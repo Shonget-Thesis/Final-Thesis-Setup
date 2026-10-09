@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "tasks": [
+    {
+      "id": "INFRA-001",
+      "title": "Organize source, evidence, docs, and progress checks",
+      "owner": "Codex (setup)",
+      "status": "done",
+      "updated": "2026-10-09",
+      "acceptance": "Portable code/evidence snapshot with hashes, runnable timing replay, tracker validation, and recorded check outcomes.",
+      "evidence": [
+        "README.md",
+        "docs/SOURCE_MANIFEST.json",
+        "code/analysis/replay_timing.py",
+        "research/experiments/EXP-000-timing-replay/results.json",
+        "docs/progress/log/2026-10-09-workspace-setup.md"
+      ],
+      "validation": "Workspace validation passed; all 11 unit tests passed; the portable timing replay reproduced the audited 48-instance arithmetic. PDF build remains tracked separately under PAPER-001."
+    },
+    {
+      "id": "PAPER-001",
+      "title": "Create and compile a chapter-based manuscript",
+      "owner": "unassigned",
+      "status": "review",
+      "updated": "2026-10-09",
+      "acceptance": "LaTeX draft builds with resolved references and rendered pages are reviewed.",
+      "evidence": [
+        "paper/drafts/adaptive-handover.tex",
+        "paper/drafts/tanh-velocity-blending.tex",
+        "docs/progress/log/2026-10-09-latex-installation.md"
+      ],
+      "validation": "All three LaTeX targets compile successfully on the installed Windows toolchain; rendered-page review and layout warning cleanup remain pending."
+    },
+    {
+      "id": "PAPER-002",
+      "title": "Confirm authors, title, adviser, and institutional template",
+      "owner": "unassigned",
+      "status": "todo",
+      "updated": "2026-10-09",
+      "acceptance": "Confirmed metadata and official formatting requirements replace manuscript placeholders.",
+      "evidence": [],
+      "validation": ""
+    },
+    {
+      "id": "LIT-001",
+      "title": "Verify primary literature and contribution boundary",
+      "owner": "unassigned",
+      "status": "todo",
+      "updated": "2026-10-09",
+      "acceptance": "Literature matrix has checked sources and verified BibTeX; novelty is reviewed against prior work.",
+      "evidence": [
+        "research/literature/README.md"
+      ],
+      "validation": ""
+    },
+    {
+      "id": "REPRO-001",
+      "title": "Recover generation provenance and portable environment",
+      "owner": "unassigned",
+      "status": "todo",
+      "updated": "2026-10-09",
+      "acceptance": "Source revision, generating scripts, checkpoint hashes, input/output manifests, and tested environment export are recorded.",
+      "evidence": [
+        "research/audits/2026-10-05/FINDINGS.md"
+      ],
+      "validation": ""
+    },
+    {
+      "id": "REPRO-002",
+      "title": "Reconcile schedules, evaluation rules, and actual cost",
+      "owner": "unassigned",
+      "status": "todo",
+      "updated": "2026-10-09",
+      "acceptance": "Teacher steps and actual grid times are documented; one evaluator and instrumented forwards/end-to-end timing pass a baseline smoke test.",
+      "evidence": [],
+      "validation": ""
+    },
+    {
+      "id": "EVAL-001",
+      "title": "Freeze development/test protocol before tuning",
+      "owner": "unassigned",
+      "status": "todo",
+      "updated": "2026-10-09",
+      "acceptance": "Speaker splits, sample size, margins, metrics, seeds, baselines, and decision rule have a dated review record.",
+      "evidence": [
+        "research/protocols/evaluation.md"
+      ],
+      "validation": ""
+    },
+    {
+      "id": "EVAL-002",
+      "title": "Run paired held-out comparisons and listening evaluation",
+      "owner": "unassigned",
+      "status": "todo",
+      "updated": "2026-10-09",
+      "acceptance": "Reproducible runs compare tuned fixed, SNR-only, and justified hybrid candidates with full cost and speaker-cluster uncertainty.",
+      "evidence": [],
+      "validation": ""
+    },
+    {
+      "id": "PAPER-003",
+      "title": "Complete manuscript and adviser review",
+      "owner": "unassigned",
+      "status": "todo",
+      "updated": "2026-10-09",
+      "acceptance": "Claims link to validated experiments, submission checks pass, PDF is visually reviewed, and adviser feedback is resolved.",
+      "evidence": [],
+      "validation": ""
+    },
+    {
+      "id": "PAPER-004",
+      "title": "Separate draft papers from the final submission project",
+      "owner": "Codex (organization)",
+      "status": "done",
+      "updated": "2026-10-09",
+      "acceptance": "Both existing and supplied drafts are preserved as independent LaTeX projects; final folder is separate; build paths and checks support all projects.",
+      "evidence": [
+        "paper/README.md",
+        "paper/drafts/tanh-velocity-blending.tex",
+        "paper/main.tex",
+        "docs/progress/log/2026-10-09-paper-organization.md"
+      ],
+      "validation": "Workspace validation and all 13 tests pass. Existing draft content hashes and supplied original bytes are preserved. Normalized introduction text comparison passes. Final-only submission check rejects the placeholder as expected. PDF compilation remains unverified without latexmk."
+    },
+    {
+      "id": "PAPER-005",
+      "title": "Use standalone drafts and separate final chapters",
+      "owner": "Codex (organization)",
+      "status": "done",
+      "updated": "2026-10-09",
+      "acceptance": "Each draft is one self-contained TeX file; final main loads separate chapters; build tooling and documentation match.",
+      "evidence": [
+        "paper/README.md",
+        "paper/main.tex",
+        "docs/progress/log/2026-10-09-single-file-drafts.md"
+      ],
+      "validation": "Workspace validation and all 13 tests passed. Original included TeX content is preserved in standalone drafts. PDF compilation remains unverified without latexmk."
+    },
+    {
+      "id": "INFRA-002",
+      "title": "Install LaTeX toolchain and compile every paper target",
+      "owner": "Codex (setup)",
+      "status": "done",
+      "updated": "2026-10-09",
+      "acceptance": "MiKTeX, Perl, pdflatex and latexmk are installed and the normal Python command produces all three PDFs.",
+      "evidence": [
+        "docs/progress/log/2026-10-09-latex-installation.md",
+        "paper/.latexmkrc"
+      ],
+      "validation": "MiKTeX and Strawberry Perl installers succeeded; python scripts/build_paper.py --all succeeded; all three generated PDFs have valid headers and no unresolved citations/references in logs."
+    },
+    {
+      "id": "PAPER-006",
+      "title": "Simplify paper into a self-contained Overleaf-style project",
+      "owner": "Claude (organization)",
+      "status": "done",
+      "updated": "2026-10-09",
+      "acceptance": "paper/ builds with plain latexmk and VS Code LaTeX Workshop, uploads to Overleaf unchanged, and checks/CI/docs match the new paths.",
+      "evidence": [
+        "paper/README.md",
+        "paper/main.tex",
+        "paper/.latexmkrc",
+        "docs/progress/log/2026-10-09-paper-layout-simplification.md"
+      ],
+      "validation": "latexmk -Werror in paper/ exited 0 and produced all three PDFs; all 13 tests passed. Workspace check passes once the superseded paper/final/ files are removed. Rendered-page review still pending."
+    }
+  ]
+}

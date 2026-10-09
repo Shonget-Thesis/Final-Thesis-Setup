@@ -1,0 +1,551 @@
+{
+  "source_repository": "https://github.com/Shonget-Thesis/Shonget-DMOSpeech2",
+  "source_head": "60d87ac782f96ff8dcfc59ed998cb5b4db0618e8",
+  "copied_on": "2026-10-09",
+  "scope": "Selected working-tree source snapshot, not a complete Git export. The October 5 audit was untracked at import. Hashes identify exact imported bytes; historical claims are not independently validated.",
+  "excluded": [
+    "Git metadata",
+    "duplicate f5_tts - Copy tree and archive",
+    "audio",
+    "checkpoints",
+    "datasets",
+    "unrelated exploratory folders"
+  ],
+  "files": [
+    {
+      "source": "src/ctcmodel.py",
+      "destination": "code/vendor/dmospeech2/src/ctcmodel.py",
+      "sha256": "849ed11cbf6e3726771b95b33b62c6fef5a415774655a0c87a08ab9085ad0c03"
+    },
+    {
+      "source": "src/demo.ipynb",
+      "destination": "code/vendor/dmospeech2/src/demo.ipynb",
+      "sha256": "d1bca1a43c09aca15a61df8d763ce74c69fd8050e62d78273914f8cda45875f4"
+    },
+    {
+      "source": "src/discriminator_conformer.py",
+      "destination": "code/vendor/dmospeech2/src/discriminator_conformer.py",
+      "sha256": "47e01f795ad315f8e55f96cf5147ce669c77d7b2473cae3d0421bc1f5a7dac5d"
+    },
+    {
+      "source": "src/dmd_trainer.py",
+      "destination": "code/vendor/dmospeech2/src/dmd_trainer.py",
+      "sha256": "8e8bfe4abcbd8b6353f7311fe4d7fc9f47e6e817b3b21c3105cb4feeab3e59d2"
+    },
+    {
+      "source": "src/duration_predictor.py",
+      "destination": "code/vendor/dmospeech2/src/duration_predictor.py",
+      "sha256": "3a494e30cf6c2f5885573948b6b2ff95e15ef2538ad7530acddbbc4bb315b8b0"
+    },
+    {
+      "source": "src/duration_trainer.py",
+      "destination": "code/vendor/dmospeech2/src/duration_trainer.py",
+      "sha256": "a8e7a7575989c01073a60bf8c5b0067a1ae0f7479df064609aa15ebc007cd981"
+    },
+    {
+      "source": "src/duration_trainer_with_prompt.py",
+      "destination": "code/vendor/dmospeech2/src/duration_trainer_with_prompt.py",
+      "sha256": "195e3ae65a80786a3f10c71c192995aa66a27e8c73520164c12f25de5981ab87"
+    },
+    {
+      "source": "src/ecapa_tdnn.py",
+      "destination": "code/vendor/dmospeech2/src/ecapa_tdnn.py",
+      "sha256": "7a4fa9a4a3a6e3a7ba05aff8d9d7360dde6eddf2bd235791d9c65b6c0f9bb1ad"
+    },
+    {
+      "source": "src/f5_tts/api.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/api.py",
+      "sha256": "7170fb23f1616857b928bda73bc082a2aff1ffe294cba466ea34e84221e7dacb"
+    },
+    {
+      "source": "src/f5_tts/configs/E2TTS_Base.yaml",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/configs/E2TTS_Base.yaml",
+      "sha256": "919bfc8406765c1243b62c184bd430e27e528ff828e64afe5ec7f74987568fd5"
+    },
+    {
+      "source": "src/f5_tts/configs/E2TTS_Small.yaml",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/configs/E2TTS_Small.yaml",
+      "sha256": "4a11c3b7a336496f81a9a05b5fbae12271a1c071f9c1c11bf883ba8bd27f1265"
+    },
+    {
+      "source": "src/f5_tts/configs/F5TTS_Base.yaml",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/configs/F5TTS_Base.yaml",
+      "sha256": "6cb3a183b9433bfef9fd5c6e6ae799a9f1d6ba01af959e3711da5c173721388c"
+    },
+    {
+      "source": "src/f5_tts/configs/F5TTS_Small.yaml",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/configs/F5TTS_Small.yaml",
+      "sha256": "aeb853d6a424c5008eb67e65171ae9c50805163d5641e200ee5e92ff745b2620"
+    },
+    {
+      "source": "src/f5_tts/configs/F5TTS_v1_Base.yaml",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/configs/F5TTS_v1_Base.yaml",
+      "sha256": "5ff14f4ee37cdf48491cd45398d3571040a8f9ba7c9175c6835fcab4d12abfae"
+    },
+    {
+      "source": "src/f5_tts/eval/ecapa_tdnn.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/eval/ecapa_tdnn.py",
+      "sha256": "4d3953093ae50e9d6fbdf711bf1ff0d57009ebe745b0e48f3137b85e4be2b96d"
+    },
+    {
+      "source": "src/f5_tts/eval/eval_infer_batch.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/eval/eval_infer_batch.py",
+      "sha256": "c8dea4448d5112fbac3b99d4f013e438f066b5851cb579dd0d7aa19936dff984"
+    },
+    {
+      "source": "src/f5_tts/eval/eval_infer_batch.sh",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/eval/eval_infer_batch.sh",
+      "sha256": "3c37a932a18c7ef1b571362c802624634a08a4793d1c325e07d09f577e9344b9"
+    },
+    {
+      "source": "src/f5_tts/eval/eval_librispeech_test_clean.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/eval/eval_librispeech_test_clean.py",
+      "sha256": "dbd9095af3e16686c109b1365dd2c4fb7e953eabe5a8b93cbc540f645bfb1979"
+    },
+    {
+      "source": "src/f5_tts/eval/eval_seedtts_testset.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/eval/eval_seedtts_testset.py",
+      "sha256": "7444f3282eef391b78828a051374fcaae2f21dbc01d8dad5467329f2bb6276d2"
+    },
+    {
+      "source": "src/f5_tts/eval/eval_utmos.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/eval/eval_utmos.py",
+      "sha256": "9fdee71785a11889bd0800afb8f9553db3530c1c0770900dcfbfdc952006df3a"
+    },
+    {
+      "source": "src/f5_tts/eval/README.md",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/eval/README.md",
+      "sha256": "001b33baad82c5f280a9e0feb423a34c53413bcfa10da714cb439473ce311fa8"
+    },
+    {
+      "source": "src/f5_tts/eval/utils_eval.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/eval/utils_eval.py",
+      "sha256": "dc98af3d5aa945ff57cdc6f7e7731409e1e5526fb1cbfc475ba04a7a01941744"
+    },
+    {
+      "source": "src/f5_tts/infer/examples/basic/basic.toml",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/infer/examples/basic/basic.toml",
+      "sha256": "5b782843795c1e1de393982f38f4524f262b661eec25a3d5737b0e114724af16"
+    },
+    {
+      "source": "src/f5_tts/infer/examples/multi/story.toml",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/infer/examples/multi/story.toml",
+      "sha256": "46f494e00249530096b0d4fd374ff57d60d1dbf9567dc5c849eca1d849b70c7e"
+    },
+    {
+      "source": "src/f5_tts/infer/examples/multi/story.txt",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/infer/examples/multi/story.txt",
+      "sha256": "d4b9d0859616331e58b4aabd8712fc649b08d9e27824226e78c102be58b2e13e"
+    },
+    {
+      "source": "src/f5_tts/infer/examples/vocab.txt",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/infer/examples/vocab.txt",
+      "sha256": "2a05f992e00af9b0bd3800a8d23e78d520dbd705284ed2eedb5f4bd29398fa3c"
+    },
+    {
+      "source": "src/f5_tts/infer/infer_cli.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/infer/infer_cli.py",
+      "sha256": "ddefd44f6164736e2789b40f916a8327b84d907b169d9c0814a2423149c112d9"
+    },
+    {
+      "source": "src/f5_tts/infer/infer_gradio.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/infer/infer_gradio.py",
+      "sha256": "1f8d7cbb9ed84da2a8b40fd7e19aba2e60fde178730bc35e65decefe5cdbb775"
+    },
+    {
+      "source": "src/f5_tts/infer/README.md",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/infer/README.md",
+      "sha256": "e53d963160c266b2a52e78e5b9ad68ffcffc4076f711a7618202e9ba24ef68e1"
+    },
+    {
+      "source": "src/f5_tts/infer/SHARED.md",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/infer/SHARED.md",
+      "sha256": "c85bcdecfdf7dd35f054231aaa541c692cc22ac8aa863d4bd36996aa265201b3"
+    },
+    {
+      "source": "src/f5_tts/infer/speech_edit.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/infer/speech_edit.py",
+      "sha256": "5557948c429d6442e751f7230ddb521fffd9e4e4e9ce6be839c433b820336656"
+    },
+    {
+      "source": "src/f5_tts/infer/utils_infer.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/infer/utils_infer.py",
+      "sha256": "fa6f7a02204bb9ef3ae02e4af4ea033e4b6f062e7f33fed38ee58448b58a684d"
+    },
+    {
+      "source": "src/f5_tts/model/backbones/dit.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/model/backbones/dit.py",
+      "sha256": "3b544cd5643b4576c7dc384aff11a820da27efec57fef74a2baba472a96e2799"
+    },
+    {
+      "source": "src/f5_tts/model/backbones/mmdit.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/model/backbones/mmdit.py",
+      "sha256": "0a362390ec4be9b77b226d72035b16c92ee596de43e7b599cf24193219cd8399"
+    },
+    {
+      "source": "src/f5_tts/model/backbones/README.md",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/model/backbones/README.md",
+      "sha256": "85a79f49780bf79f941c6db2cc07d30a2e04d334d694d449f091678d9a758eca"
+    },
+    {
+      "source": "src/f5_tts/model/backbones/unett.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/model/backbones/unett.py",
+      "sha256": "701efe4853049c4d5f01e1a1349bf92e7d1531700442532212f9a6a381b778e2"
+    },
+    {
+      "source": "src/f5_tts/model/cfm.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/model/cfm.py",
+      "sha256": "2e7bdc469ab1c7914f96e81053735a08a1ed88147d8b233812dc61b4ac81a6f4"
+    },
+    {
+      "source": "src/f5_tts/model/dataset.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/model/dataset.py",
+      "sha256": "9502feffae3cd7e6f9a955959881c7eb1c11f1f9974d1fc714d89e226431d0bd"
+    },
+    {
+      "source": "src/f5_tts/model/modules.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/model/modules.py",
+      "sha256": "591a751b3e5f6b1dd1cc62c8e488e677594b0d1d0ab6fdffd30851cca195892c"
+    },
+    {
+      "source": "src/f5_tts/model/trainer.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/model/trainer.py",
+      "sha256": "f93a87569120ab9e1691abe8c74cab96f98b4bf0f84753569f1fb97054c5a6e2"
+    },
+    {
+      "source": "src/f5_tts/model/utils.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/model/utils.py",
+      "sha256": "cb6c7d48c9097959898831a792321776dbb1b56013ed65d1faba61959d5db304"
+    },
+    {
+      "source": "src/f5_tts/model/__init__.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/model/__init__.py",
+      "sha256": "e7f6b91a1d1a4cf3faa652fe5830c54477d5d5ebb1f96f8b260a720150206a2e"
+    },
+    {
+      "source": "src/f5_tts/model_new/backbones/dit.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/model_new/backbones/dit.py",
+      "sha256": "083696146e252b634c0424badb219579d781cc6b3e41d663532ad8c82171e8e8"
+    },
+    {
+      "source": "src/f5_tts/model_new/backbones/mmdit.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/model_new/backbones/mmdit.py",
+      "sha256": "f6713baed79c9084f9e43804392a937097e45cfbb0d9fa205695e1d0ef2c6fd0"
+    },
+    {
+      "source": "src/f5_tts/model_new/backbones/README.md",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/model_new/backbones/README.md",
+      "sha256": "e62a1904af3ebe6b1c53aabde390c31bd4488597c7271850a9d4279efd59b33e"
+    },
+    {
+      "source": "src/f5_tts/model_new/backbones/unett.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/model_new/backbones/unett.py",
+      "sha256": "5ba0706795d97b9fa74a09e54f8f98186b5fac2a6296b5a17e18e5cde94d6c2d"
+    },
+    {
+      "source": "src/f5_tts/model_new/cfm.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/model_new/cfm.py",
+      "sha256": "e37271a362ff6789c1ff04ebf6ac14ff2ded8fb4a38b1b239720b1f12ae61fea"
+    },
+    {
+      "source": "src/f5_tts/model_new/dataset.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/model_new/dataset.py",
+      "sha256": "45a57cc999be9b795f49d30e331993ca1513b037046053b496abefc98ee86877"
+    },
+    {
+      "source": "src/f5_tts/model_new/modules.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/model_new/modules.py",
+      "sha256": "f2e7272c14fd33a4b2eb9542195a034fc17eeeafb8b479e84c69aab4e9444eb2"
+    },
+    {
+      "source": "src/f5_tts/model_new/trainer.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/model_new/trainer.py",
+      "sha256": "18fa6552cde752e4a72d6a621bb2a2afc8004d3c158168e6b099e315a7c9664d"
+    },
+    {
+      "source": "src/f5_tts/model_new/utils.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/model_new/utils.py",
+      "sha256": "10bd9274de5641ed3607f733999205d3a848b737d3bcf9bb4ce2b66f8853558b"
+    },
+    {
+      "source": "src/f5_tts/model_new/__init__.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/model_new/__init__.py",
+      "sha256": "2eef55246e0fe3df121d7ead5c1849505d99287fe8cbae18df7b716ff68cac84"
+    },
+    {
+      "source": "src/f5_tts/runtime/triton_trtllm/benchmark.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/runtime/triton_trtllm/benchmark.py",
+      "sha256": "74c719a8f1a752aac36d4728c1e42e56e4699da152f9ac0cc58265e2a8bb0646"
+    },
+    {
+      "source": "src/f5_tts/runtime/triton_trtllm/client_grpc.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/runtime/triton_trtllm/client_grpc.py",
+      "sha256": "fe46daaaf842023a478b5f4fa14dc36ccfd37f4cc4552d49338c4a77f25a95b2"
+    },
+    {
+      "source": "src/f5_tts/runtime/triton_trtllm/client_http.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/runtime/triton_trtllm/client_http.py",
+      "sha256": "24d6562eff0eeb13fc4515d06e9740b28d63265ccd6469d80863d9248081f573"
+    },
+    {
+      "source": "src/f5_tts/runtime/triton_trtllm/docker-compose.yml",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/runtime/triton_trtllm/docker-compose.yml",
+      "sha256": "f28869b057fc2098c443f58c09955efe7b32a428ceb396882a08847bc65ebcc8"
+    },
+    {
+      "source": "src/f5_tts/runtime/triton_trtllm/Dockerfile.server",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/runtime/triton_trtllm/Dockerfile.server",
+      "sha256": "abb6f0fae0ad9b837474acbe7cbf7b4f3eb7056df16bf6d3b8959f88c7262f73"
+    },
+    {
+      "source": "src/f5_tts/runtime/triton_trtllm/model_repo_f5_tts/f5_tts/1/f5_tts_trtllm.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/runtime/triton_trtllm/model_repo_f5_tts/f5_tts/1/f5_tts_trtllm.py",
+      "sha256": "35a9c636d0d94f6c7d5f2acad8a61902d63478bc88ce434a4b49170b3e20b7b5"
+    },
+    {
+      "source": "src/f5_tts/runtime/triton_trtllm/model_repo_f5_tts/f5_tts/1/model.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/runtime/triton_trtllm/model_repo_f5_tts/f5_tts/1/model.py",
+      "sha256": "fbe7f3744ab606dce9f7f194f10795d8e762ae39b8f06b70406d7f362c582859"
+    },
+    {
+      "source": "src/f5_tts/runtime/triton_trtllm/model_repo_f5_tts/f5_tts/config.pbtxt",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/runtime/triton_trtllm/model_repo_f5_tts/f5_tts/config.pbtxt",
+      "sha256": "1dd45114b292d8efe2f0fd0a55489bf0d319b54d9e843294799de80005712607"
+    },
+    {
+      "source": "src/f5_tts/runtime/triton_trtllm/model_repo_f5_tts/vocoder/1/.gitkeep",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/runtime/triton_trtllm/model_repo_f5_tts/vocoder/1/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "src/f5_tts/runtime/triton_trtllm/model_repo_f5_tts/vocoder/config.pbtxt",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/runtime/triton_trtllm/model_repo_f5_tts/vocoder/config.pbtxt",
+      "sha256": "7efbceb84b2c2bbc2d1937e1b71a8f1260ad7a60e15301c30caa8d6f6292b551"
+    },
+    {
+      "source": "src/f5_tts/runtime/triton_trtllm/patch/f5tts/model.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/runtime/triton_trtllm/patch/f5tts/model.py",
+      "sha256": "73f5e7f62e54f819f0b4200adf26ca14747e3309aad2a19a99f0e9c3144eaa9b"
+    },
+    {
+      "source": "src/f5_tts/runtime/triton_trtllm/patch/f5tts/modules.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/runtime/triton_trtllm/patch/f5tts/modules.py",
+      "sha256": "d74bebaa35de449687193ad743797fbb85a5cca27132b7b67134e93a608ec8f7"
+    },
+    {
+      "source": "src/f5_tts/runtime/triton_trtllm/patch/__init__.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/runtime/triton_trtllm/patch/__init__.py",
+      "sha256": "35d547e40767ec6d647fb9c3e2de881a94246c8c55c76178143e0e62547f6859"
+    },
+    {
+      "source": "src/f5_tts/runtime/triton_trtllm/README.md",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/runtime/triton_trtllm/README.md",
+      "sha256": "fdb9fad6cece88684bb75f6923accb04c25279944ce37ea146e6d5cfeb64f457"
+    },
+    {
+      "source": "src/f5_tts/runtime/triton_trtllm/requirements-pytorch.txt",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/runtime/triton_trtllm/requirements-pytorch.txt",
+      "sha256": "be7e8fdb447c27bb8ac54f32d3d061f0b3ffb625bddfa057e89469855be8740a"
+    },
+    {
+      "source": "src/f5_tts/runtime/triton_trtllm/run.sh",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/runtime/triton_trtllm/run.sh",
+      "sha256": "38bfcb04befd895929803d4cf6ed8d5e8c9cd0b1c49320eb11ed1442ab495ca6"
+    },
+    {
+      "source": "src/f5_tts/runtime/triton_trtllm/scripts/convert_checkpoint.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/runtime/triton_trtllm/scripts/convert_checkpoint.py",
+      "sha256": "d51cd828fefec57eed9e13f07eb951af2b8d80eaa15278b35117169d113a4366"
+    },
+    {
+      "source": "src/f5_tts/runtime/triton_trtllm/scripts/conv_stft.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/runtime/triton_trtllm/scripts/conv_stft.py",
+      "sha256": "185e18b0063ffd828a807074350f26f44516a8b6b4e1f969bd6f8a7147e17f2d"
+    },
+    {
+      "source": "src/f5_tts/runtime/triton_trtllm/scripts/export_vocoder_to_onnx.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/runtime/triton_trtllm/scripts/export_vocoder_to_onnx.py",
+      "sha256": "df532dd478cb94784b071bb8042cc13938fdaabcc572710a4e12106b2ce6a296"
+    },
+    {
+      "source": "src/f5_tts/runtime/triton_trtllm/scripts/export_vocos_trt.sh",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/runtime/triton_trtllm/scripts/export_vocos_trt.sh",
+      "sha256": "a8504ee0725d4973a7ea36bce40b9db3b582b037d7d0476ef14cbb2778d0666a"
+    },
+    {
+      "source": "src/f5_tts/runtime/triton_trtllm/scripts/fill_template.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/runtime/triton_trtllm/scripts/fill_template.py",
+      "sha256": "22858ec9b728c364a7edd762373c96b8da609f22098b0c515b4c556e9db33b65"
+    },
+    {
+      "source": "src/f5_tts/scripts/count_max_epoch.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/scripts/count_max_epoch.py",
+      "sha256": "d899778afc5b38e2dae9255279979cbfea6a9d0fccc6e7230b9647211855cbb6"
+    },
+    {
+      "source": "src/f5_tts/scripts/count_params_gflops.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/scripts/count_params_gflops.py",
+      "sha256": "060b72a6eef57351ba48b33e60c52f3fada267330cac01feb5416c4b4b326957"
+    },
+    {
+      "source": "src/f5_tts/socket_client.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/socket_client.py",
+      "sha256": "368f5d8d518082a6b07b7a914211e38ce7ce586288a0b4eec41cecab24dbc295"
+    },
+    {
+      "source": "src/f5_tts/socket_server.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/socket_server.py",
+      "sha256": "066eace663ef58a38a7bf7d933061c0077cf47ad5aa54eaf073c510feaeed0a1"
+    },
+    {
+      "source": "src/f5_tts/train/datasets/prepare_csv_wavs.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/train/datasets/prepare_csv_wavs.py",
+      "sha256": "54ac2c2504f4566b7c65cb798b4d1f48204ca9de0d0ebbad39143343073ce3b1"
+    },
+    {
+      "source": "src/f5_tts/train/datasets/prepare_emilia.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/train/datasets/prepare_emilia.py",
+      "sha256": "86121a8789d2406a6ba37ee762f10f1b12cec0dc3617b95a05bbbfdb863f517e"
+    },
+    {
+      "source": "src/f5_tts/train/datasets/prepare_emilia_v2.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/train/datasets/prepare_emilia_v2.py",
+      "sha256": "374a37307651a96eaae0c1f9d7ebcbe2fb76d81de44b6966f34e2df24591d683"
+    },
+    {
+      "source": "src/f5_tts/train/datasets/prepare_libritts.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/train/datasets/prepare_libritts.py",
+      "sha256": "63cc0903079bea93487a232d3b07b347e12ef7894cb66cac092934b8e13d4b69"
+    },
+    {
+      "source": "src/f5_tts/train/datasets/prepare_ljspeech.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/train/datasets/prepare_ljspeech.py",
+      "sha256": "cf99be072a85c29111e41f7d701b568c0139495d33d6a0171e20382f4dbd2c91"
+    },
+    {
+      "source": "src/f5_tts/train/datasets/prepare_wenetspeech4tts.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/train/datasets/prepare_wenetspeech4tts.py",
+      "sha256": "9bae881e53c26c8d816a0012003d2990b02acfb407f9310da4b57a1ca48497e6"
+    },
+    {
+      "source": "src/f5_tts/train/finetune_cli.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/train/finetune_cli.py",
+      "sha256": "9bd663cfe110154139bcb19fe5a8967bed350a6244d5285246b314319cbb392d"
+    },
+    {
+      "source": "src/f5_tts/train/finetune_gradio.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/train/finetune_gradio.py",
+      "sha256": "57d325481b75df9ab0df83fe9a810ffdcef1975ad5e66b4e26ee5d643db3b770"
+    },
+    {
+      "source": "src/f5_tts/train/README.md",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/train/README.md",
+      "sha256": "c60e46532c40422d9e8f0472e3e7cc986526081e9a1ac2ef8ef0bc6ac41bf9f9"
+    },
+    {
+      "source": "src/f5_tts/train/train.py",
+      "destination": "code/vendor/dmospeech2/src/f5_tts/train/train.py",
+      "sha256": "5097a901d92aaa260ce4e3ce054680834ebf3e304fc69f8cda4d02f53b8db10d"
+    },
+    {
+      "source": "src/grpo_duration_trainer.py",
+      "destination": "code/vendor/dmospeech2/src/grpo_duration_trainer.py",
+      "sha256": "59a478632dd023ee335f060089826e6041e1b7ac62ea2bee5bc4c682da28cc8e"
+    },
+    {
+      "source": "src/guidance_model.py",
+      "destination": "code/vendor/dmospeech2/src/guidance_model.py",
+      "sha256": "8f812460c9b144b588e6ba7659ebc44d7dfaf5ff218b5b9dcad3fea0346f3ce2"
+    },
+    {
+      "source": "src/infer.py",
+      "destination": "code/vendor/dmospeech2/src/infer.py",
+      "sha256": "ff07c89a21bfc81e0f476e665b46680d9324d611462203359b1b8b0fb90b308b"
+    },
+    {
+      "source": "src/unimodel.py",
+      "destination": "code/vendor/dmospeech2/src/unimodel.py",
+      "sha256": "652cf81db3097264a471362f8db1635ecc0fa9d7d88ec012f4da298c78f9d945"
+    },
+    {
+      "source": "FINAL_THESIS_DELIVERABLES/code/run_adaptive_scheduler_evaluation.py",
+      "destination": "code/experiments/legacy/run_adaptive_scheduler_evaluation.py",
+      "sha256": "9ddc9b02cfe98398c8ffe8eb2a0fc1f6dd4254fa6d931945e59fb9015226bb31"
+    },
+    {
+      "source": "FINAL_THESIS_DELIVERABLES/code/run_proving_fixed_timing_problem.py",
+      "destination": "code/experiments/legacy/run_proving_fixed_timing_problem.py",
+      "sha256": "86332860133297f6030a192301ba050f514d3cd6a838c6dcdd7b3484b6d5d691"
+    },
+    {
+      "source": "FINAL_THESIS_DELIVERABLES/metrics_and_telemetry/calibrated_hybrid_scheduler_telemetry.json",
+      "destination": "research/evidence/legacy/metrics_and_telemetry/calibrated_hybrid_scheduler_telemetry.json",
+      "sha256": "fe21eeb24a7eaf00bc26ad6e02530983fcc4e027238fd7cad582ef9e7b2c5399"
+    },
+    {
+      "source": "FINAL_THESIS_DELIVERABLES/metrics_and_telemetry/fixed_handover_timing_proof.json",
+      "destination": "research/evidence/legacy/metrics_and_telemetry/fixed_handover_timing_proof.json",
+      "sha256": "00d74a8323850a4cefcebb740aeea53216660f8a9234a7f7ab0c4670e191cfc8"
+    },
+    {
+      "source": "FINAL_THESIS_DELIVERABLES/README.md",
+      "destination": "research/evidence/legacy/README.md",
+      "sha256": "83cce9b1b83d2bd1ef190afd5a1c68f8db70e3b8db8f49a4b4b68e5ff25723b9"
+    },
+    {
+      "source": "FINAL_THESIS_DELIVERABLES/reports/ADAPTIVE_SCHEDULER_EVALUATION_REPORT.md",
+      "destination": "research/evidence/legacy/reports/ADAPTIVE_SCHEDULER_EVALUATION_REPORT.md",
+      "sha256": "ad78508264077be9dcb5b78c6ab1dd5e24b8c9446448166ba50d388181b4b309"
+    },
+    {
+      "source": "FINAL_THESIS_DELIVERABLES/reports/FIXED_HANDOVER_TIMING_EMPIRICAL_PROOF.md",
+      "destination": "research/evidence/legacy/reports/FIXED_HANDOVER_TIMING_EMPIRICAL_PROOF.md",
+      "sha256": "f3e5ed8a2d343f0c085aa42c8517cc8ca73c36dca8adc8c5f177ee73e91b210b"
+    },
+    {
+      "source": "FINAL_THESIS_DELIVERABLES/THESIS_PROBLEM_AND_SOLUTION_CONSOLIDATED_MASTER_REPORT.md",
+      "destination": "research/evidence/legacy/THESIS_PROBLEM_AND_SOLUTION_CONSOLIDATED_MASTER_REPORT.md",
+      "sha256": "45cb3bce22522e4bae812375ac3e2635882a929bbc7e0d7749cd5c9f8754f94b"
+    },
+    {
+      "source": "README.md",
+      "destination": "code/vendor/dmospeech2/README.md",
+      "sha256": "f3c3938eb9bc280bcdbc075fcb386ec2259b468263ef4feaa07dbf23db4b568d"
+    },
+    {
+      "source": "LICENSE",
+      "destination": "code/vendor/dmospeech2/LICENSE",
+      "sha256": "f9c167fc841ff7e73b2eadd57e5a6aa98995976972de4f0624ca089a279d8a6f"
+    },
+    {
+      "source": "requirements.txt",
+      "destination": "code/vendor/dmospeech2/requirements.txt",
+      "sha256": "1713e333c1827479b3849a8697e81a1b47d04f70dea4562aa2e531839865d9b3"
+    },
+    {
+      "source": "app_gradio.py",
+      "destination": "code/vendor/dmospeech2/app_gradio.py",
+      "sha256": "651c7b7bb17e9b326686e407f541574f638881c24e96e3bba251710ab58ce332"
+    },
+    {
+      "source": "evaluate_quality.py",
+      "destination": "code/vendor/dmospeech2/evaluate_quality.py",
+      "sha256": "762f30374148a1b9f445ac9e4d01ced57f8031b59a1643e98c87d655b7127b58"
+    },
+    {
+      "source": "generate_final_eval.py",
+      "destination": "code/vendor/dmospeech2/generate_final_eval.py",
+      "sha256": "1114651b593a7484f117681e9f70e4ddd797bc35c1905ee60295dd0a45b15e0f"
+    },
+    {
+      "source": "thesis_direction_audit_20261005/FINDINGS.md",
+      "destination": "research/audits/2026-10-05/FINDINGS.md",
+      "sha256": "3f86930f0fe47f60a38878b18f25a54bcac0f29cdf481732d34677c47a19930d"
+    },
+    {
+      "source": "thesis_direction_audit_20261005/recompute.py",
+      "destination": "research/audits/2026-10-05/recompute_original.py",
+      "sha256": "ef64917b76520f763f74a53d8a9cbd02d83e750e6b27cb8f18f73c4205c528d8"
+    }
+  ]
+}

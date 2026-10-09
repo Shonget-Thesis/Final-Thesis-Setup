@@ -1,0 +1,71 @@
+{
+  "scope": "Offline replay of development records; not a scheduler runtime or held-out evaluation",
+  "evaluator_version": "legacy-replay-v1",
+  "wer_unit": "percentage_points",
+  "instances": 48,
+  "policies": {
+    "t=0.05": {
+      "recorded_mean_nfe": 7,
+      "relative_failures": 26,
+      "strict_failures": 27
+    },
+    "t=0.10": {
+      "recorded_mean_nfe": 9,
+      "relative_failures": 13,
+      "strict_failures": 14
+    },
+    "t=0.15": {
+      "recorded_mean_nfe": 11,
+      "relative_failures": 5,
+      "strict_failures": 7
+    },
+    "t=0.25": {
+      "recorded_mean_nfe": 13,
+      "relative_failures": 0,
+      "strict_failures": 4
+    },
+    "t=0.40": {
+      "recorded_mean_nfe": 16,
+      "relative_failures": 10,
+      "strict_failures": 12
+    },
+    "snr_only": {
+      "recorded_mean_nfe": 11.458333333333334,
+      "relative_failures": 0,
+      "strict_failures": 4,
+      "relative_failure_ids": [],
+      "strict_failure_ids": [
+        23,
+        24,
+        32,
+        44
+      ],
+      "exact_fixed_record_matches_wer_sim_latency": null
+    },
+    "calibrated_hybrid": {
+      "recorded_mean_nfe": 11.479166666666666,
+      "relative_failures": 0,
+      "strict_failures": 4,
+      "relative_failure_ids": [],
+      "strict_failure_ids": [
+        23,
+        24,
+        32,
+        44
+      ],
+      "exact_fixed_record_matches_wer_sim_latency": 48
+    }
+  },
+  "actual_teacher_grid_times_by_step_count": {
+    "1": 0.004815273327803071,
+    "2": 0.01921471959676957,
+    "3": 0.043059664267791176,
+    "4": 0.07612046748871326,
+    "6": 0.16853038769745476
+  },
+  "input_sha256": {
+    "research/evidence/legacy/metrics_and_telemetry/fixed_handover_timing_proof.json": "00d74a8323850a4cefcebb740aeea53216660f8a9234a7f7ab0c4670e191cfc8",
+    "research/evidence/legacy/metrics_and_telemetry/calibrated_hybrid_scheduler_telemetry.json": "fe21eeb24a7eaf00bc26ad6e02530983fcc4e027238fd7cad582ef9e7b2c5399",
+    "code/configs/evaluation_v1.json": "a1cd7b6bf4eb331db9ef938ac6c91de3bf254cf75b32a9992fe96b7735568670"
+  }
+}

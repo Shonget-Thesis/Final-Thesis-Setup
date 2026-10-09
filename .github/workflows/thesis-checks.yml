@@ -1,0 +1,43 @@
+name: Thesis checks
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  workspace:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Validate workspace
+        run: python scripts/check_workspace.py
+      - name: Check analysis and workflow safeguards
+        run: python -m unittest discover -s code/tests
+      - name: Require PR progress records
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: python scripts/check_workspace.py --base "$BASE_SHA"
+      - name: Reproduce archived timing arithmetic
+        run: python code/analysis/replay_timing.py
+  paper:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: paper
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install TeX toolchain
+        run: sudo apt-get update && sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended
+      - name: Compile final manuscript and drafts
+        run: latexmk -Werror
+      - uses: actions/upload-artifact@v4
+        with:
+          name: thesis-papers
+          path: paper/build/*.pdf
