@@ -1,0 +1,41 @@
+# Python and local environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+# Research assets kept in external storage
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.wav
+*.flac
+*.mp3
+*.m4a
+*.ogg
+*.zip
+*.tar
+*.tar.gz
+code/vendor/dmospeech2/ckpts/
+research/data/
+research/runs/
+# Generated manuscript and local reports
+paper/**/build/
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+.DS_Store
+Thumbs.db

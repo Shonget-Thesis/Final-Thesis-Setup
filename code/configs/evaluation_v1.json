@@ -1,0 +1,13 @@
+{
+  "version": "legacy-replay-v1",
+  "scope": "Development-record arithmetic only; not a frozen held-out protocol",
+  "wer_unit": "percentage_points",
+  "relative_wer_floor": 12.5,
+  "relative_wer_allowance": 1,
+  "strict_wer_ceiling": 12.5,
+  "similarity_allowance": 0.02,
+  "snr_threshold_db": 18,
+  "baseline_label": "t=0.25",
+  "low_snr_label": "t=0.25",
+  "high_snr_label": "t=0.15"
+}
