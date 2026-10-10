@@ -1,0 +1,34 @@
+\documentclass[12pt,a4paper,oneside]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage[numbers]{natbib}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{figures/}}
+
+% Metadata: replace once the title and author list are confirmed.
+\newcommand{\thesistitle}{TBD: Final thesis title}
+\newcommand{\thesisauthors}{TBD: Confirmed submission author list}
+\newcommand{\pending}[1]{\par\noindent\textbf{Pending:} #1\par}
+
+\title{\thesistitle}
+\author{\thesisauthors}
+\date{Submission version not yet prepared}
+
+\begin{document}
+\maketitle
+\pending{This is the final manuscript. No draft has been promoted to the submission version.}
+\tableofcontents
+\input{chapters/01-introduction}
+\input{chapters/02-related-work}
+\input{chapters/03-methodology}
+\input{chapters/04-results}
+\input{chapters/05-conclusion}
+% Uncomment after the first \cite{} of a verified entry in references.bib.
+% \bibliographystyle{plainnat}
+% \bibliography{references}
+\end{document}

@@ -1,0 +1,8 @@
+# Keep maintained text portable across Windows and Linux.
+* text=auto eol=lf
+# Imported bytes are evidence: do not normalize their original line endings.
+code/vendor/** -text
+code/experiments/legacy/** -text
+research/evidence/legacy/** -text
+research/audits/2026-10-05/** -text
+paper/sources/tanh-velocity-blending/original.md -text
