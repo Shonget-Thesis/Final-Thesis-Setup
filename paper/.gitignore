@@ -13,3 +13,4 @@ build/
 *.lof
 *.lot
 /*.pdf
+/changes.tex
