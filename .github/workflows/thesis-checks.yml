@@ -33,11 +33,39 @@ jobs:
         working-directory: paper
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # the changes PDF needs the pull request's base commit
       - name: Install TeX toolchain
-        run: sudo apt-get update && sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended texlive-bibtex-extra texlive-science cm-super biber
+        run: sudo apt-get update && sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended texlive-bibtex-extra texlive-science texlive-plain-generic cm-super biber latexdiff
       - name: Compile manuscript
         run: latexmk -Werror
       - uses: actions/upload-artifact@v4
         with:
           name: thesis-papers
-          path: paper/build/*.pdf
+          path: paper/build/main.pdf
+      # Pull requests only: the manuscript with every change since the base
+      # branch marked (removed text red and struck through, new text blue).
+      # A review aid, so a failure here does not fail the check.
+      - name: Build changes PDF
+        id: changes
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        run: ../scripts/build_changes_pdf.sh "${{ github.event.pull_request.base.sha }}"
+      - uses: actions/upload-artifact@v4
+        if: github.event_name == 'pull_request' && steps.changes.outcome == 'success'
+        with:
+          name: changes-vs-${{ github.event.pull_request.base.ref }}
+          path: paper/build/changes.pdf
+      - name: Describe the PDFs
+        if: always()
+        run: |
+          {
+            echo "## Paper PDFs"
+            echo "Download from **Artifacts** at the bottom of this page:"
+            echo "- **thesis-papers**: main.pdf, the manuscript as it would be after merging."
+            if [ "${{ steps.changes.outcome }}" = "success" ]; then
+              echo "- **changes-vs-${{ github.event.pull_request.base.ref }}**: changes.pdf, the same manuscript with this pull request's changes marked (removed text red and struck through, new text blue)."
+            elif [ "${{ github.event_name }}" = "pull_request" ]; then
+              echo "- The changes PDF could not be built this time; review main.pdf and the file diff instead."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

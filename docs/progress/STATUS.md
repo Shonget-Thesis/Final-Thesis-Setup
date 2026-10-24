@@ -10,6 +10,8 @@ All title-page and approval fields (authors, date, adviser, panel, dean) and the
 
 The endpoint-stabilization score is framed as a candidate signal still to be tested against the prompt SNR, with a post-proposal investigation plan (Section 3.7.5). All synthesis, scoring and timing run on an NVIDIA Tesla T4 GPU through Google Colab (the Ryzen laptop is no longer used). The restart level stays fixed. See the [drift framing log](log/2026-10-25-drift-framing.md).
 
+Every pull request now gets two PDF artifacts: main.pdf and a changes PDF with the pull request's edits marked (latexdiff against the base branch). See the [changes PDF log](log/2026-10-25-changes-pdf.md) and the paper guide's review section.
+
 ## Current priorities
 
 1. Review the completed workspace setup and its recorded checks.

@@ -231,6 +231,21 @@
         "docs/progress/log/2026-10-25-drift-framing.md"
       ],
       "validation": "latexmk -Werror exited 0 (main.pdf, 68 pages); python scripts/check_workspace.py passed; rendered the new Section 3.7.5 page. Adviser review of the framing is pending."
+    },
+    {
+      "id": "INFRA-003",
+      "title": "Attach a marked-changes PDF to every pull request",
+      "owner": "Claude (CI), for Mark Vincent D. Limpahan",
+      "status": "review",
+      "updated": "2026-10-25",
+      "acceptance": "On pull requests, CI builds paper/build/changes.pdf with latexdiff against the base branch and uploads it as a separate artifact, without failing the check when latexdiff output does not compile; scripts/build_changes_pdf.sh builds the same PDF locally; paper/README.md explains how to review a pull request.",
+      "evidence": [
+        "scripts/build_changes_pdf.sh",
+        ".github/workflows/thesis-checks.yml",
+        "paper/README.md",
+        "docs/progress/log/2026-10-25-changes-pdf.md"
+      ],
+      "validation": "scripts/build_changes_pdf.sh origin/main built a 69-page changes.pdf against main with no LaTeX errors; rendered pages show removed text struck through in red and new text underlined in blue. The CI run on pull request #4 is the remote check."
     }
   ]
 }
