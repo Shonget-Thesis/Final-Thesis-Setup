@@ -1,13 +1,32 @@
 % Final manuscript in the USTP CITC format (citc.sty and frontmatter.tex, from
 % https://github.com/hdmGOAT/citc_latex_style at b1b5bd3; MIT, see CITC-LICENSE).
 % Build: latexmk main.tex (biber runs automatically).
+%
+% Current content: the thesis proposal "A Risk-Calibrated Adaptive Handover
+% Method for Teacher-Guided Flow-Matching Text-to-Speech Inference" (Chapters
+% 1-3 and Appendices A-D). See docs/progress/log/2026-10-24-proposal-draft.md.
 \documentclass[12pt,a4paper]{article}
 
 \usepackage{graphicx}
-\usepackage{amsmath}
-\usepackage{amssymb}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{bm}
 \usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{multirow}
 \usepackage{float}
+\usepackage{placeins}
+\usepackage{url}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{pdflscape}
+\usepackage{adjustbox}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.16}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,shapes.geometric,fit,calc,decorations.pathreplacing,backgrounds,patterns}
+
 \usepackage[colorlinks=true,allcolors=black]{hyperref}
 \usepackage{citc}          % all CITC formatting; load after hyperref
 \usepackage{cleveref}      % after citc, which teaches it "Chapter"/"Section"
@@ -20,46 +39,115 @@
 % main-body style; keep the contents and lists on prelim numbering (8.1).
 \tocloftpagestyle{prelim}
 \graphicspath{{figures/}}
+% "(2-10)" needs more room than tocloft's default in the list of equations.
+\setlength{\cftequationsnumwidth}{3em}
 
 \newcommand{\pending}[1]{\par\noindent\textbf{Pending:} #1\par}
 
+% ---------------------------------------------------------- draft notes
+% \draftnotestrue shows [citation needed], unverified-citation and TO DO notes;
+% \draftnotesfalse hides them for a clean copy (resolve them before submitting).
+\newif\ifdraftnotes
+\draftnotestrue
+\ifdraftnotes
+  \newcommand{\citationneeded}[1]{\textcolor{red!75!black}{\footnotesize\textsf{[citation needed: #1]}}}
+  \newcommand{\unverified}[1]{\textcolor{orange!85!black}{(#1)\textsuperscript{\textsf{?}}}}
+  \newcommand{\todo}[1]{\textcolor{magenta!80!black}{\footnotesize\textsf{[TO DO: #1]}}}
+\else
+  \newcommand{\citationneeded}[1]{}
+  \newcommand{\unverified}[1]{(#1)}
+  \newcommand{\todo}[1]{}
+\fi
+
+% ------------------------------------------------------------- figures
+\newcommand{\figfont}{\fontsize{8.5}{10.5}\selectfont}
+\newcommand{\figsmall}{\fontsize{7.5}{9}\selectfont}
+\definecolor{frozenFill}{gray}{0.94}
+\definecolor{frozenLine}{gray}{0.55}
+\definecolor{newLine}{RGB}{0,105,120}
+\definecolor{newFill}{RGB}{226,243,245}
+\definecolor{offLine}{RGB}{190,105,0}
+\definecolor{offFill}{RGB}{253,242,226}
+
+% ------------------------------- algorithms and statements, per chapter
+\counterwithin{algorithm}{section}
+\makeatletter   % unique hyperref anchors for algorithm line numbers
+\def\theHALG@line{\thealgorithm.\arabic{ALG@line}}
+\makeatother
+\theoremstyle{plain}
+\newtheorem{proposition}{Proposition}[section]
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{assumption}{Assumption}[section]
+\newtheorem{remark}{Remark}[section]
+\crefname{proposition}{Proposition}{Propositions}
+\crefname{definition}{Definition}{Definitions}
+\crefname{remark}{Remark}{Remarks}
+\crefname{algorithm}{Algorithm}{Algorithms}
+
+% ------------------------------------------------------- math shortcuts
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\renewcommand{\P}{\mathbb{P}}
+
+\setlist{itemsep=2pt,topsep=4pt,parsep=0pt}
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.75}
+
 % ------------------------------------------------------------ metadata
-% Replace each TBD once confirmed by the team and adviser (task PAPER-002).
+% Values come from the team's proposal draft. Items still marked TBD need
+% confirmation by the team and adviser (task PAPER-002).
 % Title page: uppercase, inverse pyramid, lines broken with \\ (3.2.3).
 \newcommand{\citcTitle}{%
-  TBD: FINAL THESIS TITLE}
+  A RISK-CALIBRATED ADAPTIVE HANDOVER METHOD\\
+  FOR TEACHER-GUIDED FLOW-MATCHING\\
+  TEXT-TO-SPEECH INFERENCE}
 % The same title as one run of text, for the approval page.
-\newcommand{\citcTitleInline}{TBD: FINAL THESIS TITLE}
-\newcommand{\citcDepartment}{TBD: DEPARTMENT}
-% Written in full, e.g. BACHELOR OF SCIENCE IN COMPUTER SCIENCE (3.2.10).
-\newcommand{\citcDegree}{TBD: DEGREE PROGRAM}
+\newcommand{\citcTitleInline}{A RISK-CALIBRATED ADAPTIVE HANDOVER METHOD FOR
+  TEACHER-GUIDED FLOW-MATCHING TEXT-TO-SPEECH INFERENCE}
+\newcommand{\citcDepartment}{DEPARTMENT OF COMPUTER SCIENCE}
+% Written in full (3.2.10).
+\newcommand{\citcDegree}{BACHELOR OF SCIENCE IN COMPUTER SCIENCE}
 % Month and year the grade is submitted to the registrar (3.2.11).
 \newcommand{\citcSubmissionDate}{TBD: MONTH YEAR}
-% First name, full middle name, surname; one per line, in approved order (3.2.7).
+% First name, full middle name, surname; one per line, in approved order
+% (3.2.7). Names as in the proposal draft; TBD: write each middle name in full.
 \newcommand{\citcAuthors}{%
-  TBD: CONFIRMED AUTHOR LIST}
-\newcommand{\citcAuthorsInline}{TBD: CONFIRMED AUTHOR LIST}
+  HEART CHIONG\\
+  MARK VINCENT D. LIMPAHAN\\
+  ROXANNE LOCSIN\\
+  RHENEL JHON SAJOL}
+\newcommand{\citcAuthorsInline}{HEART CHIONG, MARK VINCENT D. LIMPAHAN,
+  ROXANNE LOCSIN, RHENEL JHON SAJOL}
 % Full name with middle initial; no "Dr." or "Engr." (3.3.8).
-\newcommand{\citcAdviser}{TBD: ADVISER}
+\newcommand{\citcAdviser}{MARYLENE S. EDER}
 \newcommand{\citcChair}{TBD: PANEL CHAIR}
 \newcommand{\citcMemberA}{TBD: PANEL MEMBER}
 \newcommand{\citcMemberB}{TBD: PANEL MEMBER}
 \newcommand{\citcDean}{TBD: COLLEGE DEAN}
 
+% The proposal shows only the title page, contents and lists, and Chapters 1-3
+% with references and appendices. Set \citcproposalfalse for the final thesis
+% (adds the approval, acknowledgement, dedication, acronym and abstract pages
+% and Chapters 4-5).
+\newif\ifcitcproposal
+\citcproposaltrue
+
 \begin{document}
 
-% Article 3 preliminary pages. No draft has been promoted to the submission
-% version yet.
 \input{frontmatter}
 
 \input{chapters/01-introduction}
 \input{chapters/02-related-work}
 \input{chapters/03-methodology}
+\ifcitcproposal\else
 \input{chapters/04-results}
 \input{chapters/05-conclusion}
+\fi
 
-% Uncomment after the first \parencite/\textcite of a verified entry in
-% references.bib; an empty bibliography fails latexmk -Werror.
-% \printbibliography[title={REFERENCES}]
+\printbibliography[title={REFERENCES},heading=bibintoc]
+
+\input{chapters/appendices}
 
 \end{document}

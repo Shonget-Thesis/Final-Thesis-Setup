@@ -1,0 +1,46 @@
+% Figure: data splits and fixed-sequence calibration (Objective 3)
+\begin{figure}[!htbp]
+\centering
+\begin{adjustbox}{max width=\linewidth}
+\begin{tikzpicture}[
+  font=\figfont,
+  box/.style={draw, rounded corners=2pt, fill=gray!8, text width=3.3cm, align=center, minimum height=1.1cm, inner sep=3pt},
+  lam/.style={draw=blue!60!black, thick, rounded corners=2pt, fill=blue!5, text width=2.5cm, align=center, minimum height=1.25cm, inner sep=2pt},
+  resbox/.style={draw, thick, rounded corners=2pt, fill=green!6, text width=3.3cm, align=center, minimum height=1.1cm, inner sep=3pt},
+  arr/.style={-{Stealth[length=2mm]}, thick}
+]
+% --- splits
+\node[box] (pool) at (0,0) {Seed-TTS test-en prompts\\(speaker pool)};
+\node[box] (dev) at (4.4,0) {\textbf{Development}\\candidates, gate $\theta$};
+\node[box, draw=blue!60!black, thick] (cal) at (8.4,0) {\textbf{Calibration} ($n$)\\one utterance per speaker};
+\node[box] (test) at (12.4,0) {\textbf{Test}\\held-out check, benchmark};
+\draw[arr] (pool) -- (dev);
+\draw[arr] (dev) -- (cal);
+\draw[arr] (cal) -- (test);
+\node[font=\figsmall\itshape] at (8.4,0.95) {speaker-disjoint splits};
+
+% --- fixed-sequence testing over the lambda grid
+\node[lam] (l1) at (0.2,-2.6) {$\lambda_1$ (most\\conservative)\\$p_1\le\delta$?};
+\node[lam] (l2) at (3.6,-2.6) {$\lambda_2$\\$p_2\le\delta$?};
+\node[font=\large] (dots) at (5.95,-2.6) {$\cdots$};
+\node[lam] (lg) at (8.3,-2.6) {$\lambda_g$\\$p_g\le\delta$?};
+\node[resbox] (res) at (12.4,-2.6) {Return $\hat\lambda=\lambda_{g-1}$\\(last certified)};
+\node[resbox] (ref) at (0.2,-4.75) {No threshold certified:\\use the reference switching time};
+
+\draw[arr] (l1) -- node[above, font=\figsmall] {yes} (l2);
+\draw[arr] (l2) -- node[above, font=\figsmall] {yes} (dots);
+\draw[arr] (dots) -- node[above, font=\figsmall] {yes} (lg);
+\draw[arr] (lg) -- node[above, font=\figsmall] {no: stop} (res);
+\draw[arr] (l1) -- node[right, font=\figsmall] {no} (ref);
+\draw[arr, dashed] (cal.south) -- ++(0,-0.55) -| node[pos=0.25, above, font=\figsmall]
+  {failure counts $n\hat R_g$ for each $\lambda_g$} (l1.north);
+
+\node[font=\figsmall, align=left, text width=8.6cm, anchor=north west] at (3.3,-3.75)
+  {$p_g=\P\big(\mathrm{Bin}(n,\alpha)\le n\hat R_g\big)$ tests ``risk of $\lambda_g$ exceeds $\alpha$''.\\
+   Testing in a fixed order and stopping at the first non-rejection gives\\
+   $\P\big(R(\pi_{\hat\lambda})\le\alpha\big)\ge 1-\delta$ (Proposition~\ref{prop:ltt}).};
+\end{tikzpicture}
+\end{adjustbox}
+\caption{Speaker-disjoint data splits and the fixed-sequence calibration of the stabilization threshold. Thresholds are tested from conservative to aggressive, and the last certified one is used.}
+\label{fig:calibration}
+\end{figure}

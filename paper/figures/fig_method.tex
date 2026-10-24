@@ -1,0 +1,49 @@
+% Figure: proposed calibrated adaptive handover (Algorithm 1)
+\begin{figure}[!htbp]
+\centering
+\begin{adjustbox}{max width=\linewidth}
+\begin{tikzpicture}[
+  font=\figfont,
+  base/.style={draw, rounded corners=2pt, fill=gray!8, text width=2.15cm, align=center, minimum height=1.3cm, inner sep=3pt},
+  prop/.style={draw=blue!60!black, thick, dashed, rounded corners=2pt, fill=blue!5, text width=2.15cm, align=center, minimum height=1.3cm, inner sep=3pt},
+  dec/.style={diamond, draw=blue!60!black, thick, dashed, fill=blue!5, aspect=1.5, inner sep=0pt, align=center, text width=1.35cm},
+  arr/.style={-{Stealth[length=2mm]}, thick}
+]
+% main row
+\node[base] (in) at (0,0) {Prompt audio,\\prompt text,\\target text};
+\node[base] (teach) at (3.2,0) {Teacher guided\\step at $t_i$\\(2 passes)};
+\node[prop] (score) at (6.4,0) {Endpoint estimate\\$\hat x_1(t_i)$, score $d_i$\\(no extra pass)};
+\node[dec] (stop) at (9.75,0) {Stop the\\teacher\\here?};
+\node[base] (stud) at (13.6,0) {Student from $T$:\\fixed restart,\\3 steps (3 passes)};
+\node[base] (voc) at (13.6,-2.3) {Vocos vocoder\\$\rightarrow$ waveform};
+
+% side inputs to the decision
+\node[prop] (snr) at (3.2,2.2) {Prompt SNR\\estimate $\hat S$\\(no pass)};
+\node[prop] (cal) at (13.6,2.2) {Calibrated $\hat\lambda$\\(Objective~3),\\SNR gate $\theta$};
+
+\draw[arr] (in) -- (teach);
+\draw[arr] (teach) -- (score);
+\draw[arr] (score) -- (stop);
+\draw[arr] (stop) -- node[above, font=\figsmall] {yes: pass} node[below, font=\figsmall] {$T$} (stud);
+\draw[arr] (stud) -- (voc);
+\draw[arr] (in.north) |- (snr.west);
+\draw[arr] (snr.east) -| ($(stop.north)+(-0.2,0)$);
+\draw[arr] (cal.west) -| ($(stop.north)+(0.2,0)$);
+\draw[arr] (stop.south) -- ++(0,-1.0) coordinate (lp) -| (teach.south);
+\node[right, font=\figsmall] at ($(stop.south)+(0,-0.45)$) {no};
+\node[above, font=\figsmall] at ($(lp)!0.5!(lp-|teach.south)$) {Euler update to $t_{i+1}$, next step};
+
+% stop rule
+\node[font=\figsmall, align=left, anchor=north west, text width=9.6cm] at (-1.1,-1.95)
+  {\textbf{Stop rule:} stop if $i=i_m$ (the reference step), or if $i$ is a candidate step with $d_i\le\hat\lambda$ and $\hat S\ge\theta$.};
+
+% legend
+\node[base, minimum height=0.35cm, text width=0.45cm] (l1) at (-0.85,-3.05) {};
+\node[right, font=\figsmall] at (l1.east) {published DMOSpeech~2 sampler};
+\node[prop, minimum height=0.35cm, text width=0.45cm] (l2) at (4.4,-3.05) {};
+\node[right, font=\figsmall] at (l2.east) {added by the proposed method};
+\end{tikzpicture}
+\end{adjustbox}
+\caption{Proposed calibrated adaptive handover. The added components (dashed) reuse quantities the sampler already computes, so the per-utterance stopping decision costs no extra forward pass; the student and vocoder run as published.}
+\label{fig:method}
+\end{figure}

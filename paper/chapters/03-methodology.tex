@@ -1,4 +1,664 @@
 % !TEX root = ../main.tex
+
 \section{METHODOLOGY}
 \label{sec:method}
-\pending{Add the reviewed methodology content selected for the final manuscript.}
+
+% =====================================================================
+% Structure (16 Oct 2026): system architecture -> research workflow ->
+% common experimental setup -> one section per specific objective ->
+% ethics. Preliminary experiments moved to Appendix D. Tense: future for
+% what the study will do; present for facts about the released code and
+% for mathematical statements. Every display equation has a "where:"
+% symbol table and a List of Equations entry (\eqentry).
+% =====================================================================
+
+% =====================================================================
+\subsection{System Architecture}
+\label{sec:architecture}
+
+The proposed method will add a decision layer to the teacher-guided sampler of DMOSpeech~2 \parencite{li2025dmospeech2} without changing any network. Figure~\ref{fig:method} shows the resulting architecture. Its components fall into three groups, summarized in Table~\ref{tab:components}: the frozen backbone, which generates speech exactly as released; the inference-time controller, which decides for each utterance where the teacher stops; and the offline calibrator, which sets the controller's single threshold before deployment.
+
+The frozen backbone consists of the duration predictor, the teacher, the distilled student and the vocoder. The duration predictor fixes the length of the output; the teacher integrates the guided flow on its time grid; the student completes generation in three steps from the state that the teacher hands over; and the vocoder turns the resulting mel-spectrogram into a waveform. Section~\ref{sec:baseline} describes this sampler as the study will run it. All weights of these four networks stay as released, so any difference in cost or quality between two runs of the same input can only come from where the teacher stops.
+
+The controller sits between the teacher and the student. At each candidate stopping step it reads two quantities that the sampler already has: the teacher's current state and guided velocity, from which it forms an estimate of the final output and measures how much that estimate has changed since the previous step (Definition~\ref{def:stab}), and the prompt audio, from which it estimates the signal-to-noise ratio (Definition~\ref{def:snr}). A stopping rule (Definition~\ref{def:policy}) combines the two and either stops the teacher, handing its endpoint estimate to the student, or lets it take the next step. If no earlier candidate qualifies, the teacher stops at the reference step, so the controller never makes generation more expensive than the baseline (Proposition~\ref{prop:fallback}). The controller runs no network of its own and adds no forward pass (Proposition~\ref{prop:zero}).
+
+The calibrator runs once, before deployment. It replays the stopping rule on recorded outcomes of a held-out calibration set for an ordered grid of thresholds and keeps the most aggressive threshold that passes a binomial test (Algorithm~\ref{alg:ltt}). This threshold carries the reliability guarantee of Proposition~\ref{prop:ltt}. The calibrator touches no weight and no inference step; its only output is the number $\hat\lambda$ used by the controller.
+
+\input{figures/fig_method}
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Components of the proposed architecture.}
+\label{tab:components}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.0cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{2.3cm} >{\raggedright\arraybackslash}p{2.6cm}@{}}
+\toprule
+\textbf{Component} & \textbf{Role} & \textbf{Status} & \textbf{Cost per utterance} \\
+\midrule
+Duration predictor & Sets the number of frames to generate & Frozen & As released \\
+Teacher (F5-TTS) & Guided Euler steps on the sway grid & Frozen & 2 passes per step \\
+Student (DMOSpeech~2) & Three re-noising steps from the handed-over state & Frozen & 3 passes \\
+Vocoder (Vocos) & Mel-spectrogram to waveform & Frozen & As released \\
+Endpoint monitor & Endpoint estimate and stabilization score $d_i$ & Added, inference & No pass \\
+Prompt SNR estimator & Frame-energy estimate $\hat S$ & Added, inference & No pass \\
+Stopping rule $\pi_{\hat\lambda}$ & Chooses the stopping step & Added, inference & No pass \\
+Calibrator & Chooses $\hat\lambda$ with a guarantee & Added, offline & Run once \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Several choices in this architecture rest on the team's earlier experiments, which are reported in Appendix~\ref{app:prelim}. They showed that the cheapest acceptable switching time differs between inputs, that restarting the student later than its published level adds failures, and that a threshold chosen without a statistical test sits at the edge of its search range and certifies nothing. These experiments used lighter evaluation models and few speakers, so they inform the design but are not evidence for the method.
+
+% =====================================================================
+\subsection{Research Workflow}
+\label{sec:workflow}
+
+The study will be carried out in four stages, one per specific objective, each on its own group of speakers (Figure~\ref{fig:workflow}). Objective~1 will measure how quality and cost change with the switching time; Objective~2 will turn those observations into a formal problem and a stopping policy with proven properties; Objective~3 will calibrate the policy's threshold so that its added-failure rate is bounded with stated confidence; and Objective~4 will compare the calibrated policy with simpler rules and test its robustness. Table~\ref{tab:design} aligns each objective with its method, data and output, and Sections~\ref{sec:obj1} to \ref{sec:obj4} describe them in turn after the common setup of Section~\ref{sec:setup}.
+
+\input{figures/fig_workflow}
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Alignment of objectives, methods, data and outputs.}
+\label{tab:design}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{4.0cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{2.6cm} >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Objective} & \textbf{Method} & \textbf{Data} & \textbf{Output}\\
+\midrule
+1.\ Characterize the switching-time space & Run every candidate switching time; record quality, cost and decision signals & Development split & Quality--cost map; candidate set; SNR gate\\
+2.\ Formulate and analyze the method & Problem formulation, decision signals, stopping policy, propositions with proofs & --- & Policy, Algorithm~\ref{alg:handover}, Propositions~\ref{prop:zero}--\ref{prop:oracle}\\
+3.\ Calibrate with a guarantee & Learn-Then-Test with binomial p-values and fixed-sequence testing; repeated-split check & Calibration and test splits & Threshold $\hat\lambda$; verified bound\\
+4.\ Benchmark and test robustness & Comparison with fixed, SNR-only and oracle rules; noise shift; calibration size & Test split & Savings, quality, robustness\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Each objective can produce a negative result, and each such result will be reported. Objective~1 may show that no candidate cheaper than the reference is acceptable for a meaningful share of inputs; Objective~3 may certify no threshold at the chosen tolerance, or the certified threshold may fail on held-out speakers; and Objective~4 may show that the savings vanish against a simple SNR rule. The workflow is designed so that these outcomes are detected rather than hidden.
+
+% =====================================================================
+\subsection{Common Experimental Setup}
+\label{sec:setup}
+
+\subsubsection{Baseline Sampler}
+\label{sec:baseline}
+
+The study will use the DMOSpeech~2 checkpoints and inference code released with \textcite{li2025dmospeech2}. For a prompt and target text, the total duration comes from the fixed duration predictor. The mel-spectrogram tensor $x\in\R^{F\times 100}$ covers the prompt frames followed by the frames to be generated, and a mask $M$ marks the generated (non-prompt) frames. Algorithm~\ref{alg:baseline} gives the sampler as the study will run it; the paragraphs below explain each part.
+
+The teacher integrates the flow on a sway grid of 16 intervals, which is \Cref{eq:sway} with $s=-1$ and the code's default \texttt{teacher\_steps}~$=16$:
+\begin{equation}
+t_i = 1-\cos\!\Big(\frac{\pi}{2}\cdot\frac{i}{16}\Big), \qquad i = 0,1,\dots,16.
+\label{eq:grid}
+\end{equation}
+\eqentry{Teacher time grid}
+\begin{whereterms}[2.6cm]
+$t_i$ & time of teacher grid point $i$ on the flow axis, from $t_0=0$ (noise) to $t_{16}=1$ (data) \\
+$i$ & index of the grid point \\
+$16$ & number of grid intervals in the released code
+\end{whereterms}
+
+At each grid point the teacher evaluates the guided velocity
+\begin{equation}
+v(x_{t_i},t_i) = v_c(x_{t_i},t_i) + \gamma\,\big(v_c(x_{t_i},t_i) - v_u(x_{t_i},t_i)\big), \qquad \gamma = 2.
+\label{eq:guided}
+\end{equation}
+\eqentry{Guided teacher velocity}
+\begin{whereterms}[2.6cm]
+$v(x_{t_i},t_i)$ & guided velocity used for the teacher's update \\
+$x_{t_i}$ & mel-spectrogram state at time $t_i$ \\
+$v_c$ & teacher output conditioned on the text and the prompt (one forward pass) \\
+$v_u$ & teacher output without the condition (one forward pass) \\
+$\gamma$ & guidance strength (code argument \texttt{cfg\_strength}); $\gamma=2$ corresponds to $w=3$ in the form of Section~\ref{sec:rrl-fm}
+\end{whereterms}
+Each evaluation therefore costs two forward passes. The released sampler can add a stochastic term to $v$ (argument \texttt{eta}, default 1). The study will set that term to zero, so the teacher trajectory of an input is deterministic. Every candidate switching time of an input then follows one and the same trajectory, the decision signal and the endpoint use the same velocity, and differences between candidates come only from where the teacher stops.
+
+For a stopping argument $s$, the teacher runs Euler steps (\Cref{eq:euler}) up to $t_h = t_{k}$, the first grid point with $t_k > s$. One more guided evaluation at $t_h$ then gives the endpoint estimate of \Cref{eq:endpoint}, which is handed to the student:
+\begin{equation}
+T = x_{t_k} + (1-t_k)\,v(x_{t_k},t_k).
+\label{eq:handover}
+\end{equation}
+\eqentry{Endpoint estimate handed to the student}
+\begin{whereterms}[2.6cm]
+$T$ & endpoint estimate: the teacher's prediction of the final mel-spectrogram \\
+$k$ & teacher stop index, the first grid point with $t_k>s$ \\
+$s$ & stopping argument (code argument \texttt{t\_switch}) \\
+$t_k$ & handover time $t_h$ \\
+$1-t_k$ & remaining distance to the data end of the flow axis
+\end{whereterms}
+
+The student then completes generation on its own grid $\tau \in \{0,\allowbreak 0.0761,\allowbreak 0.2929,\allowbreak 0.6173\}$, the sway map applied to $\{0,\allowbreak 0.25,\allowbreak 0.5,\allowbreak 0.75\}$, starting at index $j$ (code argument \texttt{student\_start\_step}). The study will fix $j=1$, the released code's default, for every switching time, so the student always restarts at $\tau=0.0761$ and runs three steps. (The paper's main configuration uses two student steps, which corresponds to $j=2$.) At each step it draws fresh noise and updates
+\begin{equation}
+\phi = (1-\tau)\,\varepsilon + \tau\,x, \qquad x \leftarrow \phi + (1-\tau)\,g(\phi,\tau).
+\label{eq:student}
+\end{equation}
+\eqentry{Student re-noising step}
+\begin{whereterms}[2.6cm]
+$\tau$ & current point of the student grid (restart level at the first step) \\
+$\varepsilon$ & fresh Gaussian noise, $\varepsilon\sim\mathcal N(0,I)$, seeded per input and per step \\
+$x$ & current estimate of the output; $x=T$ before the first student step \\
+$\phi$ & re-noised input to the student \\
+$g(\phi,\tau)$ & student network output (one forward pass)
+\end{whereterms}
+Because the noise is seeded per input and per student step, all candidate switching times of an input use identical draws. Finally, the prompt frames are removed and Vocos converts the mel-spectrogram into a waveform \parencite{siuzdak2024vocos}.
+
+\begin{algorithm}[!htbp]
+\caption{Teacher-guided sampling (fixed switching argument $s$)}
+\label{alg:baseline}
+\small
+\begin{algorithmic}[1]
+\Require prompt mel and mask $M$, text, duration, stopping argument $s$, seed
+\State draw $x_{t_0}\sim\mathcal{N}(0,I)$ with the input's seed
+\State $k \gets \min\{i : t_i > s\}$ \Comment{teacher stop index on the 16-interval sway grid}
+\For{$i = 0,\dots,k-1$}
+  \State $v \gets v_c(x_{t_i},t_i) + \gamma\,\big(v_c(x_{t_i},t_i) - v_u(x_{t_i},t_i)\big)$ \Comment{2 forward passes}
+  \State $x_{t_{i+1}} \gets x_{t_i} + (t_{i+1}-t_i)\,v$
+\EndFor
+\State \label{line:endpoint}$T \gets x_{t_k} + (1-t_k)\,v(x_{t_k},t_k)$ \Comment{endpoint estimate, 2 forward passes}
+\State $x \gets T$
+\For{$\tau \in \{0.0761,\,0.2929,\,0.6173\}$} \Comment{student, fixed start $j=1$}
+  \State draw $\varepsilon\sim\mathcal{N}(0,I)$ with a seed fixed per input and step
+  \State $\phi \gets (1-\tau)\,\varepsilon + \tau\,x$; \quad $x \gets \phi + (1-\tau)\,g(\phi,\tau)$ \Comment{1 forward pass}
+\EndFor
+\State remove prompt frames; decode $x$ with the vocoder
+\end{algorithmic}
+\end{algorithm}
+
+Counting the forward passes in Algorithm~\ref{alg:baseline} gives the exact cost of every candidate switching time, which the rest of the chapter uses as the unit of computation.
+
+\begin{proposition}[Cost identity]\label{prop:cost}
+For stopping argument $s$ with $t_h=t_{k(s)}$ and the fixed student start index $j=1$, the number of forward passes is
+\begin{equation}
+C(s) = 2\,\big(k(s)+1\big) + 3.
+\label{eq:cost}
+\end{equation}
+\eqentry{Cost identity}
+\begin{whereterms}[2.6cm]
+$C(s)$ & forward passes needed to synthesize one utterance with stopping argument $s$ \\
+$k(s)$ & teacher stop index for $s$ (number of Euler steps) \\
+$k(s)+1$ & guided teacher evaluations: $k$ Euler steps plus the endpoint evaluation \\
+$2$ & forward passes per guided evaluation \\
+$3$ & student forward passes, $4-j$ with $j=1$
+\end{whereterms}
+\end{proposition}
+\begin{proof}
+The teacher evaluates its guided field at $t_0,\dots,t_{k-1}$ for the Euler steps and once more at $t_k$ for the endpoint, i.e.\ $k+1$ times, each with one conditional and one unconditional pass. The student evaluates once per remaining grid point, $4-j=3$ times.
+\end{proof}
+
+\begin{remark}\label{rem:grid}
+The DMOSpeech~2 paper reports its main configuration as 14 teacher and 2 student steps at $t_{\text{switch}}=0.25$ \parencite{li2025dmospeech2}. On a 32-interval sway grid, the last grid point not above 0.25 is $t_{14}=1-\cos(14\pi/64)\approx0.227$, which gives exactly 14 teacher steps; the released code's teacher-only sampler also defaults to a 32-interval grid. The released teacher-guided sampler instead stops at the first point above $s$ on its default 16-interval grid, which for $s=0.25$ is $t_8\approx0.293$ after eight Euler steps. Both grids share their even points, so $t_{14}$ on the 32-interval grid equals $t_7$ on the 16-interval grid. The authors' evaluation script is not released, so this reading is consistent with the released code rather than confirmed. All costs in this chapter refer to the 16-interval grid.
+\end{remark}
+
+\subsubsection{Notation}
+Table~\ref{tab:notation} lists the symbols used in the rest of this chapter. Inputs are treated as random draws from an unknown distribution $\mathcal{D}$ of (prompt, prompt text, target text) triples, which is what allows the calibration in Objective~3 to make statements about new inputs.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Notation.}
+\label{tab:notation}
+\begin{tabularx}{\columnwidth}{@{}>{\raggedright\arraybackslash}p{2.6cm} X@{}}
+\toprule
+Symbol & Meaning \\
+\midrule
+$x$ & input (prompt audio, prompt text, target text) drawn from distribution $\mathcal{D}$ \\
+$\mathcal{K}=\{k_1,\dots,k_m\}$ & candidate switching times (stopping arguments), ordered by cost; $k_m=k_{\text{ref}}$ is the reference \\
+$C(k)$ & forward passes when the teacher stops at candidate $k$ (Prop.~\ref{prop:cost}) \\
+$f(x,k)\in\{0,1\}$ & added-failure indicator of $k$ relative to $k_{\text{ref}}$ (Def.~\ref{def:failure}) \\
+$\pi$ & policy mapping observable signals to a candidate switching time \\
+$R(\pi)$ & risk: $\E_{x\sim\mathcal{D}}[f(x,\pi(x))]$ \\
+$\alpha,\delta$ & tolerated risk; allowed probability that calibration fails \\
+$d_i$ & endpoint-stabilization score at teacher grid step $i$ \\
+$\hat S$ & estimated prompt SNR (dB) \\
+$\lambda,\theta$ & stabilization threshold (calibrated); SNR gate (set on development data) \\
+$T$ & teacher endpoint estimate passed to the student \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{Data and Splits}
+\label{sec:data}
+
+The corpus will be Seed-TTS test-en, whose prompts come from Common Voice \parencite{anastassiou2024seedtts,ardila2020commonvoice}; it is the English test set used by DMOSpeech~2 \parencite{li2025dmospeech2}, so the reference configuration can be compared with published numbers. It contains 1,088 utterances from 666 prompt speakers. The speakers will be divided into three disjoint splits with a fixed random seed (Table~\ref{tab:splits}), using 500 of the 666 speakers and one utterance per speaker in every split; speaker identity is taken from the prompt recording, so the splits are disjoint at the level of Seed-TTS prompt identities. The development split will serve Objective~1 and the choice of the SNR gate; the calibration split will serve only the threshold calibration of Objective~3; and the test split will serve the held-out check of Objective~3 and the benchmark of Objective~4. Keeping speakers disjoint prevents the calibrated threshold from being tuned to voices it is later tested on, and allowing at most one utterance per speaker in the calibration and test splits makes the inputs close to independent, which the guarantee of Proposition~\ref{prop:ltt} requires.
+
+Every utterance will be synthesized under two prompt conditions. The clean condition will use the prompt as recorded. The noisy condition will add white Gaussian noise scaled to 15~dB below the prompt's mean power, seeded per input and checked to lie within $15.0\pm0.1$~dB, as in the earlier experiments (Appendix~\ref{app:prelim}); it tests whether the decision signals and the SNR gate react to degraded prompts. Within an input, every candidate switching time will use the same initial noise and the same student noise draws (Section~\ref{sec:baseline}), and all models will run in evaluation mode, so differences between candidates are paired. Because each speaker contributes one utterance under both prompt conditions, calibration and testing will count a speaker as failing when either of its two utterances fails; this keeps one observation per speaker, as the guarantee of Proposition~\ref{prop:ltt} requires.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Speaker-disjoint data splits.}
+\label{tab:splits}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.3cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{3.6cm} >{\raggedright\arraybackslash}p{2.4cm}@{}}
+\toprule
+\textbf{Split} & \textbf{Used for} & \textbf{Constraint} & \textbf{Size} \\
+\midrule
+Development & Objective~1; choice of the SNR gate $\theta$ & Speaker-disjoint from the others & 100 speakers / 100 utterances \\
+Calibration & Objective~3 (threshold $\hat\lambda$) & One utterance per speaker & 200 speakers / 200 utterances \\
+Test & Objective~3 held-out check; Objective~4 & One utterance per speaker & 200 speakers / 200 utterances \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{Quality and Cost Measures}
+\label{sec:measures}
+
+Each generated utterance will be scored on intelligibility, speaker similarity and predicted naturalness (Table~\ref{tab:measures}). Word error rate will be computed from a Whisper-large-v3 transcript, as in the DMOSpeech~2 evaluation \parencite{radford2023whisper,li2025dmospeech2}, after normalizing both texts as in the Seed-TTS English evaluation: punctuation is replaced by spaces, whitespace is collapsed and text is lowercased. Speaker similarity will be the cosine similarity between the embeddings of a WavLM-Base+ speaker-verification model (\texttt{microsoft/wavlm-base-plus-sv}) for the generated speech and for the ground-truth target recording \parencite{chen2022wavlm}. DMOSpeech~2 uses a WavLM-large-based verifier, so absolute SIM values in this study are not comparable with its published numbers; the failure rule is unaffected, because it compares each candidate only with the reference scored by the same verifier. Naturalness will be predicted with UTMOS \parencite{saeki2022utmos}. These models replace the lighter ones of the earlier experiments. Cost will be measured primarily in forward passes, which follow exactly from Proposition~\ref{prop:cost} and do not depend on hardware, and secondarily in wall-clock time and real-time factor on the study's testing hardware (Ryzen~7, 16~GB RAM, integrated graphics).
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Quality and cost measures.}
+\label{tab:measures}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.6cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{3.3cm} >{\raggedright\arraybackslash}p{3.0cm}@{}}
+\toprule
+\textbf{Measure} & \textbf{Computed with} & \textbf{Compared against} & \textbf{Role} \\
+\midrule
+WER & Whisper-large-v3 transcript, stated normalization & Target text & Failure rule; reported \\
+SIM & WavLM-Base+ speaker verifier, cosine similarity & Ground-truth target recording & Failure rule; reported \\
+UTMOS & Predicted mean opinion score & --- & Reported only \\
+Forward passes & Proposition~\ref{prop:cost} & Reference $C(k_{\text{ref}})=21$ & Primary cost \\
+Runtime, RTF & Wall-clock time on the study's testing hardware & Reference & Secondary cost \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+A switching time is acceptable for an input if it does not make the output clearly worse than the reference switching time on the same input. Because both outputs share all noise draws, this comparison isolates the effect of stopping the teacher earlier. Definition~\ref{def:failure} turns it into a binary event that can be counted, which is what the calibration needs; UTMOS will be reported but not used in the rule, because predicted naturalness is noisy for single utterances.
+
+\begin{definition}[Added failure]\label{def:failure}
+For input $x$ and candidate switching time $k$, with outputs from the same seeds, $f(x,k)=1$ if
+\begin{equation}
+\mathrm{WER}(x,k) > \max\big(c,\ \mathrm{WER}(x,k_{\text{ref}}) + m_W\big)
+\quad\text{or}\quad
+\mathrm{SIM}(x,k) < \mathrm{SIM}(x,k_{\text{ref}}) - m_S,
+\label{eq:failure}
+\end{equation}
+\eqentry{Added-failure rule}
+and $f(x,k)=0$ otherwise. By construction $f(x,k_{\text{ref}})=0$.
+\begin{whereterms}[2.6cm]
+$f(x,k)$ & added-failure indicator of candidate $k$ on input $x$ \\
+$\mathrm{WER}(x,k)$ & word error rate of the output for $x$ at candidate $k$ \\
+$\mathrm{SIM}(x,k)$ & speaker similarity of the output for $x$ at candidate $k$ \\
+$k_{\text{ref}}$ & reference switching time ($s=0.25$) \\
+$c$ & absolute WER ceiling, $c=12.5\%$ \\
+$m_W$ & WER margin, 1 percentage point \\
+$m_S$ & SIM margin, $0.02$
+\end{whereterms}
+All three constants are fixed before any calibration.
+\end{definition}
+
+The ceiling $c$ keeps a short sentence from failing because of a single misrecognized word, while the margins allow for small run-to-run differences in the evaluation models. Any utterance above the ceiling will also be checked by listening and by its transcript before the failure is attributed to synthesis rather than to the recognizer.
+
+\subsubsection{Tools, Hardware, and Reproducibility}
+
+The implementation will use Python and PyTorch with the released DMOSpeech~2 code (Section~\ref{sec:baseline}), Vocos \parencite{siuzdak2024vocos} and the evaluation models above on a Ryzen~7 laptop with 16~GB of RAM and integrated graphics. All reported runtimes will be measured on that laptop under the same settings; latencies from the earlier experiments, which used lighter evaluation models, will not be compared. Every script will import one shared sampler module, so the reference, the fixed alternatives and the adaptive policy run the same code. Before any experiment, three checks will be run on that module: two runs of the same input with the same seed must give identical outputs; the adaptive policy forced to fall back must reproduce the reference output exactly; and a counter wrapped around the teacher and student networks must record exactly the forward passes predicted by Proposition~\ref{prop:cost}. Raw per-utterance results and configuration files will be archived, and every table will be regenerated by a committed script from those raw results.
+
+% =====================================================================
+\subsection{Characterizing the Switching-Time Space}
+\label{sec:obj1}
+
+\subsubsection{Candidate Switching Times}
+
+Objective~1 asks how quality and cost change with the switching time across inputs. The candidates are the stopping arguments in Table~\ref{tab:cost}, with the student start index fixed at $j=1$. Their costs follow from Proposition~\ref{prop:cost} and are shown against the teacher grid in Figure~\ref{fig:grid}. The reference is $s=0.25$, matching the paper's switching time; later switches are excluded because they cannot save computation relative to the reference. The earliest candidate, $s=0.07$, is the code's default and saves 8 of the reference's 21 forward passes.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Candidate switching times (stopping argument $s$) and their exact cost under the released sampler, with the student restart fixed at $j=1$ ($\tau=0.0761$).}
+\label{tab:cost}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}cccccl@{}}
+\toprule
+$s$ & Stop index $k$ & $t_h$ & Teacher evals & $C(s)$ & Note \\
+\midrule
+0.07 & 4 & 0.0761 & 5 & 13 & code default \\
+0.10 & 5 & 0.1181 & 6 & 15 & \\
+0.15 & 6 & 0.1685 & 7 & 17 & \\
+0.25 & 8 & 0.2929 & 9 & 21 & reference \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\input{figures/fig_grid}
+
+\subsubsection{Procedure}
+
+Because the teacher is deterministic, all four candidates of an input share the same teacher trajectory up to the earliest stop. Objective~1 will exploit this: for each input it will run the teacher once up to the reference step, store the endpoint estimates at the four candidate steps and the full trace of decision signals, and then run the student once from each stored endpoint (Algorithm~\ref{alg:grid}). This gives the same outputs as four separate runs at about a third of the teacher cost, and it records the endpoint-stabilization score $d_i$ (Definition~\ref{def:stab}) at every teacher step and the prompt SNR estimate $\hat S$ for every input. These recorded signals are what later allow the policy to be evaluated for any threshold without new synthesis.
+
+\begin{algorithm}[!htbp]
+\caption{Single-pass evaluation of all candidate switching times for one input}
+\label{alg:grid}
+\small
+\begin{algorithmic}[1]
+\Require input $x$, seed, candidate steps $i_1<\dots<i_m$ ($i_m$ the reference step)
+\State $\hat S \gets \Call{SNREstimate}{\text{prompt}}$; draw $x_{t_0}$ with the seed
+\For{$i = 0,\dots,i_m$}
+  \State evaluate guided $v(x_{t_i},t_i)$; $\hat x_1(t_i) \gets x_{t_i} + (1-t_i)\,v$; compute $d_i$ if $i\ge1$
+  \If{$i\in\{i_1,\dots,i_m\}$}
+    \State store $T_i \gets \hat x_1(t_i)$
+  \EndIf
+  \If{$i<i_m$}
+    \State $x_{t_{i+1}} \gets x_{t_i} + (t_{i+1}-t_i)\,v$
+  \EndIf
+\EndFor
+\For{each stored $T_i$}
+  \State run the student from $T_i$ (fixed $j=1$, seeded noise); decode
+  \State record WER, SIM, UTMOS, $C(i)$, runtime, and $f(x,i)$ against the reference output
+\EndFor
+\State record $\hat S$ and the trace $d_1,\dots,d_{i_m}$
+\end{algorithmic}
+\end{algorithm}
+
+The procedure will be run on every development input under both prompt conditions. Each (input, condition, candidate) combination will become one row of the result table, holding the quality measures, the cost, the added-failure indicator and the signal trace; a random tenth of the generated audio will be archived for listening checks.
+
+\subsubsection{Analysis}
+
+The analysis will have three parts. First, for each candidate the study will report the distribution of WER, SIM and UTMOS and the added-failure rate against the reference, with Clopper--Pearson 95\% intervals \parencite{clopper1934}; this is the average quality--cost trade-off that a single fixed switching time can offer. Second, for each input it will identify the oracle choice, the cheapest candidate that does not fail, and report how often the oracle is earlier than the reference in each condition; if the oracle is almost always the reference, or almost always the earliest candidate, a per-utterance rule has little to gain and the study will report this. Third, it will measure how strongly $d_i$ and $\hat S$ are associated with the oracle choice, using rank correlation and plots, to judge whether the signals carry information about when the teacher can stop.
+
+The outputs of this objective will be the final candidate set $\mathcal{K}$, the SNR gate $\theta$, chosen on this split as the lowest prompt SNR above which early candidates rarely fail, and the quality--cost map that answers Objective~1.
+
+% =====================================================================
+\subsection{Formulation and Analysis of the Selection Method}
+\label{sec:obj2}
+
+\subsubsection{Problem Formulation}
+
+The goal of per-utterance switching is to spend as little computation as possible while keeping added failures rare. Stated as an optimization problem, it seeks the cheapest policy whose risk of added failures stays below the tolerance $\alpha$:
+\begin{equation}
+\min_{\pi}\ \E_{x\sim\mathcal{D}}\big[C(\pi(x))\big] \quad\text{s.t.}\quad R(\pi)=\E_{x\sim\mathcal{D}}\big[f(x,\pi(x))\big]\le\alpha.
+\label{eq:objective}
+\end{equation}
+\eqentry{Per-utterance handover problem}
+\begin{whereterms}[2.6cm]
+$\pi$ & policy that maps an input's observable signals to a candidate switching time \\
+$\mathcal{D}$ & unknown distribution of inputs \\
+$C(\pi(x))$ & forward passes used for input $x$ (\Cref{eq:cost}) \\
+$f(x,\pi(x))$ & added-failure indicator of the chosen candidate (\Cref{eq:failure}) \\
+$R(\pi)$ & risk: expected rate of added failures over inputs \\
+$\alpha$ & tolerated risk, fixed in advance
+\end{whereterms}
+A policy may only use information available before the student starts, and the constraint involves the unknown distribution $\mathcal{D}$. The method will therefore restrict attention to a one-parameter family of policies, defined from two cheap signals, and Objective~3 will enforce the constraint with high probability from finite calibration data.
+
+\subsubsection{Decision Signals}
+
+The first signal measures whether the teacher's prediction of the final output has settled. At every teacher step the guided velocity already gives an endpoint estimate (\Cref{eq:endpoint}); if two consecutive estimates are nearly the same, further teacher steps are unlikely to change the coarse structure that the student inherits.
+
+\begin{definition}[Endpoint-stabilization score]\label{def:stab}
+At teacher grid step $i\ge1$, with endpoint estimates $\hat x_1(t_i) = x_{t_i} + (1-t_i)\,v(x_{t_i},t_i)$ from the deterministic guided velocity,
+\begin{equation}
+d_i = \frac{\|\hat x_1(t_i) - \hat x_1(t_{i-1})\|_M}{\|\hat x_1(t_i)\|_M + \epsilon}.
+\label{eq:stab}
+\end{equation}
+\eqentry{Endpoint-stabilization score}
+\begin{whereterms}[2.6cm]
+$d_i$ & endpoint-stabilization score at step $i$; small means settled \\
+$\hat x_1(t_i)$ & endpoint estimate at step $i$ (\Cref{eq:endpoint}) \\
+$\hat x_1(t_{i-1})$ & endpoint estimate at the previous step \\
+$\|\cdot\|_M$ & Euclidean norm over the generated (non-prompt) frames marked by $M$ \\
+$\epsilon$ & small positive constant that prevents division by zero
+\end{whereterms}
+\end{definition}
+
+The second signal protects against prompts on which early switching is risky. The earlier experiments found that early switches failed mostly on noisy prompts (Appendix~\ref{app:prelim}), so the policy will only allow an early switch when the prompt appears clean.
+
+\begin{definition}[Prompt SNR estimate]\label{def:snr}
+The prompt waveform is split into 25~ms frames with a 10~ms hop, and
+\begin{equation}
+\hat S = \mathrm{clip}_{[0,50]}\!\left(10\log_{10}\frac{\bar E_{\text{top}}}{\bar E_{\text{bottom}}}\right).
+\label{eq:snr}
+\end{equation}
+\eqentry{Prompt SNR estimate}
+\begin{whereterms}[2.6cm]
+$\hat S$ & estimated prompt signal-to-noise ratio in dB \\
+$\bar E_{\text{top}}$ & mean energy of the loudest half of the frames (speech) \\
+$\bar E_{\text{bottom}}$ & mean energy of the quietest 10\% of the frames (background) \\
+$\mathrm{clip}_{[0,50]}$ & limits the value to between 0 and 50~dB
+\end{whereterms}
+It is computed on the prompt before loudness normalization and set to 0~dB when the prompt has fewer than two frames, so that very short prompts fall back to the reference. It is a proxy, to be validated against the known added-noise level of the noisy condition.
+\end{definition}
+
+\subsubsection{Policy and Algorithm}
+
+The policy combines the two signals with one threshold on each. It walks through the teacher's steps in order and stops at the first candidate step at which the endpoint has stabilized and the prompt passes the SNR gate; if no candidate qualifies, it stops at the reference step, so it can never cost more than the reference.
+
+\begin{definition}[Stabilization stopping policy]\label{def:policy}
+Let the candidate stopping steps be $i_1<\dots<i_m$, with $i_m$ the reference step. Given threshold $\lambda$ and SNR gate $\theta$, the policy stops the teacher at
+\begin{equation}
+\pi_\lambda(x) =
+\begin{cases}
+\min\{\, i_r : r<m,\ d_{i_r}\le\lambda,\ \hat S\ge\theta \,\} & \text{if this set is not empty},\\
+i_m & \text{otherwise}.
+\end{cases}
+\label{eq:policy}
+\end{equation}
+\eqentry{Stabilization stopping policy}
+\begin{whereterms}[2.6cm]
+$\pi_\lambda(x)$ & stopping step chosen for input $x$ \\
+$i_1,\dots,i_m$ & candidate stopping steps; $i_m$ is the reference step \\
+$d_{i_r}$ & stabilization score at candidate $i_r$ (\Cref{eq:stab}) \\
+$\lambda$ & stabilization threshold, calibrated in Objective~3 \\
+$\hat S$, $\theta$ & prompt SNR estimate (\Cref{eq:snr}) and SNR gate set on the development split
+\end{whereterms}
+The student then runs from the released code's default restart level ($j=1$).
+\end{definition}
+
+Figure~\ref{fig:method} in Section~\ref{sec:architecture} shows how the policy sits inside the released sampler, and Algorithm~\ref{alg:handover} gives it step by step. Only the stopping decision is new; the teacher, student and vocoder run unchanged. The threshold $\lambda$ is the single parameter that trades cost for risk: a larger $\lambda$ accepts less settled endpoints and stops earlier.
+
+\begin{algorithm}[!htbp]
+\caption{Calibrated adaptive handover (inference)}
+\label{alg:handover}
+\small
+\begin{algorithmic}[1]
+\Require prompt, texts, calibrated $\hat\lambda$, gate $\theta$, candidates $i_1<\dots<i_m$
+\State $\hat S \gets \Call{SNREstimate}{\text{prompt}}$
+\For{each teacher grid step $i$}
+  \State evaluate guided $v(x_{t_i},t_i)$; compute $\hat x_1(t_i)$ and $d_i$
+  \If{$i=i_m$ \textbf{or} ($i\in\{i_1,\dots,i_{m-1}\}$ \textbf{and} $d_i\le\hat\lambda$ \textbf{and} $\hat S\ge\theta$)}
+    \State $T\gets \hat x_1(t_i)$; \textbf{break}
+  \EndIf
+  \State $x_{t_{i+1}} \gets x_{t_i} + (t_{i+1}-t_i)\,v$
+\EndFor
+\State run the student from $T$ at its fixed restart level ($j=1$, three steps)
+\State decode with the vocoder
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Properties}
+\label{sec:properties}
+
+The following four properties are what make the policy practical and safe to calibrate. The first shows that the decision is free; the second, that the threshold controls cost in one direction, which keeps the calibration grid meaningful; the third, that the policy can never be worse in cost than the reference and degrades to it when calibration fails; and the fourth gives the best cost any risk-free policy could reach, against which the policy's savings will be judged.
+
+\begin{proposition}[Zero overhead]\label{prop:zero}
+Computing $d_i$ at every candidate step and $\hat S$ requires no forward pass beyond those of the switching time finally executed.
+\end{proposition}
+\begin{proof}
+$\hat S$ uses only the prompt waveform. The Euler update at $t_i$ already evaluates $v(x_{t_i},t_i)$, so $\hat x_1(t_i)$ is a tensor operation on quantities already computed. If the policy stops at $t_i$, that evaluation serves as the endpoint estimate (Algorithm~\ref{alg:baseline}, line~\ref{line:endpoint}); if it continues, it serves as the next Euler step. Either way it is counted once.
+\end{proof}
+
+\begin{proposition}[Monotone cost]\label{prop:mono}
+If $\lambda'\le\lambda$, then for every input $\pi_{\lambda'}$ stops no earlier than $\pi_\lambda$; hence $C(\pi_{\lambda'}(x))\ge C(\pi_\lambda(x))$.
+\end{proposition}
+\begin{proof}
+Any candidate with $d\le\lambda'$ also has $d\le\lambda$, so the first qualifying candidate under $\lambda$ comes no later than under $\lambda'$. Cost increases with the stopping step by Proposition~\ref{prop:cost}.
+\end{proof}
+
+\begin{proposition}[Safe fallback]\label{prop:fallback}
+For every input and threshold, $C(\pi_\lambda(x))\le C(k_{\text{ref}})$; and if calibration certifies no threshold, the method reproduces the reference output exactly.
+\end{proposition}
+\begin{proof}
+The policy never stops later than $i_m$ and the student cost is the same for every candidate, so $C$ never exceeds its reference value. If no threshold is certified, the reference switching time is used for every input; because the teacher is deterministic and the student's noise is seeded per input and per step (Section~\ref{sec:baseline}), its output is identical to the reference output.
+\end{proof}
+
+\begin{proposition}[Oracle lower bound]\label{prop:oracle}
+Let $k^\ast(x)$ be the cheapest candidate with $f(x,k)=0$. Every policy with zero risk satisfies $\E[C(\pi(x))]\ge\E[C(k^\ast(x))]$.
+\end{proposition}
+\begin{proof}
+Zero risk requires $f(x,\pi(x))=0$ for almost every $x$, so $C(\pi(x))\ge C(k^\ast(x))$ pointwise.
+\end{proof}
+
+The outputs of this objective will be the policy, Algorithm~\ref{alg:handover}, and Propositions~\ref{prop:zero}--\ref{prop:oracle}, which together answer Objective~2.
+
+% =====================================================================
+\subsection{Calibration with a Reliability Guarantee}
+\label{sec:obj3}
+
+\subsubsection{Calibration Procedure}
+\label{sec:calibration}
+
+Objective~3 will choose the threshold $\lambda$ so that the constraint of \Cref{eq:objective} holds with stated confidence on new inputs. The tolerance $\alpha$ and the confidence parameter $\delta$ will be fixed before calibration, and so will the grid of candidate thresholds $\Lambda = \{\lambda_1<\dots<\lambda_G\} = \{0.20, 0.25, \dots, 1.20\}$, that is, $G=21$ values in steps of 0.05, ordered from conservative to aggressive and identical to the grid of Appendix~\ref{app:sim}. The grid extends well beyond 0.60, the upper end of the preliminary search at which its selected threshold sat (Appendix~\ref{app:prelim}), so that the data rather than the grid will limit the calibrated threshold. Because the thresholds are tested in a fixed order, adding grid points does not weaken the guarantee of Proposition~\ref{prop:ltt}. Since Objective~1's procedure will also be run on the calibration split, the outcome of every candidate switching time will already be known for every calibration input. The policy's decision for any $\lambda$ follows from the recorded signals, so its added failures can be counted without new synthesis. For each $\lambda_g$, the empirical risk on the $n$ calibration inputs is
+\begin{equation}
+\hat R_g = \frac1n\sum_{l=1}^n f\big(x_l,\pi_{\lambda_g}(x_l)\big).
+\label{eq:emprisk}
+\end{equation}
+\eqentry{Empirical risk on the calibration set}
+\begin{whereterms}[2.6cm]
+$\hat R_g$ & empirical added-failure rate of threshold $\lambda_g$ \\
+$n$ & number of calibration inputs (one per speaker) \\
+$x_l$ & $l$-th calibration input \\
+$\pi_{\lambda_g}(x_l)$ & stopping step chosen by the policy with threshold $\lambda_g$ (\Cref{eq:policy}) \\
+$f(\cdot,\cdot)$ & added-failure indicator (\Cref{eq:failure})
+\end{whereterms}
+
+Each threshold is treated as a hypothesis to be rejected, $H_g: R(\pi_{\lambda_g})>\alpha$, and the evidence against it is the binomial p-value
+\begin{equation}
+p_g = \P\big(\mathrm{Bin}(n,\alpha)\le n\hat R_g\big),
+\label{eq:pvalue}
+\end{equation}
+\eqentry{Binomial p-value}
+\begin{whereterms}[2.6cm]
+$p_g$ & p-value of threshold $\lambda_g$ \\
+$\mathrm{Bin}(n,\alpha)$ & number of failures among $n$ independent inputs if the true risk were exactly $\alpha$ \\
+$n\hat R_g$ & observed number of added failures of $\lambda_g$ \\
+$\alpha$ & tolerated risk
+\end{whereterms}
+that is, the probability of seeing so few failures if the true risk were exactly $\alpha$. Thresholds will then be tested in the fixed order of the grid: the procedure rejects $H_g$ while $p_g\le\delta$ and stops at the first non-rejection, returning $\hat\lambda=\lambda_{\hat g}$, the last rejected threshold, or the reference policy if $H_1$ is not rejected. Algorithm~\ref{alg:ltt} states the procedure and Figure~\ref{fig:calibration} illustrates it together with the data splits. Appendix~\ref{app:calc} works through a numerical example, and Appendix~\ref{app:sim} checks the procedure on simulated data.
+
+\begin{algorithm}[!htbp]
+\caption{Fixed-sequence Learn-Then-Test calibration of the threshold}
+\label{alg:ltt}
+\small
+\begin{algorithmic}[1]
+\Require recorded signals and failure indicators for $n$ calibration inputs; grid $\lambda_1<\dots<\lambda_G$; $\alpha$, $\delta$
+\State $\hat\lambda \gets$ \textsc{reference} \Comment{default: no threshold certified}
+\For{$g = 1,\dots,G$}
+  \State $\hat R_g \gets \frac1n\sum_{l} f\big(x_l,\pi_{\lambda_g}(x_l)\big)$ \Comment{lookup, no synthesis}
+  \State $p_g \gets \P\big(\mathrm{Bin}(n,\alpha)\le n\hat R_g\big)$
+  \If{$p_g\le\delta$}
+    \State $\hat\lambda\gets\lambda_g$
+  \Else
+    \State \textbf{break}
+  \EndIf
+\EndFor
+\State \Return $\hat\lambda$
+\end{algorithmic}
+\end{algorithm}
+
+\input{figures/fig_calibration}
+
+\subsubsection{Guarantee}
+
+The procedure is valid because each p-value is honest when its hypothesis is true, and because testing in a fixed order spends the whole error budget $\delta$ on the first true hypothesis rather than dividing it among all thresholds.
+
+\begin{proposition}[Risk control]\label{prop:ltt}
+If the calibration inputs and a new test input are independent draws from $\mathcal{D}$, then
+\begin{equation}
+\P\big(R(\pi_{\hat\lambda})\le\alpha\big)\ \ge\ 1-\delta.
+\label{eq:guarantee}
+\end{equation}
+\eqentry{Reliability guarantee}
+\begin{whereterms}[2.6cm]
+$R(\pi_{\hat\lambda})$ & true added-failure rate of the calibrated policy on new inputs \\
+$\hat\lambda$ & threshold returned by Algorithm~\ref{alg:ltt} \\
+$\alpha$ & tolerated risk \\
+$1-\delta$ & confidence; the probability is over the draw of the calibration sample
+\end{whereterms}
+\end{proposition}
+\begin{proof}
+\emph{Valid p-values.} If $H_g$ is true, $n\hat R_g\sim\mathrm{Bin}(n,R)$ with $R>\alpha$, which is stochastically larger than $\mathrm{Bin}(n,\alpha)$; hence $\P(p_g\le\delta)\le\delta$.
+\emph{Error event.} $R(\pi_{\hat\lambda})>\alpha$ means a true null $H_{\hat g}$ was rejected. The procedure rejects every hypothesis before $\hat g$, so the first true null in the fixed order, $g^\ast$ (which depends only on the unknown risks, not on the data), was rejected. The error event thus implies $p_{g^\ast}\le\delta$, which has probability at most $\delta$. Returning the reference policy never errs, since its risk is zero. This is the fixed-sequence argument of \textcite{bauer1991} as used by \textcite{angelopoulos2025ltt}.
+\end{proof}
+
+\begin{remark}
+The proof needs no monotonicity of risk in $\lambda$; monotonicity only affects how many thresholds get certified. The guarantee is marginal (an average over inputs), not per utterance, and fails if test inputs differ in distribution from calibration inputs.
+\end{remark}
+
+\subsubsection{Calibration Sample Size}
+
+The size of the calibration split determines how small a risk can be certified at all. Table~\ref{tab:samplesize} gives, for several combinations of $n$, $\alpha$ and $\delta$, the largest number of added failures that still lets \Cref{eq:pvalue} certify a threshold. With zero failures, certifying $\alpha=0.05$ at $\delta=0.10$ requires at least 45 independent inputs, so the 36 instances of the earlier cross-validation (Appendix~\ref{app:prelim}) could not have certified it. The study will fix the tolerance at $\alpha=0.05$ and the confidence parameter at $\delta=0.10$ before calibration, matching Appendices~\ref{app:calc} and~\ref{app:sim}, so that the calibrated threshold adds failures to at most 5\% of new inputs with probability at least 90\%. The calibration size $n$ will then be chosen from this table and the number of available speakers.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Exact binomial requirement from \Cref{eq:pvalue}: the largest number of added failures on $n$ calibration inputs that still certifies a threshold. At $n=50$, $\alpha=0.05$ and $\delta=0.05$, no threshold can be certified even with zero failures.}
+\label{tab:samplesize}
+\begin{tabular}{@{}cccc@{}}
+\toprule
+Calibration size $n$ & $\alpha$ & $\delta$ & Max.\ added failures \\
+\midrule
+50 & 0.10 & 0.10 & 1 \\
+100 & 0.05 & 0.10 & 1 \\
+100 & 0.10 & 0.10 & 5 \\
+200 & 0.05 & 0.10 & 5 \\
+200 & 0.10 & 0.10 & 14 \\
+300 & 0.05 & 0.10 & 9 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Verifying the Guarantee}
+
+The guarantee is a statement about repeated calibration, so it will be checked in two ways. The single held-out check will apply $\hat\lambda$ to the test split and report its realized added-failure rate with a Clopper--Pearson interval \parencite{clopper1934}; a rate well above $\alpha$ would indicate that an assumption, most likely the independence or the shared distribution of calibration and test inputs, does not hold. The repeated-split check will pool the calibration and test inputs, re-split them at random into speaker-disjoint halves 100 times, recalibrate $\hat\lambda$ on each calibration half and measure its risk on the matching test half. The fraction of splits with test risk at most $\alpha$ should be at least $1-\delta$. Because all outcomes will already be recorded, both checks need no new synthesis.
+
+The outputs of this objective will be the calibrated threshold $\hat\lambda$ and evidence on whether the bound holds, answering Objective~3.
+
+% =====================================================================
+\subsection{Benchmarking and Robustness}
+\label{sec:obj4}
+\label{sec:analysis}
+
+\subsubsection{Compared Methods}
+
+The proposed policy will be compared on the test split with the methods in Table~\ref{tab:methods}. The fixed reference and the fixed alternatives show what a single switching time can achieve. The SNR-only rule tests whether the stabilization signal adds anything beyond the prompt check; its gate will be calibrated with the same procedure as $\hat\lambda$, so both rules carry the same kind of guarantee. The ablation without the SNR gate isolates the gate's contribution, and the oracle marks the best saving any risk-free policy could reach (Proposition~\ref{prop:oracle}). Teacher-only and student-only synthesis give the outer limits of the quality--cost range.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Compared methods.}
+\label{tab:methods}
+\begin{tabularx}{\columnwidth}{@{}>{\raggedright\arraybackslash}p{2.5cm} X@{}}
+\toprule
+Method & Rule \\
+\midrule
+Fixed reference & $s=0.25$ for every input \\
+Fixed alternatives & $s\in\{0.07,0.10,0.15\}$ for every input \\
+SNR-only rule & stop at the earliest candidate if $\hat S\ge\theta$, else reference; $\theta$ calibrated with the same procedure \\
+Proposed & stabilization policy (Def.~\ref{def:policy}), $\hat\lambda$ from Objective~3 \\
+Proposed, no SNR gate & ablation with $\theta=-\infty$ \\
+Oracle (diagnostic) & cheapest non-failing candidate in hindsight (Prop.~\ref{prop:oracle}) \\
+Teacher-only, student-only & context for the quality--cost range \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{Measures}
+
+Cost will be reported as mean forward passes per utterance and as the saving against the reference, together with the share of the oracle's saving that each method achieves:
+\begin{equation}
+\Delta(\pi) = 1-\frac{\bar C(\pi)}{C(k_{\text{ref}})}, \qquad
+\eta(\pi) = \frac{C(k_{\text{ref}})-\bar C(\pi)}{C(k_{\text{ref}})-\bar C(k^\ast)}.
+\label{eq:saving}
+\end{equation}
+\eqentry{Saving and share of the oracle saving}
+\begin{whereterms}[2.6cm]
+$\Delta(\pi)$ & relative saving of method $\pi$ against the reference \\
+$\eta(\pi)$ & share of the largest possible risk-free saving that $\pi$ achieves \\
+$\bar C(\pi)$ & mean forward passes of $\pi$ on the test split \\
+$C(k_{\text{ref}})$ & forward passes of the reference, 21 \\
+$\bar C(k^\ast)$ & mean forward passes of the oracle (Proposition~\ref{prop:oracle})
+\end{whereterms}
+Both will be reported with bootstrap 95\% confidence intervals. Because the forward-pass counts are exact, savings in this unit are free of timing noise; wall-clock time, real-time factor and peak memory on the study's hardware device be reported alongside to show whether the savings translate into faster synthesis once the duration predictor, vocoder and data movement are included. Quality will be reported as WER, SIM and UTMOS, and as the added-failure rate against the reference.
+
+\subsubsection{Robustness}
+
+Two robustness questions follow from the assumptions of Proposition~\ref{prop:ltt}. The first concerns distribution shift: the threshold will be calibrated on clean prompts only and tested on noisy prompts, and then calibrated on a mix of both, to see whether the guarantee and the savings survive a change in prompt quality and how much the SNR gate contributes when they do not. The second concerns calibration size: Objective~3 will be repeated on random subsets of the calibration pool of size $n=50$, $100$ and $200$, and the study will report which thresholds can be certified, the resulting savings and the realized risk, which shows how much data a practitioner needs for the method to pay off.
+
+\subsubsection{Statistical Analysis}
+
+Comparisons with the reference will be paired, since every method is applied to the same inputs with the same noise draws. Differences in forward passes, WER, SIM and UTMOS will be tested with the Wilcoxon signed-rank test on speaker-level values \parencite{wilcoxon1945}, which does not assume normally distributed differences, with Holm correction across the compared methods. Paired failure counts of two methods will be compared with the exact McNemar test. A claim that a method's quality is not worse than the reference's will require an equivalence test, the two one-sided tests procedure, with margins fixed before testing \parencite{schuirmann1987}; a non-significant difference alone will not be taken as evidence of equal quality. Failure rates will be reported with exact Clopper--Pearson intervals \parencite{clopper1934}. Results will be reported per condition as well as overall, so that savings on clean prompts are not used to mask failures on noisy ones.
+
+% =====================================================================
+\subsection{Ethical Considerations}
+
+Voice cloning can be used to imitate real people without their consent. The study will therefore use only public research corpora under their licenses \parencite{ardila2020commonvoice,panayotov2015librispeech}, will not release cloned voices beyond what those licenses permit, and will report aggregate results rather than distribute synthesized speech of identifiable speakers. It will not involve end users and makes no claims about effects on autistic users or other vulnerable groups; any small listening check will be limited to the research team \todo{check institutional requirements for any listening test}.
+
+\FloatBarrier
