@@ -1,34 +1,65 @@
-\documentclass[12pt,a4paper,oneside]{report}
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{lmodern}
-\usepackage[margin=1in]{geometry}
+% Final manuscript in the USTP CITC format (citc.sty and frontmatter.tex, from
+% https://github.com/hdmGOAT/citc_latex_style at b1b5bd3; MIT, see CITC-LICENSE).
+% Build: latexmk main.tex (biber runs automatically).
+\documentclass[12pt,a4paper]{article}
+
 \usepackage{graphicx}
-\usepackage{booktabs}
 \usepackage{amsmath}
-\usepackage[numbers]{natbib}
-\usepackage[hidelinks]{hyperref}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage[colorlinks=true,allcolors=black]{hyperref}
+\usepackage{citc}          % all CITC formatting; load after hyperref
+\usepackage{cleveref}      % after citc, which teaches it "Chapter"/"Section"
+\usepackage{csquotes}      % biblatex-apa expects it with babel
+% Palatino's header needs 0.5pt more than citc.sty sets; move the top margin up
+% by the same amount so the page number stays where 8.2.b puts it.
+\setlength{\headheight}{14.5pt}
+\addtolength{\topmargin}{-0.5pt}
+% tocloft stamps its lists with the plain style, which citc.sty makes the
+% main-body style; keep the contents and lists on prelim numbering (8.1).
+\tocloftpagestyle{prelim}
 \graphicspath{{figures/}}
 
-% Metadata: replace once the title and author list are confirmed.
-\newcommand{\thesistitle}{TBD: Final thesis title}
-\newcommand{\thesisauthors}{TBD: Confirmed submission author list}
 \newcommand{\pending}[1]{\par\noindent\textbf{Pending:} #1\par}
 
-\title{\thesistitle}
-\author{\thesisauthors}
-\date{Submission version not yet prepared}
+% ------------------------------------------------------------ metadata
+% Replace each TBD once confirmed by the team and adviser (task PAPER-002).
+% Title page: uppercase, inverse pyramid, lines broken with \\ (3.2.3).
+\newcommand{\citcTitle}{%
+  TBD: FINAL THESIS TITLE}
+% The same title as one run of text, for the approval page.
+\newcommand{\citcTitleInline}{TBD: FINAL THESIS TITLE}
+\newcommand{\citcDepartment}{TBD: DEPARTMENT}
+% Written in full, e.g. BACHELOR OF SCIENCE IN COMPUTER SCIENCE (3.2.10).
+\newcommand{\citcDegree}{TBD: DEGREE PROGRAM}
+% Month and year the grade is submitted to the registrar (3.2.11).
+\newcommand{\citcSubmissionDate}{TBD: MONTH YEAR}
+% First name, full middle name, surname; one per line, in approved order (3.2.7).
+\newcommand{\citcAuthors}{%
+  TBD: CONFIRMED AUTHOR LIST}
+\newcommand{\citcAuthorsInline}{TBD: CONFIRMED AUTHOR LIST}
+% Full name with middle initial; no "Dr." or "Engr." (3.3.8).
+\newcommand{\citcAdviser}{TBD: ADVISER}
+\newcommand{\citcChair}{TBD: PANEL CHAIR}
+\newcommand{\citcMemberA}{TBD: PANEL MEMBER}
+\newcommand{\citcMemberB}{TBD: PANEL MEMBER}
+\newcommand{\citcDean}{TBD: COLLEGE DEAN}
 
 \begin{document}
-\maketitle
-\pending{This is the final manuscript. No draft has been promoted to the submission version.}
-\tableofcontents
+
+% Article 3 preliminary pages. No draft has been promoted to the submission
+% version yet.
+\input{frontmatter}
+
 \input{chapters/01-introduction}
 \input{chapters/02-related-work}
 \input{chapters/03-methodology}
 \input{chapters/04-results}
 \input{chapters/05-conclusion}
-% Uncomment after the first \cite{} of a verified entry in references.bib.
-% \bibliographystyle{plainnat}
-% \bibliography{references}
+
+% Uncomment after the first \parencite/\textcite of a verified entry in
+% references.bib; an empty bibliography fails latexmk -Werror.
+% \printbibliography[title={REFERENCES}]
+
 \end{document}
