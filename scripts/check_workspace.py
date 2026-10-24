@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = ["README.md", "AGENTS.md", "code/README.md", "paper/README.md", "docs/SETUP.md", "docs/WORKFLOW.md", "docs/RESEARCH_DIRECTION.md",
             "docs/progress/STATUS.md", "docs/progress/tasks.json", "docs/progress/TASKS.md",
             "docs/SOURCE_MANIFEST.json", "research/protocols/evaluation.md"]
-REQUIRED += list(MANUSCRIPTS.values()) + ["paper/references.bib"]
+REQUIRED += list(MANUSCRIPTS.values()) + ["paper/references.bib", "paper/citc.sty", "paper/frontmatter.tex"]
 REQUIRED += [f"paper/chapters/{name}.tex" for name in
              ("01-introduction", "02-related-work", "03-methodology", "04-results", "05-conclusion")]
 ARCHIVED = ("code/vendor/", "code/experiments/legacy/", "research/evidence/legacy/", "research/audits/2026-10-05/")
@@ -94,7 +94,9 @@ def validate(root, submission=False):
         keys = set(re.findall(r"@\w+\s*\{\s*([^,]+),", bib))
         if target != "final" and source.exists():
             keys.update(re.findall(r"\\bibitem(?:\[[^\]]*\])?\{([^}]+)\}", source.read_text(encoding="utf-8")))
-        for file in ([source, *sorted((paper / "chapters").glob("*.tex"))] if target == "final" else [source]):
+        final_files = [source, *(f for f in sorted(paper.glob("*.tex")) if f != source),
+                       *sorted((paper / "chapters").glob("*.tex"))]
+        for file in (final_files if target == "final" else [source]):
             if not file.exists():
                 continue
             content = file.read_text(encoding="utf-8")
@@ -103,11 +105,14 @@ def validate(root, submission=False):
             for ref in re.findall(r"\\(?:input|include)\{([^}]+)\}", content):
                 if not (paper / (ref if ref.endswith(".tex") else ref + ".tex")).is_file():
                     errors.append(f"{file.name}: missing TeX input {ref}")
-            for group in re.findall(r"\\cite\w*\*?(?:\[[^\]]*\])*\{([^}]+)\}", content):
+            # \cite, \parencite, \textcite, ...; \workcite{Name}{key} names the author first.
+            cited = re.findall(r"\\(?!workcite)[A-Za-z]*cite[A-Za-z]*\*?(?:\[[^\]]*\])*\{([^}]+)\}", content)
+            cited += re.findall(r"\\workcite\{[^}]*\}\{([^}]+)\}", content)
+            for group in cited:
                 for key in group.split(","):
                     if key.strip() not in keys:
                         errors.append(f"{file.name}: missing bibliography key {key}")
-            if submission and target == "final" and re.search(r"\bTBD\b|\bTODO\b|\\pending\{", content):
+            if submission and target == "final" and re.search(r"\bTBD\b|\bTODO\b|\\pending\{|\\placeholder\{", content):
                 errors.append(f"{file.name}: unfinished manuscript content")
     return errors
 
