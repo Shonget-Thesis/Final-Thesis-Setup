@@ -55,6 +55,8 @@ DEGREE OF
 \citcSubmissionDate
 \end{center}
 
+% \ifcitcproposal (main.tex) leaves out the pages the proposal does not use.
+\ifcitcproposal\else
 % ======================================================== 3.3 APPROVAL PAGE
 % 3.3.2 requires the current ISO form FM-USTP-ACAD-11, printed and signed in
 % wet ink, then scanned into the electronic copy (3.3.17). What follows lays
@@ -139,6 +141,8 @@ marks.}
 \placeholder{Dedication}{Optional under Section 3.1.1.3. Delete the page if you
 are not using it.}
 
+\fi % end of pages left out of the proposal
+
 % ==================================================== 3.5 TABLE OF CONTENTS
 % Title topmost, centered, uppercase and bold. "PAGE" underlined, four spaces
 % below the title line; first entry three spaces below that; no dot leaders
@@ -171,6 +175,7 @@ are not using it.}
 \vspace{2\baselineskip}
 \listofequations
 
+\ifcitcproposal\else
 % ========================================= 3.7 ACRONYMS AND ABBREVIATIONS
 % Required only when there are at least five (3.7.1). One alphabetical list,
 % no equation symbols (3.7.2/3.7.3). First column 3.5-4.7 cm, second
@@ -178,8 +183,17 @@ are not using it.}
 \citcPrelimPage{Acronyms and Abbreviations}
 \vspace{-1\baselineskip}
 \noindent\begin{tabularx}{\linewidth}{@{}P{4.0cm}L@{}}
-CITC   & College of Information Technology and Computing \\[0.6\baselineskip]
-USTP   & University of Science and Technology of Southern Philippines \\
+AAC    & Augmentative and Alternative Communication \\[0.6\baselineskip]
+ASD    & Autism Spectrum Disorder \\[0.6\baselineskip]
+CFG    & Classifier-Free Guidance \\[0.6\baselineskip]
+LTT    & Learn-Then-Test \\[0.6\baselineskip]
+NFE    & Neural Function Evaluation \\[0.6\baselineskip]
+RTF    & Real-Time Factor \\[0.6\baselineskip]
+SIM    & Speaker Similarity \\[0.6\baselineskip]
+SNR    & Signal-to-Noise Ratio \\[0.6\baselineskip]
+TTS    & Text-to-Speech \\[0.6\baselineskip]
+UTMOS  & UTokyo-SaruLab Mean Opinion Score predictor \\[0.6\baselineskip]
+WER    & Word Error Rate \\
 \end{tabularx}
 
 % ============================================================ 3.8 ABSTRACT
@@ -195,6 +209,8 @@ USTP   & University of Science and Technology of Southern Philippines \\
 the research problem, the objective, the methods, the results, the conclusion.
 Then three to five lowercase keywords separated by commas.}
 \endgroup
+
+\fi % end of pages left out of the proposal
 
 % ------------------------------------------------- back to the main matter
 \clearpage

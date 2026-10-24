@@ -8,6 +8,8 @@ The supplied tanh paper is now a standalone LaTeX draft in paper/drafts/tanh-vel
 
 paper/main.tex now uses the USTP CITC style (citc.sty and its preliminary pages, APA 7 via biblatex/biber); every title-page and approval field is still TBD and chapters remain placeholders. See the [CITC format log](log/2026-10-24-citc-format.md).
 
+The team's thesis proposal (Chapters 1-3 and Appendices A-D, "A Risk-Calibrated Adaptive Handover Method for Teacher-Guided Flow-Matching Text-to-Speech Inference") is now the content of paper/main.tex and paper/chapters/, in the CITC format; a proposal switch hides the final-thesis pages and the placeholder Chapters 4-5. It is a working draft, not adviser-approved. See the [proposal draft log](log/2026-10-24-proposal-draft.md).
+
 ## Current priorities
 
 1. Review the completed workspace setup and its recorded checks.
