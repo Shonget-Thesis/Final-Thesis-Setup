@@ -2,7 +2,7 @@
 
 Generated from tasks.json; edit the JSON and run python scripts/render_progress.py.
 
-todo: 6 | in_progress: 1 | blocked: 0 | review: 4 | done: 5
+todo: 6 | in_progress: 1 | blocked: 0 | review: 6 | done: 5
 
 | ID | Task | Owner | Status | Updated | Evidence |
 | --- | --- | --- | --- | --- | --- |
@@ -22,5 +22,7 @@ todo: 6 | in_progress: 1 | blocked: 0 | review: 4 | done: 5
 | PAPER-007 | Format the final manuscript with the CITC LaTeX style | Claude (formatting) | review | 2026-10-24 | [main.tex](../../paper/main.tex), [citc.sty](../../paper/citc.sty), [frontmatter.tex](../../paper/frontmatter.tex), [2026-10-24-citc-format.md](../../docs/progress/log/2026-10-24-citc-format.md) |
 | PAPER-008 | Promote the proposal draft into the CITC final manuscript | Claude (formatting), for Mark Vincent D. Limpahan | review | 2026-10-24 | [main.tex](../../paper/main.tex), [frontmatter.tex](../../paper/frontmatter.tex), [01-introduction.tex](../../paper/chapters/01-introduction.tex), [02-related-work.tex](../../paper/chapters/02-related-work.tex), [03-methodology.tex](../../paper/chapters/03-methodology.tex), [appendices.tex](../../paper/chapters/appendices.tex), [references.bib](../../paper/references.bib), [ltt_sim.py](../../code/analysis/ltt_sim.py), [2026-10-24-proposal-draft.md](../../docs/progress/log/2026-10-24-proposal-draft.md) |
 | PAPER-009 | Single manuscript with fill-in front matter | Claude (formatting), for Mark Vincent D. Limpahan | review | 2026-10-24 | [frontmatter.tex](../../paper/frontmatter.tex), [ADR-004-single-manuscript.md](../../docs/decisions/ADR-004-single-manuscript.md), [2026-10-24-single-manuscript.md](../../docs/progress/log/2026-10-24-single-manuscript.md) |
+| PAPER-010 | Frame the stabilization signal as a hypothesis to be tested | Claude (drafting), for Mark Vincent D. Limpahan | review | 2026-10-25 | [01-introduction.tex](../../paper/chapters/01-introduction.tex), [02-related-work.tex](../../paper/chapters/02-related-work.tex), [03-methodology.tex](../../paper/chapters/03-methodology.tex), [appendices.tex](../../paper/chapters/appendices.tex), [2026-10-25-drift-framing.md](../../docs/progress/log/2026-10-25-drift-framing.md) |
+| INFRA-003 | Attach a marked-changes PDF to every pull request | Claude (CI), for Mark Vincent D. Limpahan | review | 2026-10-25 | [build_changes_pdf.sh](../../scripts/build_changes_pdf.sh), [thesis-checks.yml](../../.github/workflows/thesis-checks.yml), [README.md](../../paper/README.md), [2026-10-25-changes-pdf.md](../../docs/progress/log/2026-10-25-changes-pdf.md) |
 
 Completion requires acceptance evidence and a recorded validation. Unassigned owners need team assignment.

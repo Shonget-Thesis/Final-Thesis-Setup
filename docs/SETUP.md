@@ -25,7 +25,7 @@ Do not install the model requirements into the lightweight checking environment.
 Installed and verified on this Windows machine on 2026-10-09: MiKTeX 25.12, Strawberry Perl 5.42.3.1, and latexmk 4.88. The manuscript compiles with latexmk in paper/ (the earlier drafts were removed on 2026-10-24, ADR-004). Restart VS Code and open a new terminal after installation so PATH includes MiKTeX. Confirm discovery with Get-Command pdflatex,latexmk,perl. See the [installation record](progress/log/2026-10-09-latex-installation.md).
 
 
-Windows: install MiKTeX or TeX Live with latexmk, pdfLaTeX, BibTeX, and Perl available on PATH. MiKTeX may request missing packages on the first build. The final manuscript uses biblatex-apa with biber. Linux/CI: install latexmk, texlive-latex-extra, texlive-fonts-recommended, texlive-bibtex-extra, and biber.
+Windows: install MiKTeX or TeX Live with latexmk, pdfLaTeX, BibTeX, and Perl available on PATH. MiKTeX may request missing packages on the first build. The final manuscript uses biblatex-apa with biber. Linux/CI: install latexmk, texlive-latex-extra, texlive-fonts-recommended, texlive-bibtex-extra, texlive-science (algorithm packages), cm-super (sharp small fonts), and biber.
 
 ~~~powershell
 cd paper

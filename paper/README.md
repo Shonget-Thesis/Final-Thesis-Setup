@@ -36,6 +36,22 @@ latexmk -c       # remove intermediates
 
 CI runs `latexmk -Werror`, which fails on undefined citations or references, and uploads the PDF.
 
+## Reviewing a pull request
+
+Every push to a branch other than main builds two PDFs, and so does every pull request. Open the pull request, go to **Checks → Thesis checks** (either run), and download them from **Artifacts** at the bottom of the run's summary page:
+
+- **thesis-papers** (`main.pdf`): the manuscript as it would look after merging.
+- **changes-vs-main** (`changes.pdf`): the same manuscript with the pull request's changes marked: removed text red and struck through, new text blue and underlined. Changed equations are marked as a whole, and figures, TikZ pictures and algorithm bodies are not marked inside.
+
+To build the changes PDF on your own computer (needs latexdiff, and `ulem` from texlive-plain-generic on Linux):
+
+~~~powershell
+scripts/build_changes_pdf.sh             # changes since origin/main
+scripts/build_changes_pdf.sh my-branch   # changes since any branch or commit
+~~~
+
+Suggested routine: one branch and pull request per change, opened as a draft while writing; merge when the checks are green and one groupmate has read both PDFs and approved.
+
 ## Overleaf
 
 Upload this folder as a zip (New Project → Upload Project). main.tex is detected as the main document. Overleaf's GitHub sync requires a paid or institutional plan; without it, download the source zip and commit it here.
