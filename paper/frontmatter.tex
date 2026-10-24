@@ -1,17 +1,123 @@
 % ---------------------------------------------------------------------------
 % CITC preliminary pages (Article 3), in the order Section 3.1.1 fixes:
-% title page, acknowledgment, dedication (optional), table of contents,
-% list of tables, list of figures, list of equations, acronyms, abstract.
+% title page, approval sheet, acknowledgment, dedication (optional), table of
+% contents, list of tables, list of figures, list of equations, acronyms,
+% abstract.
 %
-% Fill the fields in main.tex, then put \input{frontmatter} immediately after
-% \begin{document}, in place of \maketitle. It switches to lowercase roman
-% numerals at the bottom of the page and hands back to arabic numerals in the
-% upper right when done.
+% FILL IN EVERYTHING BETWEEN THE TWO "=== FILL IN ===" LINES BELOW. The pages
+% after that section build themselves from these values; you should not need
+% to edit them.
+%
+% Anything still marked TBD or \placeholder{...} is unfinished: it prints in
+% the PDF, and "python scripts/check_workspace.py --submission" rejects it.
+% Article/section numbers in the comments refer to the CITC guidelines.
+%
+% The proposal (\citcproposaltrue in main.tex) prints only the title page,
+% contents and lists. The approval sheet, acknowledgement, dedication,
+% acronyms and abstract appear when main.tex is set to \citcproposalfalse.
 % ---------------------------------------------------------------------------
 
-% ------------------------------------------------------------------- fields
-% The title, author, degree and signatory fields (\citcTitle and the rest) are
-% defined in main.tex so the submission check can see unfinished values.
+% =============================== FILL IN ===================================
+
+% ----------------------------------------------------- TITLE PAGE (3.2)
+% Title in UPPERCASE, broken with \\ into an inverse pyramid: each line
+% shorter than the one above (3.2.3).
+\newcommand{\citcTitle}{%
+  A RISK-CALIBRATED ADAPTIVE HANDOVER METHOD\\
+  FOR TEACHER-GUIDED FLOW-MATCHING\\
+  TEXT-TO-SPEECH INFERENCE}
+
+% The same title as one line of text, no \\ (used on the approval sheet).
+\newcommand{\citcTitleInline}{A RISK-CALIBRATED ADAPTIVE HANDOVER METHOD FOR
+  TEACHER-GUIDED FLOW-MATCHING TEXT-TO-SPEECH INFERENCE}
+
+% One of the department names the guidelines list (3.2.6), in UPPERCASE.
+\newcommand{\citcDepartment}{DEPARTMENT OF COMPUTER SCIENCE}
+
+% Degree written in full, never abbreviated (3.2.10).
+\newcommand{\citcDegree}{BACHELOR OF SCIENCE IN COMPUTER SCIENCE}
+
+% Month and year the grade is submitted to the registrar, not the date you
+% hand in the manuscript (3.2.11). Example: JANUARY 2027
+\newcommand{\citcSubmissionDate}{OCTOBER 2026}
+
+% Authors in UPPERCASE: first name, MIDDLE NAME WRITTEN IN FULL (not an
+% initial), surname; one per line, in the order the panel approved (3.2.7).
+\newcommand{\citcAuthors}{%
+  MARK VINCENT DACULOS LIMPAHAN\\
+  ROXANNE MANTICAJON LOCSIN\\
+  HEART GALARIDO CHIONG\\
+  RHENEL JHON RODRIGUEZ SAJOL}
+
+% The same names as one line, separated by commas (used on the approval sheet).
+\newcommand{\citcAuthorsInline}{MARK VINCENT DACULOS LIMPAHAN, ROXANNE
+  MANTICAJON LOCSIN, HEART GALARIDO CHIONG, RHENEL JHON RODRIGUEZ SAJOL}
+
+% ------------------------------------------------- APPROVAL SHEET (3.3)
+% Full name with middle initial, in UPPERCASE. No "Dr." or "Engr."; add the
+% degree after the name, e.g. ", PhD" or ", MIT" (3.3.8).
+\newcommand{\citcAdviser}{MARYLENE S. EDER, MIT}
+\newcommand{\citcChair}{MARICEL A. ESCLAMADO, PhD}
+\newcommand{\citcMemberA}{CHERYLL S. PAGAL, MSAMS}
+% Second panel member: leave the braces empty when there is only one, and
+% the sheet prints a single centered member.
+\newcommand{\citcMemberB}{}
+\newcommand{\citcDean}{JUNAR A. LANDICHO, PhD}
+% The printed sheet is only a layout guide. Before submission it is replaced
+% by the signed, scanned ISO form FM-USTP-ACAD-11 (3.3.2, 3.3.17).
+
+% ------------------------------------------------- ACKNOWLEDGMENT (3.4)
+% Justified, at most five pages, no pictures or colloquialisms. First or
+% third person is allowed. Separate paragraphs with a blank line. Filipino
+% words go in \emph{...} or ``quotation marks''.
+\newcommand{\citcAcknowledgement}{%
+\placeholder{Acknowledgement}{Write it here. Justified, at most five pages, no
+figures. Filipino words are permitted if italicized or placed in quotation
+marks.}
+}
+
+% ------------------------------------------- DEDICATION (optional, 3.1.1.3)
+% Keep \citcdedicationtrue to print a dedication page; change it to
+% \citcdedicationfalse to leave the page out.
+\newif\ifcitcdedication
+\citcdedicationtrue
+\newcommand{\citcDedication}{%
+\placeholder{Dedication}{Optional under Section 3.1.1.3. Write it here, or set
+\textbackslash citcdedicationfalse above to leave the page out.}
+}
+
+% -------------------------------------- ACRONYMS AND ABBREVIATIONS (3.7)
+% Needed only with five or more. One alphabetical list, no equation symbols.
+% One row per entry:  ACRONYM & Meaning written out \\
+% Keep the [0.6\baselineskip] after every row except the last.
+\newcommand{\citcAcronyms}{%
+AAC    & Augmentative and Alternative Communication \\[0.6\baselineskip]
+ASD    & Autism Spectrum Disorder \\[0.6\baselineskip]
+CFG    & Classifier-Free Guidance \\[0.6\baselineskip]
+LTT    & Learn-Then-Test \\[0.6\baselineskip]
+NFE    & Neural Function Evaluation \\[0.6\baselineskip]
+RTF    & Real-Time Factor \\[0.6\baselineskip]
+SIM    & Speaker Similarity \\[0.6\baselineskip]
+SNR    & Signal-to-Noise Ratio \\[0.6\baselineskip]
+TTS    & Text-to-Speech \\[0.6\baselineskip]
+UTMOS  & UTokyo-SaruLab Mean Opinion Score predictor \\[0.6\baselineskip]
+WER    & Word Error Rate \\
+}
+
+% ------------------------------------------------------- ABSTRACT (3.8)
+% 150-250 words on one page, ONE continuous paragraph (no blank lines):
+% background, objective, methods, results and conclusion. No citations,
+% equations or subheadings.
+\newcommand{\citcAbstract}{%
+\placeholder{Abstract}{Between 150 and 250 words in one continuous paragraph:
+the research problem, the objective, the methods, the results, the conclusion.}
+}
+
+% Three to five keywords, lowercase, separated by commas (3.8).
+\newcommand{\citcKeywords}{text-to-speech, flow matching, knowledge
+  distillation, adaptive inference, risk control}
+
+% =============================== FILL IN ===================================
 
 % ------------------------------------------------------------------ plumbing
 % 8.1.1/8.1.2: lowercase roman numerals, centered, 1.25 cm from the bottom
@@ -97,6 +203,14 @@ Chair
 \end{center}
 
 \vspace{1\baselineskip}
+% One member centered when \citcMemberB is empty, otherwise two side by side.
+\if\relax\detokenize\expandafter{\citcMemberB}\relax
+\begin{center}
+\rule{7.5cm}{0.4pt}\\
+\textbf{\citcMemberA}\\
+Member
+\end{center}
+\else
 \noindent\begin{minipage}[t]{0.48\linewidth}\centering
 \rule{6cm}{0.4pt}\\
 \textbf{\citcMemberA}\\
@@ -107,6 +221,7 @@ Member
 \textbf{\citcMemberB}\\
 Member
 \end{minipage}
+\fi
 
 \vspace{1.5\baselineskip}
 \noindent Approved and accepted in partial fulfillment of the requirements for
@@ -130,16 +245,15 @@ Date of Final Defense
 % allowed (3.4.6). No pictures, no colloquialisms (3.4.7).
 \citcPrelimPage{Acknowledgement}
 
-\placeholder{Acknowledgement}{Write it here. Justified, at most five pages, no
-figures. Filipino words are permitted if italicized or placed in quotation
-marks.}
+\citcAcknowledgement
 
 % ============================================== 3.1.1.3 DEDICATION (optional)
-% Delete this page if you do not want one.
+% Turned on or off with \citcdedicationtrue/false in the fill-in section.
+\ifcitcdedication
 \citcPrelimPage{Dedication}
 
-\placeholder{Dedication}{Optional under Section 3.1.1.3. Delete the page if you
-are not using it.}
+\citcDedication
+\fi
 
 \fi % end of pages left out of the proposal
 
@@ -183,17 +297,7 @@ are not using it.}
 \citcPrelimPage{Acronyms and Abbreviations}
 \vspace{-1\baselineskip}
 \noindent\begin{tabularx}{\linewidth}{@{}P{4.0cm}L@{}}
-AAC    & Augmentative and Alternative Communication \\[0.6\baselineskip]
-ASD    & Autism Spectrum Disorder \\[0.6\baselineskip]
-CFG    & Classifier-Free Guidance \\[0.6\baselineskip]
-LTT    & Learn-Then-Test \\[0.6\baselineskip]
-NFE    & Neural Function Evaluation \\[0.6\baselineskip]
-RTF    & Real-Time Factor \\[0.6\baselineskip]
-SIM    & Speaker Similarity \\[0.6\baselineskip]
-SNR    & Signal-to-Noise Ratio \\[0.6\baselineskip]
-TTS    & Text-to-Speech \\[0.6\baselineskip]
-UTMOS  & UTokyo-SaruLab Mean Opinion Score predictor \\[0.6\baselineskip]
-WER    & Word Error Rate \\
+\citcAcronyms
 \end{tabularx}
 
 % ============================================================ 3.8 ABSTRACT
@@ -205,9 +309,10 @@ WER    & Word Error Rate \\
 
 \begingroup
 \setlength{\parindent}{0pt}
-\placeholder{Abstract}{Between 150 and 250 words in one continuous paragraph:
-the research problem, the objective, the methods, the results, the conclusion.
-Then three to five lowercase keywords separated by commas.}
+\citcAbstract
+
+\vspace{\baselineskip}
+\textit{Keywords:} \citcKeywords
 \endgroup
 
 \fi % end of pages left out of the proposal

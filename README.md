@@ -9,7 +9,7 @@ Start with [current status](docs/progress/STATUS.md), the [task board](docs/prog
 | Folder | Purpose |
 | --- | --- |
 | [code/](code/README.md) | Maintained analysis, tests, experiment configurations, and imported DMOSpeech 2 source |
-| [paper/](paper/README.md) | Self-contained, Overleaf-compatible LaTeX project: final manuscript (main.tex + chapters/) and single-file drafts |
+| [paper/](paper/README.md) | Self-contained, Overleaf-compatible LaTeX project: manuscript (main.tex, frontmatter.tex, chapters/) |
 | [docs/](docs/README.md) | Setup, research decisions, workflow, progress, and reproducibility records |
 | [research/](research/README.md) | Historical evidence, audits, protocols, literature notes, and experiment records |
 | scripts/ | Workspace validation and progress rendering |
@@ -33,7 +33,7 @@ cd paper
 latexmk
 ~~~
 
-This builds paper/main.tex and every draft into paper/build/. See the [paper guide](paper/README.md) for the VS Code and Overleaf workflow, [setup](docs/SETUP.md) for toolchain installation, and [the workflow](docs/WORKFLOW.md) for the daily update process. MiKTeX and Strawberry Perl are installed locally and all three PDFs build. GitHub Actions is configured to compile them on push/PR, but has not been run yet.
+This builds paper/main.tex into paper/build/. See the [paper guide](paper/README.md) for the VS Code and Overleaf workflow, [setup](docs/SETUP.md) for toolchain installation, and [the workflow](docs/WORKFLOW.md) for the daily update process. MiKTeX and Strawberry Perl are installed locally and the manuscript builds. GitHub Actions is configured to compile it on push/PR, but has not been run yet.
 
 ## What is already here
 
