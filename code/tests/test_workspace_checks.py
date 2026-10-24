@@ -63,6 +63,19 @@ class WorkspaceCheckTests(unittest.TestCase):
         self.assertTrue(any("unfinished manuscript" in e for e in validate(self.root, submission=True)))
 
 
+    def test_submission_rejects_frontmatter_placeholders(self):
+        (self.root / "paper/frontmatter.tex").write_text(r"\placeholder{Abstract}{Write it}", encoding="utf-8")
+        self.assertEqual(validate(self.root), [])
+        self.assertTrue(any("frontmatter.tex: unfinished" in e for e in validate(self.root, submission=True)))
+
+    def test_biblatex_citations_must_resolve(self):
+        (self.root / "paper/references.bib").write_text("@article{known,\n title={T}}", encoding="utf-8")
+        (self.root / "paper/chapters/02-related-work.tex").write_text(
+            r"\parencite{known} \textcite[p.~2]{known} \workcite{Known et al.}{known}", encoding="utf-8")
+        self.assertEqual(validate(self.root), [])
+        (self.root / "paper/chapters/02-related-work.tex").write_text(r"\textcite{unknown}", encoding="utf-8")
+        self.assertTrue(any("missing bibliography key unknown" in e for e in validate(self.root)))
+
     def test_submission_allows_unfinished_drafts(self):
         (self.root / "paper/drafts/tanh-velocity-blending.tex").write_text("TBD: draft", encoding="utf-8")
         self.assertEqual(validate(self.root, submission=True), [])

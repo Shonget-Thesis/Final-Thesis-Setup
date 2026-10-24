@@ -163,6 +163,21 @@
         "docs/progress/log/2026-10-09-paper-layout-simplification.md"
       ],
       "validation": "latexmk -Werror in paper/ exited 0 and produced all three PDFs; all 13 tests passed. Workspace check passes once the superseded paper/final/ files are removed. Rendered-page review still pending."
+    },
+    {
+      "id": "PAPER-007",
+      "title": "Format the final manuscript with the CITC LaTeX style",
+      "owner": "Claude (formatting)",
+      "status": "review",
+      "updated": "2026-10-24",
+      "acceptance": "paper/main.tex uses citc.sty and the CITC preliminary pages with provenance recorded, builds under latexmk -Werror, and checks/CI/docs support biblatex and the new files.",
+      "evidence": [
+        "paper/main.tex",
+        "paper/citc.sty",
+        "paper/frontmatter.tex",
+        "docs/progress/log/2026-10-24-citc-format.md"
+      ],
+      "validation": "latexmk -Werror in paper/ exited 0 for all three PDFs with zero warnings in main.log; low-resolution rendered pages inspected; 15 tests passed. Team confirmation that the CITC format is required, and full guideline review, are pending."
     }
   ]
 }

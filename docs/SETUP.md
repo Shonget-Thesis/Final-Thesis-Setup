@@ -25,14 +25,14 @@ Do not install the model requirements into the lightweight checking environment.
 Installed and verified on this Windows machine on 2026-10-09: MiKTeX 25.12, Strawberry Perl 5.42.3.1, and latexmk 4.88. All three papers compile with latexmk in paper/. Restart VS Code and open a new terminal after installation so PATH includes MiKTeX. Confirm discovery with Get-Command pdflatex,latexmk,perl. See the [installation record](progress/log/2026-10-09-latex-installation.md).
 
 
-Windows: install MiKTeX or TeX Live with latexmk, pdfLaTeX, BibTeX, and Perl available on PATH. MiKTeX may request missing packages on the first build. Linux/CI: install latexmk, texlive-latex-extra, and texlive-fonts-recommended.
+Windows: install MiKTeX or TeX Live with latexmk, pdfLaTeX, BibTeX, and Perl available on PATH. MiKTeX may request missing packages on the first build. The final manuscript uses biblatex-apa with biber. Linux/CI: install latexmk, texlive-latex-extra, texlive-fonts-recommended, texlive-bibtex-extra, and biber.
 
 ~~~powershell
 cd paper
 latexmk
 ~~~
 
-PDFs go to paper/build/. For editing with live preview, install the LaTeX Workshop VS Code extension (recommended in .vscode/extensions.json); saving any .tex file rebuilds it. CI runs latexmk -Werror, which fails on unresolved citations/references. For Overleaf, upload the paper/ folder as a zip; main.tex is the main document. The generic report class must be replaced or adjusted once the institution supplies its official template. See the [paper guide](../paper/README.md).
+PDFs go to paper/build/. For editing with live preview, install the LaTeX Workshop VS Code extension (recommended in .vscode/extensions.json); saving any .tex file rebuilds it. CI runs latexmk -Werror, which fails on unresolved citations/references. For Overleaf, upload the paper/ folder as a zip; main.tex is the main document. The final manuscript uses the CITC style (paper/citc.sty); see the paper guide. See the [paper guide](../paper/README.md).
 
 ## Automation
 
