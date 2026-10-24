@@ -43,18 +43,20 @@ jobs:
         with:
           name: thesis-papers
           path: paper/build/main.pdf
-      # Pull requests only: the manuscript with every change since the base
-      # branch marked (removed text red and struck through, new text blue).
-      # A review aid, so a failure here does not fail the check.
+      # Every branch except main: the manuscript with every change since main
+      # (or the pull request's base) marked: removed text red and struck
+      # through, new text blue. A review aid, so a failure here does not fail
+      # the check. Runs for both the push and the pull_request event, so the
+      # PDF is there whichever run a reviewer opens.
       - name: Build changes PDF
         id: changes
-        if: github.event_name == 'pull_request'
+        if: github.ref != 'refs/heads/main'
         continue-on-error: true
-        run: ../scripts/build_changes_pdf.sh "${{ github.event.pull_request.base.sha }}"
+        run: ../scripts/build_changes_pdf.sh "${{ github.event.pull_request.base.sha || 'origin/main' }}"
       - uses: actions/upload-artifact@v4
-        if: github.event_name == 'pull_request' && steps.changes.outcome == 'success'
+        if: github.ref != 'refs/heads/main' && steps.changes.outcome == 'success'
         with:
-          name: changes-vs-${{ github.event.pull_request.base.ref }}
+          name: changes-vs-main
           path: paper/build/changes.pdf
       - name: Describe the PDFs
         if: always()
@@ -64,8 +66,8 @@ jobs:
             echo "Download from **Artifacts** at the bottom of this page:"
             echo "- **thesis-papers**: main.pdf, the manuscript as it would be after merging."
             if [ "${{ steps.changes.outcome }}" = "success" ]; then
-              echo "- **changes-vs-${{ github.event.pull_request.base.ref }}**: changes.pdf, the same manuscript with this pull request's changes marked (removed text red and struck through, new text blue)."
-            elif [ "${{ github.event_name }}" = "pull_request" ]; then
+              echo "- **changes-vs-main**: changes.pdf, the same manuscript with this branch's changes marked (removed text red and struck through, new text blue)."
+            elif [ "${{ github.ref }}" != "refs/heads/main" ]; then
               echo "- The changes PDF could not be built this time; review main.pdf and the file diff instead."
             fi
           } >> "$GITHUB_STEP_SUMMARY"

@@ -18,3 +18,7 @@ Task: INFRA-003. User request (Mark Vincent D. Limpahan): let reviewers preview 
 - First remote run is the CI on pull request #4.
 - latexdiff cannot mark changes inside figures, TikZ code or algorithm bodies; reviewers should check those in main.pdf and the file diff.
 - Requiring green checks and an approval before merging is a branch-protection setting only a repository admin can enable.
+
+## Follow-up: build on every branch
+
+The first remote runs showed the PDF only on the `pull_request` run; each push to a PR branch also starts a `push` run, which is what the Checks tab may open first. The changes PDF is now built on every run except pushes to main, against the pull request's base commit or, for push runs, `origin/main`, and the artifact is always named **changes-vs-main**.
