@@ -46,7 +46,7 @@ with local error $O((t_{i+1}-t_i)^2)$ for a smooth field \parencite{hairer1993}.
 \label{eq:endpoint}
 \end{equation}
 \eqentry{Endpoint estimate}
-This \emph{endpoint estimate} costs no extra network evaluation once $v(x_t,t)$ is computed. It is the quantity the released implementation passes from teacher to student (Section~\ref{sec:baseline}), and its change between steps is the decision signal of the proposed method (Section~\ref{sec:obj2}).
+This \emph{endpoint estimate} costs no extra network evaluation once $v(x_t,t)$ is computed. It is the quantity the released implementation passes from teacher to student (Section~\ref{sec:baseline}), and its change between steps is one of the two decision signals the study will test (Section~\ref{sec:obj2}).
 
 \todo{PARAGRAPH: why few steps are hard. Points: (a) Euler's global error grows with step size, roughly $O(h)$ for step size $h$; (b) the \emph{learned} marginal field is curved even though each conditional path is straight, because many noise points map to many data points; (c) so a model taken with very few large steps drifts off the data, which is why distillation (Section~\ref{sec:rrl-distill}) exists. Link: the endpoint estimate in \Cref{eq:endpoint} is only as good as the current velocity, so its quality improves as $t$ grows; this is the intuition behind using its stabilisation as a stopping signal.}
 
@@ -255,7 +255,7 @@ ACT \parencite{graves2016act} & Internal steps per input & Learned halting unit 
 BranchyNet \parencite{teerapittayanon2016branchynet} & Exit layer & Softmax entropy & Tuned threshold & None \\
 CALM \parencite{schuster2022calm} & Exit layer per token & Confidence / saturation & Calibrated threshold & Risk control \\
 Adaptive collaboration \parencite{starodubcev2024your} & Whether the teacher refines & Quality estimator on a full student sample & Tuned threshold & None \\
-\textbf{This study} & Teacher-to-student switching time & Endpoint stabilisation and prompt SNR & Calibrated threshold & Risk control (LTT) \\
+\textbf{This study} & Teacher-to-student switching time & Prompt SNR and endpoint stabilization, alone and combined (to be compared) & Calibrated threshold & Risk control (LTT) \\
 \bottomrule
 \end{tabularx}
 \end{table}
