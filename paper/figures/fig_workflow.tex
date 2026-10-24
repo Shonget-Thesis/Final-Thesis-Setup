@@ -1,0 +1,48 @@
+% Figure: overall research workflow (Objectives 1-4)
+\begin{figure}[!htbp]
+\centering
+\begin{adjustbox}{max width=\linewidth}
+\begin{tikzpicture}[
+  font=\figfont,
+  obj/.style={draw, rounded corners=2pt, fill=gray!8, text width=3.35cm, minimum height=2.6cm, align=left, inner sep=4pt, anchor=north},
+  head/.style={font=\figfont\bfseries, align=center, text width=3.6cm},
+  data/.style={draw, dashed, rounded corners=2pt, text width=3.35cm, align=center, inner sep=3pt, minimum height=0.8cm, anchor=north},
+  arr/.style={-{Stealth[length=2.2mm]}, thick}
+]
+\foreach \i/\x in {1/0, 2/4.05, 3/8.1, 4/12.15} { \coordinate (c\i) at (\x,0); }
+
+\node[head] (h1) at (c1) {Objective 1\\Characterize the\\switching-time space};
+\node[head] (h2) at (c2) {Objective 2\\Formulate and\\analyze the method};
+\node[head] (h3) at (c3) {Objective 3\\Calibrate with\\a guarantee};
+\node[head] (h4) at (c4) {Objective 4\\Benchmark and\\test robustness};
+
+\node[obj] (o1) at ($(h1.south)+(0,-0.15)$) {%
+  \textit{Method:} run all candidate switching times; log $d_i$, $\hat S$, WER, SIM, UTMOS, passes\\[3pt]
+  \textit{Output:} quality--cost map, candidate set $\mathcal K$, SNR gate $\theta$};
+\node[obj] (o2) at ($(h2.south)+(0,-0.15)$) {%
+  \textit{Method:} cost-minimization problem, signals, stopping policy $\pi_\lambda$, proofs\\[3pt]
+  \textit{Output:} Algorithm~\ref{alg:handover}; zero-overhead, monotone, fallback, oracle properties};
+\node[obj] (o3) at ($(h3.south)+(0,-0.15)$) {%
+  \textit{Method:} Learn-then-Test over a $\lambda$ grid with binomial p-values\\[3pt]
+  \textit{Output:} threshold $\hat\lambda$ with $\P(R\le\alpha)\ge1-\delta$; repeated-split check};
+\node[obj] (o4) at ($(h4.south)+(0,-0.15)$) {%
+  \textit{Method:} compare with fixed, SNR-only and oracle rules; noise shift; calibration size\\[3pt]
+  \textit{Output:} savings, quality, robustness};
+
+\draw[arr] (o1.east) -- (o2.west);
+\draw[arr] (o2.east) -- (o3.west);
+\draw[arr] (o3.east) -- (o4.west);
+
+\node[data] (d1) at ($(o1.south)+(0,-0.35)$) {Development split};
+\node[data] (d2) at ($(o2.south)+(0,-0.35)$) {Theory (no data)};
+\node[data] (d3) at ($(o3.south)+(0,-0.35)$) {Calibration split};
+\node[data] (d4) at ($(o4.south)+(0,-0.35)$) {Test split};
+\foreach \i in {1,2,3,4} { \draw[-{Stealth[length=1.8mm]}] (d\i.north) -- (o\i.south); }
+
+\node[font=\figfont\itshape, align=center] at ($(d2.south)!0.5!(d3.south)+(0,-0.45)$)
+  {Splits are speaker-disjoint; all network weights stay frozen throughout.};
+\end{tikzpicture}
+\end{adjustbox}
+\caption{Overall workflow of the research methodology, from characterizing the switching-time space to benchmarking the calibrated method.}
+\label{fig:workflow}
+\end{figure}

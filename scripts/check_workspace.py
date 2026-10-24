@@ -92,16 +92,12 @@ def validate(root, submission=False):
         paper = source.parent
         bib = (paper / "references.bib").read_text(encoding="utf-8") if (paper / "references.bib").exists() else ""
         keys = set(re.findall(r"@\w+\s*\{\s*([^,]+),", bib))
-        if target != "final" and source.exists():
-            keys.update(re.findall(r"\\bibitem(?:\[[^\]]*\])?\{([^}]+)\}", source.read_text(encoding="utf-8")))
-        final_files = [source, *(f for f in sorted(paper.glob("*.tex")) if f != source),
-                       *sorted((paper / "chapters").glob("*.tex"))]
-        for file in (final_files if target == "final" else [source]):
+        files = [source, *(f for f in sorted(paper.glob("*.tex")) if f != source),
+                 *sorted((paper / "chapters").glob("*.tex"))]
+        for file in files:
             if not file.exists():
                 continue
             content = file.read_text(encoding="utf-8")
-            if target != "final" and re.search(r"\\(?:input|include|bibliography)\{", content):
-                errors.append(f"{file.name}: drafts must be standalone TeX files")
             for ref in re.findall(r"\\(?:input|include)\{([^}]+)\}", content):
                 if not (paper / (ref if ref.endswith(".tex") else ref + ".tex")).is_file():
                     errors.append(f"{file.name}: missing TeX input {ref}")
@@ -112,7 +108,7 @@ def validate(root, submission=False):
                 for key in group.split(","):
                     if key.strip() not in keys:
                         errors.append(f"{file.name}: missing bibliography key {key}")
-            if submission and target == "final" and re.search(r"\bTBD\b|\bTODO\b|\\pending\{|\\placeholder\{", content):
+            if submission and re.search(r"\bTBD\b|\bTODO\b|\\pending\{|\\placeholder\{", content):
                 errors.append(f"{file.name}: unfinished manuscript content")
     return errors
 

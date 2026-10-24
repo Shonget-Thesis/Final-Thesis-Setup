@@ -1,0 +1,37 @@
+% Figure: teacher time grid, candidate switching times and their cost
+\begin{figure}[!htbp]
+\centering
+\begin{adjustbox}{max width=\linewidth}
+\begin{tikzpicture}[font=\figfont, x=50cm, y=1cm]
+% axis (flow time t), drawn up to t = 0.30
+\draw[-{Stealth[length=2mm]}, thick] (0,0) -- (0.31,0) node[right] {$t$};
+% teacher grid points t_i = 1 - cos(pi/2 * i/16), i = 0..8
+\foreach \i/\t in {0/0, 1/0.0048, 2/0.0192, 3/0.0431, 4/0.0761, 5/0.1181, 6/0.1685, 7/0.2270, 8/0.2929} {
+  \fill[gray!70] (\t,0) circle (1.6pt);
+  \ifnum\i>2 \node[below, gray!80!black, font=\figsmall] at (\t,-0.08) {$t_{\i}$};\fi
+  \ifnum\i=0 \node[below, gray!80!black, font=\figsmall] at (\t,-0.08) {$t_{0}$};\fi
+}
+% candidate stopping points with stacked cost bars (teacher passes + 3 student passes)
+\foreach \t/\k/\teach/\c/\s in {0.0761/4/10/13/0.07, 0.1181/5/12/15/0.10, 0.1685/6/14/17/0.15, 0.2929/8/18/21/0.25} {
+  \fill[black] (\t,0) circle (2.2pt);
+  \fill[gray!45] (\t-0.008,0.2) rectangle (\t+0.008,0.2+\teach*0.12);
+  \fill[white] (\t-0.008,0.2+\teach*0.12) rectangle (\t+0.008,0.2+\teach*0.12+0.36);
+  \draw (\t-0.008,0.2) rectangle (\t+0.008,0.2+\teach*0.12+0.36);
+  \node[above, font=\figfont] at (\t,0.2+\teach*0.12+0.36) {$C=\c$};
+  \node[below, font=\figsmall, align=center] at (\t,-0.45) {$s=\s$\\$t_h=\t$};
+}
+\node[above, font=\figsmall\itshape] at (0.2929,3.25) {reference};
+% legend
+\fill[gray!45] (0.005,2.9) rectangle (0.013,3.15); \draw (0.005,2.9) rectangle (0.013,3.15);
+\node[right, font=\figsmall] at (0.014,3.02) {teacher passes $2(k+1)$};
+\fill[white] (0.005,2.5) rectangle (0.013,2.75); \draw (0.005,2.5) rectangle (0.013,2.75);
+\node[right, font=\figsmall] at (0.014,2.62) {student passes (always 3)};
+% student restart note
+\draw[decorate, decoration={brace, mirror, amplitude=4pt}] (0,-1.35) -- (0.2929,-1.35)
+  node[midway, below=5pt, align=center, font=\figsmall]
+  {Wherever the teacher stops, the student re-noises the estimate to the fixed restart level $\tau=0.0761$\\and runs three steps; only the number of teacher steps changes.};
+\end{tikzpicture}
+\end{adjustbox}
+\caption{Teacher time grid and candidate switching times. Each bar shows the forward passes of one candidate under the published sampler (Proposition~\ref{prop:cost}); the student restart level is fixed.}
+\label{fig:grid}
+\end{figure}

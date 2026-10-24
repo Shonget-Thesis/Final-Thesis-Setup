@@ -22,7 +22,7 @@ Do not install the model requirements into the lightweight checking environment.
 
 ## LaTeX
 
-Installed and verified on this Windows machine on 2026-10-09: MiKTeX 25.12, Strawberry Perl 5.42.3.1, and latexmk 4.88. All three papers compile with latexmk in paper/. Restart VS Code and open a new terminal after installation so PATH includes MiKTeX. Confirm discovery with Get-Command pdflatex,latexmk,perl. See the [installation record](progress/log/2026-10-09-latex-installation.md).
+Installed and verified on this Windows machine on 2026-10-09: MiKTeX 25.12, Strawberry Perl 5.42.3.1, and latexmk 4.88. The manuscript compiles with latexmk in paper/ (the earlier drafts were removed on 2026-10-24, ADR-004). Restart VS Code and open a new terminal after installation so PATH includes MiKTeX. Confirm discovery with Get-Command pdflatex,latexmk,perl. See the [installation record](progress/log/2026-10-09-latex-installation.md).
 
 
 Windows: install MiKTeX or TeX Live with latexmk, pdfLaTeX, BibTeX, and Perl available on PATH. MiKTeX may request missing packages on the first build. The final manuscript uses biblatex-apa with biber. Linux/CI: install latexmk, texlive-latex-extra, texlive-fonts-recommended, texlive-bibtex-extra, and biber.
@@ -36,4 +36,4 @@ PDFs go to paper/build/. For editing with live preview, install the LaTeX Worksh
 
 ## Automation
 
-The GitHub workflow runs lightweight checks/tests and compiles all draft/final projects, then uploads their PDFs as an artifact. It is configured locally; it only runs after these changes reach GitHub. No branch protection, remote push, or adviser approval is implied. Review the first workflow result and record its URL in the tracker.
+The GitHub workflow runs lightweight checks/tests and compiles the manuscript, then uploads its PDF as an artifact. It is configured locally; it only runs after these changes reach GitHub. No branch protection, remote push, or adviser approval is implied. Review the first workflow result and record its URL in the tracker.

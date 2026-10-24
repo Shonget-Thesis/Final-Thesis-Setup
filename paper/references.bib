@@ -1,1 +1,400 @@
-% Copy the verified bibliography with the selected manuscript when promoting it.
+% ------------------------------------------------------------------
+% references.bib -- rebuilt from the cite keys in the revision draft.
+% Check every entry against the original paper before submission.
+% 15 Oct 2026: dmospeech2repo removed (cite li2025dmospeech2 only);
+%   ho2022cfg, graves2016act, teerapittayanon2016branchynet and
+%   schuster2022calm checked against arXiv / proceedings pages;
+%   therrien2025sgd and muharib2024sgd added (FSU / Springer pages).
+% 18 Oct 2026: all entries verified online; Therrien co-author names
+%   corrected; full author lists and missing pages/DOIs added.
+% ------------------------------------------------------------------
+
+@inproceedings{lipman2023flow,
+  author    = {Lipman, Yaron and Chen, Ricky T. Q. and Ben-Hamu, Heli and Nickel, Maximilian and Le, Matt},
+  title     = {Flow Matching for Generative Modeling},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2023}
+}
+
+@inproceedings{liu2023flow,
+  author    = {Liu, Xingchao and Gong, Chengyue and Liu, Qiang},
+  title     = {Flow Straight and Fast: Learning to Generate and Transfer Data with Rectified Flow},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2023}
+}
+
+@inproceedings{mehta2024matcha,
+  author    = {Mehta, Shivam and Tu, Ruibo and Beskow, Jonas and Sz{\'e}kely, {\'E}va and Henter, Gustav Eje},
+  title     = {Matcha-{TTS}: A Fast {TTS} Architecture with Conditional Flow Matching},
+  booktitle = {IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)},
+  year      = {2024}
+}
+
+% Seed-TTS has 46 authors (arXiv metadata); APA 7: first 19, ellipsis, last.
+@article{anastassiou2024seedtts,
+  author  = {Anastassiou, Philip and Chen, Jiawei and Chen, Jitong and Chen, Yuanzhe and Chen, Zhuo and Chen, Ziyi and Cong, Jian and Deng, Lelai and Ding, Chuang and Gao, Lu and Gong, Mingqing and Huang, Peisong and Huang, Qingqing and Huang, Zhiying and Huo, Yuanyuan and Jia, Dongya and Li, Chumin and Li, Feiya and Li, Hui and {\ldots} and Zhuang, Xiaobin},
+  title   = {{Seed-TTS}: A Family of High-Quality Versatile Speech Generation Models},
+  journal = {arXiv preprint arXiv:2406.02430},
+  year    = {2024}
+}
+
+@inproceedings{le2023voicebox,
+  author    = {Le, Matthew and Vyas, Apoorv and Shi, Bowen and Karrer, Brian and Sari, Leda and Moritz, Rashel and Williamson, Mary and Manohar, Vimal and Adi, Yossi and Mahadeokar, Jay and Hsu, Wei-Ning},
+  title     = {Voicebox: Text-Guided Multilingual Universal Speech Generation at Scale},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2023}
+}
+
+@inproceedings{eskimez2024e2,
+  author    = {Eskimez, Sefik Emre and Wang, Xiaofei and Thakker, Manthan and Li, Canrun and Tsai, Chung-Hsien and Xiao, Zhen and Yang, Hemin and Zhu, Zirun and Tang, Min and Tan, Xu and Liu, Yanqing and Zhao, Sheng and Kanda, Naoyuki},
+  title     = {{E2 TTS}: Embarrassingly Easy Fully Non-Autoregressive Zero-Shot {TTS}},
+  booktitle = {IEEE Spoken Language Technology Workshop (SLT)},
+  year      = {2024}
+}
+
+@inproceedings{chen2024f5,
+  author    = {Chen, Yushen and Niu, Zhikang and Ma, Ziyang and Deng, Keqi and Wang, Chunhui and Zhao, Jian and Yu, Kai and Chen, Xie},
+  title     = {{F5-TTS}: A Fairytaler that Fakes Fluent and Faithful Speech with Flow Matching},
+  booktitle = {Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},
+  pages     = {6255--6271},
+  address   = {Vienna, Austria},
+  doi       = {10.18653/v1/2025.acl-long.313},
+  year      = {2025}
+}
+
+@inproceedings{li2024dmospeech,
+  author    = {Li, Yinghao Aaron and Kumar, Rithesh and Jin, Zeyu},
+  title     = {{DMOSpeech}: Direct Metric Optimization via Distilled Diffusion Model in Zero-Shot Speech Synthesis},
+  booktitle = {International Conference on Machine Learning (ICML)},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {267},
+  pages     = {35186--35208},
+  year      = {2025}
+}
+
+@inproceedings{li2025dmospeech2,
+  author    = {Li, Yinghao Aaron and Jiang, Xilin and Tao, Fei and Niu, Cheng and Xu, Kaifeng and Song, Juntong and Mesgarani, Nima},
+  title     = {{DMOSpeech 2}: Reinforcement Learning for Duration Prediction in Metric-Optimized Speech Synthesis},
+  booktitle = {Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume    = {40},
+  pages     = {31814--31822},
+  doi       = {10.1609/aaai.v40i38.40450},
+  year      = {2026}
+}
+
+@article{ho2022cfg,
+  author  = {Ho, Jonathan and Salimans, Tim},
+  title   = {Classifier-Free Diffusion Guidance},
+  journal = {arXiv preprint arXiv:2207.12598},
+  note    = {Earlier version presented at the NeurIPS 2021 Workshop on Deep Generative Models and Downstream Applications},
+  doi     = {10.48550/arXiv.2207.12598},
+  year    = {2022}
+}
+
+@inproceedings{salimans2022progressive,
+  author    = {Salimans, Tim and Ho, Jonathan},
+  title     = {Progressive Distillation for Fast Sampling of Diffusion Models},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2022}
+}
+
+@inproceedings{song2023consistency,
+  author    = {Song, Yang and Dhariwal, Prafulla and Chen, Mark and Sutskever, Ilya},
+  title     = {Consistency Models},
+  booktitle = {International Conference on Machine Learning (ICML)},
+  year      = {2023}
+}
+
+@inproceedings{yin2024dmd,
+  author    = {Yin, Tianwei and Gharbi, Micha{\"e}l and Zhang, Richard and Shechtman, Eli and Durand, Fr{\'e}do and Freeman, William T. and Park, Taesung},
+  title     = {One-Step Diffusion with Distribution Matching Distillation},
+  booktitle = {IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year      = {2024}
+}
+
+@inproceedings{ye2024flashspeech,
+  author    = {Ye, Zhen and Ju, Zeqian and Liu, Haohe and Tan, Xu and Chen, Jianyi and Lu, Yiwen and Sun, Peiwen and Pan, Jiahao and Bian, Weizhen and He, Shulin and Xue, Wei and Liu, Qifeng and Guo, Yike},
+  title     = {{FlashSpeech}: Efficient Zero-Shot Speech Synthesis},
+  booktitle = {ACM International Conference on Multimedia (MM)},
+  doi       = {10.1145/3664647.3681044},
+  year      = {2024}
+}
+
+@inproceedings{lu2022dpmsolver,
+  author    = {Lu, Cheng and Zhou, Yuhao and Bao, Fan and Chen, Jianfei and Li, Chongxuan and Zhu, Jun},
+  title     = {{DPM-Solver}: A Fast {ODE} Solver for Diffusion Probabilistic Model Sampling in Around 10 Steps},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2022}
+}
+
+@inproceedings{karras2022edm,
+  author    = {Karras, Tero and Aittala, Miika and Aila, Timo and Laine, Samuli},
+  title     = {Elucidating the Design Space of Diffusion-Based Generative Models},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2022}
+}
+
+@inproceedings{meng2022sdedit,
+  author    = {Meng, Chenlin and He, Yutong and Song, Yang and Song, Jiaming and Wu, Jiajun and Zhu, Jun-Yan and Ermon, Stefano},
+  title     = {{SDEdit}: Guided Image Synthesis and Editing with Stochastic Differential Equations},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2022}
+}
+
+@inproceedings{xu2023restart,
+  author    = {Xu, Yilun and Deng, Mingyang and Cheng, Xiang and Tian, Yonglong and Liu, Ziming and Jaakkola, Tommi},
+  title     = {Restart Sampling for Improving Generative Processes},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2023}
+}
+
+@article{angelopoulos2025ltt,
+  author  = {Angelopoulos, Anastasios N. and Bates, Stephen and Cand{\`e}s, Emmanuel J. and Jordan, Michael I. and Lei, Lihua},
+  title   = {Learn then Test: Calibrating Predictive Algorithms to Achieve Risk Control},
+  journal = {The Annals of Applied Statistics},
+  volume  = {19},
+  number  = {2},
+  doi     = {10.1214/24-AOAS1998},
+  year    = {2025}
+}
+
+@article{bates2021rcps,
+  author  = {Bates, Stephen and Angelopoulos, Anastasios and Lei, Lihua and Malik, Jitendra and Jordan, Michael},
+  title   = {Distribution-Free, Risk-Controlling Prediction Sets},
+  journal = {Journal of the ACM},
+  volume  = {68},
+  number  = {6},
+  pages   = {1--34},
+  doi     = {10.1145/3478535},
+  year    = {2021}
+}
+
+@inproceedings{angelopoulos2024crc,
+  author    = {Angelopoulos, Anastasios N. and Bates, Stephen and Fisch, Adam and Lei, Lihua and Schuster, Tal},
+  title     = {Conformal Risk Control},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2024}
+}
+
+@article{graves2016act,
+  author  = {Graves, Alex},
+  title   = {Adaptive Computation Time for Recurrent Neural Networks},
+  journal = {arXiv preprint arXiv:1603.08983},
+  doi     = {10.48550/arXiv.1603.08983},
+  year    = {2016}
+}
+
+@inproceedings{teerapittayanon2016branchynet,
+  author    = {Teerapittayanon, Surat and McDanel, Bradley and Kung, H. T.},
+  title     = {{BranchyNet}: Fast Inference via Early Exiting from Deep Neural Networks},
+  booktitle = {23rd International Conference on Pattern Recognition (ICPR)},
+  address   = {Canc{\'u}n, Mexico},
+  publisher = {IEEE},
+  note      = {arXiv:1709.01686},
+  year      = {2016}
+}
+
+@inproceedings{schuster2022calm,
+  author    = {Schuster, Tal and Fisch, Adam and Gupta, Jai and Dehghani, Mostafa and Bahri, Dara and Tran, Vinh Q. and Tay, Yi and Metzler, Donald},
+  title     = {Confident Adaptive Language Modeling},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {35},
+  note      = {arXiv:2207.07061},
+  year      = {2022}
+}
+
+@inproceedings{ardila2020commonvoice,
+  author    = {Ardila, Rosana and Branson, Megan and Davis, Kelly and Kohler, Michael and Meyer, Josh and Henretty, Michael and Morais, Reuben and Saunders, Lindsay and Tyers, Francis and Weber, Gregor},
+  title     = {Common Voice: A Massively-Multilingual Speech Corpus},
+  booktitle = {Language Resources and Evaluation Conference (LREC)},
+  pages     = {4218--4222},
+  year      = {2020}
+}
+
+@inproceedings{panayotov2015librispeech,
+  author    = {Panayotov, Vassil and Chen, Guoguo and Povey, Daniel and Khudanpur, Sanjeev},
+  title     = {Librispeech: An {ASR} Corpus Based on Public Domain Audio Books},
+  booktitle = {IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)},
+  year      = {2015}
+}
+
+@book{hairer1993,
+  author    = {Hairer, Ernst and N{\o}rsett, Syvert P. and Wanner, Gerhard},
+  title     = {Solving Ordinary Differential Equations {I}: Nonstiff Problems},
+  edition   = {2},
+  publisher = {Springer},
+  year      = {1993}
+}
+
+@inproceedings{chen2018neuralode,
+  author    = {Chen, Ricky T. Q. and Rubanova, Yulia and Bettencourt, Jesse and Duvenaud, David},
+  title     = {Neural Ordinary Differential Equations},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2018}
+}
+
+@article{hoeffding1963,
+  author  = {Hoeffding, Wassily},
+  title   = {Probability Inequalities for Sums of Bounded Random Variables},
+  journal = {Journal of the American Statistical Association},
+  volume  = {58},
+  number  = {301},
+  pages   = {13--30},
+  year    = {1963}
+}
+
+@article{clopper1934,
+  author  = {Clopper, C. J. and Pearson, E. S.},
+  title   = {The Use of Confidence or Fiducial Limits Illustrated in the Case of the Binomial},
+  journal = {Biometrika},
+  volume  = {26},
+  number  = {4},
+  pages   = {404--413},
+  year    = {1934}
+}
+
+@article{bauer1991,
+  author  = {Bauer, Peter},
+  title   = {Multiple Testing in Clinical Trials},
+  journal = {Statistics in Medicine},
+  volume  = {10},
+  number  = {6},
+  pages   = {871--890},
+  year    = {1991}
+}
+
+@inproceedings{radford2023whisper,
+  author    = {Radford, Alec and Kim, Jong Wook and Xu, Tao and Brockman, Greg and McLeavey, Christine and Sutskever, Ilya},
+  title     = {Robust Speech Recognition via Large-Scale Weak Supervision},
+  booktitle = {International Conference on Machine Learning (ICML)},
+  year      = {2023}
+}
+
+@article{chen2022wavlm,
+  author  = {Chen, Sanyuan and Wang, Chengyi and Chen, Zhengyang and Wu, Yu and Liu, Shujie and Chen, Zhuo and Li, Jinyu and Kanda, Naoyuki and Yoshioka, Takuya and Xiao, Xiong and Wu, Jian and Zhou, Long and Ren, Shuo and Qian, Yanmin and Qian, Yao and Wu, Jian and Zeng, Michael and Yu, Xiangzhan and Wei, Furu},
+  title   = {{WavLM}: Large-Scale Self-Supervised Pre-Training for Full Stack Speech Processing},
+  journal = {IEEE Journal of Selected Topics in Signal Processing},
+  volume  = {16},
+  number  = {6},
+  pages   = {1505--1518},
+  year    = {2022}
+}
+
+@inproceedings{saeki2022utmos,
+  author    = {Saeki, Takaaki and Xin, Detai and Nakata, Wataru and Koriyama, Tomoki and Takamichi, Shinnosuke and Saruwatari, Hiroshi},
+  title     = {{UTMOS}: {UTokyo-SaruLab} System for {VoiceMOS} Challenge 2022},
+  booktitle = {Proc. Interspeech},
+  year      = {2022}
+}
+
+@inproceedings{siuzdak2024vocos,
+  author    = {Siuzdak, Hubert},
+  title     = {Vocos: Closing the Gap Between Time-Domain and {Fourier}-Based Neural Vocoders for High-Quality Audio Synthesis},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2024}
+}
+
+@article{wilcoxon1945,
+  author  = {Wilcoxon, Frank},
+  title   = {Individual Comparisons by Ranking Methods},
+  journal = {Biometrics Bulletin},
+  volume  = {1},
+  number  = {6},
+  pages   = {80--83},
+  year    = {1945}
+}
+
+@article{schuirmann1987,
+  author  = {Schuirmann, Donald J.},
+  title   = {A Comparison of the Two One-Sided Tests Procedure and the Power Approach for Assessing the Equivalence of Average Bioavailability},
+  journal = {Journal of Pharmacokinetics and Biopharmaceutics},
+  volume  = {15},
+  number  = {6},
+  pages   = {657--680},
+  year    = {1987}
+}
+
+% ------------------------------------------------------------------
+% Added 13 Oct 2026 (each checked against the publisher/arXiv page)
+% ------------------------------------------------------------------
+
+@article{zhu2025zipvoice,
+  author  = {Zhu, Han and Kang, Wei and Yao, Zengwei and Guo, Liyong and Kuang, Fangjun and Li, Zhaoqing and Zhuang, Weiji and Lin, Long and Povey, Daniel},
+  title   = {{ZipVoice}: Fast and High-Quality Zero-Shot Text-to-Speech with Flow Matching},
+  journal = {arXiv preprint arXiv:2506.13053},
+  year    = {2025}
+}
+
+@inproceedings{starodubcev2024your,
+  author    = {Starodubcev, Nikita and Baranchuk, Dmitry and Fedorov, Artem and Babenko, Artem},
+  title     = {Your Student is Better Than Expected: Adaptive Teacher-Student Collaboration for Text-Conditional Diffusion Models},
+  booktitle = {IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  pages     = {9275--9285},
+  doi       = {10.1109/CVPR52733.2024.00886},
+  year      = {2024}
+}
+
+@article{mualem2026aria,
+  author  = {Mualem, Loay and Tong, Vinh and Darouich, Samir and Niepert, Mathias},
+  title   = {{ARIA}: Adaptive Region-Based Importance Allocation for Conditional Diffusion Distillation},
+  journal = {arXiv preprint arXiv:2606.23898},
+  year    = {2026}
+}
+
+@article{therrien2025sgd,
+  author  = {Therrien, Michelle C. S. and Whalon, Kelly and Nunes, D{\'e}bora and Marti, Peter and Sellers, Ashley},
+  title   = {A Systematic Review of {AAC} Interventions Using Speech Generating Devices for Autistic Preschoolers},
+  journal = {Augmentative and Alternative Communication},
+  volume  = {41},
+  number  = {2},
+  pages   = {114--128},
+  doi     = {10.1080/07434618.2025.2479768},
+  year    = {2025}
+}
+
+@article{muharib2024sgd,
+  author  = {Muharib, Reem and Walker, Virginia L. and Dunn, Walker},
+  title   = {Effects of Interventions Involving Tablet-Based Speech-Generating Devices for Individuals with {ASD}: A Meta-analysis},
+  journal = {Journal of Autism and Developmental Disorders},
+  volume  = {54},
+  number  = {12},
+  pages   = {4496--4514},
+  doi     = {10.1007/s10803-023-06173-6},
+  year    = {2024}
+}
+% ------------------------------------------------------------------
+% Added 15 Oct 2026 -- Chapter 2 expansion (each checked online)
+% ------------------------------------------------------------------
+
+@inproceedings{yin2024dmd2,
+  author    = {Yin, Tianwei and Gharbi, Micha{\"e}l and Park, Taesung and Zhang, Richard and Shechtman, Eli and Durand, Fr{\'e}do and Freeman, William T.},
+  title     = {Improved Distribution Matching Distillation for Fast Image Synthesis},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  note      = {arXiv:2405.14867},
+  year      = {2024}
+}
+
+@inproceedings{song2021sde,
+  author    = {Song, Yang and Sohl-Dickstein, Jascha and Kingma, Diederik P. and Kumar, Abhishek and Ermon, Stefano and Poole, Ben},
+  title     = {Score-Based Generative Modeling through Stochastic Differential Equations},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2021}
+}
+
+@article{angelopoulos2023gentle,
+  author  = {Angelopoulos, Anastasios N. and Bates, Stephen},
+  title   = {Conformal Prediction: A Gentle Introduction},
+  journal = {Foundations and Trends in Machine Learning},
+  volume  = {16},
+  number  = {4},
+  pages   = {494--591},
+  doi     = {10.1561/2200000101},
+  year    = {2023}
+}
+
+@article{lipman2024guide,
+  author  = {Lipman, Yaron and Havasi, Marton and Holderrieth, Peter and Shaul, Neta and Le, Matt and Karrer, Brian and Chen, Ricky T. Q. and Lopez-Paz, David and Ben-Hamu, Heli and Gat, Itai},
+  title   = {Flow Matching Guide and Code},
+  journal = {arXiv preprint arXiv:2412.06264},
+  year    = {2024}
+}

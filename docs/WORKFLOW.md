@@ -16,7 +16,7 @@ Create research/experiments/EXP-NNN-short-name/ from the experiment template. Re
 
 ## Paper edits
 
-Edit the relevant standalone paper/drafts/<name>.tex file. Draft metadata, chapters, and bibliography belong in that file. Record final-manuscript sources in paper/references.bib and link reported results to experiment IDs. Keep unsupported claims marked as pending. Build the PDF and inspect layout before adviser submission; CI compilation alone does not establish layout quality. Update draft metadata inline, or the metadata block in paper/main.tex when the title, authors, adviser, and institution are confirmed. When selecting a submission version, transfer reviewed text into the separate paper/chapters/ files, record its source draft/revision, and preserve draft history. The --submission check applies to paper/main.tex and paper/chapters/ only.
+Edit chapter text in paper/chapters/, and the title page, approval sheet, acknowledgement, dedication, acronyms, abstract and keywords in the fill-in section at the top of paper/frontmatter.tex. Record sources in paper/references.bib and link reported results to experiment IDs. Keep unsupported claims marked as pending. Build the PDF and inspect layout before adviser submission; CI compilation alone does not establish layout quality. Earlier drafts live only in git history (ADR-004); when reusing their text, record the source commit. The --submission check applies to paper/main.tex, paper/frontmatter.tex and paper/chapters/.
 
 ## Weekly review
 
