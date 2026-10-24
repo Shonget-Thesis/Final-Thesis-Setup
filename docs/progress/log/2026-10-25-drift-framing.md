@@ -25,3 +25,7 @@ Task: PAPER-010. Team decisions relayed by Mark Vincent D. Limpahan:
 
 - Adviser review of the new framing.
 - Valid runtimes come only from the full-pipeline T4 timing run; the grid CSVs' runtime columns exclude the teacher and must not be cited.
+
+## CI fix (same branch)
+
+The paper job had failed on every run since the proposal content landed (main at 97ec687 and this branch): the algorithm environments need `algorithm.sty` and `algpseudocode.sty` from texlive-science, which the workflow did not install. Mapping every file in build/main.fls to its Debian package showed texlive-science as the only missing package. The workflow now installs texlive-science and cm-super (outline versions of the T1 sans and typewriter fonts used by draft notes and code names); docs/SETUP.md lists both.
