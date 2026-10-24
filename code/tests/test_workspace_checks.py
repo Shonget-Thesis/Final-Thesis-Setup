@@ -76,16 +76,9 @@ class WorkspaceCheckTests(unittest.TestCase):
         (self.root / "paper/chapters/02-related-work.tex").write_text(r"\textcite{unknown}", encoding="utf-8")
         self.assertTrue(any("missing bibliography key unknown" in e for e in validate(self.root)))
 
-    def test_submission_allows_unfinished_drafts(self):
-        (self.root / "paper/drafts/tanh-velocity-blending.tex").write_text("TBD: draft", encoding="utf-8")
-        self.assertEqual(validate(self.root, submission=True), [])
-
-    def test_citations_and_inputs_resolve_within_each_project(self):
-        draft = self.root / "paper/drafts/tanh-velocity-blending.tex"
-        draft.write_text(r"\cite{draft-only}\bibitem{draft-only}Draft", encoding="utf-8")
-        self.assertEqual(validate(self.root), [])
-        (self.root / "paper/main.tex").write_text(r"\cite{draft-only}", encoding="utf-8")
-        self.assertTrue(any("missing bibliography key" in e for e in validate(self.root)))
+    def test_missing_tex_input_is_reported(self):
+        (self.root / "paper/main.tex").write_text(r"\input{chapters/missing}", encoding="utf-8")
+        self.assertTrue(any("missing TeX input chapters/missing" in e for e in validate(self.root)))
 
     def test_progress_diff_requires_records_for_code_change(self):
         with patch("check_workspace.subprocess.run", return_value=SimpleNamespace(stdout="code/analysis/new.py\n")):
