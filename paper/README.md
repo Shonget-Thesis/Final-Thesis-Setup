@@ -38,7 +38,7 @@ CI runs `latexmk -Werror`, which fails on undefined citations or references, and
 
 ## Reviewing a pull request
 
-Every pull request builds two PDFs. Open the pull request, go to **Checks → Thesis checks**, and download them from **Artifacts** at the bottom of the run's summary page:
+Every push to a branch other than main builds two PDFs, and so does every pull request. Open the pull request, go to **Checks → Thesis checks** (either run), and download them from **Artifacts** at the bottom of the run's summary page:
 
 - **thesis-papers** (`main.pdf`): the manuscript as it would look after merging.
 - **changes-vs-main** (`changes.pdf`): the same manuscript with the pull request's changes marked: removed text red and struck through, new text blue and underlined. Changed equations are marked as a whole, and figures, TikZ pictures and algorithm bodies are not marked inside.
