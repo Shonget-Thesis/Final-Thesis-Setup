@@ -2,7 +2,7 @@
 
 Read README.md, docs/RESEARCH_DIRECTION.md, and docs/progress/STATUS.md before substantive work.
 
-- Active implementation belongs in code/; working drafts are standalone paper/drafts/<name>.tex files; the submission manuscript is paper/main.tex with separate paper/chapters/ files. Preserve alternate drafts and source provenance. Do not treat content in the final manuscript as adviser approval.
+- Active implementation belongs in code/; the manuscript is paper/main.tex with paper/frontmatter.tex (title-page fields, acknowledgement, abstract) and separate paper/chapters/ files. The earlier standalone drafts were removed from the tree on 2026-10-24 at the team's request (ADR-004); recover them from git history rather than re-adding them. Preserve source provenance. Do not treat content in the manuscript as adviser approval.
 - Preserve imported files in code/vendor/, code/experiments/legacy/, research/evidence/legacy/, and research/audits/2026-10-05/. They are historical snapshots, not validated final results. Put corrections in maintained code or a new audit.
 - Track work in docs/progress/tasks.json. Use a stable task ID, owner, status, acceptance criterion, and dated evidence. An owner of "unassigned" is an explicit assignment gap, not an assigned researcher.
 - Update docs/progress/STATUS.md and add a dated docs/progress/log/ entry whenever code, research protocol, evidence, or manuscript meaning changes. Include checks actually run and remaining blockers.
