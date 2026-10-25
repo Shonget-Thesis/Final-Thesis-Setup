@@ -8,6 +8,8 @@ The thesis now uses Colab T4 results only. The verified T4 runs (grid, timing, s
 
 An edit basing Appendices A–C on the T4 development data was made and then reverted at the team's request; the manuscript's chapters are identical to main. See the [appendices log](log/2026-10-25-appendices-real-data.md).
 
+The EXP-001 development pilot ran on the T4 (2026-10-25): the pre-experiment checks pass and the T4 grid reproduces exactly; the 20 dB SNR gate misses 18–22 dB white noise; drift helps as a low-drift noise safeguard, not as a stopping signal. Results are in research/experiments/EXP-001-followup-t4/results/ and Part 6 of the compiled reports; see the [pilot log](log/2026-10-25-pilot-results.md). An early freeze in that session is void.
+
 The October 25 audit recomputed the T4 grid: with the manuscript's λ grid (0.20–1.20), Learn-Then-Test on the calibration split certifies every threshold (λ̂ = 1.20, not the reports' CPU-label 0.50), and the policy then equals SNR-only on the test split (4/200 speaker failures, 17.04 NFE). The stabilization score shows no discrimination on clean development prompts (AUC 0.474, three failures). Each report now carries a dated audit note; its original text is unchanged.
 
 paper/ holds one LaTeX project: paper/main.tex in the USTP CITC style (citc.sty, APA 7 via biblatex/biber), with the team's thesis proposal (Chapters 1-3 and Appendices A-D, "A Risk-Calibrated Adaptive Handover Method for Teacher-Guided Flow-Matching Text-to-Speech Inference") in paper/chapters/. A proposal switch hides the final-thesis pages and the placeholder Chapters 4-5. It is a working draft, not adviser-approved. See the [CITC format log](log/2026-10-24-citc-format.md) and the [proposal draft log](log/2026-10-24-proposal-draft.md).

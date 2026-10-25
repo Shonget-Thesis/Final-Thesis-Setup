@@ -1,0 +1,118 @@
+{
+  "purpose": "Follow-up T4 tests recommended by research/audits/2026-10-25/FINDINGS.md",
+  "thesis_commit": "5cb78297ab7116c7184b112312c1dc8722f74c26",
+  "dmo_commit": "8a7868fc3345702a586173447f4869205b501f26",
+  "input_hashes": {
+    "research/protocols/splits/development_manifest.json": "1c4309b6f560a9d896b7a3a6cae53fc5806ef81222c3f8d62a08c7bf7b9fb65a",
+    "research/protocols/splits/calibration_manifest.json": "b94fef1779c24703ddc07f758c55d63d7abe821c8dc4759e7bf4ec371993a855",
+    "research/protocols/splits/test_manifest.json": "db4ecd630820245e348619b127b9a6b1c31ba935741e2cc57d8943fd133fa239",
+    "research/evidence/benchmarks/gpu_grid_all1000.csv": "249191ec8b8454d10451185760b3b834c9f673bcfa866ce9b116770a8b4febd3",
+    "code/colab/run_followup_tests.py": "28f975f90d19198d0e75c907dcf2b88ec44f939b90baf1d3e053e8d11800ec8d"
+  },
+  "meta_lst_sha256": "7cd29f701743e6c7033edbca764ddc0b979de8c4f4907eff5e5454682114661f",
+  "fresh_manifest_sha256": "3e311e5124cbc201cff409796d035570c56319e7758e54cbe34739ac3a60ff6a",
+  "n_source_speakers": 666,
+  "n_fresh_speakers": 166,
+  "failure_rule": "fail = WER(k) > max(0.125, WER(8) + 0.01) or SIM(k) < SIM(8) - 0.02 (core/failure_config.json)",
+  "steps": [
+    4,
+    5,
+    6,
+    8
+  ],
+  "theta_db": 20.0,
+  "alpha": 0.05,
+  "delta": 0.1,
+  "lambda_grid": [
+    0.2,
+    0.25,
+    0.3,
+    0.35,
+    0.4,
+    0.45,
+    0.5,
+    0.55,
+    0.6,
+    0.65,
+    0.7,
+    0.75,
+    0.8,
+    0.85,
+    0.9,
+    0.95,
+    1.0,
+    1.05,
+    1.1,
+    1.15,
+    1.2
+  ],
+  "seed_b_base": 1337,
+  "conditions": {
+    "clean": [
+      "clean",
+      null
+    ],
+    "noisy15": [
+      "gauss",
+      15.0
+    ],
+    "gauss18": [
+      "gauss",
+      18.0
+    ],
+    "gauss20": [
+      "gauss",
+      20.0
+    ],
+    "gauss22": [
+      "gauss",
+      22.0
+    ],
+    "gauss25": [
+      "gauss",
+      25.0
+    ],
+    "babble15": [
+      "babble",
+      15.0
+    ],
+    "babble20": [
+      "babble",
+      20.0
+    ],
+    "reverb03": [
+      "reverb",
+      0.3
+    ],
+    "reverb09": [
+      "reverb",
+      0.9
+    ],
+    "telephone": [
+      "telephone",
+      null
+    ]
+  },
+  "demand": {
+    "file": "PCAFETER/ch01.wav",
+    "source": "https://zenodo.org/records/1227121/files/PCAFETER_16k.zip"
+  },
+  "policies": {
+    "reference": "Step 8 for every input",
+    "snr_only": "Step 4 if prompt SNR >= 20 dB, else Step 8",
+    "snr_drift_ltt": "Definition 3.4 with lambda_hat from fixed-sequence LTT on the T4 calibration split (clean + noisy15, speaker fails if either fails)",
+    "snr_drift_050": "Definition 3.4 with lambda = 0.50 (the reports' CPU-label threshold)",
+    "snr_step5": "Step 5 if prompt SNR >= 20 dB, else Step 8"
+  },
+  "hypotheses": {
+    "H1_heldout": "On fresh speakers (clean + noisy15, speaker-level), snr_drift_ltt and snr_only each have realized risk with a 95% Clopper-Pearson interval reported against alpha = 0.05.",
+    "H2_drift_value": "Per degradation condition, exact two-sided McNemar of snr_only vs snr_drift_050 failures on fresh speakers, Holm-adjusted across the nine conditions; drift adds value only if it has fewer failures with adjusted p < 0.05.",
+    "H3_seed_floor": "Speaker-level rate at which Step 8 with seed B fails against Step 8 with seed A (test split, clean or noisy15), with a 95% Clopper-Pearson interval."
+  },
+  "secondary": [
+    "seed-A Step-8 reproducibility against the committed T4 grid (max abs WER and SIM difference)",
+    "development-evidence analyses on the committed T4 grid: calibrate on clean, test on noisy15; calibration size n = 50, 100, 200 (200 subsamples each, seed 2026)"
+  ],
+  "sha256": "110ab8f5ffd6beb89696e4c241499d7530213382485e9d1877350cf164e9437e",
+  "created_utc": "2026-10-25T09:04:36.462292+00:00"
+}

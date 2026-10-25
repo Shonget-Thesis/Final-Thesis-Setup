@@ -303,16 +303,17 @@
       "id": "EVAL-003",
       "title": "Run the follow-up Colab T4 tests (seed floor, fresh held-out, degraded prompts)",
       "owner": "unassigned",
-      "status": "todo",
+      "status": "in_progress",
       "updated": "2026-10-25",
       "acceptance": "Smoke test passes; preregistration.json and fresh_manifest.json are committed before any test run; seed-floor, fresh-grid and degradation CSVs and the generated FOLLOWUP_REPORT.md are committed to research/experiments/EXP-001-followup-t4/results/; failures are listened to.",
       "evidence": [
         "research/experiments/EXP-001-followup-t4/README.md",
+        "research/experiments/EXP-001-followup-t4/results/MANIFEST.json",
         "code/colab/DMOSpeech2_Followup_Tests.ipynb",
         "code/colab/run_followup_tests.py",
-        "code/tests/test_followup_tests.py"
+        "docs/progress/log/2026-10-25-pilot-results.md"
       ],
-      "validation": ""
+      "validation": "Smoke test and development pilot run on a Tesla T4 on 2026-10-25: Section 3.3.5 checks passed; T4 grid reproduced exactly; results committed with hashes. The full run is pending (after the proposal); an early freeze in the same session is void."
     },
     {
       "id": "PAPER-012",

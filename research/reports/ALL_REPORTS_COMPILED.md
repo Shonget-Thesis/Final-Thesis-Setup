@@ -20,6 +20,7 @@
 | 3 | [Novel-Algorithm Comparison: Why SNR, Why Drift, Why LTT Against Other Algorithms](#part-3-novel-algorithm-comparison-why-snr-why-drift-why-ltt-against-other-algorithms) | Three new candidate algorithms (student probe, SNR-band schedule, joint restart) vs. the SNR + drift proposal. | [`NOVEL_ALGORITHM_COMPARISON_REPORT.md`](Ref_reports/NOVEL_ALGORITHM_COMPARISON_REPORT.md) |
 | 4 | [Diagnostic Report: Empirical Validation of Tangent Drift on the 100-Speaker Development Set](#part-4-diagnostic-report-empirical-validation-of-tangent-drift-on-the-100-speaker-development-set) | First drift diagnostic on the development set: does drift separate safe from unsafe Step-4 handovers? | [`DEVELOPMENT_SET_DRIFT_VALIDATION_REPORT.md`](Ref_reports/DEVELOPMENT_SET_DRIFT_VALIDATION_REPORT.md) |
 | 5 | [Proposal TO-DO Checks: T49, T50, T52, T53, T54, T55](#part-5-proposal-to-do-checks-t49-t50-t52-t53-t54-t55) | Proposal tasks T49, T50, T52–T55: grid check, dataset counts, evaluation section, figures, paste-ready text. | [`PROPOSAL_TODO_CHECKS_REPORT.md`](Ref_reports/PROPOSAL_TODO_CHECKS_REPORT.md) |
+| 6 | [Colab T4 Development Pilot (25 October 2026)](#part-6-colab-t4-development-pilot-25-october-2026) | Pre-experiment checks, reproduction of the T4 grid, eleven prompt conditions, the SNR gate's blind spot under moderate noise, drift as a low-drift noise safeguard, seed-noise floor, timing. | Added directly here on 25 October 2026 (no separate report in `Ref_reports/`); run outputs in [`research/experiments/EXP-001-followup-t4/results/`](../experiments/EXP-001-followup-t4/results/MANIFEST.json) |
 
 ---
 
@@ -1754,3 +1755,154 @@ The older [`figures/teacher_guided_timeline.png`](../figures/teacher_guided_time
 | T53 | Cite RTF only from the full-pipeline timing run, labelled T4 | Results chapter |
 | T54 | Replace Figure 2.2 with `sway_grid_tswitch.png` and the caption above | Ch2 §2.1.2, line 85 |
 | T55 | Insert `teacher_guided_timeline_t55.png` as Figure 2.4 with the caption in T55.3 | Ch2 §2.3, line 166 |
+
+---
+
+# Part 6: Colab T4 Development Pilot (25 October 2026)
+
+*Added directly to this compilation on 25 October 2026; there is no separate report in `Ref_reports/`. Every number below was computed from the run's output files, and the decision rules and conditions were fixed before the run. This is development evidence (20 development speakers): use it to check the pipeline and plan the protocol, not as proof of risk control or of drift's value.*
+
+## 6.1 Run
+
+> **Test:** Notebook `code/colab/DMOSpeech2_Followup_Tests.ipynb`, Steps 1–6b (smoke test and development pilot), runner `code/colab/run_followup_tests.py`.
+> **Purpose:** Before the proposal, verify the pipeline, reproduce the committed T4 grid, and take a first look at prompt conditions beyond white noise at 15 dB.
+> **Why it helps:** It is the only check of the method's plumbing and of the SNR gate outside clean and noisy15 prompts, and it uses no held-out speakers.
+
+- **Hardware:** Tesla T4 (Google Colab), FP32. Thesis repository at `5cb7829` (branch `rhenelAudit`); Shonget-DMOSpeech2 pinned at `8a7868f`.
+- **Data:** the first 20 development speakers (by utterance ID) under eleven prompt conditions: clean, noisy15, white Gaussian noise at 18/20/22/25 dB, DEMAND cafeteria babble at 15/20 dB, synthetic reverberation (RT60 0.3 s and 0.9 s), and telephone band. That gives 220 cases × Steps 4/5/6/8 = 880 rows, plus a 10-speaker seed-noise sample. The grid ran from 07:50 to 08:59 UTC.
+- **Outputs:** committed without audio in [`research/experiments/EXP-001-followup-t4/results/`](../experiments/EXP-001-followup-t4/results/MANIFEST.json) (`pilot/`, `smoke/`, and the void freeze in `superseded_freeze_20261025/`), byte-identical to the downloaded zip `followup_t4-20261025T090530Z-1-001.zip` (SHA-256 `29db0fec9540db28…`), with every hash in `MANIFEST.json`. The 213 audio files stay on Google Drive. Pilot files:
+
+| File | SHA-256 (first 16) |
+|---|---|
+| `pilot_grid.csv` | `4218fee03f945d7b` |
+| `pilot_seed_floor.csv` | `625247e7ae08f92b` |
+| `PILOT_REPORT.md` | `509d0aa6ed28899e` |
+| `verification.json` | `b1b44a8042a5c6ba` |
+| `worked_example.json` | `5e0daa0f5237ffbd` |
+| `pilot_results.json` | `738a9721ab544bb4` |
+
+## 6.2 Pre-experiment checks (proposal §3.3.5)
+
+> **Test:** The three checks the proposal promises, on two clean development cases.
+> **Purpose:** Confirm that the implemented sampler behaves as Chapter 3 states.
+> **Why it helps:** Turns "will be checked" into "was checked" for Propositions 3.1 (cost) and 3.4 (safe fallback).
+
+| Check | Result |
+|---|---|
+| Same seed twice gives bitwise-identical audio and drift | ✅ both cases (max audio difference 0.0) |
+| One teacher pass to Step 8 gives the same endpoints as a separate run to each step | ✅ both cases |
+| The online early-stopping policy (timing benchmark code) forced to fall back (λ = −1) stops at Step 8 and reproduces the reference audio exactly | ✅ both cases |
+| With the gate open and λ = ∞ it stops at Step 4 and reproduces the Step-4 audio | ✅ both cases |
+| Counters around the teacher and student networks record 2(k+1) + 3 forward passes | ✅ 13/15/17/21 for k = 4/5/6/8 |
+
+## 6.3 Reproduction of the committed T4 grid
+
+> **Test:** The pilot's clean and noisy15 cases compared with `research/evidence/benchmarks/gpu_grid_all1000.csv`.
+> **Purpose:** Check that a new session gives the same outputs and scores.
+> **Why it helps:** Shows the evaluation is repeatable, so later runs are directly comparable with the existing T4 results.
+
+40 cases (160 rows): **same failure label in 160/160 rows**, and the largest difference in prompt SNR, d₄, WER and SIM was **exactly 0**. The pilot speakers' ground-truth files are all 24 kHz, so for them the SIM sample-rate fix made after the grid run changes no score.
+
+## 6.4 Prompt conditions
+
+> **Test:** Fixed handover at Step 4 and the policies at θ = 20 dB under eleven prompt conditions (20 development speakers each).
+> **Purpose:** See where the SNR gate falls back, where early handover fails, and whether drift (λ = 0.50) changes any outcome.
+> **Why it helps:** Every earlier run used only clean and noisy15 prompts, where the gate is perfect by construction.
+
+| Condition | Measured prompt SNR (dB) | Gate fallback | Step-4 failures | SNR-only fails / NFE | SNR + drift 0.50 fails / NFE |
+|---|---|---:|---:|---|---|
+| clean | 26.5–50.0 | 0% | 0/20 | 0 / 13.00 | 0 / 15.10 |
+| noisy15 | 17.5–18.2 | 100% | 13/20 | 0 / 21.00 | 0 / 21.00 |
+| Gaussian 25 dB | 24.2–28.1 | 0% | 2/20 | 2 / 13.00 | 2 / 13.20 |
+| Gaussian 22 dB | 22.7–25.1 | 0% | 6/20 | 6 / 13.00 | 6 / 13.00 |
+| Gaussian 20 dB | 21.4–23.2 | 0% | 9/20 | 9 / 13.00 | 9 / 13.00 |
+| Gaussian 18 dB | 19.9–21.2 | 5% | 10/20 | 10 / 13.40 | 10 / 13.40 |
+| babble 20 dB | 21.4–25.1 | 0% | 1/20 | 1 / 13.00 | 1 / 15.30 |
+| babble 15 dB | 18.5–20.5 | 75% | 1/20 | 0 / 19.00 | 0 / 19.80 |
+| reverb 0.3 s | 22.3–50.0 | 0% | 2/20 | 2 / 13.00 | 2 / 14.60 |
+| reverb 0.9 s | 14.8–41.3 | 60% | 4/20 | 0 / 17.80 | 1 / 18.20 |
+| telephone | 31.3–50.0 | 0% | 2/20 | 2 / 13.00 | 2 / 13.00 |
+
+## 6.5 Finding: the SNR gate misses moderate white noise
+
+> **Test:** The Gaussian 18–25 dB rows of 6.4.
+> **Purpose:** Check the gate between the two conditions it was designed on.
+> **Why it helps:** Identifies the gap in the guarantee before the full run.
+
+The energy-percentile estimate reads about 2–3 dB above the injected level (noisy15 reads 17.5–18.2 dB). Prompts with 18–22 dB of white noise therefore pass the 20 dB gate, and **30–50% of them fail at Step 4**: 10/20 at 18 dB (95% CI 27–73%), 9/20 at 20 dB (23–68%), 6/20 at 22 dB (12–54%). Both SNR-only and SNR + drift (λ = 0.50) fail in exactly the same cases. The risk bound covers only the conditions seen in calibration (clean and noisy15), so this is a distribution-shift gap, not a calibration error. The LTT-calibrated gate (θ̂ = 18.5 dB, 6.9) would let even more of these through.
+
+## 6.6 Finding: drift works as a low-drift noise safeguard, not as a stopping signal
+
+> **Test:** The distribution of d₄ by condition in the pilot, and the same check on the committed T4 development and calibration splits.
+> **Purpose:** Find out whether drift carries information the SNR gate lacks.
+> **Why it helps:** Answers "why drift?" with evidence.
+
+**As a stopping signal** (high drift = wait), drift changes nothing. Across all 220 pilot cases it prevented 1 failure (babble 20 dB) and caused 2 (babble 20 dB, reverb 0.9 s) relative to SNR-only, at a higher cost. This agrees with Parts 2–4 (d₄ AUC ≈ 0.47 on clean prompts; matched by a fixed step).
+
+**As a noise detector** it is strong: noise flattens the teacher's trajectory, so d₄ *drops* as noise rises.
+
+| Condition | Median d₄ | d₄ range |
+|---|---:|---|
+| clean | 0.613 | 0.264–1.007 |
+| Gaussian 25 dB | 0.344 | 0.206–0.540 |
+| Gaussian 22 dB | 0.250 | 0.177–0.410 |
+| Gaussian 20 dB | 0.221 | 0.166–0.357 |
+| Gaussian 18 dB | 0.193 | 0.144–0.319 |
+| noisy15 | 0.171 | 0.125–0.256 |
+| babble 20 / 15 dB | 0.667 / 0.606 | 0.326–1.099 / 0.275–1.031 |
+| reverb 0.3 / 0.9 s | 0.551 / 0.504 | 0.263–0.797 / 0.165–0.765 |
+| telephone | 0.334 | 0.262–0.468 |
+
+A **low-drift safeguard** (do not hand over early when d₄ < 0.30, in addition to the SNR gate) gives, on the pilot:
+
+| Condition | SNR-only fails / NFE | SNR + safeguard fails / NFE |
+|---|---|---|
+| clean | 0/20 / 13.00 | 0/20 / 13.40 |
+| Gaussian 25 dB | 2/20 / 13.00 | 1/20 / 15.80 |
+| Gaussian 22 dB | 6/20 / 13.00 | **0/20** / 18.60 |
+| Gaussian 20 dB | 9/20 / 13.00 | **0/20** / 19.80 |
+| Gaussian 18 dB | 10/20 / 13.40 | **0/20** / 20.60 |
+| telephone | 2/20 / 13.00 | 1/20 / 14.60 |
+| other five conditions (noisy15, babble 15/20 dB, reverb 0.3/0.9 s) | 3 failures | 3 failures |
+| **All 220 cases** | **32 failures** | **5 failures** |
+
+It catches 27 of the 32 Step-4 failures that passed the gate (95% CI 67–95%) and sends 1 of 20 clean prompts back to Step 8. On the committed T4 grid, the same cut-off sends 1/100 clean development prompts and 5/200 clean calibration prompts back (95% CI 1–6%), and flags 100/100 and 199/200 noisy15 prompts. Babble does not lower drift, so the safeguard does not help there; telephone-band prompts have fairly low drift and sometimes wait longer than needed (more passes, no quality loss).
+
+**Status:** an exploratory finding, made after looking at development data. The cut-off 0.30 is chosen on the development split, which serves design decisions. Before it can be claimed, the safeguard must be written into the protocol and tested once on the held-out speakers with the moderate-noise conditions (the full run of EXP-001). Why noise lowers drift is not yet explained; report it as an empirical finding.
+
+## 6.7 Seed-noise floor (small sample)
+
+> **Test:** Step 8 with a second seed (base 1337) scored against Step 8 with the manifest seed, under the same failure rule, for 10 development speakers × clean and noisy15.
+> **Purpose:** Measure how often the failure rule fires from randomness alone.
+> **Why it helps:** Replaces the unsupported "2.5% seed-noise floor" of Parts 1–3.
+
+**4 of 10 speakers** fail (95% CI 12–74%): 2/10 on clean prompts and 2/10 on noisy15. Three of the four are SIM drops below seed A of 0.021, 0.034 and 0.115 (the margin is 0.02); one is a WER rise from 0 to 1 word in 6. The sample is far too small for a rate, but it does not support 2.5%, and it suggests the SIM margin (0.02) is within the variation between seeds. Candidate and reference share all noise draws in the method, so this does not inflate the reported added-failure rates; it does bear on how the margins of Definition 3.1 are justified.
+
+## 6.8 Timing
+
+Median **15.6 s per case** on the T4 (one teacher pass, four student completions, four scorings). The full run would therefore take about 9.6 hours: fresh held-out grid about 1.4 h, degraded prompts about 6.5 h, and seed floor up to 1.7 h.
+
+## 6.9 Offline analyses on the committed T4 grid (development evidence; no GPU)
+
+- Learn-Then-Test for SNR + drift on the calibration split (λ grid 0.20–1.20): λ̂ = 1.20, so drift does not act and the policy equals SNR-only.
+- SNR-only gate calibrated by Learn-Then-Test (θ from 30.0 down to 14.0 dB in 0.5 dB steps): **θ̂ = 18.5 dB**; on the test split 4/200 speaker failures, mean NFE 17.02.
+- Calibrate on clean prompts only: λ̂ = 1.20; on test noisy15 prompts 0/200 failures (the gate sends all of them back), mean NFE 21.00.
+- Calibration size (200 random subsets each):
+
+| Calibration size | No threshold certified | Median λ̂ | Mean test risk | Mean test NFE |
+|---:|---:|---:|---:|---:|
+| 50 | 0% | 0.35 | 1.5% | 19.02 |
+| 100 | 0% | 0.35 | 1.4% | 18.71 |
+| 200 | 0% | 1.20 | 2.0% | 17.04 |
+
+## 6.10 Incident: early freeze and one held-out speaker
+
+After the pilot, notebook Step 7 (freeze) ran at 09:04:36 UTC (preregistration SHA-256 `110ab8f5…`), and Step 8 processed one held-out speaker (`common_voice_en_10119832-common_voice_en_10119847`, clean, Steps 4/5/6/8, no failures) before it was stopped. That freeze is void: the protocol will change (6.5, 6.6) before the real freeze. Its three files are kept as a record in `results/superseded_freeze_20261025/`; on Google Drive they are to be moved out of `followup_t4/` (to a `superseded_freeze_20261025` folder) so the notebook can freeze again, and that speaker excluded from the held-out set, leaving 165.
+
+## 6.11 Implications and open items
+
+1. **Pipeline:** the pre-experiment checks pass and the T4 grid reproduces exactly; the proposal can report §3.3.5 as done on the development split.
+2. **Gate:** the 20 dB gate does not protect against 18–22 dB white noise. Options: calibrate θ on a mix of noise levels, raise the gate, or add the low-drift safeguard.
+3. **Drift:** keep SNR + drift, with drift's role revised from stopping signal to low-drift safeguard. Fix the cut-off on the development split and test it once on held-out speakers with the moderate-noise conditions.
+4. **Seed floor and margins:** repeat the seed-floor test at full size (EXP-001, 200 test speakers) before citing any rate; revisit the SIM margin's justification.
+5. **Full run:** about 9.6 h on a T4 (6.8); add the safeguard policy and the moderate-noise conditions to the protocol before freezing again.
