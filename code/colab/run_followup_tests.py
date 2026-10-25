@@ -478,7 +478,57 @@ class Pipeline:
         y0 = self.pad_sequence([torch.randn(d, 100, dtype=torch.float32, generator=gen) for d in dur_tensor],
                                padding_value=0, batch_first=True).to(self.device)
         return {"cond": cond, "text_ids": text_ids, "step_cond": step_cond, "prompt_len": prompt_len, "y0": y0,
-                "prompt_snr": prompt_snr, "seed": seed}
+                "prompt_snr": prompt_snr, "seed": seed, "prompt": prompt, "sr": sr}
+
+    def worked_example(self, item, condition, out_dir):
+        """Real intermediate values for Appendix A: prompt frame energies, endpoint norms, one endpoint entry.
+
+        Repeats the arithmetic of estimate_prompt_snr and run_teacher_single_pass step by step and checks
+        that it gives the same SNR and the same d_i as those functions, so the appendix numbers are exact.
+        """
+        torch, np, sampler = self.torch, self.np, self.sampler
+        ctx = self.prepare(item, condition, item["input_seed"], out_dir)
+        # Prompt SNR: 25 ms frames, 10 ms hop, top half vs bottom 10% (Definition 3.3).
+        x, sr = ctx["prompt"].squeeze(), ctx["sr"]
+        flen, hop = round(0.025 * sr), round(0.010 * sr)
+        n = 1 + (len(x) - flen) // hop
+        frames = np.lib.stride_tricks.as_strided(x, shape=(n, flen), strides=(x.strides[0] * hop, x.strides[0]))
+        energy = np.mean(frames**2, axis=-1)                  # same view and reduction as estimate_prompt_snr
+        e_sorted = np.sort(energy)
+        bottom, top = max(1, round(0.10 * n)), n // 2
+        e_bot, e_top = float(np.mean(e_sorted[:bottom])), float(np.mean(e_sorted[top:]))
+        snr = float(np.clip(10 * np.log10((e_top + 1e-8) / (e_bot + 1e-8)), 0.0, 50.0))
+        res = {"utt_id": item["utt_id"], "condition": condition, "snr": {
+            "frames": int(n), "frame_ms": 25, "hop_ms": 10, "bottom_frames": int(bottom), "top_frames": int(n - top),
+            "mean_energy_bottom": e_bot, "mean_energy_top": e_top, "snr_db": snr,
+            "estimate_prompt_snr_db": float(ctx["prompt_snr"]), "matches": abs(snr - ctx["prompt_snr"]) < 1e-4,
+            "first_10_frame_energies": [float(e) for e in energy[:10]]}}
+        # Teacher steps 0..6 with the guided velocity, endpoint estimate and stabilization score.
+        grid, plen, state, prev = sampler.SWAY_TEACHER_GRID, ctx["prompt_len"], ctx["y0"].clone(), None
+        steps, f, m = {}, plen + 10, 50          # one entry: generated frame 10, mel bin 50
+        with torch.inference_mode():
+            for i in range(7):
+                t = torch.tensor(grid[i], device=self.device, dtype=torch.float32)
+                kw = dict(x=state, cond=ctx["step_cond"], text=ctx["text_ids"], time=t, mask=None)
+                pred = self.tts.teacher(drop_audio_cond=False, drop_text=False, **kw)
+                null = self.tts.teacher(drop_audio_cond=True, drop_text=True, **kw)
+                v = pred + (pred - null) * sampler.CFG_STRENGTH
+                ep = state + (1.0 - grid[i]) * v
+                rec = {"t": grid[i], "endpoint_norm_M": float(torch.norm(ep[:, plen:, :]))}
+                if prev is not None:
+                    rec["change_norm_M"] = float(torch.norm((ep - prev)[:, plen:, :]))
+                    rec["d"] = rec["change_norm_M"] / (rec["endpoint_norm_M"] + 1e-8)
+                if i == 5:
+                    rec["entry"] = {"frame": int(f - plen), "mel_bin": m, "x_t": float(state[0, f, m]),
+                                    "v": float(v[0, f, m]), "endpoint": float(ep[0, f, m])}
+                steps[i] = rec
+                prev = ep
+                state = state + (grid[i + 1] - grid[i]) * v
+        _, drift = self.teacher(ctx, (6,))
+        res["teacher_steps"] = steps
+        res["max_abs_d_diff_vs_sampler"] = max(abs(steps[i]["d"] - drift[i]) for i in range(1, 7))
+        res["drift_matches_sampler"] = res["max_abs_d_diff_vs_sampler"] < 1e-5   # float32 vs float64 rounding only
+        return res
 
     def verify(self, item, out_dir):
         """The three checks of Section 3.3.5 on one clean case, plus single-pass equivalence.
@@ -689,6 +739,27 @@ def run_verification(pipe, items, out_dir):
     return res
 
 
+# Appendix A's utterance: the first clean development utterance (by ID) that the policy of Definition 3.4
+# at lambda = 0.50, theta = 20 dB keeps past Step 4 and stops at Step 5 (selected from the committed T4 grid).
+WORKED_EXAMPLE_UTT = "common_voice_en_13900-common_voice_en_13901"
+
+
+def run_worked_example(pipe, out_dir):
+    """Write worked_example.json (clean and noisy15); an exception is recorded, not raised."""
+    import traceback
+    item = next(it for it in split_items("development") if it["utt_id"] == WORKED_EXAMPLE_UTT)
+    res = {}
+    for cond in GRID_CONDITIONS:
+        try:
+            res[cond] = pipe.worked_example(item, cond, out_dir)
+        except Exception:
+            res[cond] = {"error": traceback.format_exc()}
+    (Path(out_dir) / "worked_example.json").write_text(json.dumps(res, indent=2) + "\n", encoding="utf-8")
+    ok = all("error" not in r and r["snr"]["matches"] and r["drift_matches_sampler"] for r in res.values())
+    print(f"[OK] worked example {'recorded' if ok else 'FAILED or mismatched'}: {Path(out_dir) / 'worked_example.json'}", flush=True)
+    return res
+
+
 def pilot_items(n):
     """The first n development speakers by utterance ID. Never fresh or test speakers."""
     return sorted(split_items("development"), key=lambda it: it["utt_id"])[:n]
@@ -727,6 +798,8 @@ def cmd_gpu(args):
         dev = pilot_items(args.n_speakers)
         if not (out / "verification.json").exists():
             run_verification(pipe, dev[:2], out)
+        if not (out / "worked_example.json").exists():
+            run_worked_example(pipe, out)
         run_grid(pipe, dev, conds, "pilot", out, "pilot_grid.csv")
         run_seed_floor(pipe, dev[: max(1, args.n_speakers // 2)], out, "pilot_seed_floor.csv")
         pilot_report(Path(args.out))
@@ -936,6 +1009,10 @@ def pilot_report(out):
     ver_path = pdir / "verification.json"
     res["verification"] = json.loads(ver_path.read_text(encoding="utf-8")) if ver_path.exists() else None
 
+    # 5b. Appendix A worked example, if recorded.
+    we_path = pdir / "worked_example.json"
+    res["worked_example"] = json.loads(we_path.read_text(encoding="utf-8")) if we_path.exists() else None
+
     # 6. Offline analyses on the committed T4 grid (no GPU).
     split_of = {}
     for name in ("calibration", "test"):
@@ -969,6 +1046,23 @@ def pilot_report(out):
                      f"{ok(op['exit_step'] == 4 and op['endpoint_identical'] and op['audio_identical'])} | {nfe} |")
     else:
         L.append("Not run.")
+    L += ["", "## Appendix A worked example (real intermediate values)", ""]
+    we = res["worked_example"]
+    if we:
+        for cond, w in we.items():
+            if "error" in w:
+                L.append(f"- {cond}: **error**: {w['error'].strip().splitlines()[-1][:160]}")
+                continue
+            s = w["snr"]
+            L.append(f"- {cond}: {s['frames']} frames; quietest {s['bottom_frames']} mean energy {s['mean_energy_bottom']:.3e}, "
+                     f"loudest {s['top_frames']} mean energy {s['mean_energy_top']:.3e} → Ŝ = {s['snr_db']:.2f} dB "
+                     f"(estimate_prompt_snr {s['estimate_prompt_snr_db']:.2f}; {'matches' if s['matches'] else '**mismatch**'}).")
+            d = ", ".join(f"d{i} = {w['teacher_steps'][str(i)]['change_norm_M']:.2f}/{w['teacher_steps'][str(i)]['endpoint_norm_M']:.2f} = "
+                          f"{w['teacher_steps'][str(i)]['d']:.3f}" for i in (4, 5, 6)) if isinstance(next(iter(w["teacher_steps"])), str) else \
+                ", ".join(f"d{i} = {w['teacher_steps'][i]['change_norm_M']:.2f}/{w['teacher_steps'][i]['endpoint_norm_M']:.2f} = {w['teacher_steps'][i]['d']:.3f}" for i in (4, 5, 6))
+            L.append(f"  {d} ({'matches the sampler' if w['drift_matches_sampler'] else '**differs from the sampler**'}).")
+    else:
+        L.append("Not recorded.")
     L += ["", "## Reproduction of the committed T4 grid (clean + noisy15)", ""]
     if rep["cases"]:
         L += [f"{rep['cases']} cases, {rep['rows']} rows; same failure label in {rep['same_failure_label']}/{rep['rows']} rows. "
