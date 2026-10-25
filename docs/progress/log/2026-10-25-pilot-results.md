@@ -1,10 +1,10 @@
-# 2026-10-25: Development pilot results (EXP-001, Steps 1–6b)
+# 2026-10-25: Development pilot results (EXP-011, Steps 1–6b)
 
 Task: EVAL-003. The team ran the follow-up notebook's smoke test and development pilot on a Colab Tesla T4 and downloaded the results zip.
 
 ## Recorded
 
-- Results without audio, byte-identical to the zip, in [research/experiments/EXP-001-followup-t4/results/](../../../research/experiments/EXP-001-followup-t4/results/MANIFEST.json): `pilot/`, `smoke/`, and `superseded_freeze_20261025/`. The manifest lists every SHA-256; `code/tests/test_evidence_manifest.py` now checks this folder too, and `.gitattributes` keeps it byte-exact.
+- Results without audio, byte-identical to the zip, in [research/experiments/EXP-011-followup-t4/results/](../../../research/experiments/EXP-011-followup-t4/results/MANIFEST.json): `pilot/`, `smoke/`, and `superseded_freeze_20261025/`. The manifest lists every SHA-256; `code/tests/test_evidence_manifest.py` now checks this folder too, and `.gitattributes` keeps it byte-exact.
 - Findings added as Part 6 of [research/reports/ALL_REPORTS_COMPILED.md](../../../research/reports/ALL_REPORTS_COMPILED.md). The paper is not changed.
 
 ## Main findings (development evidence, 20 speakers per condition)

@@ -20,7 +20,7 @@
 | 3 | [Novel-Algorithm Comparison: Why SNR, Why Drift, Why LTT Against Other Algorithms](#part-3-novel-algorithm-comparison-why-snr-why-drift-why-ltt-against-other-algorithms) | Three new candidate algorithms (student probe, SNR-band schedule, joint restart) vs. the SNR + drift proposal. | [`NOVEL_ALGORITHM_COMPARISON_REPORT.md`](Ref_reports/NOVEL_ALGORITHM_COMPARISON_REPORT.md) |
 | 4 | [Diagnostic Report: Empirical Validation of Tangent Drift on the 100-Speaker Development Set](#part-4-diagnostic-report-empirical-validation-of-tangent-drift-on-the-100-speaker-development-set) | First drift diagnostic on the development set: does drift separate safe from unsafe Step-4 handovers? | [`DEVELOPMENT_SET_DRIFT_VALIDATION_REPORT.md`](Ref_reports/DEVELOPMENT_SET_DRIFT_VALIDATION_REPORT.md) |
 | 5 | [Proposal TO-DO Checks: T49, T50, T52, T53, T54, T55](#part-5-proposal-to-do-checks-t49-t50-t52-t53-t54-t55) | Proposal tasks T49, T50, T52–T55: grid check, dataset counts, evaluation section, figures, paste-ready text. | [`PROPOSAL_TODO_CHECKS_REPORT.md`](Ref_reports/PROPOSAL_TODO_CHECKS_REPORT.md) |
-| 6 | [Colab T4 Development Pilot (25 October 2026)](#part-6-colab-t4-development-pilot-25-october-2026) | Pre-experiment checks, reproduction of the T4 grid, eleven prompt conditions, the SNR gate's blind spot under moderate noise, drift as a low-drift noise safeguard, seed-noise floor, timing. | Added directly here on 25 October 2026 (no separate report in `Ref_reports/`); run outputs in [`research/experiments/EXP-001-followup-t4/results/`](../experiments/EXP-001-followup-t4/results/MANIFEST.json) |
+| 6 | [Colab T4 Development Pilot (25 October 2026)](#part-6-colab-t4-development-pilot-25-october-2026) | Pre-experiment checks, reproduction of the T4 grid, eleven prompt conditions, the SNR gate's blind spot under moderate noise, drift as a low-drift noise safeguard, seed-noise floor, timing. | Added directly here on 25 October 2026 (no separate report in `Ref_reports/`); run outputs in [`research/experiments/EXP-011-followup-t4/results/`](../experiments/EXP-011-followup-t4/results/MANIFEST.json) |
 
 ---
 
@@ -1770,7 +1770,7 @@ The older [`figures/teacher_guided_timeline.png`](../figures/teacher_guided_time
 
 - **Hardware:** Tesla T4 (Google Colab), FP32. Thesis repository at `5cb7829` (branch `rhenelAudit`); Shonget-DMOSpeech2 pinned at `8a7868f`.
 - **Data:** the first 20 development speakers (by utterance ID) under eleven prompt conditions: clean, noisy15, white Gaussian noise at 18/20/22/25 dB, DEMAND cafeteria babble at 15/20 dB, synthetic reverberation (RT60 0.3 s and 0.9 s), and telephone band. That gives 220 cases × Steps 4/5/6/8 = 880 rows, plus a 10-speaker seed-noise sample. The grid ran from 07:50 to 08:59 UTC.
-- **Outputs:** committed without audio in [`research/experiments/EXP-001-followup-t4/results/`](../experiments/EXP-001-followup-t4/results/MANIFEST.json) (`pilot/`, `smoke/`, and the void freeze in `superseded_freeze_20261025/`), byte-identical to the downloaded zip `followup_t4-20261025T090530Z-1-001.zip` (SHA-256 `29db0fec9540db28…`), with every hash in `MANIFEST.json`. The 213 audio files stay on Google Drive. Pilot files:
+- **Outputs:** committed without audio in [`research/experiments/EXP-011-followup-t4/results/`](../experiments/EXP-011-followup-t4/results/MANIFEST.json) (`pilot/`, `smoke/`, and the void freeze in `superseded_freeze_20261025/`), byte-identical to the downloaded zip `followup_t4-20261025T090530Z-1-001.zip` (SHA-256 `29db0fec9540db28…`), with every hash in `MANIFEST.json`. The 213 audio files stay on Google Drive. Pilot files:
 
 | File | SHA-256 (first 16) |
 |---|---|
@@ -1868,7 +1868,7 @@ A **low-drift safeguard** (do not hand over early when d₄ < 0.30, in addition 
 
 It catches 27 of the 32 Step-4 failures that passed the gate (95% CI 67–95%) and sends 1 of 20 clean prompts back to Step 8. On the committed T4 grid, the same cut-off sends 1/100 clean development prompts and 5/200 clean calibration prompts back (95% CI 1–6%), and flags 100/100 and 199/200 noisy15 prompts. Babble does not lower drift, so the safeguard does not help there; telephone-band prompts have fairly low drift and sometimes wait longer than needed (more passes, no quality loss).
 
-**Status:** an exploratory finding, made after looking at development data. The cut-off 0.30 is chosen on the development split, which serves design decisions. Before it can be claimed, the safeguard must be written into the protocol and tested once on the held-out speakers with the moderate-noise conditions (the full run of EXP-001). Why noise lowers drift is not yet explained; report it as an empirical finding.
+**Status:** an exploratory finding, made after looking at development data. The cut-off 0.30 is chosen on the development split, which serves design decisions. Before it can be claimed, the safeguard must be written into the protocol and tested once on the held-out speakers with the moderate-noise conditions (the full run of EXP-011). Why noise lowers drift is not yet explained; report it as an empirical finding.
 
 ## 6.7 Seed-noise floor (small sample)
 
@@ -1897,12 +1897,13 @@ Median **15.6 s per case** on the T4 (one teacher pass, four student completions
 
 ## 6.10 Incident: early freeze and one held-out speaker
 
-After the pilot, notebook Step 7 (freeze) ran at 09:04:36 UTC (preregistration SHA-256 `110ab8f5…`), and Step 8 processed one held-out speaker (`common_voice_en_10119832-common_voice_en_10119847`, clean, Steps 4/5/6/8, no failures) before it was stopped. That freeze is void: the protocol will change (6.5, 6.6) before the real freeze. Its three files are kept as a record in `results/superseded_freeze_20261025/`; on Google Drive they are to be moved out of `followup_t4/` (to a `superseded_freeze_20261025` folder) so the notebook can freeze again, and that speaker excluded from the held-out set, leaving 165.
+After the pilot, notebook Step 7 (freeze) ran at 09:04:36 UTC (preregistration SHA-256 `110ab8f5…`), and Step 8 processed one held-out speaker (`common_voice_en_10119832-common_voice_en_10119847`, clean, Steps 4/5/6/8, no failures) before it was stopped. That freeze is void: the protocol will change (6.5, 6.6) before the real freeze. Its three files are kept as a record in `results/superseded_freeze_20261025/`; on Google Drive they are to be moved out of `followup_t4/` (to a `superseded_freeze_20261025` folder) so the notebook can freeze again. The notebook's held-out set is the 166 speakers outside the splits; those were already used in the team's Phase 12 run (Part 1 §4.10.2), so they are not unseen in any case, and the held-out data is to be decided before the real freeze (6.11, item 6).
 
 ## 6.11 Implications and open items
 
 1. **Pipeline:** the pre-experiment checks pass and the T4 grid reproduces exactly; the proposal can report §3.3.5 as done on the development split.
 2. **Gate:** the 20 dB gate does not protect against 18–22 dB white noise. Options: calibrate θ on a mix of noise levels, raise the gate, or add the low-drift safeguard.
 3. **Drift:** keep SNR + drift, with drift's role revised from stopping signal to low-drift safeguard. Fix the cut-off on the development split and test it once on held-out speakers with the moderate-noise conditions.
-4. **Seed floor and margins:** repeat the seed-floor test at full size (EXP-001, 200 test speakers) before citing any rate; revisit the SIM margin's justification.
+4. **Seed floor and margins:** repeat the seed-floor test at full size (EXP-011, 200 test speakers) before citing any rate; revisit the SIM margin's justification.
 5. **Full run:** about 9.6 h on a T4 (6.8); add the safeguard policy and the moderate-noise conditions to the protocol before freezing again.
+6. **Held-out data:** no Seed-TTS test-en speaker is unseen (500 in the splits; the other 166 used in Phase 12). Choose new data (for example LibriSpeech test-clean) or reuse the 166 with their Phase 12 use stated, before freezing.

@@ -1,0 +1,79 @@
+{
+  "data": "T4 grid, development split",
+  "speakers": 100,
+  "instances": 200,
+  "conditions": [
+    "clean",
+    "noisy15"
+  ],
+  "folds": [
+    {
+      "fold": 0,
+      "train_speakers": 75,
+      "train_instances": 150,
+      "test_speakers": 25,
+      "test_instances": 50,
+      "lambda": 0.35,
+      "test_failures": 0,
+      "test_mean_nfe": 19.04
+    },
+    {
+      "fold": 1,
+      "train_speakers": 75,
+      "train_instances": 150,
+      "test_speakers": 25,
+      "test_instances": 50,
+      "lambda": 0.35,
+      "test_failures": 0,
+      "test_mean_nfe": 19.24
+    },
+    {
+      "fold": 2,
+      "train_speakers": 75,
+      "train_instances": 150,
+      "test_speakers": 25,
+      "test_instances": 50,
+      "lambda": 0.35,
+      "test_failures": 0,
+      "test_mean_nfe": 19.16
+    },
+    {
+      "fold": 3,
+      "train_speakers": 75,
+      "train_instances": 150,
+      "test_speakers": 25,
+      "test_instances": 50,
+      "lambda": 0.5,
+      "test_failures": 1,
+      "test_mean_nfe": 18.08
+    }
+  ],
+  "out_of_fold": {
+    "failures": 1,
+    "instances": 200,
+    "mean_nfe": 18.88,
+    "saving_vs_21": 0.10095238095238102
+  },
+  "fixed_s015_step6": {
+    "failures": 50,
+    "instances": 200,
+    "nfe": 17
+  },
+  "noisy_prompts_sent_to_reference": 100,
+  "noisy_prompts": 100,
+  "lambda_at_grid_edge_in_folds": 0,
+  "smallest_certifiable_risk_zero_failures_delta_0.10": {
+    "per_training_speaker": 0.030234640891750653,
+    "training_speakers": 75
+  },
+  "sensitivity_grid_0.20_1.20": {
+    "lambdas": [
+      0.35,
+      0.35,
+      0.35,
+      0.5
+    ],
+    "failures": 1,
+    "mean_nfe": 18.88
+  }
+}

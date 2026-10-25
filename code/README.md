@@ -4,7 +4,7 @@
 | --- | --- |
 | [scheduling/](scheduling/) | Maintained deterministic adaptive handover sampler, metrics, and checkpoint downloader |
 | [colab/](colab/) | Google Colab GPU (Tesla T4 / A100) runners, timing benchmarks, and turnkey notebooks |
-| [colab/run_followup_tests.py](colab/run_followup_tests.py) | Follow-up T4 tests (seed-noise floor, fresh held-out speakers, degraded prompts) driven by [DMOSpeech2_Followup_Tests.ipynb](colab/DMOSpeech2_Followup_Tests.ipynb); see [EXP-001](../research/experiments/EXP-001-followup-t4/README.md) |
+| [colab/run_followup_tests.py](colab/run_followup_tests.py) | Follow-up T4 tests (seed-noise floor, fresh held-out speakers, degraded prompts) driven by [DMOSpeech2_Followup_Tests.ipynb](colab/DMOSpeech2_Followup_Tests.ipynb); see [EXP-011](../research/experiments/EXP-011-followup-t4/README.md) |
 | [experiments/phase2_calib/](experiments/phase2_calib/) | Learn-Then-Test (LTT) PAC statistical calibration algorithms |
 | [experiments/phase3_test/](experiments/phase3_test/) | Held-out statistical benchmark runner and hypothesis tests |
 | [analysis/replay_timing.py](analysis/replay_timing.py) | Maintained, standard-library timing replay using stored records |

@@ -13,7 +13,8 @@ Subcommands, run in this order (DMOSpeech2_Followup_Tests.ipynb drives them):
   seed-floor    Test split (200 speakers, clean + noisy15): Step 8 with the manifest seed
                 (seed A) and with a second seed (seed B); seed B is scored as a candidate
                 against seed A with the frozen failure rule.
-  fresh-grid    The 166 prompt speakers in no split, clean + noisy15, Steps 4/5/6/8.
+  fresh-grid    The 166 prompt speakers in no split, clean + noisy15, Steps 4/5/6/8. Note: these
+                speakers were already used in the team's Phase 12 run (EXP-006), so they are not unseen.
   degradations  The same fresh speakers under Gaussian 18-25 dB, DEMAND cafeteria babble,
                 synthetic reverberation and telephone-band prompts, Steps 4/5/6/8.
   analyze       Compute every reported number from the CSVs written above and from the

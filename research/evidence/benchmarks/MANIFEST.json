@@ -15,10 +15,66 @@
     {
       "file": "drift_features/drift_features_all1000.csv",
       "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/Colab_Output/drift_features_all1000.csv",
-      "source_commit": "untracked in source repository",
-      "producer": "run_drift_features_benchmark.py (not committed in the source repository); d_4 matches gpu_grid_all1000.csv exactly in all 1,000 cases",
+      "source_commit": "untracked copy in Colab_Output; producer committed on branch SNRgated (e15cd55)",
+      "producer": "run_drift_features_benchmark.py at Shonget-DMOSpeech2 e15cd55 (branch SNRgated), --explore_only; reference copy in code/colab/run_drift_features_benchmark.py; d_4 matches gpu_grid_all1000.csv exactly in all 1,000 cases",
       "bytes": 1815110,
       "sha256": "d1d6013309d91fb074cf2866010a90ccaec10f4a4222e9117b41cc6d596b7451"
+    },
+    {
+      "file": "early_handover/EARLY_HANDOVER_DEVELOPMENT_REPORT.md",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/early_handover_dev_gpu/EARLY_HANDOVER_DEVELOPMENT_REPORT.md",
+      "source_commit": "cf2ac90 (branch early-handover-dev)",
+      "producer": "run_early_handover_dev_gpu.py (reference copy in code/colab/) on a Tesla T4; Steps 2 and 3 newly synthesized for the 100 development speakers, Steps 4/5/6/8 reused from gpu_grid_all1000.csv (800 rows, identical)",
+      "bytes": 28181,
+      "sha256": "76cfd66f83901b18375c269bf752b0db84ecc3b48cf2970d03fe16da160dc2a4"
+    },
+    {
+      "file": "early_handover/candidate_formula_fold_results.csv",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/early_handover_dev_gpu/candidate_formula_fold_results.csv",
+      "source_commit": "cf2ac90 (branch early-handover-dev)",
+      "producer": "run_early_handover_dev_gpu.py (reference copy in code/colab/) on a Tesla T4; Steps 2 and 3 newly synthesized for the 100 development speakers, Steps 4/5/6/8 reused from gpu_grid_all1000.csv (800 rows, identical)",
+      "bytes": 1243,
+      "sha256": "606c981666d0e7c975db9bfca8297bd925e089a7d51156d80cb9f0755b532dcd"
+    },
+    {
+      "file": "early_handover/candidate_formula_search_log.csv",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/early_handover_dev_gpu/candidate_formula_search_log.csv",
+      "source_commit": "cf2ac90 (branch early-handover-dev)",
+      "producer": "run_early_handover_dev_gpu.py (reference copy in code/colab/) on a Tesla T4; Steps 2 and 3 newly synthesized for the 100 development speakers, Steps 4/5/6/8 reused from gpu_grid_all1000.csv (800 rows, identical)",
+      "bytes": 5003,
+      "sha256": "9a10a7fe43334c09d8639018fda1a479739702e4a9b3c0d389a31f1d99dd4ff7"
+    },
+    {
+      "file": "early_handover/development_expanded_grid.csv",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/early_handover_dev_gpu/development_expanded_grid.csv",
+      "source_commit": "cf2ac90 (branch early-handover-dev)",
+      "producer": "run_early_handover_dev_gpu.py (reference copy in code/colab/) on a Tesla T4; Steps 2 and 3 newly synthesized for the 100 development speakers, Steps 4/5/6/8 reused from gpu_grid_all1000.csv (800 rows, identical)",
+      "bytes": 501543,
+      "sha256": "8e57a3eb7c3a37564885c8054d641668440ad5666ccce45a799937481a6fc793"
+    },
+    {
+      "file": "early_handover/early_handover_case_audit.csv",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/early_handover_dev_gpu/early_handover_case_audit.csv",
+      "source_commit": "cf2ac90 (branch early-handover-dev)",
+      "producer": "run_early_handover_dev_gpu.py (reference copy in code/colab/) on a Tesla T4; Steps 2 and 3 newly synthesized for the 100 development speakers, Steps 4/5/6/8 reused from gpu_grid_all1000.csv (800 rows, identical)",
+      "bytes": 64544,
+      "sha256": "75bbebfabc47f4b3f188979b1298a8052ee0e93bc4bf56becd6a9c39ade59859"
+    },
+    {
+      "file": "early_handover/early_signal_diagnostics.csv",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/early_handover_dev_gpu/early_signal_diagnostics.csv",
+      "source_commit": "cf2ac90 (branch early-handover-dev)",
+      "producer": "run_early_handover_dev_gpu.py (reference copy in code/colab/) on a Tesla T4; Steps 2 and 3 newly synthesized for the 100 development speakers, Steps 4/5/6/8 reused from gpu_grid_all1000.csv (800 rows, identical)",
+      "bytes": 930,
+      "sha256": "476267b7b5d571696b0d8bd8e465f5823ffb7bd97102a7c708b6fa1feb86990b"
+    },
+    {
+      "file": "early_handover/expanded_policy_comparison.csv",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/early_handover_dev_gpu/expanded_policy_comparison.csv",
+      "source_commit": "cf2ac90 (branch early-handover-dev)",
+      "producer": "run_early_handover_dev_gpu.py (reference copy in code/colab/) on a Tesla T4; Steps 2 and 3 newly synthesized for the 100 development speakers, Steps 4/5/6/8 reused from gpu_grid_all1000.csv (800 rows, identical)",
+      "bytes": 826,
+      "sha256": "b9755e9b6c739735fc63cf22f2a1b63e187effd5b58b7e881f16bcea8e0d6655"
     },
     {
       "file": "gpu_full_pipeline_timing_3000.csv",
@@ -147,6 +203,134 @@
       "producer": "run_signal_selection_validation.py at 38ac387 (RUN_INFO), Tesla T4",
       "bytes": 27924,
       "sha256": "f0a95ce6855af0109a3a97d6d6b7a8c7973d95df51eabd508dafc7cd33556f44"
+    },
+    {
+      "file": "three_scheduler_revisions/THREE_SCHEDULER_REVISIONS_DEVELOPMENT_REPORT.md",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/three_scheduler_revisions_dev/three_scheduler_revisions_dev_artifacts.tar.gz (untracked there; sha256 12338dd10b6c3462...)",
+      "source_commit": "run at 5710d3f (branch early-handover-dev)",
+      "producer": "run_three_scheduler_revisions_dev.py (reference copy in code/colab/), offline analysis of early_handover/development_expanded_grid.csv (the input grid hash in experiment_metadata.json is that file with CRLF line endings)",
+      "bytes": 8519,
+      "sha256": "c3ca230264e25b72456dbdb0be56d227c732e2f0172479441aaa05276c979de2"
+    },
+    {
+      "file": "three_scheduler_revisions/all_policy_comparison.csv",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/three_scheduler_revisions_dev/three_scheduler_revisions_dev_artifacts.tar.gz (untracked there; sha256 12338dd10b6c3462...)",
+      "source_commit": "run at 5710d3f (branch early-handover-dev)",
+      "producer": "run_three_scheduler_revisions_dev.py (reference copy in code/colab/), offline analysis of early_handover/development_expanded_grid.csv (the input grid hash in experiment_metadata.json is that file with CRLF line endings)",
+      "bytes": 1820,
+      "sha256": "f51dd998ebdd8b6278eaad3c01440583eda7f7aadb685a4f8dad9f7972421388"
+    },
+    {
+      "file": "three_scheduler_revisions/causality_verification_report.json",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/three_scheduler_revisions_dev/three_scheduler_revisions_dev_artifacts.tar.gz (untracked there; sha256 12338dd10b6c3462...)",
+      "source_commit": "run at 5710d3f (branch early-handover-dev)",
+      "producer": "run_three_scheduler_revisions_dev.py (reference copy in code/colab/), offline analysis of early_handover/development_expanded_grid.csv (the input grid hash in experiment_metadata.json is that file with CRLF line endings)",
+      "bytes": 449,
+      "sha256": "d78369fcae84f860c053b895c186ba65ca3144c546bc6df1a9366744266e26ca"
+    },
+    {
+      "file": "three_scheduler_revisions/cross_validation_fold_results.csv",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/three_scheduler_revisions_dev/three_scheduler_revisions_dev_artifacts.tar.gz (untracked there; sha256 12338dd10b6c3462...)",
+      "source_commit": "run at 5710d3f (branch early-handover-dev)",
+      "producer": "run_three_scheduler_revisions_dev.py (reference copy in code/colab/), offline analysis of early_handover/development_expanded_grid.csv (the input grid hash in experiment_metadata.json is that file with CRLF line endings)",
+      "bytes": 1430,
+      "sha256": "a8e1af74e6499877879d9679d93e4bfb702f265c2aa3f5a3dc3ac02951768bd6"
+    },
+    {
+      "file": "three_scheduler_revisions/data_validation_report.json",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/three_scheduler_revisions_dev/three_scheduler_revisions_dev_artifacts.tar.gz (untracked there; sha256 12338dd10b6c3462...)",
+      "source_commit": "run at 5710d3f (branch early-handover-dev)",
+      "producer": "run_three_scheduler_revisions_dev.py (reference copy in code/colab/), offline analysis of early_handover/development_expanded_grid.csv (the input grid hash in experiment_metadata.json is that file with CRLF line endings)",
+      "bytes": 2385,
+      "sha256": "a1b4a0e5b1bd807d92efdb487216309b4817f728759c027b8440d2cdc25e2587"
+    },
+    {
+      "file": "three_scheduler_revisions/experiment_metadata.json",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/three_scheduler_revisions_dev/three_scheduler_revisions_dev_artifacts.tar.gz (untracked there; sha256 12338dd10b6c3462...)",
+      "source_commit": "run at 5710d3f (branch early-handover-dev)",
+      "producer": "run_three_scheduler_revisions_dev.py (reference copy in code/colab/), offline analysis of early_handover/development_expanded_grid.csv (the input grid hash in experiment_metadata.json is that file with CRLF line endings)",
+      "bytes": 733,
+      "sha256": "dc5794375b2bb8a28591662e4f1144960e3f44be983208465e4bd27622ce6744"
+    },
+    {
+      "file": "three_scheduler_revisions/failure_and_waiting_case_audit.csv",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/three_scheduler_revisions_dev/three_scheduler_revisions_dev_artifacts.tar.gz (untracked there; sha256 12338dd10b6c3462...)",
+      "source_commit": "run at 5710d3f (branch early-handover-dev)",
+      "producer": "run_three_scheduler_revisions_dev.py (reference copy in code/colab/), offline analysis of early_handover/development_expanded_grid.csv (the input grid hash in experiment_metadata.json is that file with CRLF line endings)",
+      "bytes": 18693,
+      "sha256": "8500b27b788a1cdb2bb31d550d85404167efce569d647915c7829fa7f3874181"
+    },
+    {
+      "file": "three_scheduler_revisions/out_of_fold_case_decisions.csv",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/three_scheduler_revisions_dev/three_scheduler_revisions_dev_artifacts.tar.gz (untracked there; sha256 12338dd10b6c3462...)",
+      "source_commit": "run at 5710d3f (branch early-handover-dev)",
+      "producer": "run_three_scheduler_revisions_dev.py (reference copy in code/colab/), offline analysis of early_handover/development_expanded_grid.csv (the input grid hash in experiment_metadata.json is that file with CRLF line endings)",
+      "bytes": 65501,
+      "sha256": "10128018f94ac2ee92a77380584747ed1c7054cd0573ce7ba6eb1ad28aa247f7"
+    },
+    {
+      "file": "three_scheduler_revisions/out_of_fold_speaker_decisions.csv",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/three_scheduler_revisions_dev/three_scheduler_revisions_dev_artifacts.tar.gz (untracked there; sha256 12338dd10b6c3462...)",
+      "source_commit": "run at 5710d3f (branch early-handover-dev)",
+      "producer": "run_three_scheduler_revisions_dev.py (reference copy in code/colab/), offline analysis of early_handover/development_expanded_grid.csv (the input grid hash in experiment_metadata.json is that file with CRLF line endings)",
+      "bytes": 65501,
+      "sha256": "10128018f94ac2ee92a77380584747ed1c7054cd0573ce7ba6eb1ad28aa247f7"
+    },
+    {
+      "file": "three_scheduler_revisions/paired_baseline_comparisons.csv",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/three_scheduler_revisions_dev/three_scheduler_revisions_dev_artifacts.tar.gz (untracked there; sha256 12338dd10b6c3462...)",
+      "source_commit": "run at 5710d3f (branch early-handover-dev)",
+      "producer": "run_three_scheduler_revisions_dev.py (reference copy in code/colab/), offline analysis of early_handover/development_expanded_grid.csv (the input grid hash in experiment_metadata.json is that file with CRLF line endings)",
+      "bytes": 1508,
+      "sha256": "d734e27f09cfdb9d50ea5c7164ac1bec9db6ee37cbe60df9c62dcb2beab02dac"
+    },
+    {
+      "file": "three_scheduler_revisions/revision_definitions.json",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/three_scheduler_revisions_dev/three_scheduler_revisions_dev_artifacts.tar.gz (untracked there; sha256 12338dd10b6c3462...)",
+      "source_commit": "run at 5710d3f (branch early-handover-dev)",
+      "producer": "run_three_scheduler_revisions_dev.py (reference copy in code/colab/), offline analysis of early_handover/development_expanded_grid.csv (the input grid hash in experiment_metadata.json is that file with CRLF line endings)",
+      "bytes": 1370,
+      "sha256": "13608c77c2dbe791aa1ae76910f3ba31c9fbe39f80ad5e28449f26bc7b4ed03e"
+    },
+    {
+      "file": "three_scheduler_revisions/revision_fold_results.csv",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/three_scheduler_revisions_dev/three_scheduler_revisions_dev_artifacts.tar.gz (untracked there; sha256 12338dd10b6c3462...)",
+      "source_commit": "run at 5710d3f (branch early-handover-dev)",
+      "producer": "run_three_scheduler_revisions_dev.py (reference copy in code/colab/), offline analysis of early_handover/development_expanded_grid.csv (the input grid hash in experiment_metadata.json is that file with CRLF line endings)",
+      "bytes": 1430,
+      "sha256": "a8e1af74e6499877879d9679d93e4bfb702f265c2aa3f5a3dc3ac02951768bd6"
+    },
+    {
+      "file": "three_scheduler_revisions/speaker_fold_assignments.csv",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/three_scheduler_revisions_dev/three_scheduler_revisions_dev_artifacts.tar.gz (untracked there; sha256 12338dd10b6c3462...)",
+      "source_commit": "run at 5710d3f (branch early-handover-dev)",
+      "producer": "run_three_scheduler_revisions_dev.py (reference copy in code/colab/), offline analysis of early_handover/development_expanded_grid.csv (the input grid hash in experiment_metadata.json is that file with CRLF line endings)",
+      "bytes": 2803,
+      "sha256": "33d6a47130baa22e19e0478c8c82555dc7cf2618b00b50d1de5d9676618c618c"
+    },
+    {
+      "file": "three_scheduler_revisions/threshold_search_log.csv",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/three_scheduler_revisions_dev/three_scheduler_revisions_dev_artifacts.tar.gz (untracked there; sha256 12338dd10b6c3462...)",
+      "source_commit": "run at 5710d3f (branch early-handover-dev)",
+      "producer": "run_three_scheduler_revisions_dev.py (reference copy in code/colab/), offline analysis of early_handover/development_expanded_grid.csv (the input grid hash in experiment_metadata.json is that file with CRLF line endings)",
+      "bytes": 31348,
+      "sha256": "047a0ea0a092e1da5c00e7e0231c4b3488bfabd23f85741d906a8941100d45a3"
+    },
+    {
+      "file": "three_scheduler_revisions/timing_case_manifest.json",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/three_scheduler_revisions_dev/three_scheduler_revisions_dev_artifacts.tar.gz (untracked there; sha256 12338dd10b6c3462...)",
+      "source_commit": "run at 5710d3f (branch early-handover-dev)",
+      "producer": "run_three_scheduler_revisions_dev.py (reference copy in code/colab/), offline analysis of early_handover/development_expanded_grid.csv (the input grid hash in experiment_metadata.json is that file with CRLF line endings)",
+      "bytes": 10281,
+      "sha256": "1cc489b6d98376062ba9931ecdea102927ef5c9b3956fad7767ca734d69bb604"
+    },
+    {
+      "file": "three_scheduler_revisions/timing_inclusion_audit.json",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/three_scheduler_revisions_dev/three_scheduler_revisions_dev_artifacts.tar.gz (untracked there; sha256 12338dd10b6c3462...)",
+      "source_commit": "run at 5710d3f (branch early-handover-dev)",
+      "producer": "run_three_scheduler_revisions_dev.py (reference copy in code/colab/), offline analysis of early_handover/development_expanded_grid.csv (the input grid hash in experiment_metadata.json is that file with CRLF line endings)",
+      "bytes": 2000,
+      "sha256": "e88db9ff8c7bdd2adf7dc5502a2a5893582550e316e71a8f0f98fca43cd9fce6"
     }
   ],
   "excluded": [
@@ -159,12 +343,12 @@
       "reason": "CPU runs; the thesis now uses Colab T4 results only."
     },
     {
-      "item": "colab/results/three_scheduler_revisions_dev",
-      "reason": "Development analysis run on CPU (experiment_metadata.json: device cpu); not T4 evidence."
-    },
-    {
       "item": "colab/Colab_Output/DMOSpeech2_Signal_Selection_Results.zip",
       "reason": "Byte-identical duplicate of results/signal_selection/."
+    },
+    {
+      "item": "Phase 12 drift-justification outputs (Shonget-DMOSpeech2 branch SNRgated, d72e84f)",
+      "reason": "Never committed; only the summary in COLAB_RESULTS_CONSOLIDATED_REPORT.md exists. See research/experiments EXP-011."
     }
   ]
 }

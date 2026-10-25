@@ -29,3 +29,7 @@ Task: AUDIT-001. Requested by a team member, who said the code in code/ is not r
 - python scripts/render_progress.py, then python scripts/check_workspace.py: passed. The checker skips links inside research/reports/; the audit-note links were resolved separately.
 - python -m unittest discover -s code/tests: 14 tests passed.
 - latexmk -Werror in paper/: exit 0 (manuscript unchanged).
+
+## Correction (later on 2026-10-25)
+
+This log describes the 166 Seed-TTS speakers outside the splits as unused or fresh. They were already used in the team's Phase 12 run (22 Oct; research/experiments/EXP-006). No Seed-TTS test-en speaker is unseen; see the correction under Finding 1 of research/audits/2026-10-25/FINDINGS.md.
