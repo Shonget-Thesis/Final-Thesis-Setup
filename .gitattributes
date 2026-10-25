@@ -9,3 +9,4 @@ paper/sources/tanh-velocity-blending/original.md -text
 research/evidence/benchmarks/** -text
 research/experiments/EXP-011-followup-t4/results/** -text
 research/experiments/EXP-012-consistency-gate-prelim/results/** -text
+research/experiments/EXP-013-endpoint-extrapolation-prelim/results/** -text

@@ -1,6 +1,6 @@
 # EXP-013: Preliminary test of Drift-Extrapolated Handover (DEH)
 
-**Status:** designed 2026-10-25, not run. Notebook `code/colab/DMOSpeech2_Endpoint_Extrapolation_Prelim.ipynb`, runner `code/colab/run_endpoint_extrapolation_prelim.py` (Colab T4; same setup cells as EXP-011, without the DEMAND download).
+**Status:** run on a Colab Tesla T4 on 2026-10-25 (thesis `07639ea`, Shonget-DMOSpeech2 `8a7868f`); results in [results/](results/MANIFEST.json). **DEH failed its preregistered criteria C2 and C3.** Notebook `code/colab/DMOSpeech2_Endpoint_Extrapolation_Prelim.ipynb`, runner `code/colab/run_endpoint_extrapolation_prelim.py` (Colab T4; same setup cells as EXP-011, without the DEMAND download).
 
 **Why:** EXP-012 found that no gate beats a calibrated SNR threshold: gates only choose *when* to hand over. DEH changes *what* is handed over. In this pipeline the student always restarts at τ = 0.0761, which equals the teacher's Step-4 time t₄, so a Step-4 handover (13 NFE) and the reference Step-8 handover (21 NFE) differ only in the endpoint estimate given to the student. The EXP-012 drift values decay roughly geometrically from Step 3 on (median d₅/d₄ 0.79 on clean prompts, 0.82–0.98 on noisy ones), so the endpoint is still moving at Step 4, most of all on noisy prompts.
 
@@ -24,3 +24,16 @@ On an exactly geometric trajectory T equals x̂₁(t₈) (checked in `code/tests
 **Prior work checked (2026-10-25 web search):** extrapolation is used in diffusion sampling (RX-DPM, Richardson extrapolation over several ODE solutions; multistep solvers combine past data predictions; feature forecasting for caching), and DMOSpeech 2 introduced the teacher-to-student handover. No source was found that extrapolates the teacher's endpoint to a later horizon at the handover, using a contraction rate measured from the drift. This is "not found", not proof of absence.
 
 **Caveats:** development evidence only, Gaussian noise only. The extrapolation idea came from looking at the EXP-012 drift values, so a positive result motivates a held-out test, not a claim.
+
+## Results (360 of 360 cases)
+
+From [EXTRAPOLATION_REPORT.md](results/EXTRAPOLATION_REPORT.md). Drift reproduced exactly; the smoke test re-scored the stored Step-4 and Step-8 outputs with identical WER and SIM.
+
+| Criterion | Result |
+|---|---|
+| C1 noisy Step-4 failures -25%, p < 0.05 | PASS: 126 → 90 of 300 (p 0.0005); gauss18 33 → 20, gauss20 26 → 12 |
+| C2 clean failures rise by at most 1 | FAIL: 2 → 25 of 60 |
+| C3 calibrated DEH gate beats the calibrated SNR gate | FAIL: 12/360 failures at 20.42 NFE vs 7/360 at 18.71 |
+
+- **The premise failed.** The extrapolated endpoint is farther from x̂₁(t₈) than the plain one in every condition (median gain −0.35 to −2.31). The endpoint changes shrink at a steady rate (ρ ≈ 0.8) but change direction: cos(Δ₄, Δ₃) is −0.17 on clean prompts and 0.27–0.60 on noisy ones, and cos(Δ₄, x̂₁(t₈) − x̂₁(t₄)) is near zero. Any extrapolation along Δ₄ can bring the endpoint at most about 3% closer to x̂₁(t₈) (median, noisy15), and about 0% elsewhere.
+- **Exploratory, after the run:** applying DEH only when cos(Δ₄, Δ₃) ≥ 0.2 keeps clean failures at 3 and lowers total Step-4 failures from 128 to 95. 96 of the 126 noisy plain Step-4 failures are speaker-similarity failures; DEH removed 50 of those. Plain Steps 5 and 6 still fail 14–31 of 60 noisy prompts at 18–22 dB. These checks motivated EXP-014.
