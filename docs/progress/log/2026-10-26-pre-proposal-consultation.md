@@ -24,3 +24,7 @@ The team reports the proposal manuscript is in its final form for the pre-propos
 - The presentation does not reflect the October 25 audit or the EXP-001 pilot.
 - No task in tasks.json covers this edit; owner and acceptance criterion are for the team to assign.
 - A stuck terminal latexmk can lock paper/build/main.bcf and give an empty bibliography (`<empty citation>`); build with `-interaction=nonstopmode` and not alongside LaTeX Workshop's build on save.
+
+## Addendum: Chapter 3 additions
+
+paper/chapters/03-methodology.tex gained a Research Design subsection (`sec:design`: paired quantitative experimental design, exploratory development stage versus confirmatory calibration and test stages, speaker as the unit of analysis, success criterion), a paragraph in the data section on the manifest, pre-specified exclusions and how failed runs are counted (as added failures, not removed), a label on Ethical Considerations, and a Summary of the Methodology subsection. The workflow paragraph now points to the research design. These are proposed procedures, not results. Check run: `latexmk -g -Werror -interaction=nonstopmode` in paper/, exit 0, 70 pages, no undefined citations; rendered pages not reviewed. A LaTeX Workshop build-on-save started during one of the checks and collided with it; the check was rerun after it finished.
