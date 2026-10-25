@@ -32,6 +32,10 @@ Same steps, dependency pins, checkpoint and Seed-TTS download cells as the novel
 - python scripts/check_workspace.py: passed.
 - The notebook and runner have not been executed on a GPU. The DEMAND download URL and archive layout are unverified until the notebook's step 7 runs.
 
+## Pending actions recorded
+
+The team decided to keep SNR + drift as presented at the concept defense and to run EXP-001 after the proposal defense. Both decisions, and the full list of pending actions (Chapter 3 edits before the proposal, the run and Chapter 4 after it, open provenance items), are in the "Pending actions" section of the [October 25 audit](../../../research/audits/2026-10-25/FINDINGS.md).
+
 ## Open
 
 - Commit and push before running: the notebook clones the thesis repository from GitHub.
