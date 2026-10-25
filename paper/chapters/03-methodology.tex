@@ -16,7 +16,11 @@
 \subsection{System Architecture}
 \label{sec:architecture}
 
-The proposed method will add a decision layer to the teacher-guided sampler of DMOSpeech~2 \parencite{li2025dmospeech2} without changing any network. Figure~\ref{fig:method} shows the resulting architecture. Its components fall into three groups, summarized in Table~\ref{tab:components}: the frozen backbone, which generates speech exactly as released; the inference-time controller, which decides for each utterance where the teacher stops; and the offline calibrator, which sets the controller's single threshold before deployment.
+The proposed method will add a decision layer to the teacher-guided sampler of DMOSpeech~2 \parencite{li2025dmospeech2} without changing any network. Figure~\ref{fig:contribution} shows the contribution in one picture. The released sampler stops the teacher at the same point for every input. The proposed method instead decides for each utterance whether the teacher can stop early. It makes this decision from signals the sampler already computes and with a threshold that is calibrated to bound the rate of added quality failures.
+
+\input{figures/fig_contribution}
+
+Figure~\ref{fig:method} shows the resulting architecture in more detail. Its components fall into three groups, summarized in Table~\ref{tab:components}: the frozen backbone, which generates speech exactly as released; the inference-time controller, which decides for each utterance where the teacher stops; and the offline calibrator, which sets the controller's single threshold before deployment.
 
 The frozen backbone consists of the duration predictor, the teacher, the distilled student and the vocoder. The duration predictor fixes the length of the output; the teacher integrates the guided flow on its time grid; the student completes generation in three steps from the state that the teacher hands over; and the vocoder turns the resulting mel-spectrogram into a waveform. Section~\ref{sec:baseline} describes this sampler as the study will run it. All weights of these four networks stay as released, so any difference in cost or quality between two runs of the same input can only come from where the teacher stops.
 
@@ -52,25 +56,17 @@ Several choices in this architecture rest on the team's earlier experiments, whi
 \subsection{Research Workflow}
 \label{sec:workflow}
 
-The study will be carried out in four stages, one per specific objective, each on its own group of speakers (Figure~\ref{fig:workflow}). Objective~1 will measure how quality and cost change with the switching time; Objective~2 will turn those observations into a formal problem and a stopping policy with proven properties; Objective~3 will calibrate the policy's threshold so that its added-failure rate is bounded with stated confidence; and Objective~4 will compare the calibrated policy with simpler rules and test its robustness. Table~\ref{tab:design} aligns each objective with its method, data and output, and Sections~\ref{sec:obj1} to \ref{sec:obj4} describe them in turn after the common setup of Section~\ref{sec:setup}.
+Figure~\ref{fig:workflow} shows the whole study as fifteen steps, from preparing the data to reporting the results. The shaded bands mark which steps belong to each specific objective and which group of speakers each one uses.
+
+\begin{itemize}
+\item \textbf{Common setup (Steps 1--3)} prepares the speaker splits and the two prompt conditions, and checks that the sampler is deterministic and that its cost matches Proposition~\ref{prop:cost} (Section~\ref{sec:setup}).
+\item \textbf{Objective~1 (Steps 4--6)} runs every candidate switching time on the development split and maps how quality and cost change with it (Section~\ref{sec:obj1}).
+\item \textbf{Objective~2 (Step 7)} turns these observations into a formal problem and a stopping policy with proven properties; it uses no data (Section~\ref{sec:obj2}).
+\item \textbf{Objective~3 (Steps 8--11)} fixes the test protocol in advance, calibrates the policy's threshold on the calibration split and checks the guarantee on the test split (Section~\ref{sec:obj3}).
+\item \textbf{Objective~4 (Steps 12--14)} compares the calibrated policy with simpler rules on the test split and tests its robustness (Section~\ref{sec:obj4}).
+\end{itemize}
 
 \input{figures/fig_workflow}
-
-\begin{table}[!htbp]
-\centering\small
-\caption{Alignment of objectives, methods, data and outputs.}
-\label{tab:design}
-\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{4.0cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{2.6cm} >{\raggedright\arraybackslash}X@{}}
-\toprule
-\textbf{Objective} & \textbf{Method} & \textbf{Data} & \textbf{Output}\\
-\midrule
-1.\ Characterize the switching-time space & Run every candidate switching time; record quality, cost and decision signals & Development split & Quality--cost map; candidate set; SNR gate\\
-2.\ Formulate and analyze the method & Problem formulation, decision signals, stopping policy, propositions with proofs & --- & Policy, Algorithm~\ref{alg:handover}, Propositions~\ref{prop:zero}--\ref{prop:oracle}\\
-3.\ Calibrate with a guarantee & Learn-Then-Test with binomial p-values and fixed-sequence testing; repeated-split check & Calibration and test splits & Threshold $\hat\lambda$; verified bound\\
-4.\ Benchmark and test robustness & Comparison with fixed, SNR-only and oracle rules; noise shift; calibration size & Test split & Savings, quality, robustness\\
-\bottomrule
-\end{tabularx}
-\end{table}
 
 Each objective can produce a negative result, and each such result will be reported. Objective~1 may show that no candidate cheaper than the reference is acceptable for a meaningful share of inputs; Objective~3 may certify no threshold at the chosen tolerance, or the certified threshold may fail on held-out speakers; and Objective~4 may show that the savings vanish against a simple SNR rule, or that the stabilization score adds nothing beyond the prompt SNR. The workflow is designed so that these outcomes are detected rather than hidden.
 
@@ -83,7 +79,7 @@ Each objective can produce a negative result, and each such result will be repor
 
 The study will use the DMOSpeech~2 checkpoints and inference code released with \textcite{li2025dmospeech2}. For a prompt and target text, the total duration comes from the fixed duration predictor. The mel-spectrogram tensor $x\in\R^{F\times 100}$ covers the prompt frames followed by the frames to be generated, and a mask $M$ marks the generated (non-prompt) frames. Algorithm~\ref{alg:baseline} gives the sampler as the study will run it; the paragraphs below explain each part.
 
-The teacher integrates the flow on a sway grid of 16 intervals, which is \Cref{eq:sway} with $s=-1$ and the code's default \texttt{teacher\_steps}~$=16$:
+The teacher integrates the flow on a sway grid of 16 intervals. This is the sway schedule of Section~\ref{sec:rrl-fm} with coefficient $-1$ and the code's default \texttt{teacher\_steps}~$=16$:
 \begin{equation}
 t_i = 1-\cos\!\Big(\frac{\pi}{2}\cdot\frac{i}{16}\Big), \qquad i = 0,1,\dots,16.
 \label{eq:grid}
@@ -110,7 +106,32 @@ $\gamma$ & guidance strength (code argument \texttt{cfg\_strength}); $\gamma=2$ 
 \end{whereterms}
 Each evaluation therefore costs two forward passes. The released sampler can add a stochastic term to $v$ (argument \texttt{eta}, default 1). The study will set that term to zero, so the teacher trajectory of an input is deterministic. Every candidate switching time of an input then follows one and the same trajectory, the decision signal and the endpoint use the same velocity, and differences between candidates come only from where the teacher stops.
 
-For a stopping argument $s$, the teacher runs Euler steps (\Cref{eq:euler}) up to $t_h = t_{k}$, the first grid point with $t_k > s$. One more guided evaluation at $t_h$ then gives the endpoint estimate of \Cref{eq:endpoint}, which is handed to the student:
+Between grid points, the teacher moves the state with an explicit Euler step along the guided velocity:
+\begin{equation}
+x_{t_{i+1}} = x_{t_i} + (t_{i+1}-t_i)\,v(x_{t_i},t_i).
+\label{eq:euler}
+\end{equation}
+\eqentry{Teacher Euler step}
+\begin{whereterms}[2.6cm]
+$x_{t_{i+1}}$ & state at the next grid point \\
+$x_{t_i}$ & state at the current grid point \\
+$t_{i+1}-t_i$ & step size on the flow axis \\
+$v(x_{t_i},t_i)$ & guided velocity of \Cref{eq:guided}
+\end{whereterms}
+
+At any grid point, the same velocity also gives an estimate of the final output. If the velocity stayed constant for the rest of the flow, the state would reach
+\begin{equation}
+\hat x_1(t_i) = x_{t_i} + (1-t_i)\,v(x_{t_i},t_i).
+\label{eq:endpoint}
+\end{equation}
+\eqentry{Endpoint estimate at a teacher step}
+\begin{whereterms}[2.6cm]
+$\hat x_1(t_i)$ & endpoint estimate at grid point $i$: the teacher's current prediction of the final mel-spectrogram \\
+$1-t_i$ & remaining distance to the data end of the flow axis ($t=1$)
+\end{whereterms}
+This estimate costs no extra forward pass, because the velocity has already been computed for the Euler step.
+
+For a stopping argument $s$, the teacher runs Euler steps (\Cref{eq:euler}) up to $t_h = t_{k}$, the first grid point with $t_k > s$. One more guided evaluation at $t_h$ then gives the endpoint estimate of \Cref{eq:endpoint} at $t_k$, which is handed to the student:
 \begin{equation}
 T = x_{t_k} + (1-t_k)\,v(x_{t_k},t_k).
 \label{eq:handover}
@@ -237,7 +258,39 @@ Test & Objective~3 held-out check; Objective~4 & One utterance per speaker & 200
 \subsubsection{Quality and Cost Measures}
 \label{sec:measures}
 
-Each generated utterance will be scored on intelligibility, speaker similarity and predicted naturalness (Table~\ref{tab:measures}). Word error rate will be computed from a Whisper-large-v3 transcript, as in the DMOSpeech~2 evaluation \parencite{radford2023whisper,li2025dmospeech2}, after normalizing both texts as in the Seed-TTS English evaluation: punctuation is replaced by spaces, whitespace is collapsed and text is lowercased. Speaker similarity will be the cosine similarity between the embeddings of a WavLM-Base+ speaker-verification model (\texttt{microsoft/wavlm-base-plus-sv}) for the generated speech and for the ground-truth target recording \parencite{chen2022wavlm}. DMOSpeech~2 uses a WavLM-large-based verifier, so absolute SIM values in this study are not comparable with its published numbers; the failure rule is unaffected, because it compares each candidate only with the reference scored by the same verifier. Naturalness will be predicted with UTMOS \parencite{saeki2022utmos}. These models replace the lighter ones of the earlier experiments. Cost will be measured primarily in forward passes, which follow exactly from Proposition~\ref{prop:cost} and do not depend on hardware, and secondarily in wall-clock time and real-time factor on the study's GPU (an NVIDIA Tesla T4 through Google Colab).
+Each generated utterance will be scored on intelligibility, speaker similarity and predicted naturalness (Table~\ref{tab:measures}). Word error rate will be computed from a Whisper-large-v3 transcript, as in the DMOSpeech~2 evaluation \parencite{radford2023whisper,li2025dmospeech2}, after normalizing both texts as in the Seed-TTS English evaluation: punctuation is replaced by spaces, whitespace is collapsed and text is lowercased. Speaker similarity will be the cosine similarity between the embeddings of a WavLM-Base+ speaker-verification model (\texttt{microsoft/wavlm-base-plus-sv}) for the generated speech and for the ground-truth target recording \parencite{chen2022wavlm}. DMOSpeech~2 uses a WavLM-large-based verifier, so absolute SIM values in this study are not comparable with its published numbers; the failure rule is unaffected, because it compares each candidate only with the reference scored by the same verifier. Naturalness will be predicted with UTMOS \parencite{saeki2022utmos}. These models replace the lighter ones of the earlier experiments. Cost will be measured primarily in forward passes, which follow exactly from Proposition~\ref{prop:cost} and do not depend on hardware, and secondarily in wall-clock time and real-time factor on the study's GPU, an NVIDIA Tesla T4 through Google Colab.
+
+The three numeric measures are defined as follows. Word error rate counts the word-level edits needed to turn the recognized transcript into the target text:
+\begin{equation}
+\mathrm{WER} = \frac{S_w + D_w + I_w}{N_w}.
+\label{eq:wer}
+\end{equation}
+\eqentry{Word error rate}
+\begin{whereterms}[2.6cm]
+$S_w, D_w, I_w$ & numbers of substituted, deleted and inserted words in the transcript \\
+$N_w$ & number of words in the normalized target text
+\end{whereterms}
+Speaker similarity compares the speaker embeddings of the generated and the ground-truth speech:
+\begin{equation}
+\mathrm{SIM} = \frac{e_{\text{gen}}^{\top} e_{\text{ref}}}{\lVert e_{\text{gen}}\rVert\,\lVert e_{\text{ref}}\rVert}.
+\label{eq:sim}
+\end{equation}
+\eqentry{Speaker similarity}
+\begin{whereterms}[2.6cm]
+$e_{\text{gen}}$ & speaker embedding of the generated speech \\
+$e_{\text{ref}}$ & speaker embedding of the ground-truth target recording \\
+$\lVert\cdot\rVert$ & Euclidean length of a vector
+\end{whereterms}
+The real-time factor relates synthesis time to the length of the speech produced; values below one mean faster than real time:
+\begin{equation}
+\mathrm{RTF} = \frac{T_{\text{synth}}}{T_{\text{audio}}}.
+\label{eq:rtf}
+\end{equation}
+\eqentry{Real-time factor}
+\begin{whereterms}[2.6cm]
+$T_{\text{synth}}$ & wall-clock time of the full synthesis pipeline for one utterance \\
+$T_{\text{audio}}$ & duration of the generated speech
+\end{whereterms}
 
 \begin{table}[!htbp]
 \centering\small
@@ -393,7 +446,7 @@ $\epsilon$ & small positive constant that prevents division by zero
 
 The second signal looks at the input rather than the model: it checks whether the prompt is clean enough for an early switch. The earlier experiments found that early switches failed mostly on noisy prompts (Appendix~\ref{app:prelim}), so a prompt-quality check is a natural candidate signal.
 
-The two signals answer different questions. The prompt SNR can only see risk that comes from the prompt recording, while the stabilization score is meant to also catch risk that comes from the text or from the model itself, for example a clean prompt whose output is still unsettled after a few teacher steps. Whether the stabilization score adds information beyond the prompt SNR is therefore an open question, not an assumption of the method. Development-split diagnostics (Appendix~\ref{app:prelim-dev}) suggest that the prompt SNR may carry most of the benefit, so the study treats the stabilization score as a hypothesis to be tested and plans the comparison of Section~\ref{sec:drift-plan}.
+The two signals answer different questions. The prompt SNR can only see risk that comes from the prompt recording, while the stabilization score is meant to also catch risk that comes from the text or from the model itself, for example a clean prompt whose output is still unsettled after a few teacher steps. Whether the stabilization score adds information beyond the prompt SNR is therefore an open question, not an assumption of the method. Development-split diagnostics (Appendix~\ref{app:prelim-dev}) suggest that the prompt SNR may carry most of the benefit, so the study treats the stabilization score as a hypothesis to be tested (Section~\ref{sec:drift-plan} and Appendix~\ref{app:drift-plan}).
 
 \begin{definition}[Prompt SNR estimate]\label{def:snr}
 The prompt waveform is split into 25~ms frames with a 10~ms hop, and
@@ -659,17 +712,10 @@ Two robustness questions follow from the assumptions of Proposition~\ref{prop:lt
 
 Comparisons with the reference will be paired, since every method is applied to the same inputs with the same noise draws. Differences in forward passes, WER, SIM and UTMOS will be tested with the Wilcoxon signed-rank test on speaker-level values \parencite{wilcoxon1945}, which does not assume normally distributed differences, with Holm correction across the compared methods. Paired failure counts of two methods will be compared with the exact McNemar test. A claim that a method's quality is not worse than the reference's will require an equivalence test, the two one-sided tests procedure, with margins fixed before testing \parencite{schuirmann1987}; a non-significant difference alone will not be taken as evidence of equal quality. Failure rates will be reported with exact Clopper--Pearson intervals \parencite{clopper1934}. Results will be reported per condition as well as overall, so that savings on clean prompts are not used to mask failures on noisy ones.
 
-\subsubsection{Further Investigation of the Stabilization Signal}
+\subsubsection{Testing the Stabilization Signal}
 \label{sec:drift-plan}
 
-Because the value of the stabilization score is uncertain (Section~\ref{sec:obj2}), the implementation after the proposal will test it in four steps, each fixed before the data it uses are examined.
-\begin{enumerate}[leftmargin=1.4em]
-\item \textbf{Discrimination.} On the development split, the study will measure how well the score separates handovers that fail from handovers that pass, using the area under the ROC curve, rank correlation with the per-utterance quality change, and the variance it explains beyond the prompt SNR.
-\item \textbf{Controls.} On the test split, the policy that uses both signals will be compared with the SNR gate followed by a fixed later step and with a random choice of steps that matches its mean cost, using the exact McNemar test on paired failures. If the stabilization score does not beat these controls, its step choices carry no information beyond waiting longer.
-\item \textbf{Conditions the SNR cannot see.} On speakers not used in any split, the comparison will be repeated on prompts degraded in ways that the energy-based SNR estimate may miss, such as reverberation and telephone-band recordings, with the hypothesis and test written down before synthesis.
-\item \textbf{Richer zero-cost signals.} Variants of the score that need no extra forward pass, such as per-frame or per-band changes and the gap between the conditional and unconditional predictions, will be explored on the development split only; any variant that is kept will be calibrated and tested on data it has not seen.
-\end{enumerate}
-If the stabilization score adds no measurable value in these tests, the SNR-gated variant of the policy will be recommended, and the stabilization score will be reported as a tested negative result together with the reasons found for it. The contribution of the study, a per-utterance handover framework with a certified bound on added failures, does not depend on which signal performs best.
+Whether the stabilization score adds value beyond the prompt SNR is still an open question (Section~\ref{sec:obj2}). On the test split, the policy that uses both signals will therefore be compared with the SNR gate followed by a fixed later step and with a random choice of steps that matches its mean cost, using the exact McNemar test on paired failures. If the score does not beat these controls, the SNR-gated variant of the policy will be recommended and the score will be reported as a tested negative result; the full plan for this investigation is given in Appendix~\ref{app:drift-plan}.
 
 % =====================================================================
 \subsection{Ethical Considerations}
