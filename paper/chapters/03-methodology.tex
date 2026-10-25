@@ -539,13 +539,13 @@ Figure~\ref{fig:method} in Section~\ref{sec:architecture} shows how the policy s
 \small
 \begin{algorithmic}[1]
 \Require prompt, texts, calibrated $\hat\lambda$, gate $\theta$, candidates $i_1<\dots<i_m$
-\State \label{line:snr}$\hat S \gets \Call{SNREstimate}{\text{prompt}}$
+\State $\hat S \gets \Call{SNREstimate}{\text{prompt}}$
 \For{each teacher grid step $i$}
   \State evaluate guided $v(x_{t_i},t_i)$; compute $\hat x_1(t_i)$ and $d_i$
-  \If{$i=i_m$ \textbf{or} ($i\in\{i_1,\dots,i_{m-1}\}$ \textbf{and} $d_i\le\hat\lambda$ \textbf{and} $\hat S\ge\theta$)}\label{line:stopcheck}
-    \State \label{line:handover}$T\gets \hat x_1(t_i)$; \textbf{break}
+  \If{$i=i_m$ \textbf{or} ($i\in\{i_1,\dots,i_{m-1}\}$ \textbf{and} $d_i\le\hat\lambda$ \textbf{and} $\hat S\ge\theta$)}
+    \State $T\gets \hat x_1(t_i)$; \textbf{break}
   \EndIf
-  \State \label{line:continue}$x_{t_{i+1}} \gets x_{t_i} + (t_{i+1}-t_i)\,v$
+  \State $x_{t_{i+1}} \gets x_{t_i} + (t_{i+1}-t_i)\,v$
 \EndFor
 \State run the student from $T$ at its fixed restart level ($j=1$, three steps)
 \State decode with the vocoder

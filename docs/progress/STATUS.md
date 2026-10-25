@@ -6,7 +6,7 @@ The repository now separates implementation, the LaTeX manuscript, research evid
 
 The thesis now uses Colab T4 results only. The verified T4 runs (grid, timing, signal selection, novel algorithms, drift features) are in research/evidence/benchmarks/ with source commits and SHA-256 hashes ([manifest](../../research/evidence/benchmarks/MANIFEST.json)); CPU runs and the comprehensive evaluation suite were not imported. The follow-up tests (seed-noise floor, the 166 unused speakers, degraded prompts) are designed in [EXP-001](../../research/experiments/EXP-001-followup-t4/README.md) with a Colab notebook and runner, not yet run (EVAL-003). See the [import and follow-up log](log/2026-10-25-t4-import-and-followup.md).
 
-Appendices A–C now use the T4 development data (real utterances, real development-split LTT counts, and a simulation fitted to development data beside the stress test); figure designs are unchanged. See the [appendices log](log/2026-10-25-appendices-real-data.md).
+An edit basing Appendices A–C on the T4 development data was made and then reverted at the team's request; the manuscript's chapters are identical to main. See the [appendices log](log/2026-10-25-appendices-real-data.md).
 
 The October 25 audit recomputed the T4 grid: with the manuscript's λ grid (0.20–1.20), Learn-Then-Test on the calibration split certifies every threshold (λ̂ = 1.20, not the reports' CPU-label 0.50), and the policy then equals SNR-only on the test split (4/200 speaker failures, 17.04 NFE). The stabilization score shows no discrimination on clean development prompts (AUC 0.474, three failures). Each report now carries a dated audit note; its original text is unchanged.
 

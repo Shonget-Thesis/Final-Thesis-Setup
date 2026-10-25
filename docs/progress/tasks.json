@@ -318,16 +318,14 @@
       "id": "PAPER-012",
       "title": "Base Appendices A-C on the T4 development data",
       "owner": "Claude (manuscript), for a team member",
-      "status": "review",
+      "status": "todo",
       "updated": "2026-10-25",
       "acceptance": "Appendix A follows a real development utterance and real development-split LTT counts; Appendix B adds a simulation fitted to the T4 development data while keeping the stress test; Appendix C's figure uses real development utterances; figure designs unchanged; builds under latexmk -Werror with no new warnings.",
       "evidence": [
-        "paper/chapters/appendices.tex",
-        "paper/chapters/03-methodology.tex",
         "code/analysis/ltt_sim.py",
         "docs/progress/log/2026-10-25-appendices-real-data.md"
       ],
-      "validation": "latexmk -Werror exit 0; Overfull/Underfull count equals the previous commit (13); the four changed pages were rendered and inspected; ltt_sim.py default output reproduces Table B.1 exactly; every quoted value was recomputed from research/evidence/benchmarks/gpu_grid_all1000.csv. Team review pending."
+      "validation": "Implemented in commit 5cb7829, then reverted at the team's request on 2026-10-25: paper/chapters/appendices.tex and 03-methodology.tex are identical to main again. The real values and the fitted simulation (ltt_sim.py --fitted) remain available for a later edit."
     }
   ]
 }

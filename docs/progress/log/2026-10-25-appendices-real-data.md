@@ -17,3 +17,7 @@ All values come from `research/evidence/benchmarks/gpu_grid_all1000.csv`, develo
 - Rendered and inspected the pages with Appendix A (two pages), Appendix B's new paragraph and Figure C.1.
 - python code/analysis/ltt_sim.py: output identical to Table B.1; `--fitted` gives the numbers quoted.
 - python scripts/check_workspace.py and the unit tests: see the commit.
+
+## Reverted
+
+Later the same day, at the team's request, `paper/chapters/appendices.tex` and `paper/chapters/03-methodology.tex` were restored to the version on main (`git checkout origin/main --`); the manuscript chapters are again identical to main and PAPER-012 is back to todo. Kept: `code/analysis/ltt_sim.py --fitted` (the default run still reproduces Table B.1) and the pilot's `worked_example` recording, so the edit can be redone from the same data. Checks after the revert: latexmk -Werror exit 0; workspace check and unit tests pass.
