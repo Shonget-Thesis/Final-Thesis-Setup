@@ -253,7 +253,7 @@
       "owner": "Claude (manuscript), for Mark Vincent D. Limpahan",
       "status": "review",
       "updated": "2026-10-25",
-      "acceptance": "Chapter 2 follows the adviser's outline and keeps only formulas used in or closely related to Chapter 3, with the synthesis table kept; Chapter 3 has a contribution figure and one step-by-step methodology flowchart with objective bands replacing the old workflow figure and alignment table; every formula Chapter 3 cites is defined in Chapter 3 with a symbol table; abbreviations are written out at first use and listed; the detailed stabilization-signal plan moves to Appendix D with a short summary left in Objective 4.",
+      "acceptance": "Chapter 2 follows the adviser's outline and keeps only formulas used in or closely related to Chapter 3, with the synthesis table kept; Chapter 3 has a contribution figure and one step-by-step methodology flowchart with objective bands replacing the old workflow figure and alignment table; every formula Chapter 3 cites is defined in Chapter 3 with a symbol table; abbreviations are written out at first use and listed; the detailed stabilization-signal plan moves to Appendix D with a short summary left in Objective 4. Follow-up: Chapter 2 formulas carry their sources and point to their Chapter 3 definitions without symbol tables; Chapter 2 figures state their sources; the methodology flowchart is compact, with step details in a longtable that maps each step to its Chapter 3 section; tenses follow the proposal rules (Chapter 1 present; Chapter 2 past for studies, present for facts; Chapter 3 future).",
       "evidence": [
         "paper/chapters/02-related-work.tex",
         "paper/chapters/03-methodology.tex",
@@ -264,7 +264,7 @@
         "paper/frontmatter.tex",
         "docs/progress/log/2026-10-25-adviser-revisions.md"
       ],
-      "validation": "latexmk -Werror builds a 64-page main.pdf with no undefined references or overfull boxes; scripts/build_changes_pdf.sh origin/main builds a 72-page changes.pdf; rendered pages of both new figures were inspected; check_workspace.py and the 14 unit tests pass. Adviser review is pending."
+      "validation": "latexmk -Werror builds a 62-page main.pdf with no undefined references or overfull boxes; scripts/build_changes_pdf.sh origin/main builds a 73-page changes.pdf; rendered pages of Figures 2.1, 3.1 and 3.3 and Table 3.2 were inspected; check_workspace.py and the 14 unit tests pass. Adviser review is pending."
     }
   ]
 }
