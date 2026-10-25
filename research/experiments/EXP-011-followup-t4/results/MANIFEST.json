@@ -1,5 +1,5 @@
 {
-  "description": "Outputs of the EXP-001 notebook run on 2026-10-25 (Colab Tesla T4): smoke test and development pilot (Steps 1-6b), and the files of an early freeze that is void (see research/reports/ALL_REPORTS_COMPILED.md, Part 6.10). Byte-identical copies from the downloaded results zip; audio files excluded.",
+  "description": "Outputs of the EXP-011 notebook run on 2026-10-25 (Colab Tesla T4): smoke test and development pilot (Steps 1-6b), and the files of an early freeze that is void (see research/reports/ALL_REPORTS_COMPILED.md, Part 6.10). Byte-identical copies from the downloaded results zip; audio files excluded.",
   "source_zip": "followup_t4-20261025T090530Z-1-001.zip",
   "source_zip_sha256": "29db0fec9540db285c39ece51c4f69a4a1ab57c16e653b9c0acf5368d7aaf503",
   "thesis_commit_at_run": "5cb78297ab7116c7184b112312c1dc8722f74c26",

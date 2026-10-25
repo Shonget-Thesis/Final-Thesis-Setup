@@ -1,4 +1,4 @@
-# EXP-001: Follow-up Colab T4 tests
+# EXP-011: Follow-up Colab T4 tests
 
 Status: smoke test and development pilot run on 2026-10-25 (Tesla T4); results in [results/](results/MANIFEST.json), summarized in Part 6 of [ALL_REPORTS_COMPILED.md](../../reports/ALL_REPORTS_COMPILED.md). An early freeze in the same session is void (results/superseded_freeze_20261025/). The full run (fresh held-out, degraded prompts, seed floor) is not yet run and waits for the proposal; its protocol is to add the moderate-noise findings and the low-drift safeguard (Part 6.11) before freezing. Recommended by the [October 25 audit](../../audits/2026-10-25/FINDINGS.md).
 
@@ -6,7 +6,7 @@ Notebook: [code/colab/DMOSpeech2_Followup_Tests.ipynb](../../../code/colab/DMOSp
 
 | Test | Question | Data |
 |---|---|---|
-| H1, fresh held-out grid | Does the policy calibrated on the T4 calibration split keep risk ≤ 5% on speakers nobody has inspected? | The 166 Seed-TTS test-en prompt speakers in no split; clean + noisy15; Steps 4, 5, 6, 8 |
+| H1, held-out grid | Does the policy calibrated on the T4 calibration split keep risk ≤ 5% on held-out speakers? | As implemented: the 166 Seed-TTS test-en prompt speakers in no split. ⚠️ These were already used in the team's Phase 12 run (EXP-006), so they are not unseen; the held-out data must be decided (new data, or these 166 with that history stated) before freezing; clean + noisy15; Steps 4, 5, 6, 8 |
 | H2, degradations | Does the stabilization score catch failures the SNR gate misses? SNR-only vs SNR + drift (λ = 0.50), exact McNemar, Holm across conditions | Same speakers; Gaussian 18/20/22/25 dB, DEMAND cafeteria babble 15/20 dB, synthetic reverberation (RT60 0.3/0.9 s), telephone band |
 | H3, seed-noise floor | How often does Step 8 fail against Step 8 with another seed? | 200 test speakers, clean + noisy15 |
 
