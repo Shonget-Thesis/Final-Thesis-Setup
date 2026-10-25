@@ -2,7 +2,7 @@
 
 Generated from tasks.json; edit the JSON and run python scripts/render_progress.py.
 
-todo: 7 | in_progress: 2 | blocked: 0 | review: 9 | done: 6
+todo: 7 | in_progress: 3 | blocked: 0 | review: 9 | done: 6
 
 | ID | Task | Owner | Status | Updated | Evidence |
 | --- | --- | --- | --- | --- | --- |
@@ -29,6 +29,7 @@ todo: 7 | in_progress: 2 | blocked: 0 | review: 9 | done: 6
 | REPRO-003 | Import the verified Colab T4 results with hashes | Claude (audit), for a team member | review | 2026-10-25 | [MANIFEST.json](../../research/evidence/benchmarks/MANIFEST.json), [test_evidence_manifest.py](../../code/tests/test_evidence_manifest.py), [2026-10-25-t4-import-and-followup.md](../../docs/progress/log/2026-10-25-t4-import-and-followup.md) |
 | EVAL-003 | Run the follow-up Colab T4 tests (seed floor, fresh held-out, degraded prompts) | unassigned | in_progress | 2026-10-25 | [README.md](../../research/experiments/EXP-011-followup-t4/README.md), [MANIFEST.json](../../research/experiments/EXP-011-followup-t4/results/MANIFEST.json), [DMOSpeech2_Followup_Tests.ipynb](../../code/colab/DMOSpeech2_Followup_Tests.ipynb), [run_followup_tests.py](../../code/colab/run_followup_tests.py), [2026-10-25-pilot-results.md](../../docs/progress/log/2026-10-25-pilot-results.md) |
 | PAPER-012 | Base Appendices A-C on the T4 development data | Claude (manuscript), for a team member | todo | 2026-10-25 | [ltt_sim.py](../../code/analysis/ltt_sim.py), [2026-10-25-appendices-real-data.md](../../docs/progress/log/2026-10-25-appendices-real-data.md) |
-| EVAL-004 | Preliminary test of the proposed gates (SDC, low-drift veto, guidance contrast, stratified LTT) | unassigned | todo | 2026-10-25 | [README.md](../../research/experiments/EXP-012-consistency-gate-prelim/README.md), [DMOSpeech2_Consistency_Gate_Prelim.ipynb](../../code/colab/DMOSpeech2_Consistency_Gate_Prelim.ipynb), [run_consistency_gate_prelim.py](../../code/colab/run_consistency_gate_prelim.py), [test_consistency_gate.py](../../code/tests/test_consistency_gate.py) |
+| EVAL-004 | Preliminary test of the proposed gates (SDC, low-drift veto, guidance contrast, stratified LTT) | unassigned | in_progress | 2026-10-25 | [README.md](../../research/experiments/EXP-012-consistency-gate-prelim/README.md), [DMOSpeech2_Consistency_Gate_Prelim.ipynb](../../code/colab/DMOSpeech2_Consistency_Gate_Prelim.ipynb), [run_consistency_gate_prelim.py](../../code/colab/run_consistency_gate_prelim.py), [test_consistency_gate.py](../../code/tests/test_consistency_gate.py), [MANIFEST.json](../../research/experiments/EXP-012-consistency-gate-prelim/results/MANIFEST.json), [CONSISTENCY_GATE_REPORT.md](../../research/experiments/EXP-012-consistency-gate-prelim/results/CONSISTENCY_GATE_REPORT.md) |
+| EVAL-005 | Preliminary test of Drift-Extrapolated Handover (DEH) | unassigned | todo | 2026-10-25 | [README.md](../../research/experiments/EXP-013-endpoint-extrapolation-prelim/README.md), [DMOSpeech2_Endpoint_Extrapolation_Prelim.ipynb](../../code/colab/DMOSpeech2_Endpoint_Extrapolation_Prelim.ipynb), [run_endpoint_extrapolation_prelim.py](../../code/colab/run_endpoint_extrapolation_prelim.py), [test_endpoint_extrapolation.py](../../code/tests/test_endpoint_extrapolation.py) |
 
 Completion requires acceptance evidence and a recorded validation. Unassigned owners need team assignment.

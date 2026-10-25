@@ -332,14 +332,31 @@
       "id": "EVAL-004",
       "title": "Preliminary test of the proposed gates (SDC, low-drift veto, guidance contrast, stratified LTT)",
       "owner": "unassigned",
-      "status": "todo",
+      "status": "in_progress",
       "updated": "2026-10-25",
       "acceptance": "The EXP-012 notebook runs on a Colab T4; preregistration.json predates the synthesis; labels, signals, results JSON and the generated report are committed with hashes; the result decides which gate, if any, goes into the proposed-solution appendix.",
       "evidence": [
         "research/experiments/EXP-012-consistency-gate-prelim/README.md",
         "code/colab/DMOSpeech2_Consistency_Gate_Prelim.ipynb",
         "code/colab/run_consistency_gate_prelim.py",
-        "code/tests/test_consistency_gate.py"
+        "code/tests/test_consistency_gate.py",
+        "research/experiments/EXP-012-consistency-gate-prelim/results/MANIFEST.json",
+        "research/experiments/EXP-012-consistency-gate-prelim/results/CONSISTENCY_GATE_REPORT.md"
+      ],
+      "validation": "Quick mode run on a Tesla T4 on 2026-10-25 (360 of 360 cases; drift reproduced exactly; results committed with hashes). No proposed gate beat a calibrated SNR threshold out of fold; Definition 3.4's low-drift stopping rule certified nothing. The Full run (100 speakers x 11 conditions) is not run."
+    },
+    {
+      "id": "EVAL-005",
+      "title": "Preliminary test of Drift-Extrapolated Handover (DEH)",
+      "owner": "unassigned",
+      "status": "todo",
+      "updated": "2026-10-25",
+      "acceptance": "The EXP-013 notebook runs on a Colab T4; the smoke reproduction matches the stored Step-4 and Step-8 scores; preregistration.json predates the synthesis; the CSV, results JSON and generated report are committed with hashes; the preregistered criteria C1-C3 are reported as computed.",
+      "evidence": [
+        "research/experiments/EXP-013-endpoint-extrapolation-prelim/README.md",
+        "code/colab/DMOSpeech2_Endpoint_Extrapolation_Prelim.ipynb",
+        "code/colab/run_endpoint_extrapolation_prelim.py",
+        "code/tests/test_endpoint_extrapolation.py"
       ],
       "validation": ""
     }
