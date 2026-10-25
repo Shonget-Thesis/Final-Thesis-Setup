@@ -215,6 +215,37 @@
         "docs/progress/log/2026-10-24-single-manuscript.md"
       ],
       "validation": "14 tests passed; workspace check passed; latexmk -Werror exit 0 for paper/main.tex; final-thesis variant built and its title page, approval sheet and abstract rendered and inspected. Content of the acknowledgement, dedication and abstract is still pending."
+    },
+    {
+      "id": "PAPER-010",
+      "title": "Frame the stabilization signal as a hypothesis to be tested",
+      "owner": "Claude (drafting), for Mark Vincent D. Limpahan",
+      "status": "review",
+      "updated": "2026-10-25",
+      "acceptance": "Chapters 1-3 present the prompt SNR and the endpoint-stabilization score as two candidate signals in one calibrated policy family, state that the stabilization score may not add value, and give the post-proposal plan to test it; Appendix D reports the development-split diagnostic; builds under latexmk -Werror.",
+      "evidence": [
+        "paper/chapters/01-introduction.tex",
+        "paper/chapters/02-related-work.tex",
+        "paper/chapters/03-methodology.tex",
+        "paper/chapters/appendices.tex",
+        "docs/progress/log/2026-10-25-drift-framing.md"
+      ],
+      "validation": "latexmk -Werror exited 0 (main.pdf, 68 pages); python scripts/check_workspace.py passed; rendered the new Section 3.7.5 page. Adviser review of the framing is pending."
+    },
+    {
+      "id": "INFRA-003",
+      "title": "Attach a marked-changes PDF to every pull request",
+      "owner": "Claude (CI), for Mark Vincent D. Limpahan",
+      "status": "review",
+      "updated": "2026-10-25",
+      "acceptance": "On pull requests, CI builds paper/build/changes.pdf with latexdiff against the base branch and uploads it as a separate artifact, without failing the check when latexdiff output does not compile; scripts/build_changes_pdf.sh builds the same PDF locally; paper/README.md explains how to review a pull request.",
+      "evidence": [
+        "scripts/build_changes_pdf.sh",
+        ".github/workflows/thesis-checks.yml",
+        "paper/README.md",
+        "docs/progress/log/2026-10-25-changes-pdf.md"
+      ],
+      "validation": "scripts/build_changes_pdf.sh origin/main built a 69-page changes.pdf against main with no LaTeX errors; rendered pages show removed text struck through in red and new text underlined in blue. The CI run on pull request #4 is the remote check."
     }
   ]
 }
