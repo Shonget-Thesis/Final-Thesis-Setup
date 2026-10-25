@@ -14,6 +14,8 @@ Every pull request now gets two PDF artifacts: main.pdf and a changes PDF with t
 
 The adviser's comments are applied on branch paper/adviser-revisions: Chapter 2 follows the adviser's outline with only Chapter 3-related formulas, Chapter 3 has a contribution figure and a step-by-step methodology flowchart, defines every formula it cites, and abbreviations are written out at first use. See the [adviser revisions log](log/2026-10-25-adviser-revisions.md).
 
+Follow-up on the adviser revisions: Chapter 2 formulas and figures now cite their sources and point to their Chapter 3 definitions, Figure 3.3 is a compact flowchart with a step table (Table 3.2), and Chapters 2 and 3 follow the proposal tense rules. See the follow-up section of the [adviser revisions log](log/2026-10-25-adviser-revisions.md).
+
 ## Current priorities
 
 1. Review the completed workspace setup and its recorded checks.
