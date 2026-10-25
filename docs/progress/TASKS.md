@@ -2,7 +2,7 @@
 
 Generated from tasks.json; edit the JSON and run python scripts/render_progress.py.
 
-todo: 6 | in_progress: 1 | blocked: 0 | review: 6 | done: 5
+todo: 6 | in_progress: 1 | blocked: 0 | review: 7 | done: 5
 
 | ID | Task | Owner | Status | Updated | Evidence |
 | --- | --- | --- | --- | --- | --- |
@@ -24,5 +24,6 @@ todo: 6 | in_progress: 1 | blocked: 0 | review: 6 | done: 5
 | PAPER-009 | Single manuscript with fill-in front matter | Claude (formatting), for Mark Vincent D. Limpahan | review | 2026-10-24 | [frontmatter.tex](../../paper/frontmatter.tex), [ADR-004-single-manuscript.md](../../docs/decisions/ADR-004-single-manuscript.md), [2026-10-24-single-manuscript.md](../../docs/progress/log/2026-10-24-single-manuscript.md) |
 | PAPER-010 | Frame the stabilization signal as a hypothesis to be tested | Claude (drafting), for Mark Vincent D. Limpahan | review | 2026-10-25 | [01-introduction.tex](../../paper/chapters/01-introduction.tex), [02-related-work.tex](../../paper/chapters/02-related-work.tex), [03-methodology.tex](../../paper/chapters/03-methodology.tex), [appendices.tex](../../paper/chapters/appendices.tex), [2026-10-25-drift-framing.md](../../docs/progress/log/2026-10-25-drift-framing.md) |
 | INFRA-003 | Attach a marked-changes PDF to every pull request | Claude (CI), for Mark Vincent D. Limpahan | review | 2026-10-25 | [build_changes_pdf.sh](../../scripts/build_changes_pdf.sh), [thesis-checks.yml](../../.github/workflows/thesis-checks.yml), [README.md](../../paper/README.md), [2026-10-25-changes-pdf.md](../../docs/progress/log/2026-10-25-changes-pdf.md) |
+| PAPER-011 | Apply adviser comments: simpler Chapter 2, contribution and methodology figures, self-contained Chapter 3 formulas, abbreviations | Claude (manuscript), for Mark Vincent D. Limpahan | review | 2026-10-25 | [02-related-work.tex](../../paper/chapters/02-related-work.tex), [03-methodology.tex](../../paper/chapters/03-methodology.tex), [fig_contribution.tex](../../paper/figures/fig_contribution.tex), [fig_workflow.tex](../../paper/figures/fig_workflow.tex), [appendices.tex](../../paper/chapters/appendices.tex), [01-introduction.tex](../../paper/chapters/01-introduction.tex), [frontmatter.tex](../../paper/frontmatter.tex), [2026-10-25-adviser-revisions.md](../../docs/progress/log/2026-10-25-adviser-revisions.md) |
 
 Completion requires acceptance evidence and a recorded validation. Unassigned owners need team assignment.

@@ -1,0 +1,49 @@
+% Figure: the study's contribution relative to the released DMOSpeech 2 sampler
+\begin{figure}[!htbp]
+\centering
+\begin{adjustbox}{max width=\linewidth}
+\begin{tikzpicture}[
+  font=\figfont,
+  frozen/.style={draw=frozenLine, fill=frozenFill, rounded corners=2pt, align=center, text width=2.3cm, minimum height=1.25cm, inner sep=3pt},
+  new/.style={draw=newLine, very thick, fill=newFill, rounded corners=2pt, align=center, text width=2.6cm, minimum height=1.25cm, inner sep=3pt},
+  rowlabel/.style={font=\figfont\bfseries, align=left, text width=2.2cm, anchor=west},
+  note/.style={font=\figsmall, align=left, anchor=north west, text width=12.1cm},
+  arr/.style={-{Stealth[length=2mm]}, thick},
+  newarr/.style={-{Stealth[length=2mm]}, thick, draw=newLine}
+]
+% ---------------- row A: released DMOSpeech 2 ----------------
+\node[rowlabel] at (-0.2,0) {DMOSpeech~2\\(released)};
+\node[frozen] (a1) at (3.6,0) {Prompt audio\\and text};
+\node[frozen] (a2) at (6.9,0) {Teacher: guided steps up to a \textbf{fixed} switching time};
+\node[frozen] (a3) at (10.2,0) {Student:\\three steps};
+\node[frozen] (a4) at (13.3,0) {Vocoder\\$\rightarrow$ speech};
+\draw[arr] (a1) -- (a2); \draw[arr] (a2) -- (a3); \draw[arr] (a3) -- (a4);
+\node[note] at (2.35,-0.85) {Same switching time for every input: always 21 forward passes, and no statement about how much quality an earlier switch would lose.};
+
+% ---------------- row B: this study ----------------
+\node[rowlabel] at (-0.2,-4.7) {This study};
+\node[frozen] (b1) at (3.6,-4.7) {Prompt audio\\and text};
+\node[frozen] (b2) at (6.9,-4.7) {Teacher: next guided step};
+\node[new]    (b3) at (10.2,-4.7) {\textbf{Stop here?}\\decision for this utterance};
+\node[frozen] (b4) at (13.3,-4.7) {Student, then vocoder $\rightarrow$ speech};
+\node[new, text width=3.4cm] (sig) at (6.9,-2.95) {\textbf{Decision signals:} prompt SNR, endpoint stabilization (no extra pass)};
+\node[new, text width=3.4cm] (cal) at (10.2,-6.75) {\textbf{Threshold calibrated offline} with LTT:\\$\P(R\le\alpha)\ge1-\delta$};
+\draw[arr] (b1) -- (b2);
+\draw[arr] ($(b2.east)+(0,0.25)$) -- ($(b3.west)+(0,0.25)$);
+\draw[arr] ($(b3.west)+(0,-0.25)$) -- node[below, font=\figsmall] {no} ($(b2.east)+(0,-0.25)$);
+\draw[arr] (b3) -- node[above, font=\figsmall] {yes} (b4);
+\draw[newarr] (b1.north) |- (sig.west);
+\draw[newarr] (sig.east) -| (b3.north);
+\draw[newarr] (cal) -- (b3);
+\node[note] at (2.35,-7.75) {The switching time is chosen per utterance: 13 to 21 forward passes depending on the input, never more than the released sampler, with the rate of added quality failures bounded at a stated confidence. All networks stay as released.};
+
+% ---------------- legend ----------------
+\node[frozen, text width=0.45cm, minimum height=0.35cm] (l1) at (3.0,-9.05) {};
+\node[right, font=\figsmall] at (l1.east) {released DMOSpeech~2, unchanged};
+\node[new, text width=0.45cm, minimum height=0.35cm] (l2) at (8.6,-9.05) {};
+\node[right, font=\figsmall] at (l2.east) {added by this study};
+\end{tikzpicture}
+\end{adjustbox}
+\caption{Contribution of the study. The released DMOSpeech~2 sampler hands over from the teacher to the student at the same point for every input; this study adds a per-utterance stopping decision, driven by signals the sampler already computes and governed by a threshold calibrated with a statistical guarantee.}
+\label{fig:contribution}
+\end{figure}
