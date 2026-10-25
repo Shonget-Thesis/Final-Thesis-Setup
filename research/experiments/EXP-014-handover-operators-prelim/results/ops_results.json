@@ -1,0 +1,534 @@
+{
+  "preregistration_sha256": "2a5d8ca27633b3dce3a975e967ef1de115eb4ffb0e669f2920cba0b9f585b9ca",
+  "cases": 360,
+  "expected_cases": 360,
+  "partial": false,
+  "drift_reproduction_max_abs_diff": 0.0,
+  "step4_failures": {
+    "clean": {
+      "n": 60,
+      "4": 2,
+      "tcr": 7,
+      "cdeh": 3,
+      "sea": 1
+    },
+    "noisy15": {
+      "n": 60,
+      "4": 40,
+      "tcr": 56,
+      "cdeh": 31,
+      "sea": 37
+    },
+    "gauss18": {
+      "n": 60,
+      "4": 33,
+      "tcr": 50,
+      "cdeh": 20,
+      "sea": 30
+    },
+    "gauss20": {
+      "n": 60,
+      "4": 26,
+      "tcr": 49,
+      "cdeh": 12,
+      "sea": 34
+    },
+    "gauss22": {
+      "n": 60,
+      "4": 19,
+      "tcr": 44,
+      "cdeh": 17,
+      "sea": 24
+    },
+    "gauss25": {
+      "n": 60,
+      "4": 8,
+      "tcr": 29,
+      "cdeh": 12,
+      "sea": 15
+    }
+  },
+  "median_sim_change": {
+    "tcr": {
+      "clean": -0.0015322864055633545,
+      "noisy15": -0.010345458984375,
+      "gauss18": -0.01945638656616211,
+      "gauss20": -0.02421620488166809,
+      "gauss22": -0.036594122648239136,
+      "gauss25": -0.01803603768348694
+    },
+    "cdeh": {
+      "clean": 0.0,
+      "noisy15": 0.016938388347625732,
+      "gauss18": 0.03304356336593628,
+      "gauss20": 0.012014508247375488,
+      "gauss22": 0.0061865150928497314,
+      "gauss25": 0.0
+    },
+    "sea": {
+      "clean": 0.0009869039058685303,
+      "noisy15": 0.0014247596263885498,
+      "gauss18": 0.0059223473072052,
+      "gauss20": -0.0032526254653930664,
+      "gauss22": -0.005930393934249878,
+      "gauss25": -0.0040814876556396484
+    }
+  },
+  "paired_tests": {
+    "tcr vs Step 4, noisy (primary)": {
+      "n": 300,
+      "failures_4": 126,
+      "failures_tcr": 228,
+      "only_4": 9,
+      "only_tcr": 111,
+      "p": 1.7092920119428793e-23
+    },
+    "tcr vs Step 4, clean": {
+      "n": 60,
+      "failures_4": 2,
+      "failures_tcr": 7,
+      "only_4": 0,
+      "only_tcr": 5,
+      "p": 0.0625
+    },
+    "cdeh vs Step 4, noisy (primary)": {
+      "n": 300,
+      "failures_4": 126,
+      "failures_cdeh": 92,
+      "only_4": 64,
+      "only_cdeh": 30,
+      "p": 0.0005879022254125642
+    },
+    "cdeh vs Step 4, clean": {
+      "n": 60,
+      "failures_4": 2,
+      "failures_cdeh": 3,
+      "only_4": 0,
+      "only_cdeh": 1,
+      "p": 1.0
+    },
+    "sea vs Step 4, noisy (primary)": {
+      "n": 300,
+      "failures_4": 126,
+      "failures_sea": 140,
+      "only_4": 14,
+      "only_sea": 28,
+      "p": 0.04355852192384191
+    },
+    "sea vs Step 4, clean": {
+      "n": 60,
+      "failures_4": 2,
+      "failures_sea": 1,
+      "only_4": 2,
+      "only_sea": 1,
+      "p": 1.0
+    }
+  },
+  "cross_validation": {
+    "pooled": {
+      "reference": {
+        "failures": 0,
+        "n": 360,
+        "mean_nfe": 21.0,
+        "worst_condition_risk": 0.0,
+        "per_condition": {
+          "clean": 0,
+          "noisy15": 0,
+          "gauss18": 0,
+          "gauss20": 0,
+          "gauss22": 0,
+          "gauss25": 0
+        }
+      },
+      "snr_only": {
+        "failures": 86,
+        "n": 360,
+        "mean_nfe": 14.4,
+        "worst_condition_risk": 0.5166666666666667,
+        "per_condition": {
+          "clean": 2,
+          "noisy15": 0,
+          "gauss18": 31,
+          "gauss20": 26,
+          "gauss22": 19,
+          "gauss25": 8
+        }
+      },
+      "snr_theta": {
+        "failures": 7,
+        "n": 360,
+        "mean_nfe": 18.711111111111112,
+        "worst_condition_risk": 0.08333333333333333,
+        "per_condition": {
+          "clean": 2,
+          "noisy15": 0,
+          "gauss18": 0,
+          "gauss20": 0,
+          "gauss22": 0,
+          "gauss25": 5
+        }
+      },
+      "tcr_theta": {
+        "failures": 8,
+        "n": 360,
+        "mean_nfe": 19.644444444444446,
+        "worst_condition_risk": 0.1,
+        "per_condition": {
+          "clean": 6,
+          "noisy15": 0,
+          "gauss18": 0,
+          "gauss20": 0,
+          "gauss22": 0,
+          "gauss25": 2
+        }
+      },
+      "tcr_all": {
+        "failures": 235,
+        "n": 360,
+        "mean_nfe": 13.0,
+        "worst_condition_risk": 0.9333333333333333,
+        "per_condition": {
+          "clean": 7,
+          "noisy15": 56,
+          "gauss18": 50,
+          "gauss20": 49,
+          "gauss22": 44,
+          "gauss25": 29
+        }
+      },
+      "cdeh_theta": {
+        "failures": 10,
+        "n": 360,
+        "mean_nfe": 19.08888888888889,
+        "worst_condition_risk": 0.11666666666666667,
+        "per_condition": {
+          "clean": 3,
+          "noisy15": 0,
+          "gauss18": 0,
+          "gauss20": 0,
+          "gauss22": 0,
+          "gauss25": 7
+        }
+      },
+      "cdeh_all": {
+        "failures": 95,
+        "n": 360,
+        "mean_nfe": 13.0,
+        "worst_condition_risk": 0.5166666666666667,
+        "per_condition": {
+          "clean": 3,
+          "noisy15": 31,
+          "gauss18": 20,
+          "gauss20": 12,
+          "gauss22": 17,
+          "gauss25": 12
+        }
+      },
+      "sea_theta": {
+        "failures": 11,
+        "n": 360,
+        "mean_nfe": 19.133333333333333,
+        "worst_condition_risk": 0.16666666666666666,
+        "per_condition": {
+          "clean": 1,
+          "noisy15": 0,
+          "gauss18": 0,
+          "gauss20": 0,
+          "gauss22": 0,
+          "gauss25": 10
+        }
+      },
+      "sea_all": {
+        "failures": 141,
+        "n": 360,
+        "mean_nfe": 13.0,
+        "worst_condition_risk": 0.6166666666666667,
+        "per_condition": {
+          "clean": 1,
+          "noisy15": 37,
+          "gauss18": 30,
+          "gauss20": 34,
+          "gauss22": 24,
+          "gauss25": 15
+        }
+      }
+    },
+    "stratified": {
+      "reference": {
+        "failures": 0,
+        "n": 360,
+        "mean_nfe": 21.0,
+        "worst_condition_risk": 0.0,
+        "per_condition": {
+          "clean": 0,
+          "noisy15": 0,
+          "gauss18": 0,
+          "gauss20": 0,
+          "gauss22": 0,
+          "gauss25": 0
+        }
+      },
+      "snr_only": {
+        "failures": 86,
+        "n": 360,
+        "mean_nfe": 14.4,
+        "worst_condition_risk": 0.5166666666666667,
+        "per_condition": {
+          "clean": 2,
+          "noisy15": 0,
+          "gauss18": 31,
+          "gauss20": 26,
+          "gauss22": 19,
+          "gauss25": 8
+        }
+      },
+      "snr_theta": {
+        "failures": 1,
+        "n": 360,
+        "mean_nfe": 20.844444444444445,
+        "worst_condition_risk": 0.016666666666666666,
+        "per_condition": {
+          "clean": 1,
+          "noisy15": 0,
+          "gauss18": 0,
+          "gauss20": 0,
+          "gauss22": 0,
+          "gauss25": 0
+        }
+      },
+      "tcr_theta": {
+        "failures": 0,
+        "n": 360,
+        "mean_nfe": 21.0,
+        "worst_condition_risk": 0.0,
+        "per_condition": {
+          "clean": 0,
+          "noisy15": 0,
+          "gauss18": 0,
+          "gauss20": 0,
+          "gauss22": 0,
+          "gauss25": 0
+        }
+      },
+      "tcr_all": {
+        "failures": 235,
+        "n": 360,
+        "mean_nfe": 13.0,
+        "worst_condition_risk": 0.9333333333333333,
+        "per_condition": {
+          "clean": 7,
+          "noisy15": 56,
+          "gauss18": 50,
+          "gauss20": 49,
+          "gauss22": 44,
+          "gauss25": 29
+        }
+      },
+      "cdeh_theta": {
+        "failures": 1,
+        "n": 360,
+        "mean_nfe": 20.844444444444445,
+        "worst_condition_risk": 0.016666666666666666,
+        "per_condition": {
+          "clean": 1,
+          "noisy15": 0,
+          "gauss18": 0,
+          "gauss20": 0,
+          "gauss22": 0,
+          "gauss25": 0
+        }
+      },
+      "cdeh_all": {
+        "failures": 95,
+        "n": 360,
+        "mean_nfe": 13.0,
+        "worst_condition_risk": 0.5166666666666667,
+        "per_condition": {
+          "clean": 3,
+          "noisy15": 31,
+          "gauss18": 20,
+          "gauss20": 12,
+          "gauss22": 17,
+          "gauss25": 12
+        }
+      },
+      "sea_theta": {
+        "failures": 1,
+        "n": 360,
+        "mean_nfe": 20.022222222222222,
+        "worst_condition_risk": 0.016666666666666666,
+        "per_condition": {
+          "clean": 1,
+          "noisy15": 0,
+          "gauss18": 0,
+          "gauss20": 0,
+          "gauss22": 0,
+          "gauss25": 0
+        }
+      },
+      "sea_all": {
+        "failures": 141,
+        "n": 360,
+        "mean_nfe": 13.0,
+        "worst_condition_risk": 0.6166666666666667,
+        "per_condition": {
+          "clean": 1,
+          "noisy15": 37,
+          "gauss18": 30,
+          "gauss20": 34,
+          "gauss22": 24,
+          "gauss25": 15
+        }
+      }
+    }
+  },
+  "chosen": {
+    "pooled": {
+      "reference": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "snr_only": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "snr_theta": [
+        26.0,
+        26.0,
+        26.0,
+        26.0,
+        26.0
+      ],
+      "tcr_theta": [
+        28.0,
+        28.0,
+        28.0,
+        28.0,
+        28.0
+      ],
+      "tcr_all": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "cdeh_theta": [
+        26.0,
+        28.0,
+        28.0,
+        26.0,
+        26.0
+      ],
+      "cdeh_all": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "sea_theta": [
+        28.0,
+        28.0,
+        26.0,
+        26.0,
+        26.0
+      ],
+      "sea_all": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    "stratified": {
+      "reference": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "snr_only": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "snr_theta": [
+        34.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "tcr_theta": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "tcr_all": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "cdeh_theta": [
+        34.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "cdeh_all": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "sea_theta": [
+        33.0,
+        33.0,
+        28.0,
+        33.0,
+        33.0
+      ],
+      "sea_all": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    }
+  },
+  "criteria": {
+    "tcr": {
+      "C1": false,
+      "C2": false,
+      "C3": false
+    },
+    "cdeh": {
+      "C1": true,
+      "C2": true,
+      "C3": false
+    },
+    "sea": {
+      "C1": false,
+      "C2": true,
+      "C3": false
+    }
+  }
+}
