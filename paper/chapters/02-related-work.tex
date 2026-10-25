@@ -3,7 +3,7 @@
 \section{REVIEW OF RELATED LITERATURE}
 \label{sec:related}
 
-This chapter reviews the work the study builds on, in the order the method uses it: how flow-matching models generate speech and what that costs (Section~\ref{sec:rrl-fm}), how sampling is made cheaper (Section~\ref{sec:rrl-distill}), how DMOSpeech~2 divides generation between a teacher and a student (Section~\ref{sec:rrl-handover}), how other systems spend computation only where it is needed (Section~\ref{sec:rrl-adaptive}), how a decision rule can be given a statistical guarantee (Section~\ref{sec:rrl-risk}), and how text-to-speech (TTS) output is evaluated (Section~\ref{sec:rrl-eval}). Only the formulas that Chapter~3 uses or builds on are given here; Chapter~3 restates each one it uses with its full definition.
+This chapter reviews the work the study builds on, in the order the method uses it: how flow-matching models generate speech and what that costs (Section~\ref{sec:rrl-fm}), how sampling is made cheaper (Section~\ref{sec:rrl-distill}), how DMOSpeech~2 divides generation between a teacher and a student (Section~\ref{sec:rrl-handover}), how other systems spend computation only where it is needed (Section~\ref{sec:rrl-adaptive}), how a decision rule can be given a statistical guarantee (Section~\ref{sec:rrl-risk}), and how text-to-speech (TTS) output is evaluated (Section~\ref{sec:rrl-eval}). Only the formulas that Chapter~3 uses or builds on are given here, each with its source; their symbols are defined in Chapter~3, where each formula is used.
 
 % =====================================================================
 \subsection{Flow-Matching Speech Synthesis and Its Computational Cost}
@@ -13,107 +13,80 @@ This chapter reviews the work the study builds on, in the order the method uses 
 
 A generative model has to turn something easy to sample, such as random Gaussian noise, into something hard to sample, such as the acoustic features of speech. Flow matching does this by learning a \emph{velocity field}: for every point and every time $t$ between 0 (noise) and 1 (data), the field says in which direction the point should move so that noise ends up as data \parencite{lipman2023flow,liu2023flow,lipman2024guide}. Generating a sample then means starting from noise and following the field from $t=0$ to $t=1$, that is, solving an ordinary differential equation (ODE), $\mathrm{d}x/\mathrm{d}t = v_\theta(x,t)$, where $v_\theta$ is the network. The network is trained on the straight path $x_t=(1-t)x_0+t x_1$ between a noise sample $x_0$ and a data sample $x_1$, whose velocity is simply $x_1-x_0$; this makes training simple and needs no simulation of the ODE \parencite{lipman2023flow,chen2018neuralode}. The switching time studied in this thesis is a point on this $t$ axis.
 
-In practice the ODE is solved in a fixed number of steps. The explicit Euler method on a time grid $0=t_0<t_1<\dots<t_N=1$ moves the sample a small distance along the current velocity at each step:
+In practice the ODE is solved in a fixed number of steps. The explicit Euler method \parencite{hairer1993} on a time grid $0=t_0<t_1<\dots<t_N=1$ moves the sample $x_{t_i}$ a small distance along the current velocity at each step (defined in Chapter~3 as \Cref{eq:euler}):
 \begin{equation}
 x_{t_{i+1}} = x_{t_i} + (t_{i+1}-t_i)\, v(x_{t_i}, t_i).
 \label{eq:rrl-euler}
 \end{equation}
-\begin{whereterms}[2.6cm]
-$x_{t_i}$ & the sample (here, a mel-spectrogram) at grid time $t_i$ \\
-$t_{i+1}-t_i$ & the step size \\
-$v(x_{t_i},t_i)$ & the velocity predicted by the network at that point
-\end{whereterms}
-Each step costs one evaluation of the network, and the error of each step shrinks with the step size \parencite{hairer1993}. With very few, large steps the sample drifts away from realistic speech, which is why few-step generation needs the techniques of Section~\ref{sec:rrl-distill}.
+Each step costs one evaluation of the network, and the error of each step shrinks with the step size. With very few, large steps the sample drifts away from realistic speech, which is why few-step generation needs the techniques of Section~\ref{sec:rrl-distill}.
 
-Because the training path is straight, one step of length $1-t$ along the current velocity gives an estimate of the final output from any point on the way:
+Because the training path is straight, one step of length $1-t$ along the current velocity gives an estimate of the final output from any point on the way \parencite{lipman2024guide,li2025dmospeech2} (defined in Chapter~3 as \Cref{eq:endpoint}):
 \begin{equation}
 \hat{x}_1(t) = x_t + (1-t)\, v(x_t,t).
 \label{eq:rrl-endpoint}
 \end{equation}
-\begin{whereterms}[2.6cm]
-$\hat{x}_1(t)$ & estimate of the final output made at time $t$ \\
-$x_t$ & the current sample \\
-$v(x_t,t)$ & the current velocity
-\end{whereterms}
-This \emph{endpoint estimate} costs no extra network evaluation once the velocity is known. It is what the released DMOSpeech~2 code passes from the teacher to the student (Section~\ref{sec:rrl-handover}), and how much it changes from one step to the next is one of the two decision signals the study will test (Chapter~3). Some samplers also add fresh noise during sampling, which can correct accumulated errors; such a stochastic sampler and its noise-free counterpart describe the same distribution of outputs \parencite{song2021sde}. The released DMOSpeech~2 sampler has an optional stochastic term, which this study switches off so that every candidate switching time of an input follows the same teacher trajectory.
+This \emph{endpoint estimate} costs no extra network evaluation once the velocity is known. It is what the released DMOSpeech~2 code passes from the teacher to the student (Section~\ref{sec:rrl-handover}), and how much it changes from one step to the next is one of the two decision signals the study will test (Chapter~3). Some samplers also add fresh noise during sampling, which can correct accumulated errors; such a stochastic sampler and its noise-free counterpart describe the same distribution of outputs \parencite{song2021sde}. The released DMOSpeech~2 sampler has an optional stochastic term, which this study will switch off so that every candidate switching time of an input follows the same teacher trajectory.
 
 \subsubsection{Zero-Shot Text-to-Speech}
 
-A zero-shot TTS system receives a few seconds of a new speaker's voice (the prompt), the transcript of the prompt and a target text, and must speak the target text in that voice without being retrained for the speaker. Earlier systems used speaker encoders or language models over audio codes; diffusion and flow-matching systems instead treat the task as filling in the missing part of a mel-spectrogram whose first part is the prompt \parencite{le2023voicebox,eskimez2024e2,anastassiou2024seedtts}. Matcha-TTS showed that conditional flow matching gives fast, high-quality TTS \parencite{mehta2024matcha}. F5-TTS, the teacher in this study, used a diffusion transformer and introduced \emph{sway sampling} \parencite{chen2024f5}, which spaces the solver's time steps unevenly by mapping a uniform grid $u\in[0,1]$ to
+A zero-shot TTS system receives a few seconds of a new speaker's voice (the prompt), the transcript of the prompt and a target text, and must speak the target text in that voice without being retrained for the speaker. Earlier systems used speaker encoders or language models over audio codes; diffusion and flow-matching systems instead treat the task as filling in the missing part of a mel-spectrogram whose first part is the prompt \parencite{le2023voicebox,eskimez2024e2,anastassiou2024seedtts}. Matcha-TTS showed that conditional flow matching gives fast, high-quality TTS \parencite{mehta2024matcha}. F5-TTS, the teacher in this study, used a diffusion transformer and introduced \emph{sway sampling} \parencite{chen2024f5}, which spaces the solver's time steps unevenly by mapping a uniform grid $u\in[0,1]$ to a flow time $t$ with a sway coefficient $s$ (applied in Chapter~3 as \Cref{eq:grid}):
 \begin{equation}
 t = u + s\,\big(\cos(\tfrac{\pi}{2}u) - 1 + u\big)
 \label{eq:rrl-sway}
 \end{equation}
-\begin{whereterms}[2.6cm]
-$u$ & position on a uniform grid from 0 to 1 \\
-$s$ & sway coefficient; $s<0$ places more steps near $t=0$ \\
-$t$ & resulting flow time
-\end{whereterms}
 With $s=-1$ the map becomes $t=1-\cos(\tfrac{\pi}{2}u)$, and half of the steps fall below $t\approx0.29$ (Figure~\ref{fig:rrl-sway}). F5-TTS and DMOSpeech~2 both argued that these early steps decide the coarse structure of the output, such as prosody and alignment \parencite{chen2024f5,li2025dmospeech2}. Because the candidate switching times lie in this dense region, moving the switch by one grid point changes the cost by one teacher step.
 
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=\textwidth]{figures/sway_grid_tswitch.png}
-\caption{Sway sampling ($s=-1$) concentrates teacher steps at small $t$, where the switching time lies. (a) The sway map against the uniform grid; 8 of the 17 teacher grid points lie at or below $t_{\text{switch}}=0.25$, and the candidate handover steps 4, 5, 6 and 8 cost 13, 15, 17 and 21 forward passes. (b) Near $t=0.25$, the paper's 14 teacher steps correspond to the last point not above 0.25 on a 32-interval grid ($t_{14}\approx0.227$), while the released code stops at the first point above 0.25 on its 16-interval grid ($t_8\approx0.293$).}
+\caption[Sway sampling and the switching time]{Sway sampling ($s=-1$) concentrates teacher steps at small $t$, where the switching time lies. (a) The sway map against the uniform grid; 8 of the 17 teacher grid points lie at or below $t_{\text{switch}}=0.25$, and the candidate handover steps 4, 5, 6 and 8 cost 13, 15, 17 and 21 forward passes. (b) Near $t=0.25$, the paper's 14 teacher steps correspond to the last point not above 0.25 on a 32-interval grid ($t_{14}\approx0.227$), while the released code stops at the first point above 0.25 on its 16-interval grid ($t_8\approx0.293$). Figure by the researchers, computed from the sway map of \textcite{chen2024f5} and the configuration reported by \textcite{li2025dmospeech2} and its released code.}
 \label{fig:rrl-sway}
 \end{figure}
 
 \subsubsection{Forward-Pass Cost and Guidance}
 
-Classifier-free guidance (CFG) makes the output follow the text and the speaker prompt more closely by combining two predictions of the same network, one with the condition and one without it, as $v = v_u + w\,(v_c - v_u)$, where $v_c$ and $v_u$ are the conditional and unconditional predictions and $w$ is the guidance weight \parencite{ho2022cfg}. When the two predictions are computed separately, each guided step needs two network evaluations, also called forward passes or neural function evaluations (NFEs). The teacher in DMOSpeech~2 is guided; the student was trained to imitate the guided teacher and needs only one pass per step \parencite{li2025dmospeech2}. Counting integration steps alone would therefore understate the cost: the study counts forward passes, and a teacher step costs twice a student step. This is why stopping the teacher earlier is where the savings are.
+Classifier-free guidance (CFG) makes the output follow the text and the speaker prompt more closely by combining two predictions of the same network, one with the condition and one without it, as $v = v_u + w\,(v_c - v_u)$, where $v_c$ and $v_u$ are the conditional and unconditional predictions and $w$ is the guidance weight \parencite{ho2022cfg}. When the two predictions are computed separately, each guided step needs two network evaluations, also called forward passes or neural function evaluations (NFEs). The teacher in DMOSpeech~2 is guided; the student was trained to imitate the guided teacher and needs only one pass per step \parencite{li2025dmospeech2}. Counting integration steps alone would therefore understate the cost: the study will count forward passes, and a teacher step costs twice a student step. This is why stopping the teacher earlier is where the savings are.
 
 % =====================================================================
 \subsection{Methods for Reducing Sampling Cost}
 \label{sec:rrl-distill}
 
-There are two ways to make sampling cheaper. Better numerical solvers keep the same network and reach a given accuracy in fewer steps \parencite{lu2022dpmsolver,karras2022edm}; every step still costs a full, guided evaluation, so they help less when only a handful of steps are left. Distillation instead trains a \emph{student} network that needs only a few steps. Progressive distillation repeatedly halved the number of steps \parencite{salimans2022progressive}, consistency models learned to map any point on a trajectory directly to its endpoint \parencite{song2023consistency}, and distribution matching distillation (DMD) trained a generator whose outputs follow the teacher's output distribution \parencite{yin2024dmd,yin2024dmd2}. This study keeps the released Euler sampler and changes only where the teacher stops, so better solvers are complementary and outside its scope.
+There are two ways to make sampling cheaper. Better numerical solvers keep the same network and reach a given accuracy in fewer steps \parencite{lu2022dpmsolver,karras2022edm}; every step still costs a full, guided evaluation, so they help less when only a handful of steps are left. Distillation instead trains a \emph{student} network that needs only a few steps. Progressive distillation repeatedly halved the number of steps \parencite{salimans2022progressive}, consistency models learned to map any point on a trajectory directly to its endpoint \parencite{song2023consistency}, and distribution matching distillation (DMD) trained a generator whose outputs follow the teacher's output distribution \parencite{yin2024dmd,yin2024dmd2}. This study will keep the released Euler sampler and change only where the teacher stops, so better solvers are complementary and outside its scope.
 
 In speech, FlashSpeech reported efficient zero-shot synthesis with a few-step model \parencite{ye2024flashspeech}. DMOSpeech distilled a diffusion TTS teacher with DMD, reduced sampling from 128 steps to four, and added training objectives that directly improve intelligibility and speaker similarity, so the student can even outperform the teacher on those measures \parencite{li2024dmospeech}. ZipVoice provided another flow-matching TTS system with a distilled variant \parencite{zhu2025zipvoice}. The student in this study comes from the DMOSpeech line and was trained with the improved DMD of \textcite{yin2024dmd2}; at each of its few steps it predicts the final output and then mixes that prediction with fresh noise before the next step \parencite{li2025dmospeech2}.
 
-Distillation, however, trades diversity for speed. DMOSpeech~2 reported that the distilled student produced less varied prosody than the teacher, a loss it called mode shrinkage \parencite{li2025dmospeech2}. These systems show that distillation lowers inference cost, but not that one sampling configuration suits every input. This study does not measure diversity as an outcome.
+Distillation, however, trades diversity for speed. DMOSpeech~2 reported that the distilled student produced less varied prosody than the teacher, a loss it called mode shrinkage \parencite{li2025dmospeech2}. These systems showed that distillation lowers inference cost, but not that one sampling configuration suits every input. This study will not measure diversity as an outcome.
 
 % =====================================================================
 \subsection{Teacher-Guided Sampling and Re-Noising at the Handover}
 \label{sec:rrl-handover}
 
-DMOSpeech~2 restored diversity by letting the teacher perform the first, high-noise steps and the student finish the rest \parencite{li2025dmospeech2}. The point at which the teacher hands its state to the student is the \emph{switching time}, the variable this study selects. The authors attributed the restored diversity to a division of labour: early steps establish prosody and text--speech alignment, and later steps refine acoustic detail. Their main configuration used $t_{\text{switch}}=0.25$ with 14 teacher and 2 student steps, on a 32-interval sway grid, and they reported outputs about $1.8\times$ faster than the full 32-step teacher; they suggested a switching time of about 0.1--0.2 when efficiency matters and 0.4--0.5 when diversity matters \parencite{li2025dmospeech2}. The switching time was a single value for all inputs, so the speed--diversity trade-off was set once rather than per utterance.
+DMOSpeech~2 restored diversity by letting the teacher perform the first, high-noise steps and the student finish the rest \parencite{li2025dmospeech2}. The point at which the teacher hands its state to the student is the \emph{switching time}, the variable this study will select. The authors attributed the restored diversity to a division of labour: early steps establish prosody and text--speech alignment, and later steps refine acoustic detail. Their main configuration used $t_{\text{switch}}=0.25$ with 14 teacher and 2 student steps, on a 32-interval sway grid, and they reported outputs about $1.8\times$ faster than the full 32-step teacher; they suggested a switching time of about 0.1--0.2 when efficiency matters and 0.4--0.5 when diversity matters \parencite{li2025dmospeech2}. The switching time was a single value for all inputs, so the speed--diversity trade-off was set once rather than per utterance.
 
-With $K$ guided teacher steps and $M$ unguided student steps, teacher-guided sampling costs
+Because a guided step costs two forward passes \parencite{ho2022cfg} and a student step one \parencite{li2025dmospeech2}, teacher-guided sampling with $K$ guided teacher steps and $M$ unguided student steps, against a full teacher of $N$ steps, costs (the exact count for the released code is \Cref{eq:cost} in Chapter~3)
 \begin{equation}
 C(K,M) = 2K + M, \qquad \text{speed-up over the full teacher} \approx \frac{2N}{2K+M}
 \label{eq:tgcost}
 \end{equation}
-\begin{whereterms}[2.6cm]
-$C(K,M)$ & forward passes of one teacher-guided synthesis \\
-$K$ & guided teacher steps (two forward passes each) \\
-$M$ & unguided student steps (one forward pass each) \\
-$N$ & number of steps of the full teacher
-\end{whereterms}
 For the paper's configuration, $K=14$ and $M=2$ give 30 passes against 64 for the full teacher, a ratio of about 2.1. The reported runtime speed-up of about $1.8\times$ is smaller because the duration predictor, the vocoder and data movement do not shrink with the number of forward passes. Because $K$ can only take the values of the teacher grid, the cost changes in steps of two passes as the switching time crosses grid points (Figure~\ref{fig:rrl-tg}). The released DMOSpeech~2 code differs from the paper's description in one important detail: it stops the teacher at the first grid point \emph{above} $t_{\text{switch}}$ on a 16-interval grid, so $t_{\text{switch}}=0.25$ gives eight teacher steps instead of fourteen. Chapter~3 uses the released code and its exact cost.
 
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=\textwidth]{figures/teacher_guided_timeline_t55.png}
-\caption{Teacher-guided sampling in DMOSpeech~2 at the reference switching time ($t_{\text{switch}}=0.25$, 16-interval sway grid). The teacher takes guided Euler steps up to the first grid point above $t_{\text{switch}}$ ($t_8\approx0.293$), and one more guided evaluation gives the endpoint estimate $\hat x_1$. The student then restarts from a re-noised copy of $\hat x_1$ at $\tau\approx0.076$ and finishes in three unguided steps. Guided teacher evaluations cost two forward passes each, so the teacher accounts for 18 of the 21 passes. In DMOSpeech~2 the switching time is fixed; in this study it is chosen per utterance.}
+\caption[Teacher-guided sampling in DMOSpeech~2]{Teacher-guided sampling in DMOSpeech~2 at the reference switching time ($t_{\text{switch}}=0.25$, 16-interval sway grid). The teacher takes guided Euler steps up to the first grid point above $t_{\text{switch}}$ ($t_8\approx0.293$), and one more guided evaluation gives the endpoint estimate $\hat x_1$. The student then restarts from a re-noised copy of $\hat x_1$ at $\tau\approx0.076$ and finishes in three unguided steps. Guided teacher evaluations cost two forward passes each, so the teacher accounts for 18 of the 21 passes. In DMOSpeech~2 the switching time is fixed; in this study it will be chosen per utterance. Figure by the researchers, based on the sampler described by \textcite{li2025dmospeech2} and its released code.}
 \label{fig:rrl-tg}
 \end{figure}
 
-There are reasons to expect the cheapest acceptable switching time to differ between utterances. Inputs differ in text length, speaking rate and prompt quality, including background noise and reverberation. An input whose coarse structure settles in the first few teacher steps gains little from more guided steps, while a harder input, such as one with a noisy prompt, may need them. DMOSpeech~2 reported only average results over its test set, which cannot show whether a single switching time is too late for some inputs and too early for others. The team's preliminary experiments (Appendix~\ref{app:prelim}) give first evidence of such variation: early switching failed mostly on noisy prompts.
+There are reasons to expect the cheapest acceptable switching time to differ between utterances. Inputs differ in text length, speaking rate and prompt quality, including background noise and reverberation. An input whose coarse structure settles in the first few teacher steps gains little from more guided steps, while a harder input, such as one with a noisy prompt, may need them. DMOSpeech~2 reported only average results over its test set, which cannot show whether a single switching time is too late for some inputs and too early for others. The team's preliminary experiments (Appendix~\ref{app:prelim}) gave first evidence of such variation: early switching failed mostly on noisy prompts.
 
-At the handover the student does not continue exactly from the teacher's state. It first \emph{re-noises} the teacher's endpoint estimate, mixing it with fresh noise:
+At the handover the student does not continue exactly from the teacher's state. It first \emph{re-noises} the teacher's endpoint estimate $\tilde x$, mixing it with fresh noise $\varepsilon$ at a restart level $\tau$ \parencite{li2025dmospeech2,meng2022sdedit} (defined in Chapter~3 as part of \Cref{eq:student}):
 \begin{equation}
 x_\tau = (1-\tau)\,\varepsilon + \tau\,\tilde{x}, \qquad \varepsilon\sim\mathcal{N}(0,I),\; \tau\in[0,1]
 \label{eq:rrl-renoise}
 \end{equation}
-\begin{whereterms}[2.6cm]
-$x_\tau$ & re-noised input at restart level $\tau$ \\
-$\tilde{x}$ & the guide; here, the teacher's endpoint estimate \\
-$\varepsilon$ & fresh Gaussian noise \\
-$\tau$ & restart level
-\end{whereterms}
 A fraction $\tau$ of the input carries the teacher's information and $1-\tau$ is fresh noise. This is the same operation as SDEdit, which showed that the noise level trades faithfulness to the guide against realism of the output, and that moderate noise keeps the guide's overall layout \parencite{meng2022sdedit}. Restart sampling gave a second reason why re-noising helps: adding noise and solving again shrinks errors accumulated earlier in sampling \parencite{xu2023restart}. Together these explain why the student tolerates an imperfect teacher state, which is what makes an earlier, cheaper handover possible.
 
-In the released code the restart level is set by the student's own grid, not by the switching time. With the default start index the student always restarts at $\tau=0.0761$, which equals the teacher's fourth grid point. For any later handover, the student therefore re-noises the teacher's estimate back to a noisier level than the teacher had already reached, so part of the extra teacher work is diluted. This is one reason a later switch can bring diminishing returns. This study keeps the restart level at the released default; choosing it is outside the scope.
+In the released code the restart level is set by the student's own grid, not by the switching time. With the default start index the student always restarts at $\tau=0.0761$, which equals the teacher's fourth grid point. For any later handover, the student therefore re-noises the teacher's estimate back to a noisier level than the teacher had already reached, so part of the extra teacher work is diluted. This is one reason a later switch can bring diminishing returns. This study will keep the restart level at the released default; choosing it is outside the scope.
 
 % =====================================================================
 \subsection{Input-Adaptive Computation}
@@ -148,28 +121,18 @@ Adaptive collaboration \parencite{starodubcev2024your} & Whether the teacher ref
 
 A rule that stops the teacher early will sometimes produce a worse utterance. Every such failure cannot be prevented, but it is possible to promise that failures are rare on average, for example ``at most 5\% added failures, and this promise is wrong with probability at most 10\%''. The \emph{risk} of a rule is the expected rate of the bad event over new inputs; the tolerated risk is written $\alpha$ and the allowed probability that the promise fails is written $\delta$ \parencite{angelopoulos2023gentle}.
 
-The risk cannot be measured directly, only estimated from a sample, so the estimate needs a margin for chance. For $n$ independent inputs, Hoeffding's inequality bounds how far the observed failure rate can fall below the true one \parencite{hoeffding1963}, and the exact binomial distribution gives tighter bounds when failures are rare \parencite{clopper1934}. A simple case shows the difference. If no failures are observed on $n$ inputs, the exact binomial bound certifies a risk of at most $\alpha$ with confidence $1-\delta$ when
+The risk cannot be measured directly, only estimated from a sample, so the estimate needs a margin for chance. For $n$ independent inputs, Hoeffding's inequality bounds how far the observed failure rate can fall below the true one \parencite{hoeffding1963}, and the exact binomial distribution gives tighter bounds when failures are rare \parencite{clopper1934}. A simple case shows the difference. If no failures are observed on $n$ inputs, the exact binomial bound \parencite{clopper1934} certifies a risk of at most $\alpha$ with confidence $1-\delta$ when (used for the sample size in Chapter~3, Section~\ref{sec:calsize})
 \begin{equation}
 (1-\alpha)^n\le\delta, \qquad\text{that is,}\qquad n \ge \frac{\ln\delta}{\ln(1-\alpha)}
 \label{eq:rrl-zerofail}
 \end{equation}
-\begin{whereterms}[2.6cm]
-$n$ & number of independent calibration inputs \\
-$\alpha$ & tolerated risk \\
-$\delta$ & allowed probability that the bound is wrong
-\end{whereterms}
 For $\alpha=0.05$ and $\delta=0.10$ this needs at least 45 inputs, whereas Hoeffding's bound would need about 461. The exact binomial bound is therefore the practical choice at the sample sizes of this study.
 
-Choosing a threshold from many candidates adds a second difficulty. If each of twenty unsafe thresholds has a 10\% chance of looking safe by luck, at least one of them very likely will. Risk-controlling prediction sets chose a threshold so that the expected loss is at most $\alpha$ with probability at least $1-\delta$, assuming the loss changes monotonically with the threshold \parencite{bates2021rcps}; conformal risk control bounded the expected loss directly under the same kind of assumption \parencite{angelopoulos2024crc}. Learn-Then-Test (LTT) removed the need for monotonicity: it turned each candidate threshold into a hypothesis test of ``this threshold's risk exceeds $\alpha$'' and accepted only candidates whose test is rejected, while controlling the chance that \emph{any} unsafe candidate is accepted \parencite{angelopoulos2025ltt}. Its goal is
+Choosing a threshold from many candidates adds a second difficulty. If each of twenty unsafe thresholds has a 10\% chance of looking safe by luck, at least one of them very likely will. Risk-controlling prediction sets chose a threshold so that the expected loss is at most $\alpha$ with probability at least $1-\delta$, assuming the loss changes monotonically with the threshold \parencite{bates2021rcps}; conformal risk control bounded the expected loss directly under the same kind of assumption \parencite{angelopoulos2024crc}. Learn-Then-Test (LTT) removed the need for monotonicity: it turned each candidate threshold into a hypothesis test of ``this threshold's risk exceeds $\alpha$'' and accepted only candidates whose test is rejected, while controlling the chance that \emph{any} unsafe candidate is accepted. Its goal for a selected threshold $\hat\lambda$ with risk $R(\hat\lambda)$ is \parencite{angelopoulos2025ltt} (restated for this study as \Cref{eq:guarantee} in Chapter~3)
 \begin{equation}
 \P\big( R(\hat\lambda) \le \alpha \big) \ge 1-\delta
 \label{eq:rrl-ltt}
 \end{equation}
-\begin{whereterms}[2.6cm]
-$\hat\lambda$ & the threshold LTT selects from the calibration data \\
-$R(\hat\lambda)$ & its true risk on new inputs \\
-$\alpha,\ \delta$ & tolerated risk; allowed probability of failing the goal
-\end{whereterms}
 For a failure count, the evidence against a candidate is a binomial p-value: the probability of seeing at most the observed number of failures if the true risk were exactly $\alpha$. Testing the candidates in a fixed order, decided before the calibration data are seen, and stopping at the first one that is not rejected keeps the overall error at $\delta$ without further adjustment \parencite{bauer1991}.
 
 These methods treat the model as a black box and need only that calibration and test inputs come from the same distribution, for example as independent random draws. Their guarantees are marginal: they hold on average over inputs, not for every utterance, and they do not hold if the test inputs differ from the calibration inputs \parencite{angelopoulos2025ltt}. Applying LTT to teacher-guided TTS therefore requires defining what counts as an added failure, fixing the tolerance in advance, and drawing calibration data from the same distribution as the inputs the rule will see.
@@ -178,37 +141,25 @@ These methods treat the model as a black box and need only that calibration and 
 \subsection{Evaluation of Zero-Shot TTS}
 \label{sec:rrl-eval}
 
-No single automatic measure captures every aspect of speech quality, so zero-shot TTS is evaluated on several. \emph{Intelligibility} is measured by the word error rate (WER): an automatic speech recognition (ASR) model transcribes the generated speech, and the transcript is compared with the target text,
+No single automatic measure captures every aspect of speech quality, so zero-shot TTS is evaluated on several. \emph{Intelligibility} is measured by the word error rate (WER): an automatic speech recognition (ASR) model transcribes the generated speech, and the transcript is compared with the target text by counting substituted ($S$), deleted ($D$) and inserted ($I$) words relative to the $N$ words of the reference \parencite{anastassiou2024seedtts,li2025dmospeech2} (defined in Chapter~3 as \Cref{eq:wer}):
 \begin{equation}
 \mathrm{WER} = \frac{S + D + I}{N}
 \label{eq:rrl-wer}
 \end{equation}
-\begin{whereterms}[2.6cm]
-$S, D, I$ & substituted, deleted and inserted words in the best alignment of transcript and reference \\
-$N$ & number of words in the reference
-\end{whereterms}
 DMOSpeech~2 used Whisper-large-v3 for English \parencite{radford2023whisper,li2025dmospeech2}. WER depends on the recognizer and on how the texts are normalized, so both must be stated. It can exceed 100\% when a model loops or the recognizer repeats phrases, and on short sentences it moves in large jumps.
 
-\emph{Speaker similarity} (SIM) is the cosine similarity between the speaker embeddings of the generated speech and of a reference recording,
+\emph{Speaker similarity} (SIM) is the cosine similarity between the speaker embeddings of the generated speech and of a reference recording \parencite{chen2022wavlm,li2025dmospeech2} (defined in Chapter~3 as \Cref{eq:sim}):
 \begin{equation}
 \mathrm{SIM} = \frac{e_{\text{gen}}^{\top} e_{\text{ref}}}{\|e_{\text{gen}}\|\,\|e_{\text{ref}}\|}
 \label{eq:rrl-sim}
 \end{equation}
-\begin{whereterms}[2.6cm]
-$e_{\text{gen}}$ & speaker embedding of the generated speech \\
-$e_{\text{ref}}$ & speaker embedding of the reference recording
-\end{whereterms}
-DMOSpeech~2 used a WavLM-large-based speaker verifier \parencite{chen2022wavlm,li2025dmospeech2}. Values range from $-1$ to $1$ and are comparable only within one verifier. \emph{Naturalness} is often predicted with UTMOS, a model built for the VoiceMOS Challenge that predicts the mean opinion score (MOS), on a scale from 1 to 5, that listeners would give \parencite{saeki2022utmos}. Predicted MOS is useful for ranking systems on average but noisy for single utterances \citationneeded{per-utterance reliability of automatic MOS prediction}, and it does not replace listening tests.
+DMOSpeech~2 used a WavLM-large-based speaker verifier. Values range from $-1$ to $1$ and are comparable only within one verifier. \emph{Naturalness} is often predicted with UTMOS, a model built for the VoiceMOS Challenge that predicts the mean opinion score (MOS), on a scale from 1 to 5, that listeners would give \parencite{saeki2022utmos}. Predicted MOS is useful for ranking systems on average but noisy for single utterances \citationneeded{per-utterance reliability of automatic MOS prediction}, and it does not replace listening tests.
 
-\emph{Cost} is measured by counting forward passes, which follow exactly from the sampler's step counts and do not depend on hardware, and by measuring runtime, usually reported as the real-time factor (RTF),
+\emph{Cost} is measured by counting forward passes, which follow exactly from the sampler's step counts and do not depend on hardware, and by measuring runtime, usually reported as the real-time factor (RTF) \parencite{li2025dmospeech2} (defined in Chapter~3 as \Cref{eq:rtf}):
 \begin{equation}
 \mathrm{RTF} = \frac{T_{\text{synthesis}}}{T_{\text{audio}}}
 \label{eq:rrl-rtf}
 \end{equation}
-\begin{whereterms}[2.6cm]
-$T_{\text{synthesis}}$ & time taken to synthesize the utterance \\
-$T_{\text{audio}}$ & duration of the generated speech
-\end{whereterms}
 where a value below 1 means faster than real time. RTF also includes costs that forward passes do not count, such as the vocoder and data movement, so savings in RTF are smaller than savings in forward passes. DMOSpeech~2 reported RTF on a single graphics processing unit (GPU) and evaluated English zero-shot synthesis on Seed-TTS test-en, drawn from Common Voice \parencite{li2025dmospeech2,anastassiou2024seedtts,ardila2020commonvoice}; LibriSpeech test-clean is a common alternative \parencite{panayotov2015librispeech}.
 
 When the same inputs are processed by several configurations, paired comparisons are appropriate; the Wilcoxon signed-rank test compares paired differences without assuming they are normally distributed \parencite{wilcoxon1945}. A non-significant difference does not show that quality is unchanged; that claim needs an equivalence test with a margin fixed in advance, such as the two one-sided tests procedure \parencite{schuirmann1987}.
@@ -217,7 +168,7 @@ When the same inputs are processed by several configurations, paired comparisons
 \subsection{Assistive Applications as Motivation}
 \label{sec:rrl-assistive}
 
-Efficient and responsive speech generation is relevant to assistive communication technology for autistic users. Research on augmentative and alternative communication (AAC) has examined speech-generating devices as communication supports for autistic individuals: \textcite{therrien2025sgd} systematically reviewed AAC interventions using speech-generating devices for autistic preschoolers, and \textcite{muharib2024sgd} meta-analysed interventions involving tablet-based speech-generating devices for individuals with autism spectrum disorder (ASD). A TTS component provides the spoken output of such devices for text that a user selects or enters, which makes inference cost a practical consideration. Studies of assistive technology and personalized voices for learners with ASD point in the same direction \unverified{Sahito et al., 2024; Eder et al., 2016; Cassidy et al., 2016}. These works motivate the efficiency objective only: this study builds and evaluates no application, assesses no clinical outcomes, and does not establish effectiveness as an AAC intervention.
+Efficient and responsive speech generation is relevant to assistive communication technology for autistic users. Research on augmentative and alternative communication (AAC) has examined speech-generating devices as communication supports for autistic individuals: \textcite{therrien2025sgd} systematically reviewed AAC interventions using speech-generating devices for autistic preschoolers, and \textcite{muharib2024sgd} meta-analysed interventions involving tablet-based speech-generating devices for individuals with autism spectrum disorder (ASD). A TTS component provides the spoken output of such devices for text that a user selects or enters, which makes inference cost a practical consideration. Studies of assistive technology and personalized voices for learners with ASD pointed in the same direction \unverified{Sahito et al., 2024; Eder et al., 2016; Cassidy et al., 2016}. These works motivate the efficiency objective only: this study will build and evaluate no application, will assess no clinical outcomes, and will not establish effectiveness as an AAC intervention.
 
 % =====================================================================
 \subsection{Synthesis of the Literature and Research Gap}
@@ -263,6 +214,6 @@ The reviewed work forms one chain. Flow matching gives a generation trajectory a
 \end{longtable}
 }
 
-Teacher-guided sampling made the handover a design choice, but the baseline fixed the switching time for all inputs \parencite{li2025dmospeech2}. Adaptive computation showed that per-input stopping saves computation \parencite{graves2016act,teerapittayanon2016branchynet}, adaptive teacher--student collaboration showed that teacher computation can be spent selectively \parencite{starodubcev2024your,mualem2026aria}, and calibrated early exit showed that such stopping can carry a bound on quality loss \parencite{schuster2022calm,angelopoulos2025ltt}. Within the sources examined, however, no single method combines per-utterance selection of the teacher-to-student handover time, made at no extra network cost, with statistical calibration of the added quality-failure risk in flow-matching TTS \citationneeded{confirm after the scoped search}. This gap concerns the combination of these elements in the literature reviewed and does not imply that no other adaptive inference methods exist. This study addresses it with three requirements: the decision is made per utterance from signals the sampler already computes; all networks stay as released; and the rate of added failures is bounded with stated confidence on new speakers.
+Teacher-guided sampling made the handover a design choice, but the baseline fixed the switching time for all inputs \parencite{li2025dmospeech2}. Adaptive computation showed that per-input stopping saves computation \parencite{graves2016act,teerapittayanon2016branchynet}, adaptive teacher--student collaboration showed that teacher computation can be spent selectively \parencite{starodubcev2024your,mualem2026aria}, and calibrated early exit showed that such stopping can carry a bound on quality loss \parencite{schuster2022calm,angelopoulos2025ltt}. Within the sources examined, however, no single method combines per-utterance selection of the teacher-to-student handover time, made at no extra network cost, with statistical calibration of the added quality-failure risk in flow-matching TTS \citationneeded{confirm after the scoped search}. This gap concerns the combination of these elements in the literature reviewed and does not imply that no other adaptive inference methods exist. This study will address it with three requirements: the decision is made per utterance from signals the sampler already computes; all networks stay as released; and the rate of added failures is bounded with stated confidence on new speakers.
 
 \FloatBarrier
