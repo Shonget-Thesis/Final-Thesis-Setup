@@ -1,20 +1,21 @@
 # Proposal defense walkthrough
 
-An animated, self-contained presentation of the thesis proposal (Chapters 1–3) for the proposal defense, styled after the EnduroSat site palette (black field, blue `#00A1FF` for the teacher, grey for the student, orange `#FC6A18` for what this study adds) with LEMMiNO-style citation footers on every content scene.
+An animated, full-screen presentation of the thesis proposal (Chapters 1–3) for the proposal defense, styled with a starry cosmic field, monochrome gradients, blue shade gradients (`#38BDF8` to `#0070E0`) for the teacher, grey for the student, and warm orange shade gradients (`#FFA04D` to `#D84300`) for what this study adds, with LEMMiNO-style citation footers on every content scene.
 
 | File | What it is |
 | --- | --- |
-| [index.html](index.html) | The walkthrough: 19 scenes, one HTML file, no build step |
+| [index.html](index.html) | The walkthrough: 19 scenes, one HTML file, full-screen layout |
 | [SCRIPT.md](SCRIPT.md) | The presenter script, one section per scene, about 11 minutes at the auto-play pace |
 
 ## Opening it
 
-Open `index.html` in a current Chrome, Edge or Firefox (double-click works; no server needed). It loads Archivo and IBM Plex Mono from Google Fonts, so present with an internet connection or the text falls back to system fonts.
+Open `index.html` in a current Chrome, Edge or Firefox (double-click works; no server needed). It loads Google Sans from Google Fonts (with variable weights for typography hierarchy and light weight for `--mono` labels/metadata) and Computer Modern for mathematical formulas, so present with an internet connection or fonts fall back to system fonts.
 
-- **Play** (or Space) runs the walkthrough hands-free; each scene builds its animation, then advances after its timed duration.
-- **← / →** (or clicking the stage) steps through it as slides. If a scene is still building, the first press finishes it and the second moves on.
-- **Script** (S) shows the current scene's narration under the stage; **Full script** lists every scene with a copy button.
-- **F** toggles fullscreen. The chapter buttons jump to the outline and to Chapters I–III. A link ending in `#s9` opens scene 9.
+- **← / →** (or **Space** / clicking the stage) steps through each beat and scene. If a scene is still building, the first press finishes it and the next moves on.
+- **F** toggles fullscreen to fill the entire display.
+- **1, 2, 3, 4** jumps directly to Outline, Chapter I, Chapter II, or Chapter III.
+- **Home / End** jumps to Title or Summary.
+- **S** opens full presenter script notes with a copy button; **Esc** closes notes.
 
 ## Other copies
 

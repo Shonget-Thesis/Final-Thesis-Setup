@@ -2,3 +2,4 @@
 MANUSCRIPTS = {
     "final": "paper/main.tex",
 }
+DEFAULT_TARGET = "final"
