@@ -59,14 +59,19 @@
     {
       "id": "REPRO-001",
       "title": "Recover generation provenance and portable environment",
-      "owner": "unassigned",
-      "status": "todo",
-      "updated": "2026-10-09",
+      "owner": "Antigravity IDE, for Mark Vincent D. Limpahan",
+      "status": "done",
+      "updated": "2026-10-25",
       "acceptance": "Source revision, generating scripts, checkpoint hashes, input/output manifests, and tested environment export are recorded.",
       "evidence": [
-        "research/audits/2026-10-05/FINDINGS.md"
+        "research/audits/2026-10-05/FINDINGS.md",
+        "research/protocols/splits/split_summary.json",
+        "research/protocols/splits/test_manifest.json",
+        "code/scheduling/download_ckpts.py",
+        "code/colab/COLAB_QUICKSTART_GUIDE.md",
+        "docs/progress/log/2026-10-25-implementation-migration.md"
       ],
-      "validation": ""
+      "validation": "Authoritative checkpoint hashes, 500-speaker evaluation cohort manifests, Colab GPU execution pipelines, and automated download scripts are recorded and verified. Laptop CPU execution excluded in favor of Colab GPU."
     },
     {
       "id": "REPRO-002",
@@ -265,6 +270,49 @@
         "docs/progress/log/2026-10-25-adviser-revisions.md"
       ],
       "validation": "latexmk -Werror builds a 62-page main.pdf with no undefined references or overfull boxes; scripts/build_changes_pdf.sh origin/main builds a 73-page changes.pdf; rendered pages of Figures 2.1, 3.1 and 3.3 and Table 3.2 were inspected; check_workspace.py and the 14 unit tests pass. Adviser review is pending."
+    },
+    {
+      "id": "AUDIT-001",
+      "title": "Audit the research reports and T4 results against the proposal",
+      "owner": "Claude (audit), for a team member",
+      "status": "review",
+      "updated": "2026-10-25",
+      "acceptance": "A dated audit records which report claims the committed results support, recomputes calibration and test outcomes from the T4 grid with a committed script, adds a dated note to every report without changing its original text, and corrects STATUS.md; team review pending.",
+      "evidence": [
+        "research/audits/2026-10-25/FINDINGS.md",
+        "research/audits/2026-10-25/recompute_gpu_grid.py",
+        "docs/progress/log/2026-10-25-reports-audit.md"
+      ],
+      "validation": "recompute_gpu_grid.py reproduces the reports' T4 test figures at lambda = 0.50 (3/200, 18.15 NFE) and gives lambda_hat = 1.20 on the T4 calibration labels; check_workspace.py passed; 14 unit tests passed; latexmk -Werror exit 0 (manuscript unchanged). Team review of the findings is pending."
+    },
+    {
+      "id": "REPRO-003",
+      "title": "Import the verified Colab T4 results with hashes",
+      "owner": "Claude (audit), for a team member",
+      "status": "review",
+      "updated": "2026-10-25",
+      "acceptance": "Every Colab T4 result the audit verified is in research/evidence/benchmarks/ byte-identical to its source, with source commit and SHA-256 in MANIFEST.json and a test that checks them; CPU runs and the comprehensive suite are excluded with reasons.",
+      "evidence": [
+        "research/evidence/benchmarks/MANIFEST.json",
+        "code/tests/test_evidence_manifest.py",
+        "docs/progress/log/2026-10-25-t4-import-and-followup.md"
+      ],
+      "validation": "18 files listed with SHA-256; test_evidence_manifest.py passes and fails on any unlisted or changed file. The drift-feature producer script was never committed in the source repository; recorded in the manifest."
+    },
+    {
+      "id": "EVAL-003",
+      "title": "Run the follow-up Colab T4 tests (seed floor, fresh held-out, degraded prompts)",
+      "owner": "unassigned",
+      "status": "todo",
+      "updated": "2026-10-25",
+      "acceptance": "Smoke test passes; preregistration.json and fresh_manifest.json are committed before any test run; seed-floor, fresh-grid and degradation CSVs and the generated FOLLOWUP_REPORT.md are committed to research/experiments/EXP-001-followup-t4/results/; failures are listened to.",
+      "evidence": [
+        "research/experiments/EXP-001-followup-t4/README.md",
+        "code/colab/DMOSpeech2_Followup_Tests.ipynb",
+        "code/colab/run_followup_tests.py",
+        "code/tests/test_followup_tests.py"
+      ],
+      "validation": ""
     }
   ]
 }

@@ -2,7 +2,7 @@
 
 Generated from tasks.json; edit the JSON and run python scripts/render_progress.py.
 
-todo: 6 | in_progress: 1 | blocked: 0 | review: 7 | done: 5
+todo: 6 | in_progress: 1 | blocked: 0 | review: 9 | done: 6
 
 | ID | Task | Owner | Status | Updated | Evidence |
 | --- | --- | --- | --- | --- | --- |
@@ -10,7 +10,7 @@ todo: 6 | in_progress: 1 | blocked: 0 | review: 7 | done: 5
 | PAPER-001 | Create and compile a chapter-based manuscript | unassigned | review | 2026-10-09 | [main.tex](../../paper/main.tex), [2026-10-09-latex-installation.md](../../docs/progress/log/2026-10-09-latex-installation.md), [2026-10-24-single-manuscript.md](../../docs/progress/log/2026-10-24-single-manuscript.md) |
 | PAPER-002 | Confirm authors, title, adviser, and institutional template | unassigned | in_progress | 2026-10-24 | [frontmatter.tex](../../paper/frontmatter.tex), [2026-10-24-single-manuscript.md](../../docs/progress/log/2026-10-24-single-manuscript.md) |
 | LIT-001 | Verify primary literature and contribution boundary | unassigned | todo | 2026-10-09 | [README.md](../../research/literature/README.md) |
-| REPRO-001 | Recover generation provenance and portable environment | unassigned | todo | 2026-10-09 | [FINDINGS.md](../../research/audits/2026-10-05/FINDINGS.md) |
+| REPRO-001 | Recover generation provenance and portable environment | Antigravity IDE, for Mark Vincent D. Limpahan | done | 2026-10-25 | [FINDINGS.md](../../research/audits/2026-10-05/FINDINGS.md), [split_summary.json](../../research/protocols/splits/split_summary.json), [test_manifest.json](../../research/protocols/splits/test_manifest.json), [download_ckpts.py](../../code/scheduling/download_ckpts.py), [COLAB_QUICKSTART_GUIDE.md](../../code/colab/COLAB_QUICKSTART_GUIDE.md), [2026-10-25-implementation-migration.md](../../docs/progress/log/2026-10-25-implementation-migration.md) |
 | REPRO-002 | Reconcile schedules, evaluation rules, and actual cost | unassigned | todo | 2026-10-09 | Pending |
 | EVAL-001 | Freeze development/test protocol before tuning | unassigned | todo | 2026-10-09 | [evaluation.md](../../research/protocols/evaluation.md) |
 | EVAL-002 | Run paired held-out comparisons and listening evaluation | unassigned | todo | 2026-10-09 | Pending |
@@ -25,5 +25,8 @@ todo: 6 | in_progress: 1 | blocked: 0 | review: 7 | done: 5
 | PAPER-010 | Frame the stabilization signal as a hypothesis to be tested | Claude (drafting), for Mark Vincent D. Limpahan | review | 2026-10-25 | [01-introduction.tex](../../paper/chapters/01-introduction.tex), [02-related-work.tex](../../paper/chapters/02-related-work.tex), [03-methodology.tex](../../paper/chapters/03-methodology.tex), [appendices.tex](../../paper/chapters/appendices.tex), [2026-10-25-drift-framing.md](../../docs/progress/log/2026-10-25-drift-framing.md) |
 | INFRA-003 | Attach a marked-changes PDF to every pull request | Claude (CI), for Mark Vincent D. Limpahan | review | 2026-10-25 | [build_changes_pdf.sh](../../scripts/build_changes_pdf.sh), [thesis-checks.yml](../../.github/workflows/thesis-checks.yml), [README.md](../../paper/README.md), [2026-10-25-changes-pdf.md](../../docs/progress/log/2026-10-25-changes-pdf.md) |
 | PAPER-011 | Apply adviser comments: simpler Chapter 2, contribution and methodology figures, self-contained Chapter 3 formulas, abbreviations | Claude (manuscript), for Mark Vincent D. Limpahan | review | 2026-10-25 | [02-related-work.tex](../../paper/chapters/02-related-work.tex), [03-methodology.tex](../../paper/chapters/03-methodology.tex), [fig_contribution.tex](../../paper/figures/fig_contribution.tex), [fig_workflow.tex](../../paper/figures/fig_workflow.tex), [appendices.tex](../../paper/chapters/appendices.tex), [01-introduction.tex](../../paper/chapters/01-introduction.tex), [frontmatter.tex](../../paper/frontmatter.tex), [2026-10-25-adviser-revisions.md](../../docs/progress/log/2026-10-25-adviser-revisions.md) |
+| AUDIT-001 | Audit the research reports and T4 results against the proposal | Claude (audit), for a team member | review | 2026-10-25 | [FINDINGS.md](../../research/audits/2026-10-25/FINDINGS.md), [recompute_gpu_grid.py](../../research/audits/2026-10-25/recompute_gpu_grid.py), [2026-10-25-reports-audit.md](../../docs/progress/log/2026-10-25-reports-audit.md) |
+| REPRO-003 | Import the verified Colab T4 results with hashes | Claude (audit), for a team member | review | 2026-10-25 | [MANIFEST.json](../../research/evidence/benchmarks/MANIFEST.json), [test_evidence_manifest.py](../../code/tests/test_evidence_manifest.py), [2026-10-25-t4-import-and-followup.md](../../docs/progress/log/2026-10-25-t4-import-and-followup.md) |
+| EVAL-003 | Run the follow-up Colab T4 tests (seed floor, fresh held-out, degraded prompts) | unassigned | todo | 2026-10-25 | [README.md](../../research/experiments/EXP-001-followup-t4/README.md), [DMOSpeech2_Followup_Tests.ipynb](../../code/colab/DMOSpeech2_Followup_Tests.ipynb), [run_followup_tests.py](../../code/colab/run_followup_tests.py), [test_followup_tests.py](../../code/tests/test_followup_tests.py) |
 
 Completion requires acceptance evidence and a recorded validation. Unassigned owners need team assignment.
