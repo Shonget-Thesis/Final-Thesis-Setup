@@ -2,7 +2,7 @@
 
 Generated from tasks.json; edit the JSON and run python scripts/render_progress.py.
 
-todo: 6 | in_progress: 1 | blocked: 0 | review: 9 | done: 6
+todo: 6 | in_progress: 1 | blocked: 0 | review: 10 | done: 6
 
 | ID | Task | Owner | Status | Updated | Evidence |
 | --- | --- | --- | --- | --- | --- |
@@ -28,5 +28,6 @@ todo: 6 | in_progress: 1 | blocked: 0 | review: 9 | done: 6
 | AUDIT-001 | Audit the research reports and T4 results against the proposal | Claude (audit), for a team member | review | 2026-10-25 | [FINDINGS.md](../../research/audits/2026-10-25/FINDINGS.md), [recompute_gpu_grid.py](../../research/audits/2026-10-25/recompute_gpu_grid.py), [2026-10-25-reports-audit.md](../../docs/progress/log/2026-10-25-reports-audit.md) |
 | REPRO-003 | Import the verified Colab T4 results with hashes | Claude (audit), for a team member | review | 2026-10-25 | [MANIFEST.json](../../research/evidence/benchmarks/MANIFEST.json), [test_evidence_manifest.py](../../code/tests/test_evidence_manifest.py), [2026-10-25-t4-import-and-followup.md](../../docs/progress/log/2026-10-25-t4-import-and-followup.md) |
 | EVAL-003 | Run the follow-up Colab T4 tests (seed floor, fresh held-out, degraded prompts) | unassigned | todo | 2026-10-25 | [README.md](../../research/experiments/EXP-001-followup-t4/README.md), [DMOSpeech2_Followup_Tests.ipynb](../../code/colab/DMOSpeech2_Followup_Tests.ipynb), [run_followup_tests.py](../../code/colab/run_followup_tests.py), [test_followup_tests.py](../../code/tests/test_followup_tests.py) |
+| PAPER-012 | Base Appendices A-C on the T4 development data | Claude (manuscript), for a team member | review | 2026-10-25 | [appendices.tex](../../paper/chapters/appendices.tex), [03-methodology.tex](../../paper/chapters/03-methodology.tex), [ltt_sim.py](../../code/analysis/ltt_sim.py), [2026-10-25-appendices-real-data.md](../../docs/progress/log/2026-10-25-appendices-real-data.md) |
 
 Completion requires acceptance evidence and a recorded validation. Unassigned owners need team assignment.
