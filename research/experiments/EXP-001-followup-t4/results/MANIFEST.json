@@ -1,0 +1,72 @@
+{
+  "description": "Outputs of the EXP-001 notebook run on 2026-10-25 (Colab Tesla T4): smoke test and development pilot (Steps 1-6b), and the files of an early freeze that is void (see research/reports/ALL_REPORTS_COMPILED.md, Part 6.10). Byte-identical copies from the downloaded results zip; audio files excluded.",
+  "source_zip": "followup_t4-20261025T090530Z-1-001.zip",
+  "source_zip_sha256": "29db0fec9540db285c39ece51c4f69a4a1ab57c16e653b9c0acf5368d7aaf503",
+  "thesis_commit_at_run": "5cb78297ab7116c7184b112312c1dc8722f74c26",
+  "dmo_commit_at_run": "8a7868fc3345702a586173447f4869205b501f26",
+  "excluded": [
+    "213 .wav files (failure and seed-floor audio for the listening check); kept on Google Drive"
+  ],
+  "files": [
+    {
+      "file": "pilot/pilot_grid.csv",
+      "bytes": 356784,
+      "sha256": "4218fee03f945d7bde809165947a6c5067c872cb6418a8500945bc65bf39b7d2"
+    },
+    {
+      "file": "pilot/PILOT_REPORT.md",
+      "bytes": 3510,
+      "sha256": "509d0aa6ed28899ee4a6fd0e1310464df21ff40eb3f07f0b91aaa2081c172483"
+    },
+    {
+      "file": "pilot/pilot_results.json",
+      "bytes": 21438,
+      "sha256": "738a9721ab544bb417e4a9822af22256a2f46e176e9f7327cde5961a6df815b8"
+    },
+    {
+      "file": "pilot/pilot_seed_floor.csv",
+      "bytes": 16801,
+      "sha256": "625247e7ae08f92b9f2a417533145c49554c7cc075f5f4be5f96b6f92ba0de54"
+    },
+    {
+      "file": "pilot/verification.json",
+      "bytes": 2402,
+      "sha256": "b1b44a8042a5c6ba56b92892cca2e357bd95e3913fa296699df3d6e51c05cd20"
+    },
+    {
+      "file": "pilot/worked_example.json",
+      "bytes": 4559,
+      "sha256": "5e0daa0f5237ffbdb15f6593c9d8a80f83cf0efddf3e757d1a9e43a1ece4a650"
+    },
+    {
+      "file": "smoke/smoke_grid.csv",
+      "bytes": 15824,
+      "sha256": "f0c0990deafe8ceb5e0242dd97f3e215164ec04cecbcccc060166e0c05d57402"
+    },
+    {
+      "file": "smoke/smoke_seed_floor.csv",
+      "bytes": 1809,
+      "sha256": "3ad95e5408bd3fc8c088c285aa8af3e794b915a463fa42b2ffdab369399b9add"
+    },
+    {
+      "file": "smoke/verification.json",
+      "bytes": 1236,
+      "sha256": "a1c84d3e1efd9331b21d1fa3737521b9fc6ad6fa3fbab3f2d54d35fe51cc9036"
+    },
+    {
+      "file": "superseded_freeze_20261025/fresh_grid.csv",
+      "bytes": 1744,
+      "sha256": "ded01cfaf6d869476c0e9ca62d08c280ceeaad0ff4213fad5d40fd053795512c"
+    },
+    {
+      "file": "superseded_freeze_20261025/fresh_manifest.json",
+      "bytes": 77442,
+      "sha256": "3e311e5124cbc201cff409796d035570c56319e7758e54cbe34739ac3a60ff6a"
+    },
+    {
+      "file": "superseded_freeze_20261025/preregistration.json",
+      "bytes": 3742,
+      "sha256": "cee5840b57fc64c36b54783a097140c953c2722a6b5395c4f481ac7667de74e2"
+    }
+  ]
+}

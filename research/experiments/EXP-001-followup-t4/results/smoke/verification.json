@@ -1,0 +1,54 @@
+{
+  "gpu": "Tesla T4",
+  "checks": [
+    {
+      "utt_id": "common_voice_en_10933823-common_voice_en_10933825",
+      "determinism": true,
+      "determinism_max_abs_audio_diff": 0.0,
+      "determinism_max_abs_drift_diff": 0.0,
+      "single_pass_equals_separate_runs": true,
+      "online_policy": {
+        "forced_fallback": {
+          "exit_step": 8,
+          "expected_step": 8,
+          "endpoint_identical": true,
+          "audio_identical": true
+        },
+        "gate_open_lambda_inf": {
+          "exit_step": 4,
+          "expected_step": 4,
+          "endpoint_identical": true,
+          "audio_identical": true
+        }
+      },
+      "forward_passes": {
+        "4": {
+          "teacher": 10,
+          "student": 3,
+          "total": 13,
+          "expected": 13
+        },
+        "5": {
+          "teacher": 12,
+          "student": 3,
+          "total": 15,
+          "expected": 15
+        },
+        "6": {
+          "teacher": 14,
+          "student": 3,
+          "total": 17,
+          "expected": 17
+        },
+        "8": {
+          "teacher": 18,
+          "student": 3,
+          "total": 21,
+          "expected": 21
+        }
+      },
+      "all_passed": true
+    }
+  ],
+  "all_passed": true
+}
