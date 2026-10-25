@@ -2,7 +2,7 @@
 
 Generated from tasks.json; edit the JSON and run python scripts/render_progress.py.
 
-todo: 6 | in_progress: 2 | blocked: 0 | review: 9 | done: 6
+todo: 6 | in_progress: 2 | blocked: 0 | review: 10 | done: 6
 
 | ID | Task | Owner | Status | Updated | Evidence |
 | --- | --- | --- | --- | --- | --- |
@@ -29,5 +29,6 @@ todo: 6 | in_progress: 2 | blocked: 0 | review: 9 | done: 6
 | REPRO-003 | Import the verified Colab T4 results with hashes | Claude (audit), for a team member | review | 2026-10-25 | [MANIFEST.json](../../research/evidence/benchmarks/MANIFEST.json), [test_evidence_manifest.py](../../code/tests/test_evidence_manifest.py), [2026-10-25-t4-import-and-followup.md](../../docs/progress/log/2026-10-25-t4-import-and-followup.md) |
 | EVAL-003 | Run the follow-up Colab T4 tests (seed floor, fresh held-out, degraded prompts) | unassigned | in_progress | 2026-10-25 | [README.md](../../research/experiments/EXP-011-followup-t4/README.md), [MANIFEST.json](../../research/experiments/EXP-011-followup-t4/results/MANIFEST.json), [DMOSpeech2_Followup_Tests.ipynb](../../code/colab/DMOSpeech2_Followup_Tests.ipynb), [run_followup_tests.py](../../code/colab/run_followup_tests.py), [2026-10-25-pilot-results.md](../../docs/progress/log/2026-10-25-pilot-results.md) |
 | PAPER-012 | Base Appendices A-C on the T4 development data | Claude (manuscript), for a team member | todo | 2026-10-25 | [ltt_sim.py](../../code/analysis/ltt_sim.py), [2026-10-25-appendices-real-data.md](../../docs/progress/log/2026-10-25-appendices-real-data.md) |
+| PRES-001 | Animated proposal-defense walkthrough (Chapters 1-3) | Claude (presentation), for Mark Vincent D. Limpahan | review | 2026-10-25 | [index.html](../../presentation/index.html), [SCRIPT.md](../../presentation/SCRIPT.md), [README.md](../../presentation/README.md), [2026-10-25-defense-walkthrough.md](../../docs/progress/log/2026-10-25-defense-walkthrough.md) |
 
 Completion requires acceptance evidence and a recorded validation. Unassigned owners need team assignment.
