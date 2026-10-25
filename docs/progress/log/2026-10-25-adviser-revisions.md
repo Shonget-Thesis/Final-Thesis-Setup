@@ -21,3 +21,12 @@ Task: PAPER-011. Request (Mark Vincent D. Limpahan): apply the adviser's comment
 
 - A full plain-language pass over the rest of Chapter 3 (Objectives 2 and 3) is still to be done; only the touched paragraphs were simplified.
 - latexdiff shows figures as whole blocks; check the two new figures in main.pdf.
+
+## Follow-up (same day)
+
+Request: no symbol definitions in Chapter 2, but every Chapter 2 formula defined or cited in Chapter 3; sources for Chapter 2 figures and equations; a shorter Figure 3.3, as a longtable if possible; Chapter 3 aligned with Figure 3.3; tense rules.
+
+- Chapter 2: the ten where-tables are removed. Each equation's introducing sentence now cites its source and names the Chapter 3 equation that defines it (Euler step, endpoint estimate, sway grid, cost identity, re-noising, zero-failure bound, LTT guarantee, WER, SIM, RTF). Both figure captions now say they were made by the researchers and from which sources.
+- Chapter 3: the zero-failure sample-size bound is now defined in Section 3.6.3 (new equation). Figure 3.3 is a compact flowchart, one shaded row per stage, about a third of a page. A new longtable (Table 3.2) gives each step's details, data and Chapter 3 section, replacing the bullet list. Each objective section now names its steps in Figure 3.3. The cost-matched random rule mentioned in the stabilization-signal test is added to the compared-methods table.
+- Tense: the Chapter 2 statements about this study now use the future tense; past tense for prior studies. In Chapter 3 the architecture description and several remaining present-tense actions are now future; facts about the released code and mathematical statements stay present. Chapter 1 had no future tense and was left as is.
+- Checks: latexmk -Werror (62 pages, clean), changes.pdf against main (73 pages), workspace check and unit tests pass.
