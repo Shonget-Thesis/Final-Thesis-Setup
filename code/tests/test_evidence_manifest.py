@@ -5,7 +5,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 BENCH = ROOT / "research/evidence/benchmarks"
-FOLDERS = (BENCH, ROOT / "research/experiments/EXP-001-followup-t4/results")
+FOLDERS = (BENCH, ROOT / "research/experiments/EXP-011-followup-t4/results")
 
 
 class EvidenceManifestTests(unittest.TestCase):
