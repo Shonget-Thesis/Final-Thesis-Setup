@@ -148,6 +148,37 @@ class DegradationTests(unittest.TestCase):
 
 
 @unittest.skipUnless(HAVE_SCI, "numpy and scipy are needed")
+class PilotTests(unittest.TestCase):
+    def test_pilot_uses_development_speakers_and_reports_reproduction(self):
+        dev = ft.pilot_items(3)
+        dev_ids = {r["utt_id"] for r in json.loads((ft.SPLITS_DIR / "development_manifest.json").read_text(encoding="utf-8"))}
+        self.assertTrue(all(it["utt_id"] in dev_ids for it in dev))
+        grid = ft.index_cases(ft.read_csv(ft.T4_GRID))
+        with tempfile.TemporaryDirectory() as tmp:
+            pdir = Path(tmp) / "pilot"
+            pdir.mkdir()
+            rows, t = [], 0
+            for it in dev:
+                for c in ("clean", "noisy15", "reverb09"):
+                    src = grid[(it["utt_id"], "clean" if c == "reverb09" else c)]
+                    t += 30
+                    for k in ft.STEPS:
+                        r = {key: src[k].get(key, "") for key in ft.ROW_FIELDS}
+                        r.update(condition=c, gt_sr=24000, utc=f"2026-10-26T00:{t // 60:02d}:{t % 60:02d}+00:00")
+                        rows.append(r)
+            ft.append_rows(pdir / "pilot_grid.csv", rows)
+            ft.append_rows(pdir / "pilot_seed_floor.csv", [{"test": "seed_floor_B", "utt_id": dev[0]["utt_id"], "condition": "clean", "is_failure": False}])
+            res = ft.pilot_report(tmp)
+        rep = res["reproduction_vs_t4_grid"]
+        self.assertEqual(rep["cases"], 6)
+        self.assertEqual(rep["same_failure_label"], rep["rows"])
+        self.assertEqual(rep["max_abs_diff_similarity"], 0.0)
+        self.assertEqual(res["conditions"]["reverb09"]["n"], 3)
+        self.assertEqual(res["seconds_per_case_median"], 30.0)
+        self.assertEqual(res["seed_floor"], {"speakers": 1, "failures": 0})
+
+
+@unittest.skipUnless(HAVE_SCI, "numpy and scipy are needed")
 class AnalyzeTests(unittest.TestCase):
     def test_analyze_computes_report_from_csv(self):
         grid = ft.index_cases(ft.read_csv(ft.T4_GRID))

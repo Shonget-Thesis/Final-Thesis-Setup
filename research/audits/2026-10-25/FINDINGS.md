@@ -112,7 +112,7 @@ Status on 2026-10-25. Owners are unassigned unless named. The follow-up tests (E
    - Drift: describe drift as the calibrated stopping signal whose strength λ̂ sets, with its added value tested on degraded prompts.
    - SNR-only baseline: define how its gate θ is calibrated (grid and order).
    - Small fixes: Appendix A cites Algorithm 3.3 "line 7" for continuing the teacher (it is line 6 with `[noend]`; use `\label`/`\ref`); Appendix B names `sim/ltt_sim.py` (actual path `code/analysis/ltt_sim.py`); the repeated-split check in Section 3.6.4 compares empirical test risk with 1 − δ, which the guarantee does not imply, so present it as descriptive.
-2. **Optional smoke test** (notebook Steps 1–6, about 15–20 minutes): confirms the notebook runs on a GPU and measures the real time per case. Uses two development speakers only and freezes nothing.
+2. **Smoke test and development pilot** (notebook Steps 1–6b; the pilot takes about 30–60 minutes by estimate). Development speakers only, nothing frozen. `PILOT_REPORT.md` shows whether the runner reproduces the committed T4 grid, whether the SNR gate lets reverberant, telephone-band and babble prompts through and whether drift changes any outcome there, a 10-speaker seed-floor sample, and the measured time per case. Use it to check the pipeline and plan the Chapter 3 edits, not as evidence of risk or of drift's value.
 3. **Keep the 166 unused speakers untouched** until the protocol is frozen in Step 7; inspecting them early would end their use as a held-out set.
 4. Do not cite the "2.5% seed-noise floor", λ̂ = 0.50 as the certified threshold, or the comprehensive suite's Tests 1, 12, 15 and 17 in the proposal.
 

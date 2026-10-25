@@ -6,6 +6,10 @@ Subcommands, run in this order (DMOSpeech2_Followup_Tests.ipynb drives them):
                 synthesized. Every later subcommand checks the preregistration hash first.
   smoke         Run every synthesis path on 2 development speakers into OUT/smoke/.
                 Never touches fresh speakers, so it can be run before or after freezing.
+  pilot         Optional development pilot (default 20 development speakers) into OUT/pilot/:
+                checks that the pipeline reproduces the T4 grid, whether the SNR gate lets
+                degraded prompts through, a small seed-floor sample, and the time per case.
+                Writes PILOT_REPORT.md. Never touches fresh or test speakers; needs no freeze.
   seed-floor    Test split (200 speakers, clean + noisy15): Step 8 with the manifest seed
                 (seed A) and with a second seed (seed B); seed B is scored as a candidate
                 against seed A with the frozen failure rule.
@@ -59,6 +63,9 @@ CONDITIONS = {
 }
 GRID_CONDITIONS = ("clean", "noisy15")
 DEGRADATION_CONDITIONS = tuple(c for c in CONDITIONS if c not in GRID_CONDITIONS)
+# Pilot: development speakers only. clean + noisy15 check reproduction of the T4 grid; the rest
+# are the degradations the energy-based SNR estimate may not see.
+PILOT_CONDITIONS = ("clean", "noisy15", "reverb09", "telephone", "babble15")
 ROW_FIELDS = ["test", "utt_id", "speaker_id", "condition", "base_seed", "input_seed", "teacher_step", "nfe",
               "prompt_snr", "d_4", "d_5", "d_6", "wer", "similarity", "utmos", "wer_ref", "similarity_ref",
               "utmos_ref", "is_failure", "fail_wer", "fail_sim", "hypothesis", "audio_duration", "gt_sr", "utc"]
@@ -583,6 +590,11 @@ def run_seed_floor(pipe, items, out_dir, csv_name="seed_floor.csv"):
     print(f"[OK] seed-floor complete: {path}", flush=True)
 
 
+def pilot_items(n):
+    """The first n development speakers by utterance ID. Never fresh or test speakers."""
+    return sorted(split_items("development"), key=lambda it: it["utt_id"])[:n]
+
+
 def fresh_items(out):
     path = Path(out) / "fresh_manifest.json"
     return json.loads(path.read_text(encoding="utf-8"))
@@ -601,6 +613,21 @@ def cmd_gpu(args):
         run_grid(pipe, dev, conds, "smoke", out, "smoke_grid.csv")
         run_seed_floor(pipe, dev[:1], out, "smoke_seed_floor.csv")
         print(f"Smoke run complete: {out}")
+        return
+    if args.cmd == "pilot":
+        out = out / "pilot"
+        out.mkdir(parents=True, exist_ok=True)
+        pipe = Pipeline(args.dmo_root, args.device)
+        conds = args.conditions.split(",") if args.conditions else list(PILOT_CONDITIONS)
+        unknown = [c for c in conds if c not in CONDITIONS]
+        if unknown:
+            raise SystemExit(f"Unknown conditions: {unknown}")
+        if any(CONDITIONS[c][0] == "babble" for c in conds):
+            pipe.load_babble(args.demand_dir or "")
+        dev = pilot_items(args.n_speakers)
+        run_grid(pipe, dev, conds, "pilot", out, "pilot_grid.csv")
+        run_seed_floor(pipe, dev[: max(1, args.n_speakers // 2)], out, "pilot_seed_floor.csv")
+        pilot_report(Path(args.out))
         return
     prereg = load_prereg(out)
     pipe = Pipeline(args.dmo_root, args.device)
@@ -759,6 +786,100 @@ def analyze(out, allow_partial=False):
     return res
 
 
+def pilot_report(out):
+    """Development pilot summary, computed from OUT/pilot/*.csv and the committed T4 grid."""
+    import statistics
+    pdir = Path(out) / "pilot"
+    rows = read_csv(pdir / "pilot_grid.csv", repair=True)
+    cases = index_cases(rows)
+    grid = index_cases(read_csv(T4_GRID))
+    res = {"note": "Development pilot (development-split speakers only). Assurance and planning, not evidence for the method."}
+
+    # 1. Reproduction of the committed T4 grid on clean + noisy15.
+    rep = {"cases": 0, "same_failure_label": 0, "rows": 0}
+    diffs = {"prompt_snr": [], "d_4": [], "wer": [], "similarity": []}
+    for (u, c), steps in cases.items():
+        if c not in GRID_CONDITIONS or (u, c) not in grid:
+            continue
+        rep["cases"] += 1
+        for k in STEPS:
+            new, old = steps[k], grid[(u, c)][k]
+            rep["rows"] += 1
+            rep["same_failure_label"] += is_true(new["is_failure"]) == is_true(old["is_failure"])
+            for col in diffs:
+                diffs[col].append(abs(float(new[col]) - float(old[col])))
+    rep.update({f"max_abs_diff_{k}": (max(v) if v else None) for k, v in diffs.items()})
+    res["reproduction_vs_t4_grid"] = rep
+
+    # 2. Per condition: does the gate let prompts through, and does drift ever matter?
+    per = {}
+    for c in dict.fromkeys(c for (_, c) in cases):
+        utts = sorted(u for (u, cc) in cases if cc == c)
+        snrs = [float(cases[(u, c)][REFERENCE_STEP]["prompt_snr"]) for u in utts]
+        row = {"n": len(utts), "prompt_snr_min_max": [min(snrs), max(snrs)],
+               "gate_fallback_rate": sum(s < THETA for s in snrs) / len(snrs),
+               "step4_failures_any_prompt": sum(is_true(cases[(u, c)][4]["is_failure"]) for u in utts)}
+        fl = {}
+        for pol in ("snr_only", "snr_drift_050", "snr_step5"):
+            n, k, fl[pol], nfe = evaluate(cases, utts, (c,), pol, 0.0)
+            row[pol] = {"failures": k, "mean_nfe": nfe}
+        a, b, _ = mcnemar_exact(fl["snr_only"], fl["snr_drift_050"])
+        row["discordant_only_snr_only_fails"], row["discordant_only_snr_drift_fails"] = a, b
+        per[c] = row
+    res["conditions"] = per
+
+    # 3. Seed-noise floor (small sample).
+    sf = read_csv(pdir / "pilot_seed_floor.csv", repair=True)
+    b_rows = [r for r in sf if r["test"] == "seed_floor_B"]
+    spk = {}
+    for r in b_rows:
+        spk[r["utt_id"]] = spk.get(r["utt_id"], False) or is_true(r["is_failure"])
+    res["seed_floor"] = {"speakers": len(spk), "failures": sum(spk.values())}
+
+    # 4. Time per case from completion timestamps.
+    done = {}
+    for r in rows:
+        done[(r["utt_id"], r["condition"])] = r["utc"]
+    stamps = sorted(datetime.datetime.fromisoformat(t) for t in done.values())
+    gaps = [(b - a).total_seconds() for a, b in zip(stamps, stamps[1:])]
+    sec = statistics.median(gaps) if gaps else None
+    res["seconds_per_case_median"] = sec
+    if sec:
+        res["estimated_full_run_hours"] = {"fresh_grid": 332 * sec / 3600, "degradations": 1494 * sec / 3600,
+                                           "seed_floor_upper_bound": 400 * sec / 3600}
+    res["ground_truth_sample_rates"] = sorted({int(r["gt_sr"]) for r in rows if r.get("gt_sr")})
+
+    (pdir / "pilot_results.json").write_text(json.dumps(res, indent=2) + "\n", encoding="utf-8")
+    pct = lambda x: f"{100 * x:.0f}%"
+    L = ["# Development pilot", "", res["note"], "",
+         "## Reproduction of the committed T4 grid (clean + noisy15)", ""]
+    if rep["cases"]:
+        L += [f"{rep['cases']} cases, {rep['rows']} rows; same failure label in {rep['same_failure_label']}/{rep['rows']} rows. "
+              f"Max |Δ|: prompt SNR {rep['max_abs_diff_prompt_snr']:.4f} dB, d₄ {rep['max_abs_diff_d_4']:.6f}, "
+              f"WER {rep['max_abs_diff_wer']:.4f}, SIM {rep['max_abs_diff_similarity']:.4f}."]
+    else:
+        L.append("No clean or noisy15 cases in this pilot.")
+    L += ["", "## Conditions", "",
+          "| Condition | n | Prompt SNR range (dB) | Gate fallback | Step-4 failures | SNR-only fails / NFE | SNR + drift 0.50 fails / NFE | Only SNR-only fails | Only SNR + drift fails |",
+          "|---|---:|---|---:|---:|---|---|---:|---:|"]
+    for c, d in per.items():
+        L.append(f"| {c} | {d['n']} | {d['prompt_snr_min_max'][0]:.1f}–{d['prompt_snr_min_max'][1]:.1f} | {pct(d['gate_fallback_rate'])} | "
+                 f"{d['step4_failures_any_prompt']} | {d['snr_only']['failures']} / {d['snr_only']['mean_nfe']:.2f} | "
+                 f"{d['snr_drift_050']['failures']} / {d['snr_drift_050']['mean_nfe']:.2f} | "
+                 f"{d['discordant_only_snr_only_fails']} | {d['discordant_only_snr_drift_fails']} |")
+    s = res["seed_floor"]
+    L += ["", f"Seed-noise floor: Step 8 with seed B fails against seed A for {s['failures']}/{s['speakers']} speakers.", "",
+          f"Ground-truth sample rates: {res['ground_truth_sample_rates']}."]
+    if sec:
+        e = res["estimated_full_run_hours"]
+        L += ["", f"Median {sec:.1f} s per case. Estimated full run: fresh grid {e['fresh_grid']:.1f} h, "
+                  f"degradations {e['degradations']:.1f} h, seed floor at most {e['seed_floor_upper_bound']:.1f} h."]
+    L += ["", "Small development sample: use it to check the pipeline and plan, not to estimate risk or test drift."]
+    (pdir / "PILOT_REPORT.md").write_text("\n".join(L) + "\n", encoding="utf-8")
+    print(f"Wrote {pdir / 'PILOT_REPORT.md'}")
+    return res
+
+
 def render_report(res):
     pct = lambda x: f"{100 * x:.1f}%"
     L = ["# Follow-up T4 tests: results", "",
@@ -809,16 +930,19 @@ def render_report(res):
 # ---------------------------------------------------------------------------- main
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("cmd", choices=["freeze", "smoke", "seed-floor", "fresh-grid", "degradations", "analyze"])
+    ap.add_argument("cmd", choices=["freeze", "smoke", "pilot", "pilot-report", "seed-floor", "fresh-grid", "degradations", "analyze"])
     ap.add_argument("--out", required=True, help="results folder, e.g. on Google Drive")
     ap.add_argument("--dmo_root", default="/content/Shonget-DMOSpeech2", help="Shonget-DMOSpeech2 clone")
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--demand_dir", default=None, help="folder holding PCAFETER/ch01.wav")
     ap.add_argument("--conditions", default=None, help="comma-separated subset of degradation conditions")
     ap.add_argument("--allow_partial", action="store_true", help="analyze: report incomplete runs, marked PARTIAL")
+    ap.add_argument("--n_speakers", type=int, default=20, help="pilot: number of development speakers")
     args = ap.parse_args(argv)
     if args.cmd == "freeze":
         cmd_freeze(args)
+    elif args.cmd == "pilot-report":
+        pilot_report(args.out)
     elif args.cmd == "analyze":
         analyze(args.out, args.allow_partial)
     else:
