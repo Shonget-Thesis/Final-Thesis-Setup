@@ -327,6 +327,21 @@
         "docs/progress/log/2026-10-25-appendices-real-data.md"
       ],
       "validation": "Implemented in commit 5cb7829, then reverted at the team's request on 2026-10-25: paper/chapters/appendices.tex and 03-methodology.tex are identical to main again. The real values and the fitted simulation (ltt_sim.py --fitted) remain available for a later edit."
+    },
+    {
+      "id": "EVAL-004",
+      "title": "Preliminary test of the proposed gates (SDC, low-drift veto, guidance contrast, stratified LTT)",
+      "owner": "unassigned",
+      "status": "todo",
+      "updated": "2026-10-25",
+      "acceptance": "The EXP-012 notebook runs on a Colab T4; preregistration.json predates the synthesis; labels, signals, results JSON and the generated report are committed with hashes; the result decides which gate, if any, goes into the proposed-solution appendix.",
+      "evidence": [
+        "research/experiments/EXP-012-consistency-gate-prelim/README.md",
+        "code/colab/DMOSpeech2_Consistency_Gate_Prelim.ipynb",
+        "code/colab/run_consistency_gate_prelim.py",
+        "code/tests/test_consistency_gate.py"
+      ],
+      "validation": ""
     }
   ]
 }
