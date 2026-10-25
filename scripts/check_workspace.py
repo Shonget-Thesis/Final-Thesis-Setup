@@ -19,7 +19,7 @@ REQUIRED = ["README.md", "AGENTS.md", "code/README.md", "paper/README.md", "docs
 REQUIRED += list(MANUSCRIPTS.values()) + ["paper/references.bib", "paper/citc.sty", "paper/frontmatter.tex"]
 REQUIRED += [f"paper/chapters/{name}.tex" for name in
              ("01-introduction", "02-related-work", "03-methodology", "04-results", "05-conclusion")]
-ARCHIVED = ("code/vendor/", "code/experiments/legacy/", "research/evidence/legacy/", "research/audits/2026-10-05/")
+ARCHIVED = ("code/vendor/", "code/experiments/legacy/", "research/evidence/legacy/", "research/audits/2026-10-05/", "research/reports/", "research/evidence/benchmarks/")
 
 
 def local_file(root, value):
