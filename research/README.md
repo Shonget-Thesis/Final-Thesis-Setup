@@ -1,6 +1,7 @@
 # Research records
 
 - [October 5 audit](audits/2026-10-05/FINDINGS.md): limitations and research direction.
+- [October 25 audit](audits/2026-10-25/FINDINGS.md): corrections to the reports in reports/ and a recomputation of the T4 grid in evidence/benchmarks/. Read it before quoting any calibrated threshold or test-split result.
 - evidence/legacy/: imported reports and telemetry, preserved byte-for-byte. Original "final" or "verified" labels are historical claims and must be read alongside the audit.
 - [Evaluation protocol](protocols/evaluation.md): draft requirements to freeze before new runs.
 - [Timing replay](experiments/EXP-000-timing-replay/README.md): executable arithmetic check of existing telemetry.

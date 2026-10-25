@@ -6,3 +6,5 @@ code/experiments/legacy/** -text
 research/evidence/legacy/** -text
 research/audits/2026-10-05/** -text
 paper/sources/tanh-velocity-blending/original.md -text
+research/evidence/benchmarks/** -text
+research/experiments/EXP-001-followup-t4/results/** -text

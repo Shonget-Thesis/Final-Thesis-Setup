@@ -1,0 +1,170 @@
+{
+  "description": "Colab Tesla T4 results imported from Shonget-DMOSpeech2. Byte-identical copies; see research/audits/2026-10-25/FINDINGS.md for what they support. All results are development evidence: the 200-speaker test split was inspected before the protocol was fixed.",
+  "source_repository": "https://github.com/Shonget-Thesis/Shonget-DMOSpeech2",
+  "source_head_at_import": "8a7868fc3345702a586173447f4869205b501f26",
+  "imported_on": "2026-10-25",
+  "files": [
+    {
+      "file": "GPU_FULL_PIPELINE_TIMING_REPORT.md",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/GPU_FULL_PIPELINE_TIMING_REPORT.md",
+      "source_commit": "d00325e",
+      "producer": "report generated with the timing run",
+      "bytes": 13784,
+      "sha256": "86c0fe8b9c0c3f47e573a32757a6d1a0c33a015562df2050561a6e8b9915d000"
+    },
+    {
+      "file": "drift_features/drift_features_all1000.csv",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/Colab_Output/drift_features_all1000.csv",
+      "source_commit": "untracked in source repository",
+      "producer": "run_drift_features_benchmark.py (not committed in the source repository); d_4 matches gpu_grid_all1000.csv exactly in all 1,000 cases",
+      "bytes": 1815110,
+      "sha256": "d1d6013309d91fb074cf2866010a90ccaec10f4a4222e9117b41cc6d596b7451"
+    },
+    {
+      "file": "gpu_full_pipeline_timing_3000.csv",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/gpu_full_pipeline_timing_3000.csv",
+      "source_commit": "d00325e",
+      "producer": "run_gpu_full_pipeline_timing_benchmark.py, session timing_session_20261020_130952",
+      "bytes": 690285,
+      "sha256": "62f498a06b8a5d49fda3a1f9b19e681ebf6d108ad4488988dcf9e11ffcbacc15"
+    },
+    {
+      "file": "gpu_full_pipeline_timing_3000.parquet",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/gpu_full_pipeline_timing_3000.parquet",
+      "source_commit": "d00325e",
+      "producer": "same run as the CSV",
+      "bytes": 109660,
+      "sha256": "ab6473580d068c68c4ebf89e63c064bbfdc4925f71ef47a006545eebde162800"
+    },
+    {
+      "file": "gpu_grid_all1000.csv",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/gpu_grid_all1000.csv",
+      "source_commit": "fdd8e9e",
+      "producer": "run_gpu_expanded_benchmark.py --scope all1000 (DMOSpeech2_Live_1000_GPU_Retest.ipynb)",
+      "bytes": 1506676,
+      "sha256": "249191ec8b8454d10451185760b3b834c9f673bcfa866ce9b116770a8b4febd3"
+    },
+    {
+      "file": "gpu_timing_cluster_bootstrap_ci.csv",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/gpu_timing_cluster_bootstrap_ci.csv",
+      "source_commit": "d00325e",
+      "producer": "summary of the timing run",
+      "bytes": 471,
+      "sha256": "e2780bf9b3544601952720f9b799be65ba4a4b3fc8a39d1fcf5f62a3116e24b9"
+    },
+    {
+      "file": "gpu_timing_summary_by_condition.csv",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/gpu_timing_summary_by_condition.csv",
+      "source_commit": "d00325e",
+      "producer": "summary of the timing run",
+      "bytes": 524,
+      "sha256": "929e6bab9072b74b7b0ee22383f9d49c99bcbe2ae27dd2356668be262f27d031"
+    },
+    {
+      "file": "gpu_timing_summary_test.csv",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/gpu_timing_summary_test.csv",
+      "source_commit": "d00325e",
+      "producer": "summary of the timing run",
+      "bytes": 459,
+      "sha256": "8ebaf296a8663f0d8438874d2e231ea4394f580e7846e1b010a8eb816140213b"
+    },
+    {
+      "file": "novel_algorithms/NOVEL_ALGORITHMS_REPORT.md",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/novel_algorithms_comparisons/NOVEL_ALGORITHMS_REPORT.md",
+      "source_commit": "8a7868f",
+      "producer": "run_novel_algorithm_comparison.py at 381ec71 (RUN_INFO), Tesla T4",
+      "bytes": 3004,
+      "sha256": "80a401513b82c0910468cbba42b4c588b164bea9bd3ee9f607333afc79b77454"
+    },
+    {
+      "file": "novel_algorithms/RUN_INFO.txt",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/novel_algorithms_comparisons/RUN_INFO.txt",
+      "source_commit": "8a7868f",
+      "producer": "run_novel_algorithm_comparison.py at 381ec71 (RUN_INFO), Tesla T4",
+      "bytes": 134,
+      "sha256": "8efde428134926f7931778366ece584d3254a9389d8406ee0fef1e8d0f6ab67e"
+    },
+    {
+      "file": "novel_algorithms/novel_algorithms_preregistration.json",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/novel_algorithms_comparisons/novel_algorithms_preregistration.json",
+      "source_commit": "8a7868f",
+      "producer": "run_novel_algorithm_comparison.py at 381ec71 (RUN_INFO), Tesla T4",
+      "bytes": 2569,
+      "sha256": "f79f352d4d3a65b6a298ec110f93a1ea934e4d222e1d195f7a090c056a1be891"
+    },
+    {
+      "file": "novel_algorithms/novel_algorithms_summary.json",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/novel_algorithms_comparisons/novel_algorithms_summary.json",
+      "source_commit": "8a7868f",
+      "producer": "run_novel_algorithm_comparison.py at 381ec71 (RUN_INFO), Tesla T4",
+      "bytes": 5306,
+      "sha256": "483a3f8dec005e4e3d1d4657bcf83e317ea9469507b52b45c195a41d60f34c09"
+    },
+    {
+      "file": "novel_algorithms/novel_features_all1000.csv",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/novel_algorithms_comparisons/novel_features_all1000.csv",
+      "source_commit": "8a7868f",
+      "producer": "run_novel_algorithm_comparison.py at 381ec71 (RUN_INFO), Tesla T4",
+      "bytes": 223985,
+      "sha256": "f2364ace9ac3f5dfcb51ba5b9ad44b83c0d9e2d3a24a34f677cd6b764c5abb92"
+    },
+    {
+      "file": "signal_selection/RUN_INFO.txt",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/signal_selection/RUN_INFO.txt",
+      "source_commit": "e9ed9e0",
+      "producer": "run_signal_selection_validation.py at 38ac387 (RUN_INFO), Tesla T4",
+      "bytes": 120,
+      "sha256": "12e57d5d078b0d416b964b9a1127de9c572150b66de5b2d14fdd54c870c04a24"
+    },
+    {
+      "file": "signal_selection/SIGNAL_SELECTION_REPORT.md",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/signal_selection/SIGNAL_SELECTION_REPORT.md",
+      "source_commit": "e9ed9e0",
+      "producer": "run_signal_selection_validation.py at 38ac387 (RUN_INFO), Tesla T4",
+      "bytes": 9078,
+      "sha256": "a1483ec414761402b671f00964d09c0debe82b93bd1fdd7b9b051f99b93d93bf"
+    },
+    {
+      "file": "signal_selection/signal_features_all1000.csv",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/signal_selection/signal_features_all1000.csv",
+      "source_commit": "e9ed9e0",
+      "producer": "run_signal_selection_validation.py at 38ac387 (RUN_INFO), Tesla T4",
+      "bytes": 981054,
+      "sha256": "f86cdad0b2d28fcf38ccb7ac76627c98028e69892b175410d5f4b1e24dad6947"
+    },
+    {
+      "file": "signal_selection/signal_selection_preregistration.json",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/signal_selection/signal_selection_preregistration.json",
+      "source_commit": "e9ed9e0",
+      "producer": "run_signal_selection_validation.py at 38ac387 (RUN_INFO), Tesla T4",
+      "bytes": 4483,
+      "sha256": "db39aae3a5ef699d4781ebb7fbbd4edb0a444eb9b1b78d18a6388f1e22af96c3"
+    },
+    {
+      "file": "signal_selection/signal_selection_summary.json",
+      "source": "Shonget-DMOSpeech2/Handover Scheduling/colab/results/signal_selection/signal_selection_summary.json",
+      "source_commit": "e9ed9e0",
+      "producer": "run_signal_selection_validation.py at 38ac387 (RUN_INFO), Tesla T4",
+      "bytes": 27924,
+      "sha256": "f0a95ce6855af0109a3a97d6d6b7a8c7973d95df51eabd508dafc7cd33556f44"
+    }
+  ],
+  "excluded": [
+    {
+      "item": "colab/DMOSpeech2_Comprehensive_Test_Results*.zip (comprehensive evaluation suite, commit 20a37bb)",
+      "reason": "Tests 1, 12, 15 and 17 write typed-in values, the summary is a fixed string, and its case log is built from the CPU test grid (audit Finding 8)."
+    },
+    {
+      "item": "phase1_dev_grid_100spk, phase2_calib_ltt_200spk, phase3_test_benchmark_200spk, _archive_pilot",
+      "reason": "CPU runs; the thesis now uses Colab T4 results only."
+    },
+    {
+      "item": "colab/results/three_scheduler_revisions_dev",
+      "reason": "Development analysis run on CPU (experiment_metadata.json: device cpu); not T4 evidence."
+    },
+    {
+      "item": "colab/Colab_Output/DMOSpeech2_Signal_Selection_Results.zip",
+      "reason": "Byte-identical duplicate of results/signal_selection/."
+    }
+  ]
+}

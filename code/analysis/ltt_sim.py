@@ -76,8 +76,54 @@ def naive(pop, idx):
     return best
 
 
-def main():
-    big = population(400_000)                     # stands in for the true distribution
+def fitted_population_factory():
+    """Population with parameters fitted to the T4 development split (research/evidence/benchmarks).
+
+    Half of the utterances are noisy15, as in the splits. Prompt SNR is normal per condition; log d_4 is
+    normal per condition and each later step adds a normal log-change per condition; failure follows a
+    logistic model in (d_k, noisy, k - 4) fitted by maximum likelihood to the development rows.
+    """
+    import csv
+    import json
+    import math
+    from pathlib import Path
+    from scipy.optimize import minimize
+    root = Path(__file__).resolve().parents[2]
+    dev = {r["utt_id"] for r in json.loads((root / "research/protocols/splits/development_manifest.json").read_text(encoding="utf-8"))}
+    rows = {}
+    with open(root / "research/evidence/benchmarks/gpu_grid_all1000.csv", encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            if r["utt_id"] in dev:
+                rows.setdefault((r["utt_id"], r["condition"]), {})[int(r["teacher_step"])] = r
+    fit, X, y = {}, [], []
+    for c in ("clean", "noisy15"):
+        cs = [v for (u, cc), v in rows.items() if cc == c]
+        snr = np.array([float(v[8]["prompt_snr"]) for v in cs])
+        logd = np.array([[math.log(float(v[8][f"d_{k}"])) for k in CAND] for v in cs])
+        fit[c] = dict(snr=(snr.mean(), snr.std(ddof=1)), d4=(logd[:, 0].mean(), logd[:, 0].std(ddof=1)),
+                      step=(np.diff(logd, axis=1).mean(), np.diff(logd, axis=1).std(ddof=1)))
+        for v in cs:
+            for k in CAND:
+                X.append([1.0, float(v[8][f"d_{k}"]), float(c == "noisy15"), k - 4.0])
+                y.append(float(v[k]["is_failure"].strip().lower() == "true"))
+    X, y = np.array(X), np.array(y)
+    w = minimize(lambda w: np.sum(np.logaddexp(0, X @ w) - y * (X @ w)), np.zeros(4), method="BFGS").x
+
+    def fitted_population(N):
+        noisy = rng.random(N) < 0.5
+        pick = lambda key, i: np.where(noisy, fit["noisy15"][key][i], fit["clean"][key][i])
+        snr = rng.normal(pick("snr", 0), pick("snr", 1))
+        d = {4: np.exp(rng.normal(pick("d4", 0), pick("d4", 1)))}
+        for k in (5, 6):
+            d[k] = d[k - 1] * np.exp(rng.normal(pick("step", 0), pick("step", 1)))
+        fail = {k: rng.random(N) < 1 / (1 + np.exp(-(w[0] + w[1] * d[k] + w[2] * noisy + w[3] * (k - 4)))) for k in CAND}
+        fail[8] = np.zeros(N, bool)
+        return dict(snr=snr, d=d, fail=fail)
+    return fitted_population, fit, w
+
+
+def main(make_population=population):
+    big = make_population(400_000)                # stands in for the true distribution
     true = {lam: risk_cost(big, lam) for lam in GRID}
     print("true risk / mean passes per lambda")
     for lam in GRID:
@@ -89,7 +135,7 @@ def main():
     for n in (50, 100, 200, 400):
         res = {"ltt": [], "naive": []}
         for rep in range(1000):
-            cal = population(n)
+            cal = make_population(n)
             for name, fn in (("ltt", ltt), ("naive", naive)):
                 lam = fn(cal, np.arange(n))
                 if lam is None:
@@ -110,4 +156,12 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    if "--fitted" in sys.argv:
+        # Parameters fitted to the T4 development split (Appendix B, last paragraph).
+        make, fit, w = fitted_population_factory()
+        print("fitted:", {c: {k: [round(float(x), 3) for x in v] for k, v in f.items()} for c, f in fit.items()})
+        print("failure logit a, b(d_k), c(noisy), e(k-4):", [round(float(x), 3) for x in w])
+        main(make)
+    else:
+        main()
