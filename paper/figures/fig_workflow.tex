@@ -1,48 +1,57 @@
-% Figure: overall research workflow (Objectives 1-4)
-\begin{figure}[!htbp]
+% Figure: the whole methodology as a step-by-step flowchart, with the
+% specific objectives marked as bands around their steps.
+\begin{figure}[!p]
 \centering
 \begin{adjustbox}{max width=\linewidth}
 \begin{tikzpicture}[
   font=\figfont,
-  obj/.style={draw, rounded corners=2pt, fill=gray!8, text width=3.35cm, minimum height=2.6cm, align=left, inner sep=4pt, anchor=north},
-  head/.style={font=\figfont\bfseries, align=center, text width=3.6cm},
-  data/.style={draw, dashed, rounded corners=2pt, text width=3.35cm, align=center, inner sep=3pt, minimum height=0.8cm, anchor=north},
-  arr/.style={-{Stealth[length=2.2mm]}, thick}
+  node distance=0.32cm,
+  wfstep/.style={draw, rounded corners=2pt, fill=white, text width=10.2cm, align=left, inner sep=4pt, minimum height=0.85cm},
+  decision/.style={wfstep, draw=newLine, very thick},
+  arr/.style={-{Stealth[length=2mm]}, thick},
+  band/.style={draw=frozenLine, fill=frozenFill, rounded corners=4pt, inner xsep=0.25cm, inner ysep=0.22cm},
+  bandlabel/.style={font=\figfont\bfseries, align=center, text width=2.3cm, anchor=east}
 ]
-\foreach \i/\x in {1/0, 2/4.05, 3/8.1, 4/12.15} { \coordinate (c\i) at (\x,0); }
+% ---------------- steps ----------------
+\node[wfstep] (s1) {\textbf{1. Prepare the data.} Seed-TTS test-en (1,088 utterances, 666 prompt speakers); split 500 speakers into speaker-disjoint development (100), calibration (200) and test (200) sets, one utterance per speaker.};
+\node[wfstep, below=of s1] (s2) {\textbf{2. Create the prompt conditions.} Clean prompt as recorded, and a noisy copy with white Gaussian noise 15~dB below the prompt power (seeded per input).};
+\node[wfstep, below=of s2] (s3) {\textbf{3. Check the sampler.} Same seed gives the same output; a forced fallback reproduces the reference; a pass counter matches the cost identity (Proposition~\ref{prop:cost}).};
 
-\node[head] (h1) at (c1) {Objective 1\\Characterize the\\switching-time space};
-\node[head] (h2) at (c2) {Objective 2\\Formulate and\\analyze the method};
-\node[head] (h3) at (c3) {Objective 3\\Calibrate with\\a guarantee};
-\node[head] (h4) at (c4) {Objective 4\\Benchmark and\\test robustness};
+\node[wfstep, below=0.75cm of s3] (s4) {\textbf{4. Run every candidate.} For each development input, run the teacher once to the reference step, store the endpoint estimates at teacher steps 4, 5, 6 and 8, and log the stabilization score $d_i$ and the prompt SNR $\hat S$.};
+\node[wfstep, below=of s4] (s5) {\textbf{5. Score the outputs.} Run the student from each stored endpoint; compute WER, SIM and UTMOS, count forward passes, and mark added failures against teacher step 8 (Definition~\ref{def:failure}).};
+\node[wfstep, below=of s5] (s6) {\textbf{6. Map quality against cost.} Failure rate per step and condition, the cheapest safe step per input (oracle), and how $d_i$ and $\hat S$ relate to it; fix the candidate set and the SNR gate $\theta$.};
 
-\node[obj] (o1) at ($(h1.south)+(0,-0.15)$) {%
-  \textit{Method:} run all candidate switching times; log $d_i$, $\hat S$, WER, SIM, UTMOS, passes\\[3pt]
-  \textit{Output:} quality--cost map, candidate set $\mathcal K$, SNR gate $\theta$};
-\node[obj] (o2) at ($(h2.south)+(0,-0.15)$) {%
-  \textit{Method:} cost-minimization problem, signals, stopping policy $\pi_\lambda$, proofs\\[3pt]
-  \textit{Output:} Algorithm~\ref{alg:handover}; zero-overhead, monotone, fallback, oracle properties};
-\node[obj] (o3) at ($(h3.south)+(0,-0.15)$) {%
-  \textit{Method:} Learn-then-Test over a $\lambda$ grid with binomial p-values\\[3pt]
-  \textit{Output:} threshold $\hat\lambda$ with $\P(R\le\alpha)\ge1-\delta$; repeated-split check};
-\node[obj] (o4) at ($(h4.south)+(0,-0.15)$) {%
-  \textit{Method:} compare with fixed, SNR-only and oracle rules; noise shift; calibration size\\[3pt]
-  \textit{Output:} savings, quality, robustness};
+\node[wfstep, below=0.75cm of s6] (s7) {\textbf{7. Formulate the method.} Minimize expected cost subject to the added-failure risk $R\le\alpha$; define the two signals and the stopping policy family, and prove its properties (zero overhead, monotone cost, safe fallback, oracle bound).};
 
-\draw[arr] (o1.east) -- (o2.west);
-\draw[arr] (o2.east) -- (o3.west);
-\draw[arr] (o3.east) -- (o4.west);
+\node[wfstep, below=0.75cm of s7] (s8) {\textbf{8. Fix the protocol in advance.} Tolerance $\alpha=0.05$, confidence $1-\delta=0.90$, and the ordered threshold grid, before any calibration outcome is seen.};
+\node[wfstep, below=of s8] (s9) {\textbf{9. Calibrate.} Repeat boxes 4 and 5 on the calibration set; for each threshold, count added failures, compute the binomial p-value and test in order (Algorithm~\ref{alg:ltt}).};
+\node[decision, below=of s9] (s10) {\textbf{10. Is any threshold certified?} Yes: lock $\hat\lambda$. No: the method falls back to the reference switching time, and this is reported as a result.};
+\node[wfstep, below=of s10] (s11) {\textbf{11. Check the guarantee.} Realized risk on the test set with an exact interval, and 100 repeated calibration--test re-splits.};
 
-\node[data] (d1) at ($(o1.south)+(0,-0.35)$) {Development split};
-\node[data] (d2) at ($(o2.south)+(0,-0.35)$) {Theory (no data)};
-\node[data] (d3) at ($(o3.south)+(0,-0.35)$) {Calibration split};
-\node[data] (d4) at ($(o4.south)+(0,-0.35)$) {Test split};
-\foreach \i in {1,2,3,4} { \draw[-{Stealth[length=1.8mm]}] (d\i.north) -- (o\i.south); }
+\node[wfstep, below=0.75cm of s11] (s12) {\textbf{12. Run the locked variants on the test set.} SNR only, stabilization only, both signals, SNR gate with a fixed later step, the fixed switching times, and the oracle.};
+\node[wfstep, below=of s12] (s13) {\textbf{13. Compare.} Forward passes, full-pipeline runtime on the Tesla T4, WER, SIM, UTMOS and added-failure rate; paired tests (Wilcoxon, McNemar, two one-sided tests).};
+\node[wfstep, below=of s13] (s14) {\textbf{14. Test robustness.} Calibrate on clean prompts and test on noisy ones; repeat calibration with 50, 100 and 200 speakers.};
 
-\node[font=\figfont\itshape, align=center] at ($(d2.south)!0.5!(d3.south)+(0,-0.45)$)
-  {Splits are speaker-disjoint; all network weights stay frozen throughout.};
+\node[wfstep, below=0.75cm of s14, fill=frozenFill] (s15) {\textbf{15. Report.} All results, including negative ones: no certified threshold, a failed guarantee on held-out speakers, or no gain from the stabilization signal.};
+
+\foreach \a/\b in {s1/s2,s2/s3,s3/s4,s4/s5,s5/s6,s6/s7,s7/s8,s8/s9,s9/s10,s10/s11,s11/s12,s12/s13,s13/s14,s14/s15}
+  \draw[arr] (\a) -- (\b);
+
+% ---------------- objective bands ----------------
+\begin{scope}[on background layer]
+  \node[band, fit=(s1)(s3)] (bset) {};
+  \node[band, fit=(s4)(s6)] (b1) {};
+  \node[band, fit=(s7)] (b2) {};
+  \node[band, fit=(s8)(s11)] (b3) {};
+  \node[band, fit=(s12)(s14)] (b4) {};
+\end{scope}
+\node[bandlabel] at ($(bset.west)+(-0.15,0)$) {Common setup\\[2pt]\mdseries all splits};
+\node[bandlabel] at ($(b1.west)+(-0.15,0)$) {Objective 1\\[2pt]\mdseries development split};
+\node[bandlabel] at ($(b2.west)+(-0.15,0)$) {Objective 2\\[2pt]\mdseries no data};
+\node[bandlabel] at ($(b3.west)+(-0.15,0)$) {Objective 3\\[2pt]\mdseries calibration and test splits};
+\node[bandlabel] at ($(b4.west)+(-0.15,0)$) {Objective 4\\[2pt]\mdseries test split};
 \end{tikzpicture}
 \end{adjustbox}
-\caption{Overall workflow of the research methodology, from characterizing the switching-time space to benchmarking the calibrated method.}
+\caption{Methodology of the study, step by step. The shaded bands mark the steps of each specific objective and the data each one uses; all networks stay frozen throughout.}
 \label{fig:workflow}
 \end{figure}
