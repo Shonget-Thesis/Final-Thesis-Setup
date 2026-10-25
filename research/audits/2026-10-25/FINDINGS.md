@@ -12,7 +12,9 @@ Reproduce the numbers below with `python research/audits/2026-10-25/recompute_gp
 
 The proposal (Chapter 3) describes calibration and the held-out test as future work and says the test split stays locked; the drift-framing log (2026-10-25) says the same. The reports, however, contain completed calibration and test-split results (Chapter 3 master report Sections 4.2–4.10; signal-selection, novel-algorithm and proposal TO-DO reports). The signal-selection and novel-algorithm reports state that the test split "had been inspected in earlier analyses". The SNR gate (20 dB), the λ grid, the candidate set and the failure margins were all fixed after those analyses.
 
-Consequence: the 200 test speakers cannot serve as an independent held-out set for the thesis. 166 of the 666 Seed-TTS test-en prompt speakers are in no split (666 total, 500 assigned, per `research/protocols/splits/split_summary.json`) and can serve as a fresh test set once the protocol is frozen (EVAL-001).
+Consequence: the 200 test speakers cannot serve as an independent held-out set for the thesis. 166 of the 666 Seed-TTS test-en prompt speakers are in no split (666 total, 500 assigned, per `research/protocols/splits/split_summary.json`).
+
+*Correction (2026-10-25, same day):* this audit first called those 166 speakers a fresh test set. That was wrong. The team's "Phase 12" run (22 Oct, Shonget-DMOSpeech2 branch `SNRgated`, `d72e84f`; now [EXP-006](../../experiments/EXP-006-drift-under-reverb-telephone/README.md)) already synthesized and scored them under clean, reverberant and telephone-band prompts. The Chapter 3 master report says so (§4.10.2), and the audit missed it. No Seed-TTS test-en speaker is therefore unseen. A clean held-out test needs new data (for example LibriSpeech test-clean), or must reuse the 166 with their Phase 12 history stated (Phase 12 used frozen policies and tuned nothing on them). This is a team and adviser decision.
 
 ### 2. On the T4 labels, calibration certifies the whole grid (critical)
 
@@ -88,14 +90,14 @@ Consequences for this repository: the manuscript cites none of these tests. The 
 ## Recommended actions
 
 1. Freeze the protocol (EVAL-001): failure rule, θ, λ grid, candidate set, α, δ, and the choice of T4 labels as primary.
-2. Run the final held-out test on the 166 unused prompt speakers and report the earlier inspection of the 200-speaker test split.
+2. Run the final held-out test on data not yet used (new data such as LibriSpeech test-clean, or the 166 speakers outside the splits with their Phase 12 use stated; see the correction under Finding 1) and report the earlier inspection of the 200-speaker test split.
 3. Recalibrate on the T4 calibration labels and report λ̂ = 1.20 (or the frozen grid's result) instead of the CPU λ̂ = 0.50.
-4. Decide whether the contribution is the calibrated per-utterance framework (which holds with SNR-only) or the stabilization score. *Decided by the team on 2026-10-25: the method stays SNR + drift as presented at the concept defense. Learn-Then-Test sets how strongly drift acts (λ̂); whether drift adds value beyond the SNR gate is tested on degraded prompts (EXP-001, H2) and reported either way. A calibrated threshold must not be replaced by a chosen one to make drift active.*
+4. Decide whether the contribution is the calibrated per-utterance framework (which holds with SNR-only) or the stabilization score. *Decided by the team on 2026-10-25: the method stays SNR + drift as presented at the concept defense. Learn-Then-Test sets how strongly drift acts (λ̂); whether drift adds value beyond the SNR gate is tested on degraded prompts (EXP-011, H2) and reported either way. A calibrated threshold must not be replaced by a chosen one to make drift active.*
 5. Record the `Shonget-DMOSpeech2` commit and the grid SHA-256 for every Colab run.
 
 ## Pending actions
 
-Status on 2026-10-25. Owners are unassigned unless named. The follow-up tests (EXP-001, about 5–7 hours on a T4 by estimate, not measured) are deferred until after the proposal defense.
+Status on 2026-10-25. Owners are unassigned unless named. The follow-up tests (EXP-011, about 5–7 hours on a T4 by estimate, not measured) are deferred until after the proposal defense.
 
 ### Done
 
@@ -106,7 +108,7 @@ Status on 2026-10-25. Owners are unassigned unless named. The follow-up tests (E
 ### Before the proposal defense (no new results needed)
 
 1. **Chapter 3 edits**, in the proposal's future tense; the title, objectives and SNR + drift method stay as presented:
-   - Data and splits: add the 166-speaker fresh held-out set; state that the 200-speaker test split was inspected and is development evidence; name the T4 results as primary.
+   - Data and splits: name the held-out data for the final test (decision pending: new data, or the 166 speakers outside the splits with their Phase 12 use stated); state that the 200-speaker test split was inspected and is development evidence; name the T4 results as primary.
    - Robustness: describe the degraded-prompt tests (Gaussian 18–25 dB, DEMAND babble 15/20 dB, reverberation RT60 0.3/0.9 s, telephone band) and the seed-noise floor as planned work.
    - Calibration: replace "the grid extends well beyond 0.60 … so that the data rather than the grid will limit the calibrated threshold" (Section 3.6.1); on the T4 labels the end of the grid binds (Finding 2).
    - Drift: describe drift as the calibrated stopping signal whose strength λ̂ sets, with its added value tested on degraded prompts.
@@ -114,13 +116,13 @@ Status on 2026-10-25. Owners are unassigned unless named. The follow-up tests (E
    - *2026-10-25:* an edit basing Appendices A–C on the T4 development data (PAPER-012) was made and reverted at the team's request; these items are open again.
    - Small fixes: Appendix A cites Algorithm 3.3 "line 7" for continuing the teacher (it is line 6 with `[noend]`; use `\label`/`\ref`); Appendix B names `sim/ltt_sim.py` (actual path `code/analysis/ltt_sim.py`); the repeated-split check in Section 3.6.4 compares empirical test risk with 1 − δ, which the guarantee does not imply, so present it as descriptive.
 2. **Smoke test and development pilot, run once** (notebook Steps 1–6b; the pilot takes about 1.5–2.5 hours by estimate). Twenty development speakers under all eleven prompt conditions, nothing frozen. `PILOT_REPORT.md` gives everything the Chapter 3 edits need: the Section 3.3.5 checks (determinism, forced fallback reproduces Step 8, forward-pass counts), reproduction of the committed T4 grid, per-condition gate fallback and drift discordance (including where the gate switches between 18 and 25 dB), a 10-speaker seed-floor sample, the measured time per case, and offline T4-grid analyses (λ̂, the SNR-only θ calibrated by Learn-Then-Test, calibrate-on-clean / test-on-noisy, calibration size). Use it to check the pipeline and plan Chapter 3, not as evidence of risk or of drift's value.
-3. **Keep the 166 unused speakers untouched** until the protocol is frozen in Step 7; inspecting them early would end their use as a held-out set.
+3. **Decide the held-out data before freezing.** The 166 speakers outside the splits were already used in Phase 12 (EXP-006), so the notebook's Steps 7–10, which select them, should not run until the team and adviser choose new data or accept the 166 with that history stated.
 4. Do not cite the "2.5% seed-noise floor", λ̂ = 0.50 as the certified threshold, or the comprehensive suite's Tests 1, 12, 15 and 17 in the proposal.
 
 ### After the proposal defense
 
-5. Run the notebook: smoke test, freeze (Step 7), commit `preregistration.json` and `fresh_manifest.json` to `research/experiments/EXP-001-followup-t4/` **before** Step 8, then the full run and the analysis.
-6. Commit the results zip contents to `research/experiments/EXP-001-followup-t4/results/`; keep the failure audio in `listening/` on Drive.
+5. Run the notebook: smoke test, freeze (Step 7), commit `preregistration.json` and `fresh_manifest.json` to `research/experiments/EXP-011-followup-t4/` **before** Step 8, then the full run and the analysis.
+6. Commit the results zip contents to `research/experiments/EXP-011-followup-t4/results/`; keep the failure audio in `listening/` on Drive.
 7. Listening check of every failure (Chapter 3 promises it) and, if planned, of the 50 packaged pairs.
 8. Write Chapter 4 from `FOLLOWUP_REPORT.md`, and finalize the drift wording in Chapters 1 and 3 from H2: if drift prevents failures the SNR gate misses, report that as the main result; if not, report that the calibrated method reduces to the SNR gate in practice and the guarantee holds either way.
 9. If the ground-truth sample rates are not all 24 kHz (flagged in the report), recalibrate on newly scored labels before using H1.

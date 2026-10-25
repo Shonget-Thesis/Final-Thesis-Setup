@@ -17,7 +17,7 @@ Excluded, with reasons in the manifest: the comprehensive evaluation suite (type
 
 ## Follow-up tests (designed, not run)
 
-- [code/colab/run_followup_tests.py](../../../code/colab/run_followup_tests.py) and [DMOSpeech2_Followup_Tests.ipynb](../../../code/colab/DMOSpeech2_Followup_Tests.ipynb); protocol in [EXP-001](../../../research/experiments/EXP-001-followup-t4/README.md).
+- [code/colab/run_followup_tests.py](../../../code/colab/run_followup_tests.py) and [DMOSpeech2_Followup_Tests.ipynb](../../../code/colab/DMOSpeech2_Followup_Tests.ipynb); protocol in [EXP-011](../../../research/experiments/EXP-011-followup-t4/README.md).
 - Tests: seed-noise floor on the test split; fresh held-out grid on the 166 unused prompt speakers; nine degraded-prompt conditions on those speakers; analysis computed from the CSV files only, with no fallback values.
 - The runner reuses core/sampler.py and core/metrics.py from Shonget-DMOSpeech2 pinned at 8a7868f, refuses to run without CUDA, and refuses to run after freezing if the preregistration, split manifests, T4 grid or runner change.
 - Found while pinning: the T4 grid was scored before Shonget-DMOSpeech2 commit 656d86f, when SIM read the ground-truth array as 24 kHz regardless of its rate. Mean SIM agrees with the CPU grid (0.8197 vs 0.8201 over 1,600 matched rows), which suggests the ground-truth files are 24 kHz, but this is not confirmed. The runner records each rate and the report flags any that is not 24 kHz.
@@ -34,9 +34,13 @@ Same steps, dependency pins, checkpoint and Seed-TTS download cells as the novel
 
 ## Pending actions recorded
 
-The team decided to keep SNR + drift as presented at the concept defense and to run EXP-001 after the proposal defense. Both decisions, and the full list of pending actions (Chapter 3 edits before the proposal, the run and Chapter 4 after it, open provenance items), are in the "Pending actions" section of the [October 25 audit](../../../research/audits/2026-10-25/FINDINGS.md).
+The team decided to keep SNR + drift as presented at the concept defense and to run EXP-011 after the proposal defense. Both decisions, and the full list of pending actions (Chapter 3 edits before the proposal, the run and Chapter 4 after it, open provenance items), are in the "Pending actions" section of the [October 25 audit](../../../research/audits/2026-10-25/FINDINGS.md).
 
 ## Open
 
 - Commit and push before running: the notebook clones the thesis repository from GitHub.
 - Run EVAL-003 and commit the preregistration before the tests and the results after them.
+
+## Correction (later on 2026-10-25)
+
+This log describes the 166 Seed-TTS speakers outside the splits as unused or fresh. They were already used in the team's Phase 12 run (22 Oct; research/experiments/EXP-006). No Seed-TTS test-en speaker is unseen; see the correction under Finding 1 of research/audits/2026-10-25/FINDINGS.md.

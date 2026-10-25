@@ -1,0 +1,129 @@
+{
+  "data": "T4 grid, 500 speakers x clean/noisy15",
+  "fixed_switching": {
+    "clean": {
+      "s=0.07 (Step 4, 13 NFE)": {
+        "failures": 12,
+        "n": 500,
+        "rate": 0.024
+      },
+      "s=0.1 (Step 5, 15 NFE)": {
+        "failures": 9,
+        "n": 500,
+        "rate": 0.018
+      },
+      "s=0.15 (Step 6, 17 NFE)": {
+        "failures": 5,
+        "n": 500,
+        "rate": 0.01
+      },
+      "s=0.25 (Step 8, 21 NFE)": {
+        "failures": 0,
+        "n": 500,
+        "rate": 0.0
+      }
+    },
+    "noisy15": {
+      "s=0.07 (Step 4, 13 NFE)": {
+        "failures": 322,
+        "n": 500,
+        "rate": 0.644
+      },
+      "s=0.1 (Step 5, 15 NFE)": {
+        "failures": 269,
+        "n": 500,
+        "rate": 0.538
+      },
+      "s=0.15 (Step 6, 17 NFE)": {
+        "failures": 247,
+        "n": 500,
+        "rate": 0.494
+      },
+      "s=0.25 (Step 8, 21 NFE)": {
+        "failures": 0,
+        "n": 500,
+        "rate": 0.0
+      }
+    },
+    "both": {
+      "s=0.07 (Step 4, 13 NFE)": {
+        "failures": 334,
+        "n": 1000,
+        "rate": 0.334
+      },
+      "s=0.1 (Step 5, 15 NFE)": {
+        "failures": 278,
+        "n": 1000,
+        "rate": 0.278
+      },
+      "s=0.15 (Step 6, 17 NFE)": {
+        "failures": 252,
+        "n": 1000,
+        "rate": 0.252
+      },
+      "s=0.25 (Step 8, 21 NFE)": {
+        "failures": 0,
+        "n": 1000,
+        "rate": 0.0
+      }
+    }
+  },
+  "oracle": {
+    "clean": {
+      "n": 500,
+      "cheapest_safe_step_counts": {
+        "Step 4": 488,
+        "Step 5": 9,
+        "Step 6": 3,
+        "Step 8": 0
+      },
+      "share_earlier_than_reference": 1.0,
+      "oracle_mean_nfe": 13.06,
+      "distinct_oracle_steps": 3
+    },
+    "noisy15": {
+      "n": 500,
+      "cheapest_safe_step_counts": {
+        "Step 4": 178,
+        "Step 5": 91,
+        "Step 6": 52,
+        "Step 8": 179
+      },
+      "share_earlier_than_reference": 0.642,
+      "oracle_mean_nfe": 16.644,
+      "distinct_oracle_steps": 4
+    },
+    "both": {
+      "n": 1000,
+      "cheapest_safe_step_counts": {
+        "Step 4": 666,
+        "Step 5": 100,
+        "Step 6": 55,
+        "Step 8": 179
+      },
+      "share_earlier_than_reference": 0.821,
+      "oracle_mean_nfe": 14.852,
+      "distinct_oracle_steps": 4
+    }
+  },
+  "fixed_switching_by_split": {
+    "development": {
+      "Step 4": 66,
+      "Step 5": 51,
+      "Step 6": 50,
+      "n": 200
+    },
+    "calibration": {
+      "Step 4": 130,
+      "Step 5": 111,
+      "Step 6": 96,
+      "n": 400
+    },
+    "test": {
+      "Step 4": 138,
+      "Step 5": 116,
+      "Step 6": 106,
+      "n": 400
+    }
+  }
+}
