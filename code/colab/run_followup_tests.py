@@ -63,9 +63,9 @@ CONDITIONS = {
 }
 GRID_CONDITIONS = ("clean", "noisy15")
 DEGRADATION_CONDITIONS = tuple(c for c in CONDITIONS if c not in GRID_CONDITIONS)
-# Pilot: development speakers only. clean + noisy15 check reproduction of the T4 grid; the rest
-# are the degradations the energy-based SNR estimate may not see.
-PILOT_CONDITIONS = ("clean", "noisy15", "reverb09", "telephone", "babble15")
+# Pilot: development speakers only, every condition of the full run. clean + noisy15 check
+# reproduction of the T4 grid; the rest are the degradations planned for Chapter 3.
+PILOT_CONDITIONS = tuple(CONDITIONS)
 ROW_FIELDS = ["test", "utt_id", "speaker_id", "condition", "base_seed", "input_seed", "teacher_step", "nfe",
               "prompt_snr", "d_4", "d_5", "d_6", "wer", "similarity", "utmos", "wer_ref", "similarity_ref",
               "utmos_ref", "is_failure", "fail_wer", "fail_sim", "hypothesis", "audio_duration", "gt_sr", "utc"]
@@ -226,7 +226,11 @@ POLICIES = {
     "snr_drift_ltt": lambda r, lam: choose_step(r, lam, THETA),
     "snr_drift_050": lambda r, lam: choose_step(r, 0.50, THETA),
     "snr_step5": lambda r, lam: 5 if float(r["prompt_snr"]) >= THETA else REFERENCE_STEP,
+    # SNR-only with the gate itself as the calibrated parameter (lam carries theta).
+    "snr_theta": lambda r, lam: 4 if float(r["prompt_snr"]) >= lam else REFERENCE_STEP,
 }
+# Gate grid for calibrating the SNR-only rule, conservative (high theta) to aggressive.
+THETA_GRID = [round(30.0 - 0.5 * i, 1) for i in range(33)]   # 30.0, 29.5, ..., 14.0
 
 
 def is_true(v):
@@ -259,11 +263,11 @@ def binom_cdf(k, n, p):
     return sum(math.comb(n, i) * p**i * (1 - p) ** (n - i) for i in range(k + 1))
 
 
-def ltt(cases, utts, conditions, grid=LAMBDA_GRID, alpha=ALPHA, delta=DELTA):
-    """Fixed-sequence Learn-Then-Test (Algorithm 3.3). Returns (lambda_hat or None, table)."""
+def ltt(cases, utts, conditions, grid=LAMBDA_GRID, alpha=ALPHA, delta=DELTA, policy="snr_drift_ltt"):
+    """Fixed-sequence Learn-Then-Test (Algorithm 3.4) over an ordered grid. Returns (parameter or None, table)."""
     lam_hat, table = None, []
     for lam in grid:
-        n, k, _, nfe = evaluate(cases, utts, conditions, "snr_drift_ltt", lam)
+        n, k, _, nfe = evaluate(cases, utts, conditions, policy, lam)
         p = binom_cdf(k, n, alpha)
         table.append({"lambda": lam, "failures": k, "n": n, "p": p, "mean_nfe": nfe})
         if p > delta:
@@ -429,6 +433,22 @@ class Pipeline:
 
         The prompt degradation uses noise_seed (default: the synthesis seed, as the T4 grid did).
         """
+        ctx = self.prepare(item, condition, seed, out_dir, noise_seed)
+        endpoints, drift = self.teacher(ctx, steps)
+        return {k: self.student(ctx, endpoints[k]) for k in steps}, ctx["prompt_snr"], drift
+
+    def teacher(self, ctx, steps):
+        endpoints, drift, _ = self.sampler.run_teacher_single_pass(
+            tts=self.tts, step_cond=ctx["step_cond"], text=ctx["text_ids"], y0=ctx["y0"], prompt_len=ctx["prompt_len"],
+            target_steps=tuple(steps), cfg_strength=self.sampler.CFG_STRENGTH)
+        return endpoints, drift
+
+    def student(self, ctx, endpoint):
+        return self.sampler.run_student_completion(tts=self.tts, cond=ctx["cond"], text=ctx["text_ids"], teacher_endpoint=endpoint,
+                                                   prompt_len=ctx["prompt_len"], input_seed=ctx["seed"])[1]
+
+    def prepare(self, item, condition, seed, out_dir, noise_seed=None):
+        """Prompt degradation, duration prediction, conditioning and initial noise for one case."""
         torch, sampler = self.torch, self.sampler
         prompt_path = self.data_dir / item["prompt_wav_rel"]
         if not prompt_path.exists() or prompt_path.stat().st_size < 1000:
@@ -457,12 +477,76 @@ class Pipeline:
         gen = sampler.make_local_generator(seed)
         y0 = self.pad_sequence([torch.randn(d, 100, dtype=torch.float32, generator=gen) for d in dur_tensor],
                                padding_value=0, batch_first=True).to(self.device)
-        endpoints, drift, _ = sampler.run_teacher_single_pass(tts=self.tts, step_cond=step_cond, text=text_ids, y0=y0,
-                                                              prompt_len=prompt_len, target_steps=tuple(steps),
-                                                              cfg_strength=sampler.CFG_STRENGTH)
-        audios = {k: sampler.run_student_completion(tts=self.tts, cond=cond, text=text_ids, teacher_endpoint=endpoints[k],
-                                                    prompt_len=prompt_len, input_seed=seed)[1] for k in steps}
-        return audios, prompt_snr, drift
+        return {"cond": cond, "text_ids": text_ids, "step_cond": step_cond, "prompt_len": prompt_len, "y0": y0,
+                "prompt_snr": prompt_snr, "seed": seed}
+
+    def verify(self, item, out_dir):
+        """The three checks of Section 3.3.5 on one clean case, plus single-pass equivalence.
+
+        1. Determinism: two runs with the same seed give bitwise-identical audio and drift.
+        2. Forced fallback: the online early-stopping teacher of the T4 timing benchmark, with
+           lambda = -1, stops at Step 8 and reproduces the reference audio exactly; with the gate
+           open and lambda = +inf it stops at Step 4 and reproduces the Step-4 audio.
+        3. Forward passes: counters around the teacher and student networks record 2(k+1) + 3.
+        Also: the single teacher pass gives the same endpoint as a separate run to each step.
+        """
+        torch, np = self.torch, self.np
+        sys.path.insert(0, str(Path(self.data_dir).parents[2] / "Handover Scheduling" / "colab"))
+        from run_gpu_full_pipeline_timing_benchmark import run_early_stop_teacher
+        res = {"utt_id": item["utt_id"]}
+        seed = item["input_seed"]
+        a1 = self.synthesize(item, "clean", seed, STEPS, out_dir)
+        a2 = self.synthesize(item, "clean", seed, STEPS, out_dir)
+        res["determinism"] = all(np.array_equal(a1[0][k], a2[0][k]) for k in STEPS) and a1[2] == a2[2]
+        # If not bitwise identical, the size tells GPU kernel jitter (~1e-6) apart from a real difference.
+        res["determinism_max_abs_audio_diff"] = max(float(np.max(np.abs(a1[0][k] - a2[0][k]))) for k in STEPS)
+        res["determinism_max_abs_drift_diff"] = max(abs(a1[2][i] - a2[2][i]) for i in a1[2])
+        ctx = self.prepare(item, "clean", seed, out_dir)
+        endpoints, _ = self.teacher(ctx, STEPS)
+        res["single_pass_equals_separate_runs"] = all(torch.equal(self.teacher(ctx, (k,))[0][k], endpoints[k]) for k in STEPS)
+        online = {}
+        for label, lam, expect in (("forced_fallback", -1.0, 8), ("gate_open_lambda_inf", 1e9, 4)):
+            ep, step, *_ = run_early_stop_teacher(self.tts, ctx["step_cond"], ctx["text_ids"], ctx["y0"], ctx["prompt_len"],
+                                                  50.0, "proposed", lambda_thresh=lam, snr_thresh=THETA)
+            online[label] = {"exit_step": int(step), "expected_step": expect,
+                             "endpoint_identical": bool(torch.equal(ep, endpoints[expect])),
+                             "audio_identical": bool(np.array_equal(self.student(ctx, ep), a1[0][expect]))}
+        res["online_policy"] = online
+        counts = {"teacher": 0, "student": 0}
+        restore = []
+
+        def count_calls(attr, key):
+            """Count calls of tts.<attr>: wrap the module's forward, or the attribute if it is a plain callable."""
+            target = getattr(self.tts, attr)
+            holder, name = (target, "forward") if isinstance(target, torch.nn.Module) else (self.tts, attr)
+            original = getattr(holder, name)
+
+            def wrapped(*a, **kw):
+                counts[key] += 1
+                return original(*a, **kw)
+            setattr(holder, name, wrapped)
+            restore.append((holder, name, original, holder is target))
+
+        count_calls("teacher", "teacher")
+        count_calls("generator", "student")
+        try:
+            nfe = {}
+            for k in STEPS:
+                counts.update(teacher=0, student=0)
+                self.student(ctx, self.teacher(ctx, (k,))[0][k])
+                nfe[k] = {"teacher": counts["teacher"], "student": counts["student"], "total": counts["teacher"] + counts["student"],
+                          "expected": COST[k]}
+        finally:
+            for holder, name, original, instance_forward in restore:
+                if instance_forward:
+                    del holder.forward          # back to the class's forward
+                else:
+                    setattr(holder, name, original)
+        res["forward_passes"] = nfe
+        res["all_passed"] = (res["determinism"] and res["single_pass_equals_separate_runs"]
+                             and all(v["exit_step"] == v["expected_step"] and v["endpoint_identical"] and v["audio_identical"] for v in online.values())
+                             and all(v["total"] == v["expected"] for v in nfe.values()))
+        return res
 
     def ground_truth(self, item):
         path = self.data_dir / item["gt_wav_rel"]
@@ -590,6 +674,21 @@ def run_seed_floor(pipe, items, out_dir, csv_name="seed_floor.csv"):
     print(f"[OK] seed-floor complete: {path}", flush=True)
 
 
+def run_verification(pipe, items, out_dir):
+    """Run Pipeline.verify on each item and write verification.json; an exception is recorded, not raised."""
+    import traceback
+    checks = []
+    for it in items:
+        try:
+            checks.append(pipe.verify(it, out_dir))
+        except Exception:
+            checks.append({"utt_id": it["utt_id"], "all_passed": False, "error": traceback.format_exc()})
+    res = {"gpu": pipe.gpu, "checks": checks, "all_passed": all(c["all_passed"] for c in checks)}
+    (Path(out_dir) / "verification.json").write_text(json.dumps(res, indent=2) + "\n", encoding="utf-8")
+    print(f"[OK] verification checks {'passed' if res['all_passed'] else 'FAILED'}: {Path(out_dir) / 'verification.json'}", flush=True)
+    return res
+
+
 def pilot_items(n):
     """The first n development speakers by utterance ID. Never fresh or test speakers."""
     return sorted(split_items("development"), key=lambda it: it["utt_id"])[:n]
@@ -610,9 +709,10 @@ def cmd_gpu(args):
             pipe.load_babble(args.demand_dir)
         dev = split_items("development")[:2]
         conds = ("clean", "noisy15", "reverb09", "telephone") + (("babble15",) if args.demand_dir else ())
+        ver = run_verification(pipe, dev[:1], out)
         run_grid(pipe, dev, conds, "smoke", out, "smoke_grid.csv")
         run_seed_floor(pipe, dev[:1], out, "smoke_seed_floor.csv")
-        print(f"Smoke run complete: {out}")
+        print(f"Smoke run complete: {out}; verification checks {'passed' if ver['all_passed'] else 'FAILED, see verification.json'}")
         return
     if args.cmd == "pilot":
         out = out / "pilot"
@@ -625,6 +725,8 @@ def cmd_gpu(args):
         if any(CONDITIONS[c][0] == "babble" for c in conds):
             pipe.load_babble(args.demand_dir or "")
         dev = pilot_items(args.n_speakers)
+        if not (out / "verification.json").exists():
+            run_verification(pipe, dev[:2], out)
         run_grid(pipe, dev, conds, "pilot", out, "pilot_grid.csv")
         run_seed_floor(pipe, dev[: max(1, args.n_speakers // 2)], out, "pilot_seed_floor.csv")
         pilot_report(Path(args.out))
@@ -664,7 +766,6 @@ def read_csv(path, repair=False):
 
 def analyze(out, allow_partial=False):
     """Every number in the report is computed here from the CSV files; nothing is typed in."""
-    import random
     out = Path(out)
     prereg = load_prereg(out)
     res = {"preregistration_sha256": prereg["sha256"], "partial": False}
@@ -760,25 +861,7 @@ def analyze(out, allow_partial=False):
         res["H3_seed_floor"] = "not run"
 
     # Secondary, development evidence on the committed grid.
-    lam_c, _ = ltt(grid, calib, ("clean",))
-    n, k, _, nfe = evaluate(grid, test, ("noisy15",), "snr_drift_ltt", lam_c if lam_c is not None else -1.0)
-    res["dev_clean_to_noisy"] = {"lambda_hat_clean_only": lam_c, "test_noisy15_failures": k, "n": n, "mean_nfe": nfe}
-    rng = random.Random(2026)
-    sizes = {}
-    for size in (50, 100, 200):
-        picks, risks, nfes = [], [], []
-        for _ in range(200):
-            sub = rng.sample(calib, size)
-            lh, _ = ltt(grid, sub, GRID_CONDITIONS)
-            n, k, _, nfe = evaluate(grid, test, GRID_CONDITIONS, "snr_drift_ltt", lh if lh is not None else -1.0)
-            picks.append(lh)
-            risks.append(k / n)
-            nfes.append(nfe)
-        certified = sorted(p for p in picks if p is not None)
-        sizes[size] = {"reference_only_share": 1 - len(certified) / len(picks),
-                       "median_lambda_hat": certified[len(certified) // 2] if certified else None,
-                       "mean_test_risk": sum(risks) / len(risks), "mean_test_nfe": sum(nfes) / len(nfes)}
-    res["dev_calibration_size"] = sizes
+    res.update(t4_grid_dev_analyses(grid, calib, test))
 
     (out / "analysis_results.json").write_text(json.dumps(res, indent=2) + "\n", encoding="utf-8")
     (out / "FOLLOWUP_REPORT.md").write_text(render_report(res), encoding="utf-8")
@@ -849,10 +932,44 @@ def pilot_report(out):
                                            "seed_floor_upper_bound": 400 * sec / 3600}
     res["ground_truth_sample_rates"] = sorted({int(r["gt_sr"]) for r in rows if r.get("gt_sr")})
 
+    # 5. The Section 3.3.5 checks, if the pilot ran them.
+    ver_path = pdir / "verification.json"
+    res["verification"] = json.loads(ver_path.read_text(encoding="utf-8")) if ver_path.exists() else None
+
+    # 6. Offline analyses on the committed T4 grid (no GPU).
+    split_of = {}
+    for name in ("calibration", "test"):
+        for r in json.loads((SPLITS_DIR / f"{name}_manifest.json").read_text(encoding="utf-8")):
+            split_of[r["utt_id"]] = name
+    calib = sorted({u for (u, _) in grid if split_of.get(u) == "calibration"})
+    test = sorted({u for (u, _) in grid if split_of.get(u) == "test"})
+    lam_hat, lam_table = ltt(grid, calib, GRID_CONDITIONS)
+    res["t4_calibration"] = {"lambda_hat": lam_hat, "n": len(calib), "table": lam_table}
+    res.update(t4_grid_dev_analyses(grid, calib, test))
+
     (pdir / "pilot_results.json").write_text(json.dumps(res, indent=2) + "\n", encoding="utf-8")
     pct = lambda x: f"{100 * x:.0f}%"
-    L = ["# Development pilot", "", res["note"], "",
-         "## Reproduction of the committed T4 grid (clean + noisy15)", ""]
+    L = ["# Development pilot", "", res["note"], "", "## Pre-experiment checks (Section 3.3.5)", ""]
+    v = res["verification"]
+    if v:
+        L.append(f"Overall: **{'PASSED' if v['all_passed'] else 'FAILED'}** on {len(v['checks'])} clean development cases ({v['gpu']}).")
+        L += ["", "| Case | Determinism | Single pass = separate runs | Forced fallback = Step 8 | Gate open, λ = ∞ → Step 4 | Forward passes = 2(k+1)+3 |",
+              "|---|---|---|---|---|---|"]
+        ok = lambda b: "yes" if b else "**no**"
+        for c in v["checks"]:
+            if "error" in c:
+                L.append(f"| {c['utt_id'][-24:]} | **error**: {c['error'].strip().splitlines()[-1][:120]} | | | | |")
+                continue
+            o = c["online_policy"]
+            fb, op = o["forced_fallback"], o["gate_open_lambda_inf"]
+            nfe = ", ".join(f"k={k}: {d['total']}/{d['expected']}" for k, d in c["forward_passes"].items())
+            det = ok(c["determinism"]) + ("" if c["determinism"] else f" (max |Δaudio| {c['determinism_max_abs_audio_diff']:.2e})")
+            L.append(f"| {c['utt_id'][-24:]} | {det} | {ok(c['single_pass_equals_separate_runs'])} | "
+                     f"{ok(fb['exit_step'] == 8 and fb['endpoint_identical'] and fb['audio_identical'])} | "
+                     f"{ok(op['exit_step'] == 4 and op['endpoint_identical'] and op['audio_identical'])} | {nfe} |")
+    else:
+        L.append("Not run.")
+    L += ["", "## Reproduction of the committed T4 grid (clean + noisy15)", ""]
     if rep["cases"]:
         L += [f"{rep['cases']} cases, {rep['rows']} rows; same failure label in {rep['same_failure_label']}/{rep['rows']} rows. "
               f"Max |Δ|: prompt SNR {rep['max_abs_diff_prompt_snr']:.4f} dB, d₄ {rep['max_abs_diff_d_4']:.6f}, "
@@ -875,8 +992,49 @@ def pilot_report(out):
         L += ["", f"Median {sec:.1f} s per case. Estimated full run: fresh grid {e['fresh_grid']:.1f} h, "
                   f"degradations {e['degradations']:.1f} h, seed floor at most {e['seed_floor_upper_bound']:.1f} h."]
     L += ["", "Small development sample: use it to check the pipeline and plan, not to estimate risk or test drift."]
+    t = res["dev_snr_only_theta"]
+    cn = res["dev_clean_to_noisy"]
+    L += ["", "## Offline analyses on the committed T4 grid (development evidence; no GPU)", "",
+          f"- Learn-Then-Test for SNR + drift on the calibration split (n = {res['t4_calibration']['n']}, λ grid 0.20–1.20): λ̂ = {res['t4_calibration']['lambda_hat']}.",
+          f"- SNR-only rule with θ calibrated by Learn-Then-Test (θ from 30.0 down to 14.0 dB in 0.5 dB steps): θ̂ = {t['theta_hat']}; "
+          f"on the test split {t['test_failures']}/{t['n']} speaker failures, mean NFE {t['test_mean_nfe']:.2f}.",
+          f"- Calibrate on clean prompts only: λ̂ = {cn['lambda_hat_clean_only']}; on test noisy15 prompts {cn['test_noisy15_failures']}/{cn['n']} failures, mean NFE {cn['mean_nfe']:.2f}.",
+          "", "| Calibration size | No threshold certified | Median λ̂ | Mean test risk | Mean test NFE |", "|---:|---:|---:|---:|---:|"]
+    for size, s_ in res["dev_calibration_size"].items():
+        L.append(f"| {size} | {pct(s_['reference_only_share'])} | {s_['median_lambda_hat']} | {100 * s_['mean_test_risk']:.1f}% | {s_['mean_test_nfe']:.2f} |")
+    L += ["", "The 200-speaker test split was inspected before any protocol was frozen, so these are development evidence."]
     (pdir / "PILOT_REPORT.md").write_text("\n".join(L) + "\n", encoding="utf-8")
     print(f"Wrote {pdir / 'PILOT_REPORT.md'}")
+    return res
+
+
+def t4_grid_dev_analyses(grid, calib, test):
+    """Development-evidence analyses on the committed T4 grid (the test split was inspected earlier)."""
+    import random
+    res = {}
+    lam_c, _ = ltt(grid, calib, ("clean",))
+    n, k, _, nfe = evaluate(grid, test, ("noisy15",), "snr_drift_ltt", lam_c if lam_c is not None else -1.0)
+    res["dev_clean_to_noisy"] = {"lambda_hat_clean_only": lam_c, "test_noisy15_failures": k, "n": n, "mean_nfe": nfe}
+    th, table = ltt(grid, calib, GRID_CONDITIONS, grid=THETA_GRID, policy="snr_theta")
+    n, k, _, nfe = evaluate(grid, test, GRID_CONDITIONS, "snr_theta", th if th is not None else math.inf)
+    res["dev_snr_only_theta"] = {"theta_grid": [THETA_GRID[0], THETA_GRID[-1], 0.5], "theta_hat": th,
+                                 "calibration_table": table, "test_failures": k, "n": n, "test_mean_nfe": nfe}
+    rng = random.Random(2026)
+    sizes = {}
+    for size in (50, 100, 200):
+        picks, risks, nfes = [], [], []
+        for _ in range(200):
+            sub = rng.sample(calib, size)
+            lh, _ = ltt(grid, sub, GRID_CONDITIONS)
+            n, k, _, nfe = evaluate(grid, test, GRID_CONDITIONS, "snr_drift_ltt", lh if lh is not None else -1.0)
+            picks.append(lh)
+            risks.append(k / n)
+            nfes.append(nfe)
+        certified = sorted(p for p in picks if p is not None)
+        sizes[size] = {"reference_only_share": 1 - len(certified) / len(picks),
+                       "median_lambda_hat": certified[len(certified) // 2] if certified else None,
+                       "mean_test_risk": sum(risks) / len(risks), "mean_test_nfe": sum(nfes) / len(nfes)}
+    res["dev_calibration_size"] = sizes
     return res
 
 
