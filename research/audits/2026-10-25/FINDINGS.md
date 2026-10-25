@@ -90,5 +90,43 @@ Consequences for this repository: the manuscript cites none of these tests. The 
 1. Freeze the protocol (EVAL-001): failure rule, θ, λ grid, candidate set, α, δ, and the choice of T4 labels as primary.
 2. Run the final held-out test on the 166 unused prompt speakers and report the earlier inspection of the 200-speaker test split.
 3. Recalibrate on the T4 calibration labels and report λ̂ = 1.20 (or the frozen grid's result) instead of the CPU λ̂ = 0.50.
-4. Decide whether the contribution is the calibrated per-utterance framework (which holds with SNR-only) or the stabilization score.
+4. Decide whether the contribution is the calibrated per-utterance framework (which holds with SNR-only) or the stabilization score. *Decided by the team on 2026-10-25: the method stays SNR + drift as presented at the concept defense. Learn-Then-Test sets how strongly drift acts (λ̂); whether drift adds value beyond the SNR gate is tested on degraded prompts (EXP-001, H2) and reported either way. A calibrated threshold must not be replaced by a chosen one to make drift active.*
 5. Record the `Shonget-DMOSpeech2` commit and the grid SHA-256 for every Colab run.
+
+## Pending actions
+
+Status on 2026-10-25. Owners are unassigned unless named. The follow-up tests (EXP-001, about 5–7 hours on a T4 by estimate, not measured) are deferred until after the proposal defense.
+
+### Done
+
+- Audit notes added to every report in `research/reports/`; STATUS.md corrected.
+- Verified Colab T4 results imported with hashes (`research/evidence/benchmarks/MANIFEST.json`, REPRO-003); CPU runs and the comprehensive evaluation suite excluded.
+- Follow-up runner and notebook written and tested locally (`code/colab/run_followup_tests.py`, `DMOSpeech2_Followup_Tests.ipynb`, EVAL-003); the notebook clones branch `rhenelAudit`. Not yet run on a GPU.
+
+### Before the proposal defense (no new results needed)
+
+1. **Chapter 3 edits**, in the proposal's future tense; the title, objectives and SNR + drift method stay as presented:
+   - Data and splits: add the 166-speaker fresh held-out set; state that the 200-speaker test split was inspected and is development evidence; name the T4 results as primary.
+   - Robustness: describe the degraded-prompt tests (Gaussian 18–25 dB, DEMAND babble 15/20 dB, reverberation RT60 0.3/0.9 s, telephone band) and the seed-noise floor as planned work.
+   - Calibration: replace "the grid extends well beyond 0.60 … so that the data rather than the grid will limit the calibrated threshold" (Section 3.6.1); on the T4 labels the end of the grid binds (Finding 2).
+   - Drift: describe drift as the calibrated stopping signal whose strength λ̂ sets, with its added value tested on degraded prompts.
+   - SNR-only baseline: define how its gate θ is calibrated (grid and order).
+   - Small fixes: Appendix A cites Algorithm 3.3 "line 7" for continuing the teacher (it is line 6 with `[noend]`; use `\label`/`\ref`); Appendix B names `sim/ltt_sim.py` (actual path `code/analysis/ltt_sim.py`); the repeated-split check in Section 3.6.4 compares empirical test risk with 1 − δ, which the guarantee does not imply, so present it as descriptive.
+2. **Optional smoke test** (notebook Steps 1–6, about 15–20 minutes): confirms the notebook runs on a GPU and measures the real time per case. Uses two development speakers only and freezes nothing.
+3. **Keep the 166 unused speakers untouched** until the protocol is frozen in Step 7; inspecting them early would end their use as a held-out set.
+4. Do not cite the "2.5% seed-noise floor", λ̂ = 0.50 as the certified threshold, or the comprehensive suite's Tests 1, 12, 15 and 17 in the proposal.
+
+### After the proposal defense
+
+5. Run the notebook: smoke test, freeze (Step 7), commit `preregistration.json` and `fresh_manifest.json` to `research/experiments/EXP-001-followup-t4/` **before** Step 8, then the full run and the analysis.
+6. Commit the results zip contents to `research/experiments/EXP-001-followup-t4/results/`; keep the failure audio in `listening/` on Drive.
+7. Listening check of every failure (Chapter 3 promises it) and, if planned, of the 50 packaged pairs.
+8. Write Chapter 4 from `FOLLOWUP_REPORT.md`, and finalize the drift wording in Chapters 1 and 3 from H2: if drift prevents failures the SNR gate misses, report that as the main result; if not, report that the calibrated method reduces to the SNR gate in practice and the guarantee holds either way.
+9. If the ground-truth sample rates are not all 24 kHz (flagged in the report), recalibrate on newly scored labels before using H1.
+10. After merging `rhenelAudit` into `main`, set `THESIS_BRANCH = 'main'` in Step 2 of the notebook.
+
+### Open provenance and team decisions
+
+11. The CPU grids and scripts behind the reports' λ̂ = 0.50, and `run_drift_features_benchmark.py`, were never committed; record them or note them as unrecoverable.
+12. REPRO-001 is marked done, but its acceptance criterion (generating scripts, tested environment export) is not met for the CPU grids; the team decides its status.
+13. Adviser review of the drift framing and of these findings.
