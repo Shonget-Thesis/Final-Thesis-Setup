@@ -19,7 +19,7 @@
 \section[APPENDIX A.\ SAMPLE CALCULATIONS]{Sample Calculations}
 \label{app:calc}
 
-This appendix works through the formulas of Chapter~\ref{sec:method} with numbers small enough to check by hand. Sections~\ref{app:calc-grid} to \ref{app:calc-fail} follow one toy utterance through the stopping policy; Section~\ref{app:calc-ltt} computes the calibration p-values and the sample-size limit. In the toy example each ``output'' has only three numbers, the threshold is $\lambda=0.50$ and the SNR gate is $\theta=20$~dB. The values illustrate the computation and are not experimental results.
+This appendix works through the formulas of Chapter~\ref{sec:method} on real values from the team's runs on the Tesla T4 GPU (\nolinkurl{research/evidence/benchmarks/gpu_grid_all1000.csv}), using the development split only. Sections~\ref{app:calc-grid} to \ref{app:calc-fail} follow one development utterance through the stopping policy with the threshold $\lambda=0.50$ and the SNR gate $\theta=20$~dB: \nolinkurl{common_voice_en_13900-common_voice_en_13901}, target text ``We don't have the budget to produce it in studio quality.'', chosen as the first development utterance in ID order that the policy keeps past Step~4. Section~\ref{app:calc-ltt} computes the calibration p-values on the 100 development speakers and the sample-size limit. The T4 runs record the prompt SNR and the stabilization scores but not the prompt's frame energies or the endpoint tensors, so those two steps are shown on small worked numbers, with the utterance's recorded values beside them.
 
 \subsection{Teacher Grid and Cost of Each Candidate}
 \label{app:calc-grid}
@@ -46,62 +46,64 @@ Step $k$ & $t_k$ & Role & Teacher passes & Cost $C$ & Saving vs.\ 21 \\
 
 \subsection{Prompt SNR Estimate}
 
-Suppose the prompt has ten frames with energies 0.010, 0.012, 0.00001, 0.0002, 0.011, 0.009, 0.0003, 0.013, 0.010 and 0.0002. The quietest 10\% is one frame, so $\bar E_{\text{bottom}} = 0.00001$. The loudest half is 0.010, 0.010, 0.011, 0.012 and 0.013, so $\bar E_{\text{top}} = 0.0112$. By \Cref{eq:snr},
+As a worked example of the arithmetic, take a prompt of ten frames with energies 0.010, 0.012, 0.00001, 0.0002, 0.011, 0.009, 0.0003, 0.013, 0.010 and 0.0002. The quietest 10\% is one frame, so $\bar E_{\text{bottom}} = 0.00001$. The loudest half is 0.010, 0.010, 0.011, 0.012 and 0.013, so $\bar E_{\text{top}} = 0.0112$. By \Cref{eq:snr},
 \[
 \hat S = 10\log_{10}\frac{0.0112}{0.00001} = 10\log_{10}1120 = 30.5\ \text{dB}.
 \]
-Since $30.5\ge\theta=20$, the SNR gate is open and early stopping is allowed (Algorithm~\ref{alg:handover}, line~1).
+The development utterance's prompt recorded $\hat S=30.7$~dB. Since $30.7\ge\theta=20$, the SNR gate is open and early stopping is allowed (Algorithm~\ref{alg:handover}, line~\ref{line:snr}). Its noisy15 version, with white Gaussian noise added at 15~dB, recorded $\hat S=17.7$~dB, so for that prompt the gate is closed.
 
 \subsection{Endpoint Estimate}
 
-At step 5 ($t_5=0.1181$), take one entry of the state, $x_{t_5}=0.8$, with guided velocity $v=1.5$ (\Cref{eq:guided}). By \Cref{eq:endpoint} the endpoint estimate of that entry is
+At step 5 ($t_5=0.1181$), take as a worked example one entry of the state, $x_{t_5}=0.8$, with guided velocity $v=1.5$ (\Cref{eq:guided}). By \Cref{eq:endpoint} the endpoint estimate of that entry is
 \[
 \hat x_1(t_5) = 0.8 + (1-0.1181)\times1.5 = 0.8 + 0.8819\times1.5 = 2.12.
 \]
-The velocity is computed anyway for the Euler step, so this estimate costs no forward pass (Proposition~\ref{prop:zero}).
+The same operation is applied to every entry of the mel-spectrogram. The velocity is computed anyway for the Euler step, so this estimate costs no forward pass (Proposition~\ref{prop:zero}).
 
 \subsection{Endpoint-Stabilization Score and Stopping Decision}
 
-Let the three-number endpoint estimates at steps 3, 4 and 5 be $[0.5,\,0.2,\,0.9]$, $[2.0,\,1.0,\,2.0]$ and $[2.2,\,1.0,\,1.6]$. With \Cref{eq:stab}:
+As a worked example of \Cref{eq:stab}, let three-number endpoint estimates at steps 3, 4 and 5 be $[0.5,\,0.2,\,0.9]$, $[2.0,\,1.0,\,2.0]$ and $[2.2,\,1.0,\,1.6]$:
 \begin{itemize}
-\item Step 4 (first candidate): the change is $[1.5,\,0.8,\,1.1]$ with norm $\sqrt{2.25+0.64+1.21}=\sqrt{4.10}=2.025$; the estimate's norm is $\sqrt{4+1+4}=3.000$; so $d_4 = 2.025/3.000 = 0.675 > \lambda = 0.50$. By \Cref{eq:policy} the teacher continues (Algorithm~\ref{alg:handover}, line~7).
-\item Step 5: the change is $[0.2,\,0,\,-0.4]$ with norm $\sqrt{0.20}=0.447$; the estimate's norm is $\sqrt{4.84+1+2.56}=\sqrt{8.40}=2.898$; so $d_5 = 0.447/2.898 = 0.154 \le 0.50$, and $\hat S\ge\theta$. The teacher stops at step 5 (lines~4--5).
+\item Step 4 (first candidate): the change is $[1.5,\,0.8,\,1.1]$ with norm $\sqrt{2.25+0.64+1.21}=\sqrt{4.10}=2.025$; the estimate's norm is $\sqrt{4+1+4}=3.000$; so $d_4 = 2.025/3.000 = 0.675 > \lambda = 0.50$. By \Cref{eq:policy} the teacher continues (Algorithm~\ref{alg:handover}, line~\ref{line:continue}).
+\item Step 5: the change is $[0.2,\,0,\,-0.4]$ with norm $\sqrt{0.20}=0.447$; the estimate's norm is $\sqrt{4.84+1+2.56}=\sqrt{8.40}=2.898$; so $d_5 = 0.447/2.898 = 0.154 \le 0.50$, and $\hat S\ge\theta$. The teacher stops at step 5 (lines~\ref{line:stopcheck}--\ref{line:handover}).
 \end{itemize}
-By \Cref{eq:cost} the utterance costs $2(5+1)+3 = 15$ forward passes instead of 21, a saving of $6/21 = 28.6\%$. Had $\hat S$ been 17.8~dB, the gate would have kept the teacher running to the reference step however settled the estimates looked, and the cost would have been 21.
+The development utterance follows the same path. Its T4 run recorded $d_4=0.533$, $d_5=0.420$ and $d_6=0.335$, computed over its generated frames. Since $d_4=0.533>0.50$, the teacher continues past Step~4; since $d_5=0.420\le0.50$ and $\hat S=30.7\ge20$, it stops at Step~5. By \Cref{eq:cost} the utterance costs $2(5+1)+3 = 15$ forward passes instead of 21, a saving of $6/21 = 28.6\%$. For its noisy15 version ($\hat S=17.7$~dB) the gate keeps the teacher running to the reference step however settled the estimates look, and the cost is 21.
 
 \subsection{Added-Failure Check}
 \label{app:calc-fail}
 
 With \Cref{eq:failure} and $c=12.5\%$, $m_W=1$ point, $m_S=0.02$:
 \begin{itemize}
-\item \emph{No failure.} Reference output: WER 0\%, SIM 0.80. Candidate output: WER 0\%, SIM 0.79. The WER limit is $\max(12.5\%,\,0\%+1\%)=12.5\%$ and the SIM limit is $0.80-0.02=0.78$; both are respected, so $f=0$.
-\item \emph{Failure.} Reference output: WER 15.38\% (2 errors in 13 words). Candidate output: WER 23.08\% (3 errors). The WER limit is $\max(12.5\%,\,15.38\%+1\%)=16.38\%$, which is exceeded, so $f=1$ regardless of SIM.
+\item \emph{No failure.} The development utterance at its chosen Step~5: WER 0\% (no errors in 12 words), SIM 0.963. Its Step-8 reference: WER 0\%, SIM 0.966. The WER limit is $\max(12.5\%,\,0\%+1\%)=12.5\%$ and the SIM limit is $0.966-0.02=0.946$; both are respected, so $f=0$.
+\item \emph{Failure.} Development utterance \nolinkurl{common_voice_en_15734837-common_voice_en_15734838} with its noisy15 prompt, handed over at Step~4 (which the SNR gate would not allow): WER 37.5\% (3 errors in 8 words), SIM 0.889. Its Step-8 reference: WER 0\%, SIM 0.916. The WER limit is $\max(12.5\%,\,0\%+1\%)=12.5\%$, which is exceeded, so $f=1$; the SIM limit $0.916-0.02=0.896$ is missed as well.
 \end{itemize}
 
 \subsection{Calibration p-Values and Sample Size}
 \label{app:calc-ltt}
 
-Take $n=100$ calibration inputs, $\alpha=0.05$ and $\delta=0.10$, and suppose the thresholds of the grid produce the failure counts in Table~\ref{tab:app-ltt}. For brevity the example uses a four-value grid; the grid of the study is given in Section~\ref{sec:calibration}. Each p-value follows from \Cref{eq:pvalue}; for example, with one failure,
+Take the $n=100$ development speakers, $\alpha=0.05$, $\delta=0.10$, the SNR gate $\theta=20$~dB and the grid of Section~\ref{sec:calibration}, counting a speaker as failing when its clean or its noisy15 case fails (Section~\ref{sec:data}). The T4 runs give the failure counts in Table~\ref{tab:app-ltt}. The study will calibrate on the separate calibration split; the development split serves here only to show the arithmetic on real counts. Each p-value follows from \Cref{eq:pvalue}; for example, with one failure,
 \[
 \begin{aligned}
 p &= \P\big(\mathrm{Bin}(100,0.05)\le1\big) = 0.95^{100} + 100\times0.05\times0.95^{99}\\
   &= 0.0059 + 0.0312 = 0.0371.
 \end{aligned}
 \]
-Algorithm~\ref{alg:ltt} certifies $\lambda=0.40$ and $\lambda=0.50$, stops at $\lambda=0.60$, and returns $\hat\lambda=0.50$. By \Cref{eq:guarantee}, with probability at least 90\%, this threshold adds failures to at most 5\% of new inputs from the same population.
+With two failures, $p=\P\big(\mathrm{Bin}(100,0.05)\le2\big)=0.1183$. Algorithm~\ref{alg:ltt} certifies $\lambda=0.20$ to $\lambda=0.50$, stops at $\lambda=0.55$, and returns $\hat\lambda=0.50$. Had these been calibration speakers, \Cref{eq:guarantee} would then state that, with probability at least 90\%, this threshold adds failures to at most 5\% of new inputs from the same population.
 
 \begin{table}[!htbp]
 \centering\small
-\caption{Fixed-sequence calibration with $n=100$, $\alpha=0.05$, $\delta=0.10$ (illustrative failure counts).}
+\caption{Fixed-sequence calibration on the 100 development speakers, $\alpha=0.05$, $\delta=0.10$ (failure counts from the T4 runs).}
 \label{tab:app-ltt}
 \begin{tabular}{@{}cccccl@{}}
 \toprule
 Order $g$ & $\lambda_g$ & Failures $n\hat R_g$ & $p_g$ (\Cref{eq:pvalue}) & $p_g\le0.10$? & Action \\
 \midrule
-1 & 0.40 & 0 & 0.0059 & yes & certify, continue \\
-2 & 0.50 & 1 & 0.0371 & yes & certify, continue \\
-3 & 0.60 & 3 & 0.2578 & no & stop \\
-4 & 0.70 & 6 & not tested & --- & --- \\
+1--4 & 0.20--0.35 & 0 & 0.0059 & yes & certify, continue \\
+5 & 0.40 & 1 & 0.0371 & yes & certify, continue \\
+6 & 0.45 & 1 & 0.0371 & yes & certify, continue \\
+7 & 0.50 & 1 & 0.0371 & yes & certify, continue \\
+8 & 0.55 & 2 & 0.1183 & no & stop \\
+9--21 & 0.60--1.20 & --- & not tested & --- & --- \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -124,7 +126,7 @@ A candidate fails with a probability that grows with its score and is higher on 
 \[
 \P\big(f(x,k)=1\big) = \sigma\big(-4.4 + 3.2\,d_k + 1.6\,\mathbb 1[\text{noisy}] - 0.45\,(k-4)\big),
 \]
-where $\sigma$ is the logistic function; the reference never fails, as in Definition~\ref{def:failure}. The policy of \Cref{eq:policy} uses $\theta=20$~dB and the grid $\lambda\in\{0.20,0.25,\dots,1.20\}$, with costs from \Cref{eq:cost}. The true risk of every threshold is computed on 400{,}000 simulated utterances (Figure~\ref{fig:app-sim}). Calibration is then repeated 1{,}000 times for each calibration size $n$, with $\alpha=0.05$ and $\delta=0.10$, and the true risk of each returned threshold is recorded. The script, \texttt{sim/ltt\_sim.py}, accompanies this manuscript.
+where $\sigma$ is the logistic function; the reference never fails, as in Definition~\ref{def:failure}. The policy of \Cref{eq:policy} uses $\theta=20$~dB and the grid $\lambda\in\{0.20,0.25,\dots,1.20\}$, with costs from \Cref{eq:cost}. The true risk of every threshold is computed on 400{,}000 simulated utterances (Figure~\ref{fig:app-sim}). Calibration is then repeated 1{,}000 times for each calibration size $n$, with $\alpha=0.05$ and $\delta=0.10$, and the true risk of each returned threshold is recorded. The script, \nolinkurl{code/analysis/ltt_sim.py} in the thesis repository, accompanies this manuscript. These parameters are a stress test: they are chosen so that thresholds above 0.85 are unsafe, which is the case calibration must guard against. The last paragraph of this appendix repeats the simulation with parameters fitted to the T4 development data.
 
 \begin{figure}[!htbp]
 \centering
@@ -179,6 +181,8 @@ $n$ & Method & $\P(R\le\alpha)$ & Mean $R$ & Mean passes & Reference only & Medi
 
 The simulation assumes independent inputs from one distribution, exactly the condition of Proposition~\ref{prop:ltt}. It therefore shows that the procedure is implemented and behaves as the theory says, not that the condition holds for real speech; that is what the held-out and repeated-split checks of Section~\ref{sec:obj3} will test.
 
+\emph{Parameters fitted to the T4 development data.} Fitting the same model to the 100 development speakers' T4 runs (\texttt{python code/analysis/ltt\_sim.py -{}-fitted}) gives half the utterances noisy, as in the splits; a prompt SNR of $37.9\pm7.5$~dB for clean and $17.8\pm0.3$~dB for noisy15 prompts; lower stabilization scores on noisy prompts; and a failure model whose probability rises steeply on noisy prompts but does not rise with $d_k$ (coefficient $-2.5$). Under these parameters the SNR gate sends every noisy prompt to the reference, and every threshold in the grid has a true risk below 1\% (at most 0.89\%). Learn-Then-Test and the naive rule then both keep the promise in every repetition, and Learn-Then-Test is only more cautious at small $n$: a median $\hat\lambda$ of 0.40 and 18.96 passes at $n=50$, and 1.20 and 17.08 passes at $n=200$, against 17.05 for the naive rule. On the development data, then, no unsafe threshold exists for calibration to avoid; the stress test above shows that the procedure still protects when one does.
+
 % =====================================================================
 \section[APPENDIX C.\ PROTOTYPE]{Prototype}
 \label{app:prototype}
@@ -209,7 +213,7 @@ The three boxes at the bottom of Figure~\ref{fig:glance} correspond to what the 
 }
 % (a) baseline
 \node[anchor=west, font=\small\bfseries] at (-0.3,1.25) {(a) Baseline: one fixed handover for every input};
-\foreach \y/\name in {0/{Input A\\[-2pt]\scriptsize clean, easy}, -0.85/{Input B\\[-2pt]\scriptsize moderate}, -1.7/{Input C\\[-2pt]\scriptsize noisy, hard}}{
+\foreach \y/\name in {0/{Input A\\[-2pt]\scriptsize clean, settles early}, -0.85/{Input B\\[-2pt]\scriptsize clean, settles late}, -1.7/{Input C\\[-2pt]\scriptsize noisy (15 dB)}}{
   \node[rowlbl] at (\xo-0.15,\y) {\name};
   \draw[tbar] (\xo,\y-0.28) rectangle ({\xo+18*\u},\y+0.28);
   \node[inbar] at ({\xo+9*\u},\y) {teacher \ 18 passes};
@@ -231,9 +235,9 @@ The three boxes at the bottom of Figure~\ref{fig:glance} correspond to what the 
 \node[font=\scriptsize\bfseries, text=newLine, align=center, anchor=south] at ({\xo+14*\u},\yb-0.72)
   {CONTRIBUTION: where the handover happens};
 \foreach \yy/\name/\tp/\saved/\note in
-   {1.25/{Input A\\[-2pt]\scriptsize clean, easy}/10/8/{saved 8 passes (38\%)},
-    2.10/{Input B\\[-2pt]\scriptsize moderate}/14/4/{saved 4 passes (19\%)},
-    2.95/{Input C\\[-2pt]\scriptsize noisy, hard}/18/0/{0 saved (= baseline)}}{
+   {1.25/{Input A\\[-2pt]\scriptsize clean, settles early}/10/8/{saved 8 passes (38\%)},
+    2.10/{Input B\\[-2pt]\scriptsize clean, settles late}/14/4/{saved 4 passes (19\%)},
+    2.95/{Input C\\[-2pt]\scriptsize noisy (15 dB)}/18/0/{0 saved (= baseline)}}{
   \pgfmathsetmacro{\yc}{\yb-\yy}
   \node[rowlbl] at (\xo-0.15,\yc) {\name};
   \draw[tbar] (\xo,\yc-0.28) rectangle ({\xo+\tp*\u},\yc+0.28);
@@ -269,7 +273,7 @@ The three boxes at the bottom of Figure~\ref{fig:glance} correspond to what the 
   {\textbf{\textcolor{newLine}{3. Fall back}} \ (\textit{never worse} in cost)\\[2pt]
    Never hands over later than the baseline; if no threshold is certified, the method \emph{is} the baseline.};
 \end{tikzpicture}}
-\caption{The prototype at a glance. Bar length is computation in forward passes. (a)~The baseline hands over at the same point for every input, so every input costs 21 passes. (b)~The prototype moves the handover inside the highlighted region, separately for each input: settled, easy inputs hand over early and save computation (hatched); hard inputs keep the full teacher run and cost exactly what the baseline costs. Costs are exact (Proposition~\ref{prop:cost}); which input stops where is illustrative.}
+\caption[The prototype at a glance]{The prototype at a glance. Bar length is computation in forward passes. (a)~The baseline hands over at the same point for every input, so every input costs 21 passes. (b)~The prototype moves the handover inside the highlighted region, separately for each input: settled, easy inputs hand over early and save computation (hatched); hard inputs keep the full teacher run and cost exactly what the baseline costs. Costs are exact (Proposition~\ref{prop:cost}). Inputs A--C are development utterances from the team's Tesla T4 runs under the policy of Definition~\ref{def:policy} with $\lambda=0.50$ and $\theta=20$~dB: A, \nolinkurl{common_voice_en_15734837-common_voice_en_15734838} ($\hat S=26.5$~dB, $d_4=0.438$), stops at Step~4; B, \nolinkurl{common_voice_en_10933823-common_voice_en_10933825} ($\hat S=28.2$~dB; $d_4=0.844$, $d_5=0.750$, $d_6=0.401$), stops at Step~6; C, the noisy15 prompt of \nolinkurl{common_voice_en_13900-common_voice_en_13901} ($\hat S=17.7$~dB), is held at the reference. None of the three fails at its chosen step.}
 \label{fig:glance}
 \end{figure}
 \end{landscape}
