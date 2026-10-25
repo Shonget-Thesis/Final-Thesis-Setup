@@ -15,7 +15,7 @@ Secondary: seed-A Step-8 reproducibility against the committed T4 grid, and two 
 ## Procedure
 
 1. Commit and push the runner, so the Colab clone has it.
-2. Run the smoke test (two development speakers) and, optionally, the development pilot (Step 6b: 20 development speakers, `PILOT_REPORT.md`). Both use development speakers only and can run before the protocol is frozen.
+2. Run the smoke test (two development speakers, including the Section 3.3.5 checks) and the development pilot (Step 6b: 20 development speakers under all eleven conditions, the Section 3.3.5 checks, reproduction of the T4 grid, and offline calibration analyses; `PILOT_REPORT.md`). Both use development speakers only and can run before the protocol is frozen.
 3. Run `freeze`. Commit its `preregistration.json` and `fresh_manifest.json` here before running any test. After freezing, the runner refuses to run if the preregistration, the split manifests, the committed T4 grid or the runner itself change.
 4. Run the seed-floor, fresh-grid and degradation tests, then `analyze`.
 5. Commit the CSV files, `analysis_results.json`, `FOLLOWUP_REPORT.md`, `run_info_*.json` and `demand_sha256.txt` to `results/` here. Keep the audio in `listening/` on Drive for the listening check of every failure; do not commit audio.

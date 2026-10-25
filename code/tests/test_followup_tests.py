@@ -148,6 +148,57 @@ class DegradationTests(unittest.TestCase):
 
 
 @unittest.skipUnless(HAVE_SCI, "numpy and scipy are needed")
+class VerificationLogicTests(unittest.TestCase):
+    """Pipeline.verify with fake networks: control flow, forward-pass counting and clean-up (no torch needed)."""
+
+    def test_verify_counts_passes_and_restores_networks(self):
+        import types
+        import numpy as np
+
+        class Module:
+            def __call__(self, *a, **kw):
+                return self.forward(*a, **kw)
+
+            def forward(self, *a, **kw):
+                return 0.0
+
+        with tempfile.TemporaryDirectory() as tmp:
+            colab = Path(tmp) / "Handover Scheduling/colab"
+            colab.mkdir(parents=True)
+            (colab / "run_gpu_full_pipeline_timing_benchmark.py").write_text(
+                "import numpy as np\n"
+                "def run_early_stop_teacher(tts, step_cond, text, y0, prompt_len, snr, policy, lambda_thresh=0.5, snr_thresh=20.0):\n"
+                "    k = 8 if lambda_thresh < 0 else 4\n"
+                "    return np.array([float(k)]), k, 2 * (k + 1), {}, -1.0\n", encoding="utf-8")
+            pipe = ft.Pipeline.__new__(ft.Pipeline)
+            pipe.np = np
+            pipe.torch = types.SimpleNamespace(equal=np.array_equal, nn=types.SimpleNamespace(Module=Module))
+            pipe.tts = types.SimpleNamespace(teacher=Module(), generator=Module())
+            pipe.data_dir = Path(tmp) / "data/seed-tts-eval/en"
+            pipe.prepare = lambda item, cond, seed, out_dir, noise_seed=None: {"step_cond": 0, "text_ids": 0, "y0": 0, "prompt_len": 0, "prompt_snr": 30.0, "seed": seed}
+
+            def teacher(ctx, steps):
+                for _ in range(max(steps) + 1):
+                    pipe.tts.teacher(); pipe.tts.teacher()
+                return {k: np.array([float(k)]) for k in steps}, {1: 0.5}
+
+            def student(ctx, ep):
+                for _ in range(3):
+                    pipe.tts.generator()
+                return ep * 10
+
+            pipe.teacher, pipe.student = teacher, student
+            sys.modules.pop("run_gpu_full_pipeline_timing_benchmark", None)
+            res = ft.Pipeline.verify(pipe, {"utt_id": "u", "input_seed": 1}, tmp)
+            sys.modules.pop("run_gpu_full_pipeline_timing_benchmark", None)
+        self.assertTrue(res["all_passed"], res)
+        self.assertEqual(res["forward_passes"][8], {"teacher": 18, "student": 3, "total": 21, "expected": 21})
+        self.assertEqual(res["forward_passes"][4]["total"], 13)
+        self.assertNotIn("forward", vars(pipe.tts.teacher))      # instance wrapper removed
+        self.assertEqual(res["determinism_max_abs_audio_diff"], 0.0)
+
+
+@unittest.skipUnless(HAVE_SCI, "numpy and scipy are needed")
 class PilotTests(unittest.TestCase):
     def test_pilot_uses_development_speakers_and_reports_reproduction(self):
         dev = ft.pilot_items(3)
