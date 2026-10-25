@@ -6,6 +6,8 @@ The repository now separates implementation, the LaTeX manuscript, research evid
 
 The thesis now uses Colab T4 results only. The verified T4 runs (grid, timing, signal selection, novel algorithms, drift features) are in research/evidence/benchmarks/ with source commits and SHA-256 hashes ([manifest](../../research/evidence/benchmarks/MANIFEST.json)); CPU runs and the comprehensive evaluation suite were not imported. The follow-up tests (seed-noise floor, a held-out set, degraded prompts) are designed in [EXP-011](../../research/experiments/EXP-011-followup-t4/README.md) with a Colab notebook and runner, not yet run (EVAL-003). See the [import and follow-up log](log/2026-10-25-t4-import-and-followup.md).
 
+Appendix D.2 (problem validation) now reports the T4 analysis of EXP-001 (1,000 instances, the study's failure rule) instead of the 12-speaker CPU run; see the [Appendix D.2 log](log/2026-10-26-appendix-d2-t4.md).
+
 An edit basing Appendices A–C on the T4 development data was made and then reverted at the team's request; the manuscript's chapters are identical to main. See the [appendices log](log/2026-10-25-appendices-real-data.md).
 
 The EXP-011 development pilot ran on the T4 (2026-10-25): the pre-experiment checks pass and the T4 grid reproduces exactly; the 20 dB SNR gate misses 18–22 dB white noise; drift helps as a low-drift noise safeguard, not as a stopping signal. Results are in research/experiments/EXP-011-followup-t4/results/ and Part 6 of the compiled reports; see the [pilot log](log/2026-10-25-pilot-results.md). An early freeze in that session is void.
