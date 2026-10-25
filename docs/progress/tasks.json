@@ -246,6 +246,25 @@
         "docs/progress/log/2026-10-25-changes-pdf.md"
       ],
       "validation": "scripts/build_changes_pdf.sh origin/main built a 69-page changes.pdf against main with no LaTeX errors; rendered pages show removed text struck through in red and new text underlined in blue. The CI run on pull request #4 is the remote check."
+    },
+    {
+      "id": "PAPER-011",
+      "title": "Apply adviser comments: simpler Chapter 2, contribution and methodology figures, self-contained Chapter 3 formulas, abbreviations",
+      "owner": "Claude (manuscript), for Mark Vincent D. Limpahan",
+      "status": "review",
+      "updated": "2026-10-25",
+      "acceptance": "Chapter 2 follows the adviser's outline and keeps only formulas used in or closely related to Chapter 3, with the synthesis table kept; Chapter 3 has a contribution figure and one step-by-step methodology flowchart with objective bands replacing the old workflow figure and alignment table; every formula Chapter 3 cites is defined in Chapter 3 with a symbol table; abbreviations are written out at first use and listed; the detailed stabilization-signal plan moves to Appendix D with a short summary left in Objective 4.",
+      "evidence": [
+        "paper/chapters/02-related-work.tex",
+        "paper/chapters/03-methodology.tex",
+        "paper/figures/fig_contribution.tex",
+        "paper/figures/fig_workflow.tex",
+        "paper/chapters/appendices.tex",
+        "paper/chapters/01-introduction.tex",
+        "paper/frontmatter.tex",
+        "docs/progress/log/2026-10-25-adviser-revisions.md"
+      ],
+      "validation": "latexmk -Werror builds a 64-page main.pdf with no undefined references or overfull boxes; scripts/build_changes_pdf.sh origin/main builds a 72-page changes.pdf; rendered pages of both new figures were inspected; check_workspace.py and the 14 unit tests pass. Adviser review is pending."
     }
   ]
 }

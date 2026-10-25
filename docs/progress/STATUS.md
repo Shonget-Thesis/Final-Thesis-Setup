@@ -8,9 +8,11 @@ paper/ holds one LaTeX project: paper/main.tex in the USTP CITC style (citc.sty,
 
 All title-page and approval fields (authors, date, adviser, panel, dean) and the keywords are filled in at the top of paper/frontmatter.tex; the acknowledgement, dedication and abstract are still placeholders. The earlier standalone drafts were removed at the team's request and remain in git history (ADR-004). See the [single-manuscript log](log/2026-10-24-single-manuscript.md).
 
-The endpoint-stabilization score is framed as a candidate signal still to be tested against the prompt SNR, with a post-proposal investigation plan (Section 3.7.5). All synthesis, scoring and timing run on an NVIDIA Tesla T4 GPU through Google Colab (the Ryzen laptop is no longer used). The restart level stays fixed. See the [drift framing log](log/2026-10-25-drift-framing.md).
+The endpoint-stabilization score is framed as a candidate signal still to be tested against the prompt SNR, with a post-proposal investigation plan (summarized in Objective 4, detailed in Appendix D). All synthesis, scoring and timing run on an NVIDIA Tesla T4 GPU through Google Colab (the Ryzen laptop is no longer used). The restart level stays fixed. See the [drift framing log](log/2026-10-25-drift-framing.md).
 
 Every pull request now gets two PDF artifacts: main.pdf and a changes PDF with the pull request's edits marked (latexdiff against the base branch). See the [changes PDF log](log/2026-10-25-changes-pdf.md) and the paper guide's review section.
+
+The adviser's comments are applied on branch paper/adviser-revisions: Chapter 2 follows the adviser's outline with only Chapter 3-related formulas, Chapter 3 has a contribution figure and a step-by-step methodology flowchart, defines every formula it cites, and abbreviations are written out at first use. See the [adviser revisions log](log/2026-10-25-adviser-revisions.md).
 
 ## Current priorities
 
