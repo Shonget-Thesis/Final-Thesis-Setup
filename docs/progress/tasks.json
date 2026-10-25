@@ -366,14 +366,31 @@
       "id": "EVAL-006",
       "title": "Preliminary test of three zero-cost handover operators (TCR, coherence-gated DEH, SEA)",
       "owner": "unassigned",
-      "status": "todo",
-      "updated": "2026-10-25",
+      "status": "done",
+      "updated": "2026-10-26",
       "acceptance": "The EXP-014 notebook runs on a Colab T4; the smoke reproduction matches the stored Step-4 and Step-8 scores; preregistration.json predates the synthesis; the CSV, results JSON and generated report are committed with hashes; criteria C1-C3 and the preregistered selection rule are reported as computed.",
       "evidence": [
         "research/experiments/EXP-014-handover-operators-prelim/README.md",
         "code/colab/DMOSpeech2_Handover_Operators_Prelim.ipynb",
         "code/colab/run_handover_operators_prelim.py",
-        "code/tests/test_handover_operators.py"
+        "code/tests/test_handover_operators.py",
+        "research/experiments/EXP-014-handover-operators-prelim/results/MANIFEST.json",
+        "research/experiments/EXP-014-handover-operators-prelim/results/HANDOVER_OPERATORS_REPORT.md"
+      ],
+      "validation": "Run on a Tesla T4 on 2026-10-25: 360 of 360 cases; drift reproduced exactly; the smoke test reproduced the stored Step-4 and Step-8 WER and SIM; results committed with hashes. Criteria as computed: cDEH C1/C2 pass, C3 fail; SEA C2 pass only; TCR fails all. No operator is adopted."
+    },
+    {
+      "id": "EVAL-007",
+      "title": "Preliminary test of Self-Noise Negative Guidance and the antithetic student pair",
+      "owner": "unassigned",
+      "status": "todo",
+      "updated": "2026-10-26",
+      "acceptance": "The EXP-015 notebook runs on a Colab T4; the smoke checks pass (SNNG with eta = 0 equals the plain endpoint; stored Step-4 and Step-8 scores reproduced); preregistration.json predates the synthesis; the CSV, results JSON and generated report are committed with hashes; criteria C1-C3 and the selection rule are reported as computed.",
+      "evidence": [
+        "research/experiments/EXP-015-noise-guidance-prelim/README.md",
+        "code/colab/DMOSpeech2_Noise_Guidance_Prelim.ipynb",
+        "code/colab/run_noise_guidance_prelim.py",
+        "code/tests/test_noise_guidance.py"
       ],
       "validation": ""
     }
