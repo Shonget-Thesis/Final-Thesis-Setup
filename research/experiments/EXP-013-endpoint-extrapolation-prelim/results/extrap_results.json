@@ -1,0 +1,1104 @@
+{
+  "preregistration_sha256": "a53f1ebb6cfa8b5067506ca6d628f6027f5e64b18553cdf7493b89e1b87abb78",
+  "cases": 360,
+  "expected_cases": 360,
+  "partial": false,
+  "drift_reproduction_max_abs_diff": 0.0,
+  "step4_failures": {
+    "clean": {
+      "n": 60,
+      "4": 2,
+      "deh": 25,
+      "half": 5
+    },
+    "noisy15": {
+      "n": 60,
+      "4": 40,
+      "deh": 31,
+      "half": 39
+    },
+    "gauss18": {
+      "n": 60,
+      "4": 33,
+      "deh": 20,
+      "half": 26
+    },
+    "gauss20": {
+      "n": 60,
+      "4": 26,
+      "deh": 12,
+      "half": 23
+    },
+    "gauss22": {
+      "n": 60,
+      "4": 19,
+      "deh": 15,
+      "half": 17
+    },
+    "gauss25": {
+      "n": 60,
+      "4": 8,
+      "deh": 12,
+      "half": 11
+    }
+  },
+  "paired_tests": {
+    "deh vs Step 4, noisy (primary)": {
+      "n": 300,
+      "failures_4": 126,
+      "failures_deh": 90,
+      "only_4": 70,
+      "only_deh": 34,
+      "p": 0.0005342841899801615
+    },
+    "deh vs Step 4, clean": {
+      "n": 60,
+      "failures_4": 2,
+      "failures_deh": 25,
+      "only_4": 1,
+      "only_deh": 24,
+      "p": 1.5497207641601562e-06
+    },
+    "half vs Step 4, noisy (primary)": {
+      "n": 300,
+      "failures_4": 126,
+      "failures_half": 116,
+      "only_4": 41,
+      "only_half": 31,
+      "p": 0.2887842804141049
+    },
+    "half vs Step 4, clean": {
+      "n": 60,
+      "failures_4": 2,
+      "failures_half": 5,
+      "only_4": 2,
+      "only_half": 5,
+      "p": 0.453125
+    },
+    "deh vs Step 4, noisy15": {
+      "n": 60,
+      "failures_4": 40,
+      "failures_deh": 31,
+      "only_4": 14,
+      "only_deh": 5,
+      "p": 0.063568115234375
+    },
+    "deh vs Step 4, gauss18": {
+      "n": 60,
+      "failures_4": 33,
+      "failures_deh": 20,
+      "only_4": 21,
+      "only_deh": 8,
+      "p": 0.0241195447742939
+    },
+    "deh vs Step 4, gauss20": {
+      "n": 60,
+      "failures_4": 26,
+      "failures_deh": 12,
+      "only_4": 20,
+      "only_deh": 6,
+      "p": 0.009355306625366211
+    },
+    "deh vs Step 4, gauss22": {
+      "n": 60,
+      "failures_4": 19,
+      "failures_deh": 15,
+      "only_4": 10,
+      "only_deh": 6,
+      "p": 0.454498291015625
+    },
+    "deh vs Step 4, gauss25": {
+      "n": 60,
+      "failures_4": 8,
+      "failures_deh": 12,
+      "only_4": 5,
+      "only_deh": 9,
+      "p": 0.4239501953125
+    }
+  },
+  "diagnostics": {
+    "clean": {
+      "rho": 0.790610493363173,
+      "S": 2.3005647810088723,
+      "cos_d4_d3": -0.1716278928526982,
+      "cos_d4_rest": -0.34152382510758955,
+      "gain_deh": -2.30979743242586,
+      "gain_half": -0.9919585230236166,
+      "gain_h6": -1.2752730589179226,
+      "gain_lin": -6.942683757773617,
+      "share_gain_deh_positive": 0.0
+    },
+    "noisy15": {
+      "rho": 0.778405241978313,
+      "S": 2.2231229761031805,
+      "cos_d4_d3": 0.6048226651382123,
+      "cos_d4_rest": 0.22671065246373107,
+      "gain_deh": -0.3532644681558873,
+      "gain_half": -0.025744280235104444,
+      "gain_h6": -0.0733668508960541,
+      "gain_lin": -2.347911274770059,
+      "share_gain_deh_positive": 0.13333333333333333
+    },
+    "gauss18": {
+      "rho": 0.7995556521713381,
+      "S": 2.3586871498591404,
+      "cos_d4_d3": 0.4661638995368383,
+      "cos_d4_rest": 0.061403660944917046,
+      "gain_deh": -0.5505145470825438,
+      "gain_half": -0.14211303761962524,
+      "gain_h6": -0.18617125420681246,
+      "gain_lin": -3.1414711725198075,
+      "share_gain_deh_positive": 0.03333333333333333
+    },
+    "gauss20": {
+      "rho": 0.8042272747119376,
+      "S": 2.3905388979809796,
+      "cos_d4_d3": 0.4296203638841384,
+      "cos_d4_rest": -0.0787993288267363,
+      "gain_deh": -0.9511036614269245,
+      "gain_half": -0.32047903145448375,
+      "gain_h6": -0.3707906810207471,
+      "gain_lin": -3.7931267890050386,
+      "share_gain_deh_positive": 0.0
+    },
+    "gauss22": {
+      "rho": 0.7719109493983679,
+      "S": 2.18332678091038,
+      "cos_d4_d3": 0.3838712267770517,
+      "cos_d4_rest": -0.19525407363037786,
+      "gain_deh": -1.1941136202514797,
+      "gain_half": -0.45765437390272057,
+      "gain_h6": -0.5938083181208516,
+      "gain_lin": -4.401490307467143,
+      "share_gain_deh_positive": 0.0
+    },
+    "gauss25": {
+      "rho": 0.7556091744056748,
+      "S": 2.0839451248812813,
+      "cos_d4_d3": 0.2703100999272068,
+      "cos_d4_rest": -0.28263939137683114,
+      "gain_deh": -1.3095528233705218,
+      "gain_half": -0.5118200988319034,
+      "gain_h6": -0.6872345617166554,
+      "gain_lin": -5.149911268959641,
+      "share_gain_deh_positive": 0.0
+    }
+  },
+  "cross_validation": {
+    "pooled": {
+      "reference": {
+        "failures": 0,
+        "n": 360,
+        "mean_nfe": 21.0,
+        "worst_condition_risk": 0.0,
+        "per_condition": {
+          "clean": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "noisy15": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss18": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss20": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss22": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss25": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          }
+        }
+      },
+      "snr_only": {
+        "failures": 86,
+        "n": 360,
+        "mean_nfe": 14.4,
+        "worst_condition_risk": 0.5166666666666667,
+        "per_condition": {
+          "clean": {
+            "n": 60,
+            "failures": 2,
+            "mean_nfe": 13.0
+          },
+          "noisy15": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss18": {
+            "n": 60,
+            "failures": 31,
+            "mean_nfe": 13.4
+          },
+          "gauss20": {
+            "n": 60,
+            "failures": 26,
+            "mean_nfe": 13.0
+          },
+          "gauss22": {
+            "n": 60,
+            "failures": 19,
+            "mean_nfe": 13.0
+          },
+          "gauss25": {
+            "n": 60,
+            "failures": 8,
+            "mean_nfe": 13.0
+          }
+        }
+      },
+      "snr_theta": {
+        "failures": 7,
+        "n": 360,
+        "mean_nfe": 18.711111111111112,
+        "worst_condition_risk": 0.08333333333333333,
+        "per_condition": {
+          "clean": {
+            "n": 60,
+            "failures": 2,
+            "mean_nfe": 13.266666666666667
+          },
+          "noisy15": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss18": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss20": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss22": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss25": {
+            "n": 60,
+            "failures": 5,
+            "mean_nfe": 15.0
+          }
+        }
+      },
+      "drift_window": {
+        "failures": 9,
+        "n": 360,
+        "mean_nfe": 18.377777777777776,
+        "worst_condition_risk": 0.05,
+        "per_condition": {
+          "clean": {
+            "n": 60,
+            "failures": 2,
+            "mean_nfe": 13.133333333333333
+          },
+          "noisy15": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss18": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 20.866666666666667
+          },
+          "gauss20": {
+            "n": 60,
+            "failures": 1,
+            "mean_nfe": 20.2
+          },
+          "gauss22": {
+            "n": 60,
+            "failures": 3,
+            "mean_nfe": 18.6
+          },
+          "gauss25": {
+            "n": 60,
+            "failures": 3,
+            "mean_nfe": 16.466666666666665
+          }
+        }
+      },
+      "deh_snr_only": {
+        "failures": 84,
+        "n": 360,
+        "mean_nfe": 14.4,
+        "worst_condition_risk": 0.4166666666666667,
+        "per_condition": {
+          "clean": {
+            "n": 60,
+            "failures": 25,
+            "mean_nfe": 13.0
+          },
+          "noisy15": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss18": {
+            "n": 60,
+            "failures": 20,
+            "mean_nfe": 13.4
+          },
+          "gauss20": {
+            "n": 60,
+            "failures": 12,
+            "mean_nfe": 13.0
+          },
+          "gauss22": {
+            "n": 60,
+            "failures": 15,
+            "mean_nfe": 13.0
+          },
+          "gauss25": {
+            "n": 60,
+            "failures": 12,
+            "mean_nfe": 13.0
+          }
+        }
+      },
+      "deh_theta": {
+        "failures": 12,
+        "n": 360,
+        "mean_nfe": 20.42222222222222,
+        "worst_condition_risk": 0.2,
+        "per_condition": {
+          "clean": {
+            "n": 60,
+            "failures": 12,
+            "mean_nfe": 17.533333333333335
+          },
+          "noisy15": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss18": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss20": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss22": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss25": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          }
+        }
+      },
+      "deh_window": {
+        "failures": 6,
+        "n": 360,
+        "mean_nfe": 20.68888888888889,
+        "worst_condition_risk": 0.1,
+        "per_condition": {
+          "clean": {
+            "n": 60,
+            "failures": 6,
+            "mean_nfe": 19.133333333333333
+          },
+          "noisy15": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss18": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss20": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss22": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss25": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          }
+        }
+      },
+      "deh_all": {
+        "failures": 115,
+        "n": 360,
+        "mean_nfe": 13.0,
+        "worst_condition_risk": 0.5166666666666667,
+        "per_condition": {
+          "clean": {
+            "n": 60,
+            "failures": 25,
+            "mean_nfe": 13.0
+          },
+          "noisy15": {
+            "n": 60,
+            "failures": 31,
+            "mean_nfe": 13.0
+          },
+          "gauss18": {
+            "n": 60,
+            "failures": 20,
+            "mean_nfe": 13.0
+          },
+          "gauss20": {
+            "n": 60,
+            "failures": 12,
+            "mean_nfe": 13.0
+          },
+          "gauss22": {
+            "n": 60,
+            "failures": 15,
+            "mean_nfe": 13.0
+          },
+          "gauss25": {
+            "n": 60,
+            "failures": 12,
+            "mean_nfe": 13.0
+          }
+        }
+      },
+      "half_theta": {
+        "failures": 11,
+        "n": 360,
+        "mean_nfe": 18.844444444444445,
+        "worst_condition_risk": 0.1,
+        "per_condition": {
+          "clean": {
+            "n": 60,
+            "failures": 5,
+            "mean_nfe": 13.4
+          },
+          "noisy15": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss18": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss20": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss22": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss25": {
+            "n": 60,
+            "failures": 6,
+            "mean_nfe": 15.666666666666666
+          }
+        }
+      },
+      "half_all": {
+        "failures": 121,
+        "n": 360,
+        "mean_nfe": 13.0,
+        "worst_condition_risk": 0.65,
+        "per_condition": {
+          "clean": {
+            "n": 60,
+            "failures": 5,
+            "mean_nfe": 13.0
+          },
+          "noisy15": {
+            "n": 60,
+            "failures": 39,
+            "mean_nfe": 13.0
+          },
+          "gauss18": {
+            "n": 60,
+            "failures": 26,
+            "mean_nfe": 13.0
+          },
+          "gauss20": {
+            "n": 60,
+            "failures": 23,
+            "mean_nfe": 13.0
+          },
+          "gauss22": {
+            "n": 60,
+            "failures": 17,
+            "mean_nfe": 13.0
+          },
+          "gauss25": {
+            "n": 60,
+            "failures": 11,
+            "mean_nfe": 13.0
+          }
+        }
+      }
+    },
+    "stratified": {
+      "reference": {
+        "failures": 0,
+        "n": 360,
+        "mean_nfe": 21.0,
+        "worst_condition_risk": 0.0,
+        "per_condition": {
+          "clean": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "noisy15": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss18": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss20": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss22": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss25": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          }
+        }
+      },
+      "snr_only": {
+        "failures": 86,
+        "n": 360,
+        "mean_nfe": 14.4,
+        "worst_condition_risk": 0.5166666666666667,
+        "per_condition": {
+          "clean": {
+            "n": 60,
+            "failures": 2,
+            "mean_nfe": 13.0
+          },
+          "noisy15": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss18": {
+            "n": 60,
+            "failures": 31,
+            "mean_nfe": 13.4
+          },
+          "gauss20": {
+            "n": 60,
+            "failures": 26,
+            "mean_nfe": 13.0
+          },
+          "gauss22": {
+            "n": 60,
+            "failures": 19,
+            "mean_nfe": 13.0
+          },
+          "gauss25": {
+            "n": 60,
+            "failures": 8,
+            "mean_nfe": 13.0
+          }
+        }
+      },
+      "snr_theta": {
+        "failures": 1,
+        "n": 360,
+        "mean_nfe": 20.844444444444445,
+        "worst_condition_risk": 0.016666666666666666,
+        "per_condition": {
+          "clean": {
+            "n": 60,
+            "failures": 1,
+            "mean_nfe": 20.066666666666666
+          },
+          "noisy15": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss18": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss20": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss22": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss25": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          }
+        }
+      },
+      "drift_window": {
+        "failures": 0,
+        "n": 360,
+        "mean_nfe": 20.288888888888888,
+        "worst_condition_risk": 0.0,
+        "per_condition": {
+          "clean": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 16.733333333333334
+          },
+          "noisy15": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss18": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss20": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss22": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss25": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          }
+        }
+      },
+      "deh_snr_only": {
+        "failures": 84,
+        "n": 360,
+        "mean_nfe": 14.4,
+        "worst_condition_risk": 0.4166666666666667,
+        "per_condition": {
+          "clean": {
+            "n": 60,
+            "failures": 25,
+            "mean_nfe": 13.0
+          },
+          "noisy15": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss18": {
+            "n": 60,
+            "failures": 20,
+            "mean_nfe": 13.4
+          },
+          "gauss20": {
+            "n": 60,
+            "failures": 12,
+            "mean_nfe": 13.0
+          },
+          "gauss22": {
+            "n": 60,
+            "failures": 15,
+            "mean_nfe": 13.0
+          },
+          "gauss25": {
+            "n": 60,
+            "failures": 12,
+            "mean_nfe": 13.0
+          }
+        }
+      },
+      "deh_theta": {
+        "failures": 0,
+        "n": 360,
+        "mean_nfe": 21.0,
+        "worst_condition_risk": 0.0,
+        "per_condition": {
+          "clean": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "noisy15": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss18": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss20": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss22": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss25": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          }
+        }
+      },
+      "deh_window": {
+        "failures": 0,
+        "n": 360,
+        "mean_nfe": 21.0,
+        "worst_condition_risk": 0.0,
+        "per_condition": {
+          "clean": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "noisy15": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss18": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss20": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss22": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss25": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          }
+        }
+      },
+      "deh_all": {
+        "failures": 115,
+        "n": 360,
+        "mean_nfe": 13.0,
+        "worst_condition_risk": 0.5166666666666667,
+        "per_condition": {
+          "clean": {
+            "n": 60,
+            "failures": 25,
+            "mean_nfe": 13.0
+          },
+          "noisy15": {
+            "n": 60,
+            "failures": 31,
+            "mean_nfe": 13.0
+          },
+          "gauss18": {
+            "n": 60,
+            "failures": 20,
+            "mean_nfe": 13.0
+          },
+          "gauss20": {
+            "n": 60,
+            "failures": 12,
+            "mean_nfe": 13.0
+          },
+          "gauss22": {
+            "n": 60,
+            "failures": 15,
+            "mean_nfe": 13.0
+          },
+          "gauss25": {
+            "n": 60,
+            "failures": 12,
+            "mean_nfe": 13.0
+          }
+        }
+      },
+      "half_theta": {
+        "failures": 0,
+        "n": 360,
+        "mean_nfe": 21.0,
+        "worst_condition_risk": 0.0,
+        "per_condition": {
+          "clean": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "noisy15": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss18": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss20": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss22": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          },
+          "gauss25": {
+            "n": 60,
+            "failures": 0,
+            "mean_nfe": 21.0
+          }
+        }
+      },
+      "half_all": {
+        "failures": 121,
+        "n": 360,
+        "mean_nfe": 13.0,
+        "worst_condition_risk": 0.65,
+        "per_condition": {
+          "clean": {
+            "n": 60,
+            "failures": 5,
+            "mean_nfe": 13.0
+          },
+          "noisy15": {
+            "n": 60,
+            "failures": 39,
+            "mean_nfe": 13.0
+          },
+          "gauss18": {
+            "n": 60,
+            "failures": 26,
+            "mean_nfe": 13.0
+          },
+          "gauss20": {
+            "n": 60,
+            "failures": 23,
+            "mean_nfe": 13.0
+          },
+          "gauss22": {
+            "n": 60,
+            "failures": 17,
+            "mean_nfe": 13.0
+          },
+          "gauss25": {
+            "n": 60,
+            "failures": 11,
+            "mean_nfe": 13.0
+          }
+        }
+      }
+    }
+  },
+  "chosen": {
+    "pooled": {
+      "reference": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "snr_only": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "snr_theta": [
+        26.0,
+        26.0,
+        26.0,
+        26.0,
+        26.0
+      ],
+      "drift_window": [
+        0.3,
+        0.3,
+        0.3,
+        0.3,
+        0.3
+      ],
+      "deh_snr_only": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "deh_theta": [
+        38.0,
+        37.0,
+        39.0,
+        36.0,
+        37.0
+      ],
+      "deh_window": [
+        0.6,
+        null,
+        null,
+        null,
+        0.6
+      ],
+      "deh_all": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "half_theta": [
+        27.0,
+        27.0,
+        26.0,
+        26.0,
+        27.0
+      ],
+      "half_all": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    "stratified": {
+      "reference": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "snr_only": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "snr_theta": [
+        34.0,
+        null,
+        null,
+        null,
+        null
+      ],
+      "drift_window": [
+        0.6,
+        0.6,
+        0.6,
+        0.6,
+        0.6
+      ],
+      "deh_snr_only": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "deh_theta": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "deh_window": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "deh_all": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "half_theta": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "half_all": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    }
+  },
+  "criteria": {
+    "C1 noisy Step-4 failures drop by at least 25% with exact McNemar p < 0.05": true,
+    "C2 clean Step-4 failures rise by at most 1": false,
+    "C3 pooled deh_theta: lower mean NFE than snr_theta with no more failures": false
+  }
+}

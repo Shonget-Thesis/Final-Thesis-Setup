@@ -349,14 +349,31 @@
       "id": "EVAL-005",
       "title": "Preliminary test of Drift-Extrapolated Handover (DEH)",
       "owner": "unassigned",
-      "status": "todo",
+      "status": "done",
       "updated": "2026-10-25",
       "acceptance": "The EXP-013 notebook runs on a Colab T4; the smoke reproduction matches the stored Step-4 and Step-8 scores; preregistration.json predates the synthesis; the CSV, results JSON and generated report are committed with hashes; the preregistered criteria C1-C3 are reported as computed.",
       "evidence": [
         "research/experiments/EXP-013-endpoint-extrapolation-prelim/README.md",
         "code/colab/DMOSpeech2_Endpoint_Extrapolation_Prelim.ipynb",
         "code/colab/run_endpoint_extrapolation_prelim.py",
-        "code/tests/test_endpoint_extrapolation.py"
+        "code/tests/test_endpoint_extrapolation.py",
+        "research/experiments/EXP-013-endpoint-extrapolation-prelim/results/MANIFEST.json",
+        "research/experiments/EXP-013-endpoint-extrapolation-prelim/results/EXTRAPOLATION_REPORT.md"
+      ],
+      "validation": "Run on a Tesla T4 on 2026-10-25: 360 of 360 cases; drift reproduced exactly; the smoke test reproduced the stored Step-4 and Step-8 WER and SIM; results committed with hashes. Criteria as computed: C1 pass, C2 fail (clean 2 -> 25), C3 fail. DEH is not adopted."
+    },
+    {
+      "id": "EVAL-006",
+      "title": "Preliminary test of three zero-cost handover operators (TCR, coherence-gated DEH, SEA)",
+      "owner": "unassigned",
+      "status": "todo",
+      "updated": "2026-10-25",
+      "acceptance": "The EXP-014 notebook runs on a Colab T4; the smoke reproduction matches the stored Step-4 and Step-8 scores; preregistration.json predates the synthesis; the CSV, results JSON and generated report are committed with hashes; criteria C1-C3 and the preregistered selection rule are reported as computed.",
+      "evidence": [
+        "research/experiments/EXP-014-handover-operators-prelim/README.md",
+        "code/colab/DMOSpeech2_Handover_Operators_Prelim.ipynb",
+        "code/colab/run_handover_operators_prelim.py",
+        "code/tests/test_handover_operators.py"
       ],
       "validation": ""
     }

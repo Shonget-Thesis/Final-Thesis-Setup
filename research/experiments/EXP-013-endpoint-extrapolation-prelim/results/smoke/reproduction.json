@@ -1,0 +1,74 @@
+[
+  {
+    "utt_id": "common_voice_en_18770703-common_voice_en_18770702",
+    "condition": "clean",
+    "step": 4,
+    "wer": 0.0,
+    "wer_stored": 0.0,
+    "similarity": 0.9445269107818604,
+    "similarity_stored": 0.9445269107818604
+  },
+  {
+    "utt_id": "common_voice_en_18770703-common_voice_en_18770702",
+    "condition": "clean",
+    "step": 8,
+    "wer": 0.0,
+    "wer_stored": 0.0,
+    "similarity": 0.9399069547653198,
+    "similarity_stored": 0.9399069547653198
+  },
+  {
+    "utt_id": "common_voice_en_18770703-common_voice_en_18770702",
+    "condition": "gauss20",
+    "step": 4,
+    "wer": 0.07142857142857142,
+    "wer_stored": 0.07142857142857142,
+    "similarity": 0.9034265279769897,
+    "similarity_stored": 0.9034265279769897
+  },
+  {
+    "utt_id": "common_voice_en_18770703-common_voice_en_18770702",
+    "condition": "gauss20",
+    "step": 8,
+    "wer": 0.07142857142857142,
+    "wer_stored": 0.07142857142857142,
+    "similarity": 0.8546836376190186,
+    "similarity_stored": 0.8546836376190186
+  },
+  {
+    "utt_id": "common_voice_en_18829843-common_voice_en_18829842",
+    "condition": "clean",
+    "step": 4,
+    "wer": 0.0,
+    "wer_stored": 0.0,
+    "similarity": 0.9669592380523682,
+    "similarity_stored": 0.9669592380523682
+  },
+  {
+    "utt_id": "common_voice_en_18829843-common_voice_en_18829842",
+    "condition": "clean",
+    "step": 8,
+    "wer": 0.0,
+    "wer_stored": 0.0,
+    "similarity": 0.9618139863014221,
+    "similarity_stored": 0.9618139863014221
+  },
+  {
+    "utt_id": "common_voice_en_18829843-common_voice_en_18829842",
+    "condition": "gauss20",
+    "step": 4,
+    "wer": 0.15384615384615385,
+    "wer_stored": 0.15384615384615385,
+    "similarity": 0.7198120951652527,
+    "similarity_stored": 0.7198120951652527
+  },
+  {
+    "utt_id": "common_voice_en_18829843-common_voice_en_18829842",
+    "condition": "gauss20",
+    "step": 8,
+    "wer": 0.07692307692307693,
+    "wer_stored": 0.07692307692307693,
+    "similarity": 0.6477932333946228,
+    "similarity_stored": 0.6477932333946228
+  }
+]
