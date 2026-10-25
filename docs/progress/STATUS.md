@@ -26,6 +26,8 @@ Follow-up on the adviser revisions: Chapter 2 formulas and figures now cite thei
 
 The active research implementation from the sibling working tree has been migrated into the workspace: `code/scheduling/` holds the deterministic adaptive handover sampler and metrics, `code/colab/` holds the turnkey Google Colab GPU-accelerated pipelines and notebooks (focusing entirely on Colab GPU inference and excluding local CPU-only sweeps), `research/protocols/splits/` holds the 500-speaker cohort manifests, and `research/reports/` holds the comprehensive research reports. Checkpoint downloads with verified SHA-256 hashes are automated via `code/scheduling/download_ckpts.py`. See the [implementation migration log](log/2026-10-25-implementation-migration.md).
 
+A proposal-defense walkthrough is in presentation/: an animated 19-scene page covering Chapters 1–3 with a slide mode, citation footers and a presenter script (PRES-001, awaiting team review). It follows the proposal PDF from before the October 25 audit, so its Chapter III scenes do not yet show the audit and pilot findings above. See the [walkthrough log](log/2026-10-25-defense-walkthrough.md).
+
 ## Current priorities
 
 1. Review the completed workspace setup and its recorded checks.
