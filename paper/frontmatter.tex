@@ -12,9 +12,10 @@
 % the PDF, and "python scripts/check_workspace.py --submission" rejects it.
 % Article/section numbers in the comments refer to the CITC guidelines.
 %
-% The proposal (\citcproposaltrue in main.tex) prints only the title page,
-% contents and lists. The approval sheet, acknowledgement, dedication,
-% acronyms and abstract appear when main.tex is set to \citcproposalfalse.
+% The proposal (\citcproposaltrue in main.tex) prints the title page,
+% contents, lists and the acronyms page. The approval sheet,
+% acknowledgement, dedication and abstract appear when main.tex is set to
+% \citcproposalfalse.
 % ---------------------------------------------------------------------------
 
 % =============================== FILL IN ===================================
@@ -98,10 +99,13 @@ ASR    & Automatic Speech Recognition \\[0.6\baselineskip]
 CALM   & Confident Adaptive Language Modeling \\[0.6\baselineskip]
 CFG    & Classifier-Free Guidance \\[0.6\baselineskip]
 CPU    & Central Processing Unit \\[0.6\baselineskip]
+dB     & Decibel \\[0.6\baselineskip]
 DMD    & Distribution Matching Distillation \\[0.6\baselineskip]
+GB     & Gigabyte \\[0.6\baselineskip]
 GPU    & Graphics Processing Unit \\[0.6\baselineskip]
 LTT    & Learn-Then-Test \\[0.6\baselineskip]
 MOS    & Mean Opinion Score \\[0.6\baselineskip]
+ms     & Millisecond \\[0.6\baselineskip]
 NFE    & Neural Function Evaluation \\[0.6\baselineskip]
 ODE    & Ordinary Differential Equation \\[0.6\baselineskip]
 ROC    & Receiver Operating Characteristic \\[0.6\baselineskip]
@@ -298,8 +302,8 @@ Date of Final Defense
 \vspace{2\baselineskip}
 \listofequations
 
-\ifcitcproposal\else
 % ========================================= 3.7 ACRONYMS AND ABBREVIATIONS
+% Printed in the proposal too.
 % Required only when there are at least five (3.7.1). One alphabetical list,
 % no equation symbols (3.7.2/3.7.3). First column 3.5-4.7 cm, second
 % 10.0-11.2 cm (3.7.6/3.7.7). Only the title is bold (3.7.9).
@@ -309,6 +313,7 @@ Date of Final Defense
 \citcAcronyms
 \end{tabularx}
 
+\ifcitcproposal\else
 % ============================================================ 3.8 ABSTRACT
 % 150-250 words on one page, justified, single-spaced, no paragraph indent,
 % one continuous paragraph covering background, objective, methods, results
@@ -324,7 +329,7 @@ Date of Final Defense
 \textit{Keywords:} \citcKeywords
 \endgroup
 
-\fi % end of pages left out of the proposal
+\fi % abstract is left out of the proposal
 
 % ------------------------------------------------- back to the main matter
 \clearpage
