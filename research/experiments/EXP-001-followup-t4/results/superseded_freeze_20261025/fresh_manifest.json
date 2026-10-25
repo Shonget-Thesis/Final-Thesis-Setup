@@ -1,0 +1,1496 @@
+[
+  {
+    "utt_id": "common_voice_en_10119832-common_voice_en_10119847",
+    "speaker_id": "common_voice_en_10119832",
+    "prompt_text": "We asked over twenty different people, and they all said it was his.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_10119832.wav",
+    "gt_text": "The stained glass offered a hypnotic atmosphere.",
+    "gt_wav_rel": "wavs/common_voice_en_10119832-common_voice_en_10119847.wav",
+    "input_seed": 804638822
+  },
+  {
+    "utt_id": "common_voice_en_120405-common_voice_en_120406",
+    "speaker_id": "common_voice_en_120405",
+    "prompt_text": "He approached the mass and was surprised at the size and the shape.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_120405.wav",
+    "gt_text": "The only shadow was that of the few scattered pine trees.",
+    "gt_wav_rel": "wavs/common_voice_en_120405-common_voice_en_120406.wav",
+    "input_seed": 883164156
+  },
+  {
+    "utt_id": "common_voice_en_125386-common_voice_en_125389",
+    "speaker_id": "common_voice_en_125386",
+    "prompt_text": "It was, however, still so hot from its flight through the air.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_125386.wav",
+    "gt_text": "I thought about the difficulties in translation that might arise.",
+    "gt_wav_rel": "wavs/common_voice_en_125386-common_voice_en_125389.wav",
+    "input_seed": 1432986571
+  },
+  {
+    "utt_id": "common_voice_en_153872-common_voice_en_153874",
+    "speaker_id": "common_voice_en_153872",
+    "prompt_text": "Hundreds must have seen it, and taken it for a falling star.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_153872.wav",
+    "gt_text": "A thin circle of bright metal showed between the top and the body of the cylinder.",
+    "gt_wav_rel": "wavs/common_voice_en_153872-common_voice_en_153874.wav",
+    "input_seed": 732447594
+  },
+  {
+    "utt_id": "common_voice_en_17161-common_voice_en_17160",
+    "speaker_id": "common_voice_en_17161",
+    "prompt_text": "On the second day, the boy climbed to the top of a cliff near the camp.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_17161.wav",
+    "gt_text": "The area was swirling in dust so intense that it hid the moon from view.",
+    "gt_wav_rel": "wavs/common_voice_en_17161-common_voice_en_17160.wav",
+    "input_seed": 347467254
+  },
+  {
+    "utt_id": "common_voice_en_17263780-common_voice_en_17263782",
+    "speaker_id": "common_voice_en_17263780",
+    "prompt_text": "Early to bed, early to rise, makes you healthy, wealthy & wise.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_17263780.wav",
+    "gt_text": "If my stepfather sold this old sculpture, he'd probably become a millionaire.",
+    "gt_wav_rel": "wavs/common_voice_en_17263780-common_voice_en_17263782.wav",
+    "input_seed": 1060351096
+  },
+  {
+    "utt_id": "common_voice_en_17268075-common_voice_en_17268076",
+    "speaker_id": "common_voice_en_17268075",
+    "prompt_text": "Pork cutlet is also very tasty, but our religion does not allow us to eat it.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_17268075.wav",
+    "gt_text": "Contrary to common belief, children won't gain computer literacy, if you just hand them tablet computers and smartphones.",
+    "gt_wav_rel": "wavs/common_voice_en_17268075-common_voice_en_17268076.wav",
+    "input_seed": 1079197399
+  },
+  {
+    "utt_id": "common_voice_en_17274533-common_voice_en_17274531",
+    "speaker_id": "common_voice_en_17274533",
+    "prompt_text": "She put on her slippers, scaled the stairs, and went to bed.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_17274533.wav",
+    "gt_text": "If possible, we'd like the papers a week before and after each of these dates please.",
+    "gt_wav_rel": "wavs/common_voice_en_17274533-common_voice_en_17274531.wav",
+    "input_seed": 418090112
+  },
+  {
+    "utt_id": "common_voice_en_17277080-common_voice_en_17277082",
+    "speaker_id": "common_voice_en_17277080",
+    "prompt_text": "Salmon is one of the most popular fish and very delicious, though usually not sustainable.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_17277080.wav",
+    "gt_text": "Three weeks later, he was feeling a lot better.",
+    "gt_wav_rel": "wavs/common_voice_en_17277080-common_voice_en_17277082.wav",
+    "input_seed": 681197236
+  },
+  {
+    "utt_id": "common_voice_en_17389076-common_voice_en_17389120",
+    "speaker_id": "common_voice_en_17389076",
+    "prompt_text": "Kenneth reacted badly to the steroids, he's under observation for the next hour.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_17389076.wav",
+    "gt_text": "Can you do your babysitting from outside my office?",
+    "gt_wav_rel": "wavs/common_voice_en_17389076-common_voice_en_17389120.wav",
+    "input_seed": 2107663218
+  },
+  {
+    "utt_id": "common_voice_en_17401431-common_voice_en_17401433",
+    "speaker_id": "common_voice_en_17401431",
+    "prompt_text": "Not specifically no, he only gave me the gist of his research the one time I spoke to him.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_17401431.wav",
+    "gt_text": "Well, this exactly happens in an old story from Norwegia.",
+    "gt_wav_rel": "wavs/common_voice_en_17401431-common_voice_en_17401433.wav",
+    "input_seed": 956773720
+  },
+  {
+    "utt_id": "common_voice_en_17406732-common_voice_en_17406735",
+    "speaker_id": "common_voice_en_17406732",
+    "prompt_text": "The more you read, the better you will be understood.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_17406732.wav",
+    "gt_text": "When you're at a party and somebody says \"banana bread\", a sniper might be near you.",
+    "gt_wav_rel": "wavs/common_voice_en_17406732-common_voice_en_17406735.wav",
+    "input_seed": 914999759
+  },
+  {
+    "utt_id": "common_voice_en_17662945-common_voice_en_17662954",
+    "speaker_id": "common_voice_en_17662945",
+    "prompt_text": "At the airport, the woman threw herself into revision for college so she could experience university.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_17662945.wav",
+    "gt_text": "When the carpet and the curtains caught fire, it was getting warm.",
+    "gt_wav_rel": "wavs/common_voice_en_17662945-common_voice_en_17662954.wav",
+    "input_seed": 330360805
+  },
+  {
+    "utt_id": "common_voice_en_17727889-common_voice_en_17727905",
+    "speaker_id": "common_voice_en_17727889",
+    "prompt_text": "Such an oscillating dipole moment can exchange energy with an electromagnetic wave of same frequency.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_17727889.wav",
+    "gt_text": "My grandmother has Type One diabetes.",
+    "gt_wav_rel": "wavs/common_voice_en_17727889-common_voice_en_17727905.wav",
+    "input_seed": 214557165
+  },
+  {
+    "utt_id": "common_voice_en_17784-common_voice_en_17785",
+    "speaker_id": "common_voice_en_17784",
+    "prompt_text": "Nobody knows how much ammunition the military has in its checkpoints.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_17784.wav",
+    "gt_text": "Then why should they be surprised when they see one?",
+    "gt_wav_rel": "wavs/common_voice_en_17784-common_voice_en_17785.wav",
+    "input_seed": 437283715
+  },
+  {
+    "utt_id": "common_voice_en_177895-common_voice_en_177898",
+    "speaker_id": "common_voice_en_177895",
+    "prompt_text": "Several people are walking out in the spotlight.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_177895.wav",
+    "gt_text": "A man is taking a look at the food products.",
+    "gt_wav_rel": "wavs/common_voice_en_177895-common_voice_en_177898.wav",
+    "input_seed": 1176274617
+  },
+  {
+    "utt_id": "common_voice_en_17830764-common_voice_en_17830762",
+    "speaker_id": "common_voice_en_17830764",
+    "prompt_text": "Fortunately its not the sole driving factor of the local economy.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_17830764.wav",
+    "gt_text": "Are they twins or just normal siblings?",
+    "gt_wav_rel": "wavs/common_voice_en_17830764-common_voice_en_17830762.wav",
+    "input_seed": 269342243
+  },
+  {
+    "utt_id": "common_voice_en_17854896-common_voice_en_17854894",
+    "speaker_id": "common_voice_en_17854896",
+    "prompt_text": "Albert Einstein's famous equation E equals MC squared is one of the best known equations in physics.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_17854896.wav",
+    "gt_text": "To wish one well To wish one ill.",
+    "gt_wav_rel": "wavs/common_voice_en_17854896-common_voice_en_17854894.wav",
+    "input_seed": 330630650
+  },
+  {
+    "utt_id": "common_voice_en_17861335-common_voice_en_17861337",
+    "speaker_id": "common_voice_en_17861335",
+    "prompt_text": "There are numerous advantages of using optical devices for computing.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_17861335.wav",
+    "gt_text": "It changes color when you say the words \"blue sponge\".",
+    "gt_wav_rel": "wavs/common_voice_en_17861335-common_voice_en_17861337.wav",
+    "input_seed": 2017147944
+  },
+  {
+    "utt_id": "common_voice_en_17874600-common_voice_en_17874601",
+    "speaker_id": "common_voice_en_17874600",
+    "prompt_text": "The rainforests are depleted, we turned the planet into a waste ground.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_17874600.wav",
+    "gt_text": "An automobile will arrive at the end of the alley in half an hour, you are to get inside.",
+    "gt_wav_rel": "wavs/common_voice_en_17874600-common_voice_en_17874601.wav",
+    "input_seed": 1996551667
+  },
+  {
+    "utt_id": "common_voice_en_17920116-common_voice_en_17920112",
+    "speaker_id": "common_voice_en_17920116",
+    "prompt_text": "Love does much but money does all.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_17920116.wav",
+    "gt_text": "Appearances are deceptive.",
+    "gt_wav_rel": "wavs/common_voice_en_17920116-common_voice_en_17920112.wav",
+    "input_seed": 550954033
+  },
+  {
+    "utt_id": "common_voice_en_17986345-common_voice_en_17986347",
+    "speaker_id": "common_voice_en_17986345",
+    "prompt_text": "They walked in from the rain, all dishevelled and steaming.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_17986345.wav",
+    "gt_text": "Fine, what makes you think I'd answer you truthfully?",
+    "gt_wav_rel": "wavs/common_voice_en_17986345-common_voice_en_17986347.wav",
+    "input_seed": 189045065
+  },
+  {
+    "utt_id": "common_voice_en_18070362-common_voice_en_18070351",
+    "speaker_id": "common_voice_en_18070362",
+    "prompt_text": "The pipe ran almost the length of the ditch.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_18070362.wav",
+    "gt_text": "The hinge on the door creaked with old age.",
+    "gt_wav_rel": "wavs/common_voice_en_18070362-common_voice_en_18070351.wav",
+    "input_seed": 1944262932
+  },
+  {
+    "utt_id": "common_voice_en_18187914-common_voice_en_18188853",
+    "speaker_id": "common_voice_en_18187914",
+    "prompt_text": "Bitcoin mining can be done with graphics cards or with specialized hardware.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_18187914.wav",
+    "gt_text": "A bus shuttle took us from the airport to the metro.",
+    "gt_wav_rel": "wavs/common_voice_en_18187914-common_voice_en_18188853.wav",
+    "input_seed": 272469165
+  },
+  {
+    "utt_id": "common_voice_en_182275-common_voice_en_182276",
+    "speaker_id": "common_voice_en_182275",
+    "prompt_text": "After writing a bug report, one should regularly check if someone responded.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_182275.wav",
+    "gt_text": "Those gangsters get what they deserve.",
+    "gt_wav_rel": "wavs/common_voice_en_182275-common_voice_en_182276.wav",
+    "input_seed": 880070777
+  },
+  {
+    "utt_id": "common_voice_en_18313326-common_voice_en_18313324",
+    "speaker_id": "common_voice_en_18313326",
+    "prompt_text": "I know that you can't forget how I hurt you",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_18313326.wav",
+    "gt_text": "It seemed the ordained order of things that dogs should work.",
+    "gt_wav_rel": "wavs/common_voice_en_18313326-common_voice_en_18313324.wav",
+    "input_seed": 744238324
+  },
+  {
+    "utt_id": "common_voice_en_18336410-common_voice_en_18336411",
+    "speaker_id": "common_voice_en_18336410",
+    "prompt_text": "Continuous Integration has been a lifesaver for us.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_18336410.wav",
+    "gt_text": "She obeyed, shrinking back with the baby in her arms.",
+    "gt_wav_rel": "wavs/common_voice_en_18336410-common_voice_en_18336411.wav",
+    "input_seed": 1234882485
+  },
+  {
+    "utt_id": "common_voice_en_18338543-common_voice_en_18338546",
+    "speaker_id": "common_voice_en_18338543",
+    "prompt_text": "You don't catch me at any such foolishness.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_18338543.wav",
+    "gt_text": "The history of the eighteenth century is written, Ernest prompted.",
+    "gt_wav_rel": "wavs/common_voice_en_18338543-common_voice_en_18338546.wav",
+    "input_seed": 318741705
+  },
+  {
+    "utt_id": "common_voice_en_18500600-common_voice_en_18500603",
+    "speaker_id": "common_voice_en_18500600",
+    "prompt_text": "Is that program proprietary software, or is it open source?",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_18500600.wav",
+    "gt_text": "The author is a blogger and social media phenomenon.",
+    "gt_wav_rel": "wavs/common_voice_en_18500600-common_voice_en_18500603.wav",
+    "input_seed": 1026912018
+  },
+  {
+    "utt_id": "common_voice_en_18545637-common_voice_en_18545639",
+    "speaker_id": "common_voice_en_18545637",
+    "prompt_text": "I needed to exchange insurance details with the other driver.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_18545637.wav",
+    "gt_text": "She searched in vain for a familiar face.",
+    "gt_wav_rel": "wavs/common_voice_en_18545637-common_voice_en_18545639.wav",
+    "input_seed": 170142044
+  },
+  {
+    "utt_id": "common_voice_en_18554437-common_voice_en_18554439",
+    "speaker_id": "common_voice_en_18554437",
+    "prompt_text": "She was singularly quick, singularly receptive.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_18554437.wav",
+    "gt_text": "Can't you see the scene? he asked with a queer smile of excitement.",
+    "gt_wav_rel": "wavs/common_voice_en_18554437-common_voice_en_18554439.wav",
+    "input_seed": 592515957
+  },
+  {
+    "utt_id": "common_voice_en_18672480-common_voice_en_18672484",
+    "speaker_id": "common_voice_en_18672480",
+    "prompt_text": "Some development processes usually conducted sequentially were conducted in parallel.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_18672480.wav",
+    "gt_text": "In testimony to investigators, the page described the relationship as consensual and not intimidating.",
+    "gt_wav_rel": "wavs/common_voice_en_18672480-common_voice_en_18672484.wav",
+    "input_seed": 1283224332
+  },
+  {
+    "utt_id": "common_voice_en_18707936-common_voice_en_18707937",
+    "speaker_id": "common_voice_en_18707936",
+    "prompt_text": "The nature reserve covers only a small part of the marsh area.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_18707936.wav",
+    "gt_text": "Smith is too shocked by Paine's betrayal to defend himself, and runs away.",
+    "gt_wav_rel": "wavs/common_voice_en_18707936-common_voice_en_18707937.wav",
+    "input_seed": 1552231953
+  },
+  {
+    "utt_id": "common_voice_en_18735317-common_voice_en_18735372",
+    "speaker_id": "common_voice_en_18735317",
+    "prompt_text": "The facade is constructed from white Portland stone and red brick.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_18735317.wav",
+    "gt_text": "After a routine departure, the airliner experiences sporadic sudden vibrations.",
+    "gt_wav_rel": "wavs/common_voice_en_18735317-common_voice_en_18735372.wav",
+    "input_seed": 764140628
+  },
+  {
+    "utt_id": "common_voice_en_18757805-common_voice_en_18757804",
+    "speaker_id": "common_voice_en_18757805",
+    "prompt_text": "This is particularly common around Antarctica.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_18757805.wav",
+    "gt_text": "He was a senior fellow at the time of his death in London.",
+    "gt_wav_rel": "wavs/common_voice_en_18757805-common_voice_en_18757804.wav",
+    "input_seed": 1246936722
+  },
+  {
+    "utt_id": "common_voice_en_18902273-common_voice_en_18902275",
+    "speaker_id": "common_voice_en_18902273",
+    "prompt_text": "She had been the favourite among audiences since the very beginning of the competition.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_18902273.wav",
+    "gt_text": "Cafom, a company registered in France, purchased Habitat's European businesses.",
+    "gt_wav_rel": "wavs/common_voice_en_18902273-common_voice_en_18902275.wav",
+    "input_seed": 1402089699
+  },
+  {
+    "utt_id": "common_voice_en_19117097-common_voice_en_19117098",
+    "speaker_id": "common_voice_en_19117097",
+    "prompt_text": "At the time of the conflict this location was outside Khimki.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19117097.wav",
+    "gt_text": "The railway station is also an important bus interchange station.",
+    "gt_wav_rel": "wavs/common_voice_en_19117097-common_voice_en_19117098.wav",
+    "input_seed": 1303200010
+  },
+  {
+    "utt_id": "common_voice_en_19124597-common_voice_en_19124596",
+    "speaker_id": "common_voice_en_19124597",
+    "prompt_text": "Kabul is an independent newspaper that covers most of the provinces.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19124597.wav",
+    "gt_text": "This area eventually became a center of trade.",
+    "gt_wav_rel": "wavs/common_voice_en_19124597-common_voice_en_19124596.wav",
+    "input_seed": 388893004
+  },
+  {
+    "utt_id": "common_voice_en_19254683-common_voice_en_19254687",
+    "speaker_id": "common_voice_en_19254683",
+    "prompt_text": "In the banking environment at that time the merger was inevitable.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19254683.wav",
+    "gt_text": "This generation saw strong console wars.",
+    "gt_wav_rel": "wavs/common_voice_en_19254683-common_voice_en_19254687.wav",
+    "input_seed": 217617504
+  },
+  {
+    "utt_id": "common_voice_en_19401124-common_voice_en_19401125",
+    "speaker_id": "common_voice_en_19401124",
+    "prompt_text": "The Harrah's brand would remain one of the company's three primary casino brands.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19401124.wav",
+    "gt_text": "Apart from the aforementioned teams no one has won more than five titles.",
+    "gt_wav_rel": "wavs/common_voice_en_19401124-common_voice_en_19401125.wav",
+    "input_seed": 2019554486
+  },
+  {
+    "utt_id": "common_voice_en_19455206-common_voice_en_19455208",
+    "speaker_id": "common_voice_en_19455206",
+    "prompt_text": "This was the first such general strike in the United States.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19455206.wav",
+    "gt_text": "You know the rules, three rounds, best skill wins.",
+    "gt_wav_rel": "wavs/common_voice_en_19455206-common_voice_en_19455208.wav",
+    "input_seed": 821803361
+  },
+  {
+    "utt_id": "common_voice_en_19496235-common_voice_en_19496229",
+    "speaker_id": "common_voice_en_19496235",
+    "prompt_text": "Netherlands and Spain have signed but not ratified the treaty.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19496235.wav",
+    "gt_text": "The Executive Board \"overturned\" this recommendation and the lightweight rowing has been continued.",
+    "gt_wav_rel": "wavs/common_voice_en_19496235-common_voice_en_19496229.wav",
+    "input_seed": 1081641599
+  },
+  {
+    "utt_id": "common_voice_en_19527999-common_voice_en_19528000",
+    "speaker_id": "common_voice_en_19527999",
+    "prompt_text": "He gave them another choice: to hand over the informant.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19527999.wav",
+    "gt_text": "He is now President of Ramblers Scotland.",
+    "gt_wav_rel": "wavs/common_voice_en_19527999-common_voice_en_19528000.wav",
+    "input_seed": 915365221
+  },
+  {
+    "utt_id": "common_voice_en_19540120-common_voice_en_19540122",
+    "speaker_id": "common_voice_en_19540120",
+    "prompt_text": "Activation typically spreads to all the other units connected to it.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19540120.wav",
+    "gt_text": "He originally studied architecture at the University of Cape Town.",
+    "gt_wav_rel": "wavs/common_voice_en_19540120-common_voice_en_19540122.wav",
+    "input_seed": 1863938102
+  },
+  {
+    "utt_id": "common_voice_en_19560742-common_voice_en_19560741",
+    "speaker_id": "common_voice_en_19560742",
+    "prompt_text": "The town is adjacent to and borders the city of Amsterdam on three sides.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19560742.wav",
+    "gt_text": "Tverdovsky now lives with his wife and children in the United States.",
+    "gt_wav_rel": "wavs/common_voice_en_19560742-common_voice_en_19560741.wav",
+    "input_seed": 833396935
+  },
+  {
+    "utt_id": "common_voice_en_19579295-common_voice_en_19579310",
+    "speaker_id": "common_voice_en_19579295",
+    "prompt_text": "Mullan was a schoolboy witness of the events of Bloody Sunday.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19579295.wav",
+    "gt_text": "Russo was thrown out of his car and died immediately.",
+    "gt_wav_rel": "wavs/common_voice_en_19579295-common_voice_en_19579310.wav",
+    "input_seed": 2051258831
+  },
+  {
+    "utt_id": "common_voice_en_19632634-common_voice_en_19632644",
+    "speaker_id": "common_voice_en_19632634",
+    "prompt_text": "The stone is heated in a fire or in embers.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19632634.wav",
+    "gt_text": "It then became part of Poland.",
+    "gt_wav_rel": "wavs/common_voice_en_19632634-common_voice_en_19632644.wav",
+    "input_seed": 410356152
+  },
+  {
+    "utt_id": "common_voice_en_19656513-common_voice_en_19656571",
+    "speaker_id": "common_voice_en_19656513",
+    "prompt_text": "This large sea duck is characterised by its bulky shape and large bill.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19656513.wav",
+    "gt_text": "For her Friday nights and her French lessons were gone.",
+    "gt_wav_rel": "wavs/common_voice_en_19656513-common_voice_en_19656571.wav",
+    "input_seed": 1145818876
+  },
+  {
+    "utt_id": "common_voice_en_19701583-common_voice_en_19701587",
+    "speaker_id": "common_voice_en_19701583",
+    "prompt_text": "There are also two lodges, and of land.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19701583.wav",
+    "gt_text": "He also obtained the authorizations to fly Predator drones over Yemen.",
+    "gt_wav_rel": "wavs/common_voice_en_19701583-common_voice_en_19701587.wav",
+    "input_seed": 390969979
+  },
+  {
+    "utt_id": "common_voice_en_19724475-common_voice_en_19724484",
+    "speaker_id": "common_voice_en_19724475",
+    "prompt_text": "Mitchell Stevens has published a small mini-series magazine entitled How idle are you?",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19724475.wav",
+    "gt_text": "A golden crown sits above the shield.",
+    "gt_wav_rel": "wavs/common_voice_en_19724475-common_voice_en_19724484.wav",
+    "input_seed": 835535626
+  },
+  {
+    "utt_id": "common_voice_en_19748004-common_voice_en_19748010",
+    "speaker_id": "common_voice_en_19748004",
+    "prompt_text": "French was born in Brunswick, Victoria to a family of Cornish origin.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19748004.wav",
+    "gt_text": "In some species, females are also capable of stridulation.",
+    "gt_wav_rel": "wavs/common_voice_en_19748004-common_voice_en_19748010.wav",
+    "input_seed": 476367018
+  },
+  {
+    "utt_id": "common_voice_en_19750016-common_voice_en_19750004",
+    "speaker_id": "common_voice_en_19750016",
+    "prompt_text": "It then became involved with pharmaceuticals, food additives, and industrial and consumer chemicals.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19750016.wav",
+    "gt_text": "The second stage featured six engines burning liquid hydrogen.",
+    "gt_wav_rel": "wavs/common_voice_en_19750016-common_voice_en_19750004.wav",
+    "input_seed": 1540843069
+  },
+  {
+    "utt_id": "common_voice_en_19756059-common_voice_en_19756060",
+    "speaker_id": "common_voice_en_19756059",
+    "prompt_text": "In addition, smaller groups made up of orchestra personnel perform throughout the year.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19756059.wav",
+    "gt_text": "The website has since replaced the word 'hell' with 'heck'.",
+    "gt_wav_rel": "wavs/common_voice_en_19756059-common_voice_en_19756060.wav",
+    "input_seed": 356732211
+  },
+  {
+    "utt_id": "common_voice_en_19767978-common_voice_en_19767977",
+    "speaker_id": "common_voice_en_19767978",
+    "prompt_text": "The houses are named after famous Norse rulers of the Isle of Man.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19767978.wav",
+    "gt_text": "This subsequently was renamed \"The Magazine\".",
+    "gt_wav_rel": "wavs/common_voice_en_19767978-common_voice_en_19767977.wav",
+    "input_seed": 1955593794
+  },
+  {
+    "utt_id": "common_voice_en_19778240-common_voice_en_19778244",
+    "speaker_id": "common_voice_en_19778240",
+    "prompt_text": "Part of the Lake Victoria system is within the boundaries of Kenya.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19778240.wav",
+    "gt_text": "She married David Wallett, and moved to Los Angeles to try acting.",
+    "gt_wav_rel": "wavs/common_voice_en_19778240-common_voice_en_19778244.wav",
+    "input_seed": 486604178
+  },
+  {
+    "utt_id": "common_voice_en_19789569-common_voice_en_19789566",
+    "speaker_id": "common_voice_en_19789569",
+    "prompt_text": "The Fisher government passed a large number of its legislation.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19789569.wav",
+    "gt_text": "It was considered one of the most remarkable engineering feats of the time.",
+    "gt_wav_rel": "wavs/common_voice_en_19789569-common_voice_en_19789566.wav",
+    "input_seed": 878448064
+  },
+  {
+    "utt_id": "common_voice_en_19791537-common_voice_en_19791538",
+    "speaker_id": "common_voice_en_19791537",
+    "prompt_text": "Luther and Cody Dickinson's father was the Memphis musician and record producer Jim Dickinson.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19791537.wav",
+    "gt_text": "It was also the first mission of the Luna programme.",
+    "gt_wav_rel": "wavs/common_voice_en_19791537-common_voice_en_19791538.wav",
+    "input_seed": 2146826520
+  },
+  {
+    "utt_id": "common_voice_en_19819944-common_voice_en_19819945",
+    "speaker_id": "common_voice_en_19819944",
+    "prompt_text": "Many species, particularly the South American ones, are not blue, despite the common name.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19819944.wav",
+    "gt_text": "The storm caused severe flooding states such as New Jersey, New York, and Pennsylvania.",
+    "gt_wav_rel": "wavs/common_voice_en_19819944-common_voice_en_19819945.wav",
+    "input_seed": 1869916183
+  },
+  {
+    "utt_id": "common_voice_en_19867710-common_voice_en_19867713",
+    "speaker_id": "common_voice_en_19867710",
+    "prompt_text": "There are no easy answers, and \"The Cell\" doesn't pretend to offer any.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19867710.wav",
+    "gt_text": "She trains and lives in Toronto.",
+    "gt_wav_rel": "wavs/common_voice_en_19867710-common_voice_en_19867713.wav",
+    "input_seed": 1835545418
+  },
+  {
+    "utt_id": "common_voice_en_19869780-common_voice_en_19869781",
+    "speaker_id": "common_voice_en_19869780",
+    "prompt_text": "The executive branch is composed of the Executive Council and the Executive Cabinet.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19869780.wav",
+    "gt_text": "You don't know what this means to us out here, they said.",
+    "gt_wav_rel": "wavs/common_voice_en_19869780-common_voice_en_19869781.wav",
+    "input_seed": 867053630
+  },
+  {
+    "utt_id": "common_voice_en_19933652-common_voice_en_19933655",
+    "speaker_id": "common_voice_en_19933652",
+    "prompt_text": "The earliest settlers were the family of Harvey and Louisa McCarty.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19933652.wav",
+    "gt_text": "She was a pioneer in the sensory analysis of food.",
+    "gt_wav_rel": "wavs/common_voice_en_19933652-common_voice_en_19933655.wav",
+    "input_seed": 968625045
+  },
+  {
+    "utt_id": "common_voice_en_19951090-common_voice_en_19951089",
+    "speaker_id": "common_voice_en_19951090",
+    "prompt_text": "It maintains a Civic Association and a private park and swim club for residents.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19951090.wav",
+    "gt_text": "He has also made three solo albums.",
+    "gt_wav_rel": "wavs/common_voice_en_19951090-common_voice_en_19951089.wav",
+    "input_seed": 1341450164
+  },
+  {
+    "utt_id": "common_voice_en_19967495-common_voice_en_19967497",
+    "speaker_id": "common_voice_en_19967495",
+    "prompt_text": "These two engines were nearly identical, except for the induction systems.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19967495.wav",
+    "gt_text": "The remaining singles failed to hit the dance chart.",
+    "gt_wav_rel": "wavs/common_voice_en_19967495-common_voice_en_19967497.wav",
+    "input_seed": 826804290
+  },
+  {
+    "utt_id": "common_voice_en_19972684-common_voice_en_19972807",
+    "speaker_id": "common_voice_en_19972684",
+    "prompt_text": "His daughter Marcia pursued poetry, while his son Hilary Masters became a novelist.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19972684.wav",
+    "gt_text": "Many reviewers compared its style to that of the \"Mario Kart\" series.",
+    "gt_wav_rel": "wavs/common_voice_en_19972684-common_voice_en_19972807.wav",
+    "input_seed": 9526194
+  },
+  {
+    "utt_id": "common_voice_en_19981298-common_voice_en_19981296",
+    "speaker_id": "common_voice_en_19981298",
+    "prompt_text": "The spin involves rotating like a discus thrower and using rotational momentum for power.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19981298.wav",
+    "gt_text": "All workers were reported as being employed by governments.",
+    "gt_wav_rel": "wavs/common_voice_en_19981298-common_voice_en_19981296.wav",
+    "input_seed": 81912949
+  },
+  {
+    "utt_id": "common_voice_en_19992384-common_voice_en_19992617",
+    "speaker_id": "common_voice_en_19992384",
+    "prompt_text": "She is now the second vice president of the National Assembly.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_19992384.wav",
+    "gt_text": "He then moved to Belgian side Lierse, but has since retired.",
+    "gt_wav_rel": "wavs/common_voice_en_19992384-common_voice_en_19992617.wav",
+    "input_seed": 626485349
+  },
+  {
+    "utt_id": "common_voice_en_20030172-common_voice_en_20030173",
+    "speaker_id": "common_voice_en_20030172",
+    "prompt_text": "The Germans built several administrative buildings in Ambam as it was of strategic importance.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_20030172.wav",
+    "gt_text": "The children of Gowanda had school that day.",
+    "gt_wav_rel": "wavs/common_voice_en_20030172-common_voice_en_20030173.wav",
+    "input_seed": 421093647
+  },
+  {
+    "utt_id": "common_voice_en_20190570-common_voice_en_20190572",
+    "speaker_id": "common_voice_en_20190570",
+    "prompt_text": "There is also disagreement over how such norms are recognized or established.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_20190570.wav",
+    "gt_text": "It is home to Mineral Area College, formerly known as Flat River Junior College.",
+    "gt_wav_rel": "wavs/common_voice_en_20190570-common_voice_en_20190572.wav",
+    "input_seed": 729021275
+  },
+  {
+    "utt_id": "common_voice_en_20214898-common_voice_en_20214899",
+    "speaker_id": "common_voice_en_20214898",
+    "prompt_text": "The limited expresses \"Super Hakuto\" and \"Super Inaba\" operate on this line.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_20214898.wav",
+    "gt_text": "He writes a column at \"The Detroit News\".",
+    "gt_wav_rel": "wavs/common_voice_en_20214898-common_voice_en_20214899.wav",
+    "input_seed": 40749591
+  },
+  {
+    "utt_id": "common_voice_en_20232770-common_voice_en_20232772",
+    "speaker_id": "common_voice_en_20232770",
+    "prompt_text": "It is used to punish a wrong by going outside of the law.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_20232770.wav",
+    "gt_text": "He was also invited to play several dates with W. C. Handy's Orchestra.",
+    "gt_wav_rel": "wavs/common_voice_en_20232770-common_voice_en_20232772.wav",
+    "input_seed": 60011382
+  },
+  {
+    "utt_id": "common_voice_en_20235009-common_voice_en_20235010",
+    "speaker_id": "common_voice_en_20235009",
+    "prompt_text": "Except for Larry, each Koopaling was named after a specific person.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_20235009.wav",
+    "gt_text": "He painted there a history of Achilles.",
+    "gt_wav_rel": "wavs/common_voice_en_20235009-common_voice_en_20235010.wav",
+    "input_seed": 313749224
+  },
+  {
+    "utt_id": "common_voice_en_20236234-common_voice_en_20236236",
+    "speaker_id": "common_voice_en_20236234",
+    "prompt_text": "Where it exists, a school truancy officer is often a constable or sheriff, concurrently.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_20236234.wav",
+    "gt_text": "The Festival is currently based out of New York City.",
+    "gt_wav_rel": "wavs/common_voice_en_20236234-common_voice_en_20236236.wav",
+    "input_seed": 71510802
+  },
+  {
+    "utt_id": "common_voice_en_20252760-common_voice_en_20252766",
+    "speaker_id": "common_voice_en_20252760",
+    "prompt_text": "Where plays are put on yearly, with months of practices.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_20252760.wav",
+    "gt_text": "There are three colour combinations that are used on several flags in certain regions.",
+    "gt_wav_rel": "wavs/common_voice_en_20252760-common_voice_en_20252766.wav",
+    "input_seed": 52179625
+  },
+  {
+    "utt_id": "common_voice_en_20266775-common_voice_en_20266781",
+    "speaker_id": "common_voice_en_20266775",
+    "prompt_text": "During World War One, Strong served overseas in France with American Expeditionary Forces.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_20266775.wav",
+    "gt_text": "Brim also had one child from her first marriage.",
+    "gt_wav_rel": "wavs/common_voice_en_20266775-common_voice_en_20266781.wav",
+    "input_seed": 35313243
+  },
+  {
+    "utt_id": "common_voice_en_20303932-common_voice_en_20303930",
+    "speaker_id": "common_voice_en_20303932",
+    "prompt_text": "The implication works both ways, and thus the universal is bidirectional.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_20303932.wav",
+    "gt_text": "Kaufman Lake is also a popular full day hiking destination.",
+    "gt_wav_rel": "wavs/common_voice_en_20303932-common_voice_en_20303930.wav",
+    "input_seed": 396927274
+  },
+  {
+    "utt_id": "common_voice_en_20317297-common_voice_en_20317300",
+    "speaker_id": "common_voice_en_20317297",
+    "prompt_text": "It is located on a small plain home to many vineyards.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_20317297.wav",
+    "gt_text": "The suburb is distinctly but unofficially split into the north and the south.",
+    "gt_wav_rel": "wavs/common_voice_en_20317297-common_voice_en_20317300.wav",
+    "input_seed": 1384938025
+  },
+  {
+    "utt_id": "common_voice_en_20583510-common_voice_en_20583509",
+    "speaker_id": "common_voice_en_20583510",
+    "prompt_text": "Purvis was the daughter of a Methodist minister in Pennsylvania.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_20583510.wav",
+    "gt_text": "He has also worked as a teacher, lecturer, critic and broadcaster.",
+    "gt_wav_rel": "wavs/common_voice_en_20583510-common_voice_en_20583509.wav",
+    "input_seed": 1036730104
+  },
+  {
+    "utt_id": "common_voice_en_20661858-common_voice_en_20661860",
+    "speaker_id": "common_voice_en_20661858",
+    "prompt_text": "Soon after the band signed to Century Media Records.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_20661858.wav",
+    "gt_text": "Now I have to isolate myself for long periods.",
+    "gt_wav_rel": "wavs/common_voice_en_20661858-common_voice_en_20661860.wav",
+    "input_seed": 2123661342
+  },
+  {
+    "utt_id": "common_voice_en_20791113-common_voice_en_20791116",
+    "speaker_id": "common_voice_en_20791113",
+    "prompt_text": "It is currently the oldest preserved Union Pacific steam locomotive.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_20791113.wav",
+    "gt_text": "The two quickly covered the table with a towel when they noticed the officers.",
+    "gt_wav_rel": "wavs/common_voice_en_20791113-common_voice_en_20791116.wav",
+    "input_seed": 801750128
+  },
+  {
+    "utt_id": "common_voice_en_20888046-common_voice_en_20888051",
+    "speaker_id": "common_voice_en_20888046",
+    "prompt_text": "This marked the official beginning of the university as it is today.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_20888046.wav",
+    "gt_text": "It is the most popular form of transportation in this community.",
+    "gt_wav_rel": "wavs/common_voice_en_20888046-common_voice_en_20888051.wav",
+    "input_seed": 34705588
+  },
+  {
+    "utt_id": "common_voice_en_21059484-common_voice_en_21059406",
+    "speaker_id": "common_voice_en_21059484",
+    "prompt_text": "Higher Grade qualifications can be taken in both the fifth and sixth years.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_21059484.wav",
+    "gt_text": "The area is famous for its plentiful peach blossoms and natural scenery.",
+    "gt_wav_rel": "wavs/common_voice_en_21059484-common_voice_en_21059406.wav",
+    "input_seed": 2103354460
+  },
+  {
+    "utt_id": "common_voice_en_21106663-common_voice_en_21106664",
+    "speaker_id": "common_voice_en_21106663",
+    "prompt_text": "He was a founding member of the Alliance Party of Northern Ireland.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_21106663.wav",
+    "gt_text": "A pond has a population of the nationally uncommon warty newt.",
+    "gt_wav_rel": "wavs/common_voice_en_21106663-common_voice_en_21106664.wav",
+    "input_seed": 1863656492
+  },
+  {
+    "utt_id": "common_voice_en_21345624-common_voice_en_21345626",
+    "speaker_id": "common_voice_en_21345624",
+    "prompt_text": "Varberg is located in a terrain of hills and plains.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_21345624.wav",
+    "gt_text": "The last lineage diversified rapidly, and became the ancestor of most Australian \"Atriplex\" species.",
+    "gt_wav_rel": "wavs/common_voice_en_21345624-common_voice_en_21345626.wav",
+    "input_seed": 576422187
+  },
+  {
+    "utt_id": "common_voice_en_21352017-common_voice_en_21352021",
+    "speaker_id": "common_voice_en_21352017",
+    "prompt_text": "The building is now offices.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_21352017.wav",
+    "gt_text": "Roy is bilingual, and can speak English and French.",
+    "gt_wav_rel": "wavs/common_voice_en_21352017-common_voice_en_21352021.wav",
+    "input_seed": 214153271
+  },
+  {
+    "utt_id": "common_voice_en_21534516-common_voice_en_21534520",
+    "speaker_id": "common_voice_en_21534516",
+    "prompt_text": "At Jericho Mills, Warren found the river ford unprotected.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_21534516.wav",
+    "gt_text": "A number of choirs, bands and sporting clubs are also present.",
+    "gt_wav_rel": "wavs/common_voice_en_21534516-common_voice_en_21534520.wav",
+    "input_seed": 196600822
+  },
+  {
+    "utt_id": "common_voice_en_21620052-common_voice_en_21620053",
+    "speaker_id": "common_voice_en_21620052",
+    "prompt_text": "Therefore, the experimental group provided more internal attributions towards the writer.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_21620052.wav",
+    "gt_text": "At least five species of reptiles have been recorded for the island.",
+    "gt_wav_rel": "wavs/common_voice_en_21620052-common_voice_en_21620053.wav",
+    "input_seed": 17791559
+  },
+  {
+    "utt_id": "common_voice_en_21659259-common_voice_en_21659260",
+    "speaker_id": "common_voice_en_21659259",
+    "prompt_text": "Those with no mint mark were produced in London.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_21659259.wav",
+    "gt_text": "It now has five chapters: Butterfield Trail, Magazine Mountain, Ozark, Razorback and Cornerstone.",
+    "gt_wav_rel": "wavs/common_voice_en_21659259-common_voice_en_21659260.wav",
+    "input_seed": 1973092551
+  },
+  {
+    "utt_id": "common_voice_en_21777264-common_voice_en_21777266",
+    "speaker_id": "common_voice_en_21777264",
+    "prompt_text": "The browser's main features are customization and tab functions.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_21777264.wav",
+    "gt_text": "However, the Vanguard models are competitively priced with other makes and models.",
+    "gt_wav_rel": "wavs/common_voice_en_21777264-common_voice_en_21777266.wav",
+    "input_seed": 1438783140
+  },
+  {
+    "utt_id": "common_voice_en_22709462-common_voice_en_22709463",
+    "speaker_id": "common_voice_en_22709462",
+    "prompt_text": "It enjoyed moderate success, entering the top forty on various record charts.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_22709462.wav",
+    "gt_text": "Over time the couple has four more children, although William never warms to them.",
+    "gt_wav_rel": "wavs/common_voice_en_22709462-common_voice_en_22709463.wav",
+    "input_seed": 979414710
+  },
+  {
+    "utt_id": "common_voice_en_22763534-common_voice_en_22763535",
+    "speaker_id": "common_voice_en_22763534",
+    "prompt_text": "Their two research groups are the Materials Performance Division, and the Process Development Division.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_22763534.wav",
+    "gt_text": "Most of the district residents are both poor and rural.",
+    "gt_wav_rel": "wavs/common_voice_en_22763534-common_voice_en_22763535.wav",
+    "input_seed": 947101111
+  },
+  {
+    "utt_id": "common_voice_en_22776566-common_voice_en_22776570",
+    "speaker_id": "common_voice_en_22776566",
+    "prompt_text": "The twins were regarded as 'inseparable' throughout their lives, and they often dressed identically.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_22776566.wav",
+    "gt_text": "It would be four years before the project's operations were ready to begin.",
+    "gt_wav_rel": "wavs/common_voice_en_22776566-common_voice_en_22776570.wav",
+    "input_seed": 30069959
+  },
+  {
+    "utt_id": "common_voice_en_22777850-common_voice_en_22777868",
+    "speaker_id": "common_voice_en_22777850",
+    "prompt_text": "A book titled \"Service Through Knowledge and Character\" details the school's history.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_22777850.wav",
+    "gt_text": "He was known as \"Roaring Bill\".",
+    "gt_wav_rel": "wavs/common_voice_en_22777850-common_voice_en_22777868.wav",
+    "input_seed": 1956261685
+  },
+  {
+    "utt_id": "common_voice_en_22793454-common_voice_en_22793458",
+    "speaker_id": "common_voice_en_22793454",
+    "prompt_text": "She was overjoyed by taking part on these projects.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_22793454.wav",
+    "gt_text": "After this album was released, Steve Roach embarked on a second trip to Australia.",
+    "gt_wav_rel": "wavs/common_voice_en_22793454-common_voice_en_22793458.wav",
+    "input_seed": 556359377
+  },
+  {
+    "utt_id": "common_voice_en_22972881-common_voice_en_22972884",
+    "speaker_id": "common_voice_en_22972881",
+    "prompt_text": "He was a strong supporter of free trade, immigration programmes and education reforms.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_22972881.wav",
+    "gt_text": "We're too much the ideal bad examples.",
+    "gt_wav_rel": "wavs/common_voice_en_22972881-common_voice_en_22972884.wav",
+    "input_seed": 1458670132
+  },
+  {
+    "utt_id": "common_voice_en_23305810-common_voice_en_23305815",
+    "speaker_id": "common_voice_en_23305810",
+    "prompt_text": "His writing style accents the dramatic tension and the lyricism of his plays.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_23305810.wav",
+    "gt_text": "Guerrero is a permanent resident of the United States.",
+    "gt_wav_rel": "wavs/common_voice_en_23305810-common_voice_en_23305815.wav",
+    "input_seed": 1839204038
+  },
+  {
+    "utt_id": "common_voice_en_23589975-common_voice_en_23589976",
+    "speaker_id": "common_voice_en_23589975",
+    "prompt_text": "When we take to the field we are solemn and deafening hisses attend us.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_23589975.wav",
+    "gt_text": "Finally, lumping groups of one's own pieces together is usually poor strategy.",
+    "gt_wav_rel": "wavs/common_voice_en_23589975-common_voice_en_23589976.wav",
+    "input_seed": 2117759219
+  },
+  {
+    "utt_id": "common_voice_en_23601048-common_voice_en_23601051",
+    "speaker_id": "common_voice_en_23601048",
+    "prompt_text": "However, the converse is true: any normal form is also a head normal form.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_23601048.wav",
+    "gt_text": "The region's climate and soils favored commodity agriculture over industrial development.",
+    "gt_wav_rel": "wavs/common_voice_en_23601048-common_voice_en_23601051.wav",
+    "input_seed": 144126003
+  },
+  {
+    "utt_id": "common_voice_en_23606989-common_voice_en_23606990",
+    "speaker_id": "common_voice_en_23606989",
+    "prompt_text": "Dunbar school is the second oldest school in California.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_23606989.wav",
+    "gt_text": "Many reviewers complained of painful and frustrating physiological symptoms when playing the Virtual Boy.",
+    "gt_wav_rel": "wavs/common_voice_en_23606989-common_voice_en_23606990.wav",
+    "input_seed": 1341633951
+  },
+  {
+    "utt_id": "common_voice_en_23607947-common_voice_en_23607949",
+    "speaker_id": "common_voice_en_23607947",
+    "prompt_text": "Joel Lindpere became the first player to score a goal at Red Bull Arena.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_23607947.wav",
+    "gt_text": "There is an active market for its old, rare issues.",
+    "gt_wav_rel": "wavs/common_voice_en_23607947-common_voice_en_23607949.wav",
+    "input_seed": 337669673
+  },
+  {
+    "utt_id": "common_voice_en_23621347-common_voice_en_23621349",
+    "speaker_id": "common_voice_en_23621347",
+    "prompt_text": "In recent years, studies have found that more citizens value career over personal relationships.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_23621347.wav",
+    "gt_text": "According to Catholic missionaries George remained until his death a faithful Catholic.",
+    "gt_wav_rel": "wavs/common_voice_en_23621347-common_voice_en_23621349.wav",
+    "input_seed": 1272369353
+  },
+  {
+    "utt_id": "common_voice_en_23640041-common_voice_en_23640040",
+    "speaker_id": "common_voice_en_23640041",
+    "prompt_text": "He did not particularly mind, so he never bothered to change it back.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_23640041.wav",
+    "gt_text": "Auxiliary bishops are titular bishops of sees that no longer exist.",
+    "gt_wav_rel": "wavs/common_voice_en_23640041-common_voice_en_23640040.wav",
+    "input_seed": 362369888
+  },
+  {
+    "utt_id": "common_voice_en_23771355-common_voice_en_23771359",
+    "speaker_id": "common_voice_en_23771355",
+    "prompt_text": "It is considered offensive to refer to a \"Brianna\" as \"Brian\".",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_23771355.wav",
+    "gt_text": "He continued to travel and write, supporting himself by flying airplanes.",
+    "gt_wav_rel": "wavs/common_voice_en_23771355-common_voice_en_23771359.wav",
+    "input_seed": 1714643448
+  },
+  {
+    "utt_id": "common_voice_en_23809069-common_voice_en_23809073",
+    "speaker_id": "common_voice_en_23809069",
+    "prompt_text": "Instead, they can change concavity around vertical asymptotes or discontinuities.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_23809069.wav",
+    "gt_text": "Also that year, he collaborated with Evan Dando on a new Lemonheads album.",
+    "gt_wav_rel": "wavs/common_voice_en_23809069-common_voice_en_23809073.wav",
+    "input_seed": 172755986
+  },
+  {
+    "utt_id": "common_voice_en_23843606-common_voice_en_23843609",
+    "speaker_id": "common_voice_en_23843606",
+    "prompt_text": "He then went into hiding to await his metamorphosis.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_23843606.wav",
+    "gt_text": "She is married to musician Beck, another Scientologist.",
+    "gt_wav_rel": "wavs/common_voice_en_23843606-common_voice_en_23843609.wav",
+    "input_seed": 1859280578
+  },
+  {
+    "utt_id": "common_voice_en_24814747-common_voice_en_24814749",
+    "speaker_id": "common_voice_en_24814747",
+    "prompt_text": "Several manufacturers offer screens that roll into a pocket when not in use.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_24814747.wav",
+    "gt_text": "Ross also wrote a novelization of the theatrical film \"House of Dark Shadows\".",
+    "gt_wav_rel": "wavs/common_voice_en_24814747-common_voice_en_24814749.wav",
+    "input_seed": 802900188
+  },
+  {
+    "utt_id": "common_voice_en_24912752-common_voice_en_24913161",
+    "speaker_id": "common_voice_en_24912752",
+    "prompt_text": "Some ideas discussed during that chat eventually made it into Quake's future public releases.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_24912752.wav",
+    "gt_text": "These drawings are usually outline drawings that are quite expressionless and somber in appearance.",
+    "gt_wav_rel": "wavs/common_voice_en_24912752-common_voice_en_24913161.wav",
+    "input_seed": 1146268042
+  },
+  {
+    "utt_id": "common_voice_en_25035745-common_voice_en_25035747",
+    "speaker_id": "common_voice_en_25035745",
+    "prompt_text": "This was not always so, even after the forgery was debunked.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_25035745.wav",
+    "gt_text": "She was a co-sponsor of the Employee Free Choice Act.",
+    "gt_wav_rel": "wavs/common_voice_en_25035745-common_voice_en_25035747.wav",
+    "input_seed": 1803369518
+  },
+  {
+    "utt_id": "common_voice_en_25257658-common_voice_en_25257664",
+    "speaker_id": "common_voice_en_25257658",
+    "prompt_text": "Frazier considered public education a priority during his first term.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_25257658.wav",
+    "gt_text": "It is going to be shut down within the next few weeks.",
+    "gt_wav_rel": "wavs/common_voice_en_25257658-common_voice_en_25257664.wav",
+    "input_seed": 1751031604
+  },
+  {
+    "utt_id": "common_voice_en_25694807-common_voice_en_25694816",
+    "speaker_id": "common_voice_en_25694807",
+    "prompt_text": "It is on display at the North Downs Museum in Bangor Castle.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_25694807.wav",
+    "gt_text": "He was also chairman of the Victoria League, Kent.",
+    "gt_wav_rel": "wavs/common_voice_en_25694807-common_voice_en_25694816.wav",
+    "input_seed": 903024009
+  },
+  {
+    "utt_id": "common_voice_en_2586258-common_voice_en_2586260",
+    "speaker_id": "common_voice_en_2586258",
+    "prompt_text": "Romeo and Juliet might be the most famous act of William Shakespeare.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_2586258.wav",
+    "gt_text": "Oh, what are you going to when he arrives?",
+    "gt_wav_rel": "wavs/common_voice_en_2586258-common_voice_en_2586260.wav",
+    "input_seed": 1393778935
+  },
+  {
+    "utt_id": "common_voice_en_26319796-common_voice_en_26319797",
+    "speaker_id": "common_voice_en_26319796",
+    "prompt_text": "I'm what the sailors call a shark, that is, I'm a lawyer.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_26319796.wav",
+    "gt_text": "Bronchitis is far from being an uncommon disease of infants.",
+    "gt_wav_rel": "wavs/common_voice_en_26319796-common_voice_en_26319797.wav",
+    "input_seed": 1452309631
+  },
+  {
+    "utt_id": "common_voice_en_26324572-common_voice_en_26324575",
+    "speaker_id": "common_voice_en_26324572",
+    "prompt_text": "The British evacuated Boston and Fort William and Mary for Halifax, Nova Scotia.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_26324572.wav",
+    "gt_text": "All information in the chart must be placed in order by the Record Number.",
+    "gt_wav_rel": "wavs/common_voice_en_26324572-common_voice_en_26324575.wav",
+    "input_seed": 1609375645
+  },
+  {
+    "utt_id": "common_voice_en_26645969-common_voice_en_26645970",
+    "speaker_id": "common_voice_en_26645969",
+    "prompt_text": "The creation of a Supreme Court was unique in the case of South Australia.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_26645969.wav",
+    "gt_text": "This theory is called the endosymbiotic theory.",
+    "gt_wav_rel": "wavs/common_voice_en_26645969-common_voice_en_26645970.wav",
+    "input_seed": 619989715
+  },
+  {
+    "utt_id": "common_voice_en_27172977-common_voice_en_27172980",
+    "speaker_id": "common_voice_en_27172977",
+    "prompt_text": "He concluded This is a game best played with the voices turned off.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_27172977.wav",
+    "gt_text": "Thousands of people showed their creativity and voiced their opinions.",
+    "gt_wav_rel": "wavs/common_voice_en_27172977-common_voice_en_27172980.wav",
+    "input_seed": 199052540
+  },
+  {
+    "utt_id": "common_voice_en_27474919-common_voice_en_27474918",
+    "speaker_id": "common_voice_en_27474919",
+    "prompt_text": "The player clears the game by reaching the final level of the mode.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_27474919.wav",
+    "gt_text": "Jim Martin was born in Savannah, Chatham County, Georgia.",
+    "gt_wav_rel": "wavs/common_voice_en_27474919-common_voice_en_27474918.wav",
+    "input_seed": 2092845093
+  },
+  {
+    "utt_id": "common_voice_en_28132727-common_voice_en_28132728",
+    "speaker_id": "common_voice_en_28132727",
+    "prompt_text": "Anybody from the community has the potential to become a role model.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_28132727.wav",
+    "gt_text": "Another subgenre is feminist utopias and the overlapping category of feminist science fiction.",
+    "gt_wav_rel": "wavs/common_voice_en_28132727-common_voice_en_28132728.wav",
+    "input_seed": 1713463297
+  },
+  {
+    "utt_id": "common_voice_en_28485171-common_voice_en_28485174",
+    "speaker_id": "common_voice_en_28485171",
+    "prompt_text": "This was the first major battle of the Gallic Wars.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_28485171.wav",
+    "gt_text": "As the video begins, Aguilera is chatting with a group of women.",
+    "gt_wav_rel": "wavs/common_voice_en_28485171-common_voice_en_28485174.wav",
+    "input_seed": 1573407404
+  },
+  {
+    "utt_id": "common_voice_en_28894436-common_voice_en_28894442",
+    "speaker_id": "common_voice_en_28894436",
+    "prompt_text": "It hired a new program director and morning show host, Doc Washburn.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_28894436.wav",
+    "gt_text": "Orithyia was later made into the goddess of cold mountain winds.",
+    "gt_wav_rel": "wavs/common_voice_en_28894436-common_voice_en_28894442.wav",
+    "input_seed": 186063511
+  },
+  {
+    "utt_id": "common_voice_en_29495818-common_voice_en_29495898",
+    "speaker_id": "common_voice_en_29495818",
+    "prompt_text": "The emblem of the merged organization combines elements of both predecessors.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_29495818.wav",
+    "gt_text": "That's the day I'll have you guys take the test.",
+    "gt_wav_rel": "wavs/common_voice_en_29495818-common_voice_en_29495898.wav",
+    "input_seed": 1607326819
+  },
+  {
+    "utt_id": "common_voice_en_29890305-common_voice_en_29890302",
+    "speaker_id": "common_voice_en_29890305",
+    "prompt_text": "Such calls are classified as failed call attempts.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_29890305.wav",
+    "gt_text": "He left Charlotte to take over as president of the Nuggets.",
+    "gt_wav_rel": "wavs/common_voice_en_29890305-common_voice_en_29890302.wav",
+    "input_seed": 1957309280
+  },
+  {
+    "utt_id": "common_voice_en_30735432-common_voice_en_30735433",
+    "speaker_id": "common_voice_en_30735432",
+    "prompt_text": "She received an honours degree in English at the University of Cape Town.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_30735432.wav",
+    "gt_text": "The wooden shrine is generously proportioned for the three images it houses.",
+    "gt_wav_rel": "wavs/common_voice_en_30735432-common_voice_en_30735433.wav",
+    "input_seed": 170132557
+  },
+  {
+    "utt_id": "common_voice_en_30883223-common_voice_en_30883220",
+    "speaker_id": "common_voice_en_30883223",
+    "prompt_text": "Sullivan completed her undergraduate studies at Princeton University.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_30883223.wav",
+    "gt_text": "Carpenter was paralyzed by polio while the couple were living in Iran.",
+    "gt_wav_rel": "wavs/common_voice_en_30883223-common_voice_en_30883220.wav",
+    "input_seed": 1274493609
+  },
+  {
+    "utt_id": "common_voice_en_31350445-common_voice_en_31350446",
+    "speaker_id": "common_voice_en_31350445",
+    "prompt_text": "The trip was also delayed further due to strong winds and inclement weather.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_31350445.wav",
+    "gt_text": "There are three electrified tracks at the station.",
+    "gt_wav_rel": "wavs/common_voice_en_31350445-common_voice_en_31350446.wav",
+    "input_seed": 525331519
+  },
+  {
+    "utt_id": "common_voice_en_31497532-common_voice_en_31497530",
+    "speaker_id": "common_voice_en_31497532",
+    "prompt_text": "Promotions picked back up again in November of the same year.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_31497532.wav",
+    "gt_text": "The transcript distinguishes between \"foundational credits\" necessary for graduation and \"advanced credits\".",
+    "gt_wav_rel": "wavs/common_voice_en_31497532-common_voice_en_31497530.wav",
+    "input_seed": 105876469
+  },
+  {
+    "utt_id": "common_voice_en_32174871-common_voice_en_32174873",
+    "speaker_id": "common_voice_en_32174871",
+    "prompt_text": "Bernhard and her husband Bill Bernhard have two children together.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_32174871.wav",
+    "gt_text": "He is known for leading the failed attempt to kidnap George Washington.",
+    "gt_wav_rel": "wavs/common_voice_en_32174871-common_voice_en_32174873.wav",
+    "input_seed": 115403401
+  },
+  {
+    "utt_id": "common_voice_en_32717587-common_voice_en_32717586",
+    "speaker_id": "common_voice_en_32717587",
+    "prompt_text": "Potter is eligible to represent both Australia and England at senior international level.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_32717587.wav",
+    "gt_text": "Mabuchi is known for introducing the Mabuchi functional.",
+    "gt_wav_rel": "wavs/common_voice_en_32717587-common_voice_en_32717586.wav",
+    "input_seed": 360117139
+  },
+  {
+    "utt_id": "common_voice_en_33322125-common_voice_en_33322130",
+    "speaker_id": "common_voice_en_33322125",
+    "prompt_text": "Information taken from World Athletics profile unless otherwise noted.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_33322125.wav",
+    "gt_text": "Her parents were modest Russian Jewish immigrants who had no background in music.",
+    "gt_wav_rel": "wavs/common_voice_en_33322125-common_voice_en_33322130.wav",
+    "input_seed": 1080584185
+  },
+  {
+    "utt_id": "common_voice_en_33563095-common_voice_en_33563096",
+    "speaker_id": "common_voice_en_33563095",
+    "prompt_text": "Together with his wife he had three daughters.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_33563095.wav",
+    "gt_text": "He was born to an illustrious family that produced notable people in several fields.",
+    "gt_wav_rel": "wavs/common_voice_en_33563095-common_voice_en_33563096.wav",
+    "input_seed": 735727873
+  },
+  {
+    "utt_id": "common_voice_en_33907-common_voice_en_33906",
+    "speaker_id": "common_voice_en_33907",
+    "prompt_text": "A guy with sunglasses and a backpack pointing towards the sky.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_33907.wav",
+    "gt_text": "The black dog is wearing a blue jacket and playing with a toy.",
+    "gt_wav_rel": "wavs/common_voice_en_33907-common_voice_en_33906.wav",
+    "input_seed": 234386047
+  },
+  {
+    "utt_id": "common_voice_en_33985575-common_voice_en_33985579",
+    "speaker_id": "common_voice_en_33985575",
+    "prompt_text": "She took part in the October Revolution and the Russian Civil War.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_33985575.wav",
+    "gt_text": "The series was written by Howard Overman.",
+    "gt_wav_rel": "wavs/common_voice_en_33985575-common_voice_en_33985579.wav",
+    "input_seed": 476364239
+  },
+  {
+    "utt_id": "common_voice_en_34321814-common_voice_en_34321811",
+    "speaker_id": "common_voice_en_34321814",
+    "prompt_text": "The season was abandoned after four rounds were played.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_34321814.wav",
+    "gt_text": "The area includes steep forestry land where dogs have been regularly rescued.",
+    "gt_wav_rel": "wavs/common_voice_en_34321814-common_voice_en_34321811.wav",
+    "input_seed": 526486863
+  },
+  {
+    "utt_id": "common_voice_en_35299046-common_voice_en_35299049",
+    "speaker_id": "common_voice_en_35299046",
+    "prompt_text": "This episode was Bernard Herrmann's final score for the series.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_35299046.wav",
+    "gt_text": "Women with an abdominal pregnancy will not go into labor.",
+    "gt_wav_rel": "wavs/common_voice_en_35299046-common_voice_en_35299049.wav",
+    "input_seed": 825953103
+  },
+  {
+    "utt_id": "common_voice_en_36537421-common_voice_en_36537432",
+    "speaker_id": "common_voice_en_36537421",
+    "prompt_text": "According to Abercrombie and Fitch, the name \"Hollister\" was pulled out of thin air.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_36537421.wav",
+    "gt_text": "Both Washington and Fraser recommended this to Braddock but he demurred.",
+    "gt_wav_rel": "wavs/common_voice_en_36537421-common_voice_en_36537432.wav",
+    "input_seed": 371909177
+  },
+  {
+    "utt_id": "common_voice_en_36558935-common_voice_en_36558813",
+    "speaker_id": "common_voice_en_36558935",
+    "prompt_text": "Progress and development continues as improvement mushroomed around the premises of the said institution.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_36558935.wav",
+    "gt_text": "Exports fell after the name became closely associated with terrorist attacks.",
+    "gt_wav_rel": "wavs/common_voice_en_36558935-common_voice_en_36558813.wav",
+    "input_seed": 702990973
+  },
+  {
+    "utt_id": "common_voice_en_37133940-common_voice_en_37134010",
+    "speaker_id": "common_voice_en_37133940",
+    "prompt_text": "The Downtown Studio Campus is a hub for the fine arts programs.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_37133940.wav",
+    "gt_text": "His half-brother, Richard Ainley, was also an actor.",
+    "gt_wav_rel": "wavs/common_voice_en_37133940-common_voice_en_37134010.wav",
+    "input_seed": 1152138278
+  },
+  {
+    "utt_id": "common_voice_en_37238105-common_voice_en_37238104",
+    "speaker_id": "common_voice_en_37238105",
+    "prompt_text": "There has always been a debate on why he chose the name Mogadore.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_37238105.wav",
+    "gt_text": "Thus regional hierarchies exist embedded into the larger international hierarchy.",
+    "gt_wav_rel": "wavs/common_voice_en_37238105-common_voice_en_37238104.wav",
+    "input_seed": 1765334004
+  },
+  {
+    "utt_id": "common_voice_en_479422-common_voice_en_479426",
+    "speaker_id": "common_voice_en_479422",
+    "prompt_text": "The old lady founded this organization thirty years ago.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_479422.wav",
+    "gt_text": "Grumbling makes the loaf no larger.",
+    "gt_wav_rel": "wavs/common_voice_en_479422-common_voice_en_479426.wav",
+    "input_seed": 383067755
+  },
+  {
+    "utt_id": "common_voice_en_493276-common_voice_en_493277",
+    "speaker_id": "common_voice_en_493276",
+    "prompt_text": "\"I'm an adventurer, looking for treasure,\" he said to himself.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_493276.wav",
+    "gt_text": "I need to sell some wool, the boy told the merchant.",
+    "gt_wav_rel": "wavs/common_voice_en_493276-common_voice_en_493277.wav",
+    "input_seed": 1517275753
+  },
+  {
+    "utt_id": "common_voice_en_508059-common_voice_en_508057",
+    "speaker_id": "common_voice_en_508059",
+    "prompt_text": "It was only when I got this close to it that the strangeness of it was at all evident to me.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_508059.wav",
+    "gt_text": "All that time the Martians must have been getting ready.",
+    "gt_wav_rel": "wavs/common_voice_en_508059-common_voice_en_508057.wav",
+    "input_seed": 1399835455
+  },
+  {
+    "utt_id": "common_voice_en_530085-common_voice_en_530084",
+    "speaker_id": "common_voice_en_530085",
+    "prompt_text": "Coming home, a party of tourists passed us, singing and playing music.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_530085.wav",
+    "gt_text": "The boy began again to read his book, but he was no longer able to concentrate.",
+    "gt_wav_rel": "wavs/common_voice_en_530085-common_voice_en_530084.wav",
+    "input_seed": 951229848
+  },
+  {
+    "utt_id": "common_voice_en_537766-common_voice_en_537767",
+    "speaker_id": "common_voice_en_537766",
+    "prompt_text": "The newspaper articles had prepared everyone for the reception of the idea.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_537766.wav",
+    "gt_text": "The heather was on fire, and you could see a thin blue smoke rising up slowly.",
+    "gt_wav_rel": "wavs/common_voice_en_537766-common_voice_en_537767.wav",
+    "input_seed": 906045858
+  },
+  {
+    "utt_id": "common_voice_en_541573-common_voice_en_541571",
+    "speaker_id": "common_voice_en_541573",
+    "prompt_text": "The hormone oxytocin is released when a mother breastfeeds her baby.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_541573.wav",
+    "gt_text": "There the flood mark is ten inches.",
+    "gt_wav_rel": "wavs/common_voice_en_541573-common_voice_en_541571.wav",
+    "input_seed": 1630463324
+  },
+  {
+    "utt_id": "common_voice_en_566283-common_voice_en_566282",
+    "speaker_id": "common_voice_en_566283",
+    "prompt_text": "A woman wearing pink pants is sitting on a chair and playing the bass guitar",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_566283.wav",
+    "gt_text": "A group of people are at a gathering where there is a large colorful flag",
+    "gt_wav_rel": "wavs/common_voice_en_566283-common_voice_en_566282.wav",
+    "input_seed": 808061610
+  },
+  {
+    "utt_id": "common_voice_en_568078-common_voice_en_568080",
+    "speaker_id": "common_voice_en_568078",
+    "prompt_text": "My palms were sweaty and my mouth was dry, it must be a phobia.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_568078.wav",
+    "gt_text": "You can choose either yes or nope.",
+    "gt_wav_rel": "wavs/common_voice_en_568078-common_voice_en_568080.wav",
+    "input_seed": 239039973
+  },
+  {
+    "utt_id": "common_voice_en_570615-common_voice_en_570616",
+    "speaker_id": "common_voice_en_570615",
+    "prompt_text": "Our generator has been disrupted by ultra high frequency waves.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_570615.wav",
+    "gt_text": "The bark of the pine tree was shiny and dark.",
+    "gt_wav_rel": "wavs/common_voice_en_570615-common_voice_en_570616.wav",
+    "input_seed": 298497179
+  },
+  {
+    "utt_id": "common_voice_en_570619-common_voice_en_570622",
+    "speaker_id": "common_voice_en_570619",
+    "prompt_text": "This is a very large vegetable stand under a white tent.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_570619.wav",
+    "gt_text": "A large column of bicyclists is cycling down a road.",
+    "gt_wav_rel": "wavs/common_voice_en_570619-common_voice_en_570622.wav",
+    "input_seed": 1965518899
+  },
+  {
+    "utt_id": "common_voice_en_573135-common_voice_en_573137",
+    "speaker_id": "common_voice_en_573135",
+    "prompt_text": "\"We could get to the Pyramids by tomorrow,\" said the other, taking the money.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_573135.wav",
+    "gt_text": "It was the first time either had touched the other.",
+    "gt_wav_rel": "wavs/common_voice_en_573135-common_voice_en_573137.wav",
+    "input_seed": 236520175
+  },
+  {
+    "utt_id": "common_voice_en_593372-common_voice_en_593370",
+    "speaker_id": "common_voice_en_593372",
+    "prompt_text": "On our way to San Francisco, we were listening to reggae music and smoking weed.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_593372.wav",
+    "gt_text": "I had a memo from Art today.",
+    "gt_wav_rel": "wavs/common_voice_en_593372-common_voice_en_593370.wav",
+    "input_seed": 772003336
+  },
+  {
+    "utt_id": "common_voice_en_613849-common_voice_en_613850",
+    "speaker_id": "common_voice_en_613849",
+    "prompt_text": "I can only repeat myself that this was not the plan.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_613849.wav",
+    "gt_text": "An LED was indicating the proximity detector was working properly.",
+    "gt_wav_rel": "wavs/common_voice_en_613849-common_voice_en_613850.wav",
+    "input_seed": 879579346
+  },
+  {
+    "utt_id": "common_voice_en_615162-common_voice_en_615165",
+    "speaker_id": "common_voice_en_615162",
+    "prompt_text": "Neutralize all the enemies behind the barricades with your taser.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_615162.wav",
+    "gt_text": "In the past I've had trouble prioritizing stuff in this list.",
+    "gt_wav_rel": "wavs/common_voice_en_615162-common_voice_en_615165.wav",
+    "input_seed": 706597884
+  },
+  {
+    "utt_id": "common_voice_en_621521-common_voice_en_621522",
+    "speaker_id": "common_voice_en_621521",
+    "prompt_text": "Before him was an enormous white horse, rearing over him with a frightening scream.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_621521.wav",
+    "gt_text": "a lot of patience, but shepherds know all about patience.",
+    "gt_wav_rel": "wavs/common_voice_en_621521-common_voice_en_621522.wav",
+    "input_seed": 1682410390
+  },
+  {
+    "utt_id": "common_voice_en_628642-common_voice_en_628645",
+    "speaker_id": "common_voice_en_628642",
+    "prompt_text": "Today's world is full of commercials.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_628642.wav",
+    "gt_text": "We have already met, but it would be nice to see him again.",
+    "gt_wav_rel": "wavs/common_voice_en_628642-common_voice_en_628645.wav",
+    "input_seed": 1345219467
+  },
+  {
+    "utt_id": "common_voice_en_63703-common_voice_en_63702",
+    "speaker_id": "common_voice_en_63703",
+    "prompt_text": "They're calling to us not to give up and to keep on fighting!",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_63703.wav",
+    "gt_text": "Now go upstairs and see what little Christina wants.",
+    "gt_wav_rel": "wavs/common_voice_en_63703-common_voice_en_63702.wav",
+    "input_seed": 461909881
+  },
+  {
+    "utt_id": "common_voice_en_64065-common_voice_en_64063",
+    "speaker_id": "common_voice_en_64065",
+    "prompt_text": "If you start your emails with \"Greetings\" let me be the first to welcome you to Earth.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_64065.wav",
+    "gt_text": "It was, however, still so hot from its flight through the air.",
+    "gt_wav_rel": "wavs/common_voice_en_64065-common_voice_en_64063.wav",
+    "input_seed": 1140867302
+  },
+  {
+    "utt_id": "common_voice_en_653337-common_voice_en_653336",
+    "speaker_id": "common_voice_en_653337",
+    "prompt_text": "That night, there was another jetting out of gas from the distant planet.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_653337.wav",
+    "gt_text": "We lit the lantern and walked over to his house.",
+    "gt_wav_rel": "wavs/common_voice_en_653337-common_voice_en_653336.wav",
+    "input_seed": 1280770504
+  },
+  {
+    "utt_id": "common_voice_en_667155-common_voice_en_667153",
+    "speaker_id": "common_voice_en_667155",
+    "prompt_text": "An hour later, he had before him a chest of Spanish gold coins.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_667155.wav",
+    "gt_text": "He must be disguised to avoid encounters with thieves.",
+    "gt_wav_rel": "wavs/common_voice_en_667155-common_voice_en_667153.wav",
+    "input_seed": 271574883
+  },
+  {
+    "utt_id": "common_voice_en_674100-common_voice_en_674112",
+    "speaker_id": "common_voice_en_674100",
+    "prompt_text": "We have also started contemplating the possibility of moving back to Colorado.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_674100.wav",
+    "gt_text": "Then he dropped his spade, picked up his jacket, and came out into the road.",
+    "gt_wav_rel": "wavs/common_voice_en_674100-common_voice_en_674112.wav",
+    "input_seed": 937309455
+  },
+  {
+    "utt_id": "common_voice_en_68569-common_voice_en_68571",
+    "speaker_id": "common_voice_en_68569",
+    "prompt_text": "It was, however, still so hot from its flight through the air.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_68569.wav",
+    "gt_text": "A large piece suddenly came off and fell with a loud and sharp noise.",
+    "gt_wav_rel": "wavs/common_voice_en_68569-common_voice_en_68571.wav",
+    "input_seed": 706533173
+  },
+  {
+    "utt_id": "common_voice_en_691043-common_voice_en_691044",
+    "speaker_id": "common_voice_en_691043",
+    "prompt_text": "A man wearing a jacket, hat and jeans at a market",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_691043.wav",
+    "gt_text": "A man with glasses and a beard shaves his beard with a shaver.",
+    "gt_wav_rel": "wavs/common_voice_en_691043-common_voice_en_691044.wav",
+    "input_seed": 1585097532
+  },
+  {
+    "utt_id": "common_voice_en_71427-common_voice_en_71425",
+    "speaker_id": "common_voice_en_71427",
+    "prompt_text": "This a picture of a man cleaning off a diving board with a broom.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_71427.wav",
+    "gt_text": "A man in a green and red shirt and blue shorts jumps a hurdle on a track.",
+    "gt_wav_rel": "wavs/common_voice_en_71427-common_voice_en_71425.wav",
+    "input_seed": 150284344
+  },
+  {
+    "utt_id": "common_voice_en_75329-common_voice_en_75332",
+    "speaker_id": "common_voice_en_75329",
+    "prompt_text": "I would have won the Junior Olympics if not for those medaling kids.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_75329.wav",
+    "gt_text": "I have the diet of a kid who found twenty dollars.",
+    "gt_wav_rel": "wavs/common_voice_en_75329-common_voice_en_75332.wav",
+    "input_seed": 1005295640
+  },
+  {
+    "utt_id": "common_voice_en_79862-common_voice_en_79860",
+    "speaker_id": "common_voice_en_79862",
+    "prompt_text": "A predator drone equipped with multiple cruise missiles lifted off.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_79862.wav",
+    "gt_text": "The hunter was alerted by the sound of rustling vegetation behind her.",
+    "gt_wav_rel": "wavs/common_voice_en_79862-common_voice_en_79860.wav",
+    "input_seed": 1617496298
+  },
+  {
+    "utt_id": "common_voice_en_86363-common_voice_en_86365",
+    "speaker_id": "common_voice_en_86363",
+    "prompt_text": "He had come to the town only to find a woman who could interpret his dream.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_86363.wav",
+    "gt_text": "Before the boy could reply, a butterfly appeared and fluttered between him and the old man.",
+    "gt_wav_rel": "wavs/common_voice_en_86363-common_voice_en_86365.wav",
+    "input_seed": 619691184
+  },
+  {
+    "utt_id": "common_voice_en_8805512-common_voice_en_8805513",
+    "speaker_id": "common_voice_en_8805512",
+    "prompt_text": "Plastic bags turned out to be a problem for the environment.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_8805512.wav",
+    "gt_text": "A lantern lit up the trees.",
+    "gt_wav_rel": "wavs/common_voice_en_8805512-common_voice_en_8805513.wav",
+    "input_seed": 1647371783
+  },
+  {
+    "utt_id": "common_voice_en_9559-common_voice_en_9560",
+    "speaker_id": "common_voice_en_9559",
+    "prompt_text": "\"Everyone has his or her own way of learning things,\" he said to himself.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_9559.wav",
+    "gt_text": "He didn't consider mending the hole \u2014 the stones could fall through any time they wanted.",
+    "gt_wav_rel": "wavs/common_voice_en_9559-common_voice_en_9560.wav",
+    "input_seed": 258284987
+  },
+  {
+    "utt_id": "common_voice_en_96260-common_voice_en_96263",
+    "speaker_id": "common_voice_en_96260",
+    "prompt_text": "He had tried in vain to establish a relationship with an alchemist.",
+    "prompt_wav_rel": "prompt-wavs/common_voice_en_96260.wav",
+    "gt_text": "He got up early with the idea of finding it.",
+    "gt_wav_rel": "wavs/common_voice_en_96260-common_voice_en_96263.wav",
+    "input_seed": 1852860937
+  }
+]

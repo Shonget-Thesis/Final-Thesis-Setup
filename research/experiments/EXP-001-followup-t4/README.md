@@ -1,6 +1,6 @@
 # EXP-001: Follow-up Colab T4 tests
 
-Status: designed 2026-10-25, not run. Recommended by the [October 25 audit](../../audits/2026-10-25/FINDINGS.md).
+Status: smoke test and development pilot run on 2026-10-25 (Tesla T4); results in [results/](results/MANIFEST.json), summarized in Part 6 of [ALL_REPORTS_COMPILED.md](../../reports/ALL_REPORTS_COMPILED.md). An early freeze in the same session is void (results/superseded_freeze_20261025/). The full run (fresh held-out, degraded prompts, seed floor) is not yet run and waits for the proposal; its protocol is to add the moderate-noise findings and the low-drift safeguard (Part 6.11) before freezing. Recommended by the [October 25 audit](../../audits/2026-10-25/FINDINGS.md).
 
 Notebook: [code/colab/DMOSpeech2_Followup_Tests.ipynb](../../../code/colab/DMOSpeech2_Followup_Tests.ipynb). Runner: [code/colab/run_followup_tests.py](../../../code/colab/run_followup_tests.py). Colab GPU only.
 
