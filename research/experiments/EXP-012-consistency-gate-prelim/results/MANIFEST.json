@@ -1,0 +1,53 @@
+{
+  "description": "Outputs of the EXP-012 notebook run on 2026-10-25 (Colab Tesla T4), Quick mode: 60 development speakers x clean, noisy15 and Gaussian 18/20/22/25 dB, plus the smoke test. Byte-identical copies from the downloaded results zip; the runner copies inside the zip are not duplicated here.",
+  "source_zip": "DMOSpeech2_Consistency_Gate_Results.zip",
+  "source_zip_sha256": "b362bb183198c2f1b57c6cfab90928524bec321c8f8dc3b5a22ea6618fad4b32",
+  "thesis_commit_at_run": "3d0b3ef0168bb4a4995ab6ed9e84d40d026ac3e6",
+  "dmo_commit_at_run": "8a7868fc3345702a586173447f4869205b501f26",
+  "excluded": [
+    "code/run_consistency_gate_prelim.py and code/run_followup_tests.py (copies of the runners at the thesis commit above)",
+    "failure audio in listening/ (kept on Google Drive)"
+  ],
+  "files": [
+    {
+      "file": "CONSISTENCY_GATE_REPORT.md",
+      "bytes": 4225,
+      "sha256": "138318820a2c875f40002373393cd1260e50b9bc444d3b22beba4ad4607bcc86"
+    },
+    {
+      "file": "consistency_results.json",
+      "bytes": 24525,
+      "sha256": "3cb67849992ae0afe4d11c4e2bc17338c12df2b48d60a83090460d76b71d0c8b"
+    },
+    {
+      "file": "labels_new.csv",
+      "bytes": 278328,
+      "sha256": "98b91288c4bb75528a0f4d66dea0904ea93c055c3b1f0c1510ed9dd638c12882"
+    },
+    {
+      "file": "preregistration.json",
+      "bytes": 2701,
+      "sha256": "3e4347096d1dd5deae9cbc9ced17e42590a08ac3685863d854c4e556bc117e97"
+    },
+    {
+      "file": "RUN_INFO.txt",
+      "bytes": 176,
+      "sha256": "67d6222cbdcde46147a21e078c8bd98c7c56f6b797e89dcd28a0524410eb1ac9"
+    },
+    {
+      "file": "signals.csv",
+      "bytes": 139596,
+      "sha256": "14221175382a02cb5bb801dc3c3188f25afbdb42e05669703b9e75ba2a65f5a6"
+    },
+    {
+      "file": "smoke/labels_new.csv",
+      "bytes": 7469,
+      "sha256": "32583d64c7219447168af23c9f2a9304172929a6f58190b68bd580c55e88b742"
+    },
+    {
+      "file": "smoke/signals.csv",
+      "bytes": 2426,
+      "sha256": "5fbf7de8fb56a46caa787bee08f639971fc4c6caa233cbc3462982beb775c883"
+    }
+  ]
+}
