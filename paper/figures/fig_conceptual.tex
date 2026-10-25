@@ -1,0 +1,47 @@
+% Figure: conceptual framework, input-process-output (Chapter 1)
+\begin{figure}[!htbp]
+\centering
+\begin{adjustbox}{max width=\linewidth}
+\begin{tikzpicture}[
+  font=\figfont,
+  io/.style={draw=frozenLine, fill=frozenFill, rounded corners=2pt, align=left, text width=3.9cm, minimum height=8.6cm, inner sep=5pt},
+  outbox/.style={draw=newLine, fill=newFill, rounded corners=2pt, align=left, text width=3.9cm, minimum height=8.6cm, inner sep=5pt},
+  ostep/.style={draw=newLine, very thick, fill=white, rounded corners=2pt, align=left, text width=4.3cm, minimum height=1.75cm, inner sep=4pt},
+  head/.style={font=\figfont\bfseries, align=center},
+  arr/.style={-{Stealth[length=2.2mm]}, very thick}
+]
+\node[head] at (0,1.0)   {INPUT};
+\node[head] at (5.4,1.0) {PROCESS};
+\node[head] at (10.8,1.0){OUTPUT};
+
+\node[io, anchor=north] (in) at (0,0.6) {%
+\textbf{Test material}\\
+Seed-TTS English prompts and texts; clean and 15~dB noisy prompts; speaker-disjoint development, calibration and test sets\\[5pt]
+\textbf{Models (weights unchanged)}\\
+F5-TTS teacher, DMOSpeech~2 student, duration predictor, vocoder\\[5pt]
+\textbf{Settings fixed in advance}\\
+candidate and reference switching times; added-failure rule; tolerated risk $\alpha$ and confidence parameter $\delta$};
+
+\node[ostep, anchor=north] (o1) at (5.4,0.6)   {\textbf{Objective 1.} Run every candidate switching time; measure quality and cost};
+\node[ostep, below=0.45cm of o1] (o2) {\textbf{Objective 2.} State the cost--risk problem; define the stopping rule from prompt SNR and endpoint stabilization};
+\node[ostep, below=0.45cm of o2] (o3) {\textbf{Objective 3.} Calibrate the threshold with Learn-Then-Test; check the guarantee on held-out speakers};
+\node[ostep, below=0.45cm of o3] (o4) {\textbf{Objective 4.} Compare with fixed switching times, SNR-only rule and oracle; clean and noisy prompts; calibration sizes};
+
+\node[outbox, anchor=north] (out) at (10.8,0.6) {%
+\textbf{Per-utterance switching time} and the speech it produces\\[5pt]
+\textbf{Calibrated threshold} with a stated bound on added quality failures\\[5pt]
+\textbf{Quality and cost} of every compared method: WER, SIM, UTMOS, forward passes, runtime\\[5pt]
+\textbf{Evidence} on whether endpoint stabilization adds value beyond prompt SNR};
+
+\draw[arr] (o1) -- (o2);
+\draw[arr] (o2) -- (o3);
+\draw[arr] (o3) -- (o4);
+\coordinate (pin)  at ($(o1.west)!0.5!(o4.west)$);
+\coordinate (pout) at ($(o1.east)!0.5!(o4.east)$);
+\draw[arr] (in.east |- pin) -- (pin);
+\draw[arr] (pout) -- (out.west |- pout);
+\end{tikzpicture}
+\end{adjustbox}
+\caption{Conceptual framework of the study in input--process--output form. The process stage follows the four specific objectives.}
+\label{fig:conceptual}
+\end{figure}

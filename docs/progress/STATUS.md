@@ -1,6 +1,6 @@
 # Current status
 
-Updated: 2026-10-25 (Asia/Manila). Phase: workspace setup and reproducibility reconciliation.
+Updated: 2026-10-26 (Asia/Manila). Phase: workspace setup and reproducibility reconciliation.
 
 The repository now separates implementation, the LaTeX manuscript, research evidence, and project documentation. The portable timing replay and automated bookkeeping checks pass, with all 14 current tests passing. Synthesis has been run on Colab (Tesla T4) for all 500 split speakers (research/evidence/benchmarks/), and the reports in research/reports/ include calibration and test-split results. The test split was inspected before the protocol was fixed, so all existing results are development evidence; no independent held-out evaluation exists. See the [October 25 audit](../../research/audits/2026-10-25/FINDINGS.md).
 
@@ -29,6 +29,8 @@ Follow-up on the adviser revisions: Chapter 2 formulas and figures now cite thei
 The active research implementation from the sibling working tree has been migrated into the workspace: `code/scheduling/` holds the deterministic adaptive handover sampler and metrics, `code/colab/` holds the turnkey Google Colab GPU-accelerated pipelines and notebooks (focusing entirely on Colab GPU inference and excluding local CPU-only sweeps), `research/protocols/splits/` holds the 500-speaker cohort manifests, and `research/reports/` holds the comprehensive research reports. Checkpoint downloads with verified SHA-256 hashes are automated via `code/scheduling/download_ckpts.py`. See the [implementation migration log](log/2026-10-25-implementation-migration.md).
 
 A proposal-defense walkthrough is in presentation/: an animated 19-scene page covering Chapters 1–3 with a slide mode, citation footers and a presenter script (PRES-001, awaiting team review). It follows the proposal PDF from before the October 25 audit, so its Chapter III scenes do not yet show the audit and pilot findings above. See the [walkthrough log](log/2026-10-25-defense-walkthrough.md).
+
+The team reports the proposal manuscript is final and ready for the pre-proposal consultation (2026-10-26). Chapter 1 now has a theoretical framework and a conceptual framework (input-process-output, organized by the four objectives), Chapter 2 compares T-Stitch, Adaptive Guidance and adaptive ASR correction with the proposed method, and the acronyms page now prints in the proposal. This is the team's statement, not adviser approval; rendered pages and the new citations are not yet reviewed. `scripts/build_paper.py` runs again (it wrote to paper/build/final/). A PDF of the defense walkthrough is in presentation/. See the [consultation log](log/2026-10-26-pre-proposal-consultation.md).
 
 ## Current priorities
 
