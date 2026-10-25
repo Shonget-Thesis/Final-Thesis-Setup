@@ -13,6 +13,17 @@
 % =====================================================================
 
 % =====================================================================
+\subsection{Research Design}
+\label{sec:design}
+
+This study will use a quantitative experimental design combined with algorithm development and statistical calibration. The experiment will measure how the teacher's switching time affects speech quality and computing cost; based on those measurements and the signals available during generation, the study will define an adaptive handover policy; the policy's threshold will then be calibrated on one group of speakers and evaluated on another. The design follows the four specific objectives in order (Section~\ref{sec:workflow}).
+
+The comparisons will be paired. Every input will be synthesized at every candidate switching time with the same initial noise and the same student noise draws, and all networks will keep their released weights, so any difference between two outputs of the same input can only come from where the teacher stopped (Section~\ref{sec:data}). The switching time is the only variable the method changes; the prompt condition (clean or noisy) and the calibration sample size will be varied as experimental factors, and the restart level, model weights, seeds and hardware will be held fixed.
+
+The study has an exploratory stage and a confirmatory stage, which will use different speakers. The exploratory stage, Objective~1 on the development split, will map how the candidate switching times behave and will be used to fix the candidate set and the SNR gate. The confirmatory stage begins once these choices, the added-failure rule, the tolerance $\alpha$, the confidence parameter $\delta$ and the threshold grid have been fixed: Objective~3 will calibrate the threshold on the calibration split only, and Objective~4 will evaluate the locked policy on the test split. Results from the development split will be reported as exploratory and will not be used as evidence for the guarantee.
+
+The unit of analysis will be the speaker. The calibration and test splits will contain one utterance per speaker, and a speaker will count as failing when either its clean or its noisy utterance fails, so that the observations are close to independent, as the calibration procedure requires (Section~\ref{sec:obj3}). The method will be judged successful only if, on held-out speakers, it saves forward passes relative to the reference switching time while its realized rate of added failures stays consistent with the tolerance; a result in which no threshold is certified, or in which the savings do not exceed those of a simpler rule, will be reported as a finding rather than treated as a failure of the study. The design measures speech quality, computing cost and risk only, and does not measure clinical, educational or user outcomes.
+
 \subsection{System Architecture}
 \label{sec:architecture}
 
@@ -56,7 +67,7 @@ Several choices in this architecture rest on the team's earlier experiments, whi
 \subsection{Research Workflow}
 \label{sec:workflow}
 
-Figure~\ref{fig:workflow} shows the whole study as fifteen steps, from preparing the data to reporting the results. Each row of the figure is one stage: the common setup, followed by the four specific objectives, each on its own group of speakers. Table~\ref{tab:steps} describes what will be done in every step and gives the section where the step is explained.
+Figure~\ref{fig:workflow} shows the design of Section~\ref{sec:design} as fifteen steps, from preparing the data to reporting the results. Each row of the figure is one stage: the common setup, followed by the four specific objectives, each on its own group of speakers. Table~\ref{tab:steps} describes what will be done in every step and gives the section where the step is explained.
 
 \input{figures/fig_workflow}
 
@@ -276,6 +287,8 @@ $T$ & teacher endpoint estimate passed to the student \\
 \label{sec:data}
 
 The corpus will be Seed-TTS test-en, whose prompts come from Common Voice \parencite{anastassiou2024seedtts,ardila2020commonvoice}; it is the English test set used by DMOSpeech~2 \parencite{li2025dmospeech2}, so the reference configuration can be compared with published numbers. It contains 1,088 utterances from 666 prompt speakers. The speakers will be divided into three disjoint splits with a fixed random seed (Table~\ref{tab:splits}), using 500 of the 666 speakers and one utterance per speaker in every split; speaker identity is taken from the prompt recording, so the splits are disjoint at the level of Seed-TTS prompt identities. The development split will serve Objective~1 and the choice of the SNR gate; the calibration split will serve only the threshold calibration of Objective~3; and the test split will serve the held-out check of Objective~3 and the benchmark of Objective~4. Keeping speakers disjoint prevents the calibrated threshold from being tuned to voices it is later tested on, and allowing at most one utterance per speaker in the calibration and test splits makes the inputs close to independent, which the guarantee of Proposition~\ref{prop:ltt} requires.
+
+Before the splits are drawn, a manifest will list every selected utterance with its speaker, transcripts, duration and split, and it will not change after the experiments begin. An utterance will be excluded only for reasons fixed in advance, namely a missing target or prompt transcript or audio that cannot be read, and every exclusion will be listed with its reason. A synthesis run that fails or produces unusable audio will be rerun once with the same seeds; if it fails again at a candidate switching time, it will be counted as an added failure rather than removed, so that failed runs cannot make the risk look smaller. If the reference run itself fails, the input cannot be compared and will be excluded and reported.
 
 Every utterance will be synthesized under two prompt conditions. The clean condition will use the prompt as recorded. The noisy condition will add white Gaussian noise scaled to 15~dB below the prompt's mean power, seeded per input and checked to lie within $15.0\pm0.1$~dB, as in the earlier experiments (Appendix~\ref{app:prelim}); it tests whether the decision signals and the SNR gate react to degraded prompts. Within an input, every candidate switching time will use the same initial noise and the same student noise draws (Section~\ref{sec:baseline}), and all models will run in evaluation mode, so differences between candidates are paired. Because each speaker contributes one utterance under both prompt conditions, calibration and testing will count a speaker as failing when either of its two utterances fails; this keeps one observation per speaker, as the guarantee of Proposition~\ref{prop:ltt} requires.
 
@@ -779,7 +792,14 @@ Whether the stabilization score adds value beyond the prompt SNR is still an ope
 
 % =====================================================================
 \subsection{Ethical Considerations}
+\label{sec:ethics}
 
 Voice cloning can be used to imitate real people without their consent. The study will therefore use only public research corpora under their licenses \parencite{ardila2020commonvoice,panayotov2015librispeech}, will not release cloned voices beyond what those licenses permit, and will report aggregate results rather than distribute synthesized speech of identifiable speakers. It will not involve end users and will make no claims about effects on autistic users or other vulnerable groups; any small listening check will be limited to the research team \todo{check institutional requirements for any listening test}.
+
+% =====================================================================
+\subsection{Summary of the Methodology}
+\label{sec:method-summary}
+
+The methodology follows the four specific objectives in order. First, every candidate switching time will be run on the development speakers to measure how speech quality and computing cost change with the switching time (Objective~1). Second, the choice of switching time will be stated as a cost-minimization problem with a limit on risk, and a stopping policy will be defined from two signals the sampler already computes, the prompt SNR and the endpoint-stabilization score, together with its properties (Objective~2). Third, the policy's threshold will be calibrated on separate speakers with Learn-Then-Test, so that the rate of added quality failures is at most $\alpha=0.05$ with probability at least 90\%, and the guarantee will be checked on held-out speakers (Objective~3). Fourth, the locked policy will be compared with fixed switching times, an SNR-only rule and an offline oracle under clean and noisy prompts and with different calibration sizes (Objective~4). Throughout, all networks keep their released weights, and the switching time is the only part of generation that the method changes.
 
 \FloatBarrier
