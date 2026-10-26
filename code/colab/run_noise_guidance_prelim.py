@@ -17,6 +17,12 @@ prompt's noise leaks into the generated voice. Two new methods are tested at the
          prompt SNR predicts: gamma(S) = 2 * clip(G_CLEAN / max(A + B*S, G_FLOOR), 1, r_max), with the
          line A + B*S fitted to g_4 against SNR on the EXP-012 development signals (prompts < 30 dB).
          r_max = 2.5 (scg, full) or 1.5 (scg15, capped). No extra pass: Step 4 costs 13 NFE.
+  swc    SNR-Wiener Conditioning. The prompt's noise is removed from the conditioning before the teacher
+         and the student see it. Per mel band, the noise floor N_b is the mean linear magnitude of the
+         prompt's quietest 20% of frames; every prompt frame gets the gain
+             G = clip(1 - beta(S) * N_b / M, G_MIN, 1)
+         with beta(S) = beta_max * clip((30 - S) / (30 - 20), 0, 1): no cleaning at 30 dB or above, full
+         strength at 20 dB or below. beta_max = 1.0 (swc) or 0.5 (swc05). No extra pass: 13 NFE.
 
 Data: the EXP-012 Quick set (60 development speakers x 6 conditions); the plain Step-4 and Step-8
 labels are committed, so only the new outputs are synthesized and scored.
@@ -45,13 +51,15 @@ K, NOISE_FRAC = 4, 0.2
 ETAS = {"snng05": 0.5, "snng10": 1.0}
 SCG_FIT = {"A": -0.0263, "B": 0.0078, "G_CLEAN": 0.236, "G_FLOOR": 0.02}   # EXP-012 signals.csv, prompts < 30 dB (R^2 0.60)
 SCG_RMAX = {"scg": 2.5, "scg15": 1.5}
-OUTS = tuple(ETAS) + ("anti",) + tuple(SCG_RMAX)
-COST = {4: 13, 8: 21, "snng05": 18, "snng10": 18, "anti": 16, "scg": 13, "scg15": 13}
+SWC_SNR, SWC_GMIN = (30.0, 20.0), 0.1          # no cleaning at >= 30 dB, full strength at <= 20 dB; gain floor
+SWC_BMAX = {"swc": 1.0, "swc05": 0.5}
+OUTS = tuple(ETAS) + ("anti",) + tuple(SCG_RMAX) + tuple(SWC_BMAX)
+COST = {4: 13, 8: 21, "snng05": 18, "snng10": 18, "anti": 16, "scg": 13, "scg15": 13, "swc": 13, "swc05": 13}
 ALPHA, DELTA, FOLDS, SEED, THETA = ex.ALPHA, ex.DELTA, ex.FOLDS, ex.SEED, ex.THETA
 THETA_GRID = ex.GRIDS["theta"]                                   # 40 -> 20 dB
 LOW_GRID = [float(x) for x in range(40, 9, -1)]                  # theta_lo candidates, 40 -> 10 dB
 FIELDS = ["utt_id", "speaker_id", "condition", "prompt_snr", "d_4", "d4_stored", "noise_frames", "anti_pick"] + \
-         [f"gamma_{o}" for o in SCG_RMAX] + \
+         [f"gamma_{o}" for o in SCG_RMAX] + [f"beta_{o}" for o in SWC_BMAX] + \
          [f"{m}_{o}" for o in OUTS for m in ("wer", "similarity", "utmos", "is_failure", "fail_wer", "fail_sim", "hypothesis")] + \
          ["wer_ref", "similarity_ref", "utc"]
 
@@ -74,22 +82,48 @@ def scg_gamma(snr, r_max, base=2.0, fit=SCG_FIT):
     return base * min(max(fit["G_CLEAN"] / g_hat, 1.0), r_max)
 
 
+def swc_beta(snr, beta_max, band=SWC_SNR):
+    """Cleaning strength: 0 at or above band[0] dB, beta_max at or below band[1] dB, linear in between."""
+    return beta_max * min(max((band[0] - snr) / (band[0] - band[1]), 0.0), 1.0)
+
+
+def swc_clean(cond, plen, beta, scale=1.0, frac=NOISE_FRAC, gmin=SWC_GMIN):
+    """Spectral-subtraction gain on the prompt frames of a (log-mel / scale) conditioning tensor; torch or numpy.
+    Noise per band = mean linear magnitude of the quietest frames; G = clip(1 - beta * N / M, gmin, 1)."""
+    is_torch = hasattr(cond, "clone")
+    out = cond.clone() if is_torch else cond.copy()
+    if beta <= 0:
+        return out
+    exp_, log_ = ((lambda a: a.exp()), (lambda a: a.log())) if is_torch else (__import__("numpy").exp, __import__("numpy").log)
+    p = cond[0, :plen, :]
+    energy = [float(p[i].mean()) for i in range(plen)]
+    quiet = sorted(range(plen), key=lambda i: energy[i])[:max(1, int(frac * plen))]
+    lin = exp_(p * scale)
+    noise = lin[quiet].mean(0)
+    gain = 1.0 - beta * noise / lin
+    gain = gain.clamp(gmin, 1.0) if is_torch else gain.clip(gmin, 1.0)
+    out[0, :plen, :] = log_(lin * gain) / scale
+    return out
+
+
 def guided_endpoints(pipe, ctx, specs, k=K):
-    """Teacher Euler passes to step k, one per spec {name: (gamma, eta)}:
-    v = v_c + gamma (v_c - v_u) + eta (v_c - v_noise), the noise-only prompt used only when eta > 0.
+    """Teacher Euler passes to step k, one per spec {name: (gamma, eta, step_cond or None)}:
+    v = v_c + gamma (v_c - v_u) + eta (v_c - v_noise), the noise-only prompt used only when eta > 0, and the
+    spec's own conditioning (for SWC) in place of ctx["step_cond"] when given.
     Returns ({name: x1hat(t_k)}, number of noise frames)."""
     torch = pipe.torch
     grid = pipe.sampler.SWAY_TEACHER_GRID
     ncond, n = noise_prompt(ctx["step_cond"], ctx["prompt_len"])
     out = {}
     with torch.inference_mode():
-        for name, (gamma, eta) in specs.items():
+        for name, (gamma, eta, sc) in specs.items():
+            sc = ctx["step_cond"] if sc is None else sc
             x = ctx["y0"].clone()
             for i in range(k + 1):
                 t = torch.tensor(grid[i], device=pipe.device, dtype=torch.float32)
                 kw = dict(x=x, text=ctx["text_ids"], time=t, mask=None)
-                vc = pipe.tts.teacher(cond=ctx["step_cond"], drop_audio_cond=False, drop_text=False, **kw)
-                vu = pipe.tts.teacher(cond=ctx["step_cond"], drop_audio_cond=True, drop_text=True, **kw)
+                vc = pipe.tts.teacher(cond=sc, drop_audio_cond=False, drop_text=False, **kw)
+                vu = pipe.tts.teacher(cond=sc, drop_audio_cond=True, drop_text=True, **kw)
                 v = vc + (vc - vu) * gamma
                 if eta:
                     vn = pipe.tts.teacher(cond=ncond, drop_audio_cond=False, drop_text=False, **kw)
@@ -145,19 +179,25 @@ def run_cases(pipe, todo_items, conds, out_dir, csv_name="snng.csv", reproduce=F
         plen = ctx["prompt_len"]
         cfg = pipe.sampler.CFG_STRENGTH
         gammas = {o: scg_gamma(ctx["prompt_snr"], r, base=cfg) for o, r in SCG_RMAX.items()}
-        specs = {**{o: (cfg, eta) for o, eta in ETAS.items()}, **{o: (g, 0.0) for o, g in gammas.items()}}
+        betas = {o: swc_beta(ctx["prompt_snr"], b) for o, b in SWC_BMAX.items()}
+        scale = getattr(pipe.tts, "scale", 1.0)
+        with pipe.torch.inference_mode():
+            clean = {o: (swc_clean(ctx["step_cond"], plen, b, scale), swc_clean(ctx["cond"], plen, b, scale)) for o, b in betas.items()}
+        specs = {**{o: (cfg, eta, None) for o, eta in ETAS.items()}, **{o: (g, 0.0, None) for o, g in gammas.items()},
+                 **{o: (cfg, 0.0, clean[o][0]) for o in SWC_BMAX}}
         if reproduce:
-            specs["plain"] = (cfg, 0.0)
+            specs["plain"] = (cfg, 0.0, None)
         ends, nframes = guided_endpoints(pipe, ctx, specs)
         xp, xm = student_x(pipe, ctx, E[K], 1.0), student_x(pipe, ctx, E[K], -1.0)
         with pipe.torch.inference_mode():
             pick = antithetic_pick(xp, xm, E[K], plen)
         row = {"utt_id": item["utt_id"], "speaker_id": item["speaker_id"], "condition": cond, "prompt_snr": ctx["prompt_snr"],
                "d_4": drift[4], "d4_stored": float(ref["d_4"]), "noise_frames": nframes, "anti_pick": pick,
-               **{f"gamma_{o}": g for o, g in gammas.items()},
+               **{f"gamma_{o}": g for o, g in gammas.items()}, **{f"beta_{o}": b for o, b in betas.items()},
                "wer_ref": float(ref["wer_ref"]), "similarity_ref": float(ref["similarity_ref"])}
         gt = pipe.ground_truth(item)
         audios = {o: decode(pipe, ctx, student_x(pipe, ctx, ends[o])) for o in tuple(ETAS) + tuple(SCG_RMAX)}
+        audios.update({o: decode(pipe, ctx, student_x(pipe, dict(ctx, cond=clean[o][1]), ends[o])) for o in SWC_BMAX})
         if pick < 0:
             audios["anti"] = decode(pipe, ctx, xm)
         for o in OUTS:
@@ -327,10 +367,11 @@ def analyze(out, allow_partial=False):
 
 def render(res):
     names = {"snng05": "SNNG η = 0.5 (18 NFE)", "snng10": "SNNG η = 1.0 (18 NFE)", "anti": "Antithetic pair (16 NFE)",
-             "scg": "SNR-Compensated Guidance, r_max 2.5 (13 NFE)", "scg15": "SNR-Compensated Guidance, r_max 1.5 (13 NFE)"}
+             "scg": "SNR-Compensated Guidance, r_max 2.5 (13 NFE)", "scg15": "SNR-Compensated Guidance, r_max 1.5 (13 NFE)",
+             "swc": "SNR-Wiener Conditioning, β_max 1.0 (13 NFE)", "swc05": "SNR-Wiener Conditioning, β_max 0.5 (13 NFE)"}
     d = res["drift_reproduction_max_abs_diff"]
     f4 = lambda x: "n/a" if x is None else f"{x:+.4f}"
-    L = ["# Preliminary test: Self-Noise Negative Guidance, SNR-Compensated Guidance and the antithetic student pair", "",
+    L = ["# Preliminary test: noise-aware handover methods (SNNG, SCG, SWC, antithetic pair)", "",
          f"{'**PARTIAL.** ' if res['partial'] else ''}Development speakers only ({N_SPEAKERS} speakers x {len(CONDS)} conditions: {', '.join(CONDS)}); "
          f"{res['cases']} of {res['expected_cases']} cases; preregistration `{res['preregistration_sha256'][:16]}…`. "
          "Every number is computed from the CSV files by `run_noise_guidance_prelim.py analyze`.", "",
@@ -373,13 +414,16 @@ def write_prereg(out, args):
     path = Path(out) / "preregistration.json"
     if path.exists():
         return json.loads(path.read_text(encoding="utf-8"))
-    pre = {"purpose": "Preliminary development test of Self-Noise Negative Guidance (SNNG), SNR-Compensated Guidance (SCG) and the antithetic student pair at the Step-4 handover",
+    pre = {"purpose": "Preliminary development test of Self-Noise Negative Guidance (SNNG), SNR-Compensated Guidance (SCG), SNR-Wiener Conditioning (SWC) and the antithetic student pair at the Step-4 handover",
            "methods": {"snng": f"v = v_c + gamma (v_c - v_u) + eta (v_c - v_noise); noise-only prompt = the {int(NOISE_FRAC * 100)}% quietest prompt frames tiled; "
                                "teacher to Step 4 with this velocity, then the usual student", "etas": ETAS,
                        "anti": "student with eps and with -eps from the plain Step-4 endpoint; keep the output closer to the endpoint on generated frames",
                        "scg": "teacher to Step 4 with CFG scale gamma(S) = 2 * clip(G_CLEAN / max(A + B*S, G_FLOOR), 1, r_max); "
                               "A, B fitted to g_4 against prompt SNR on the EXP-012 development signals (prompts < 30 dB, the same 60 speakers "
-                              "evaluated here; the fit uses no failure labels)", "scg_fit": SCG_FIT, "scg_rmax": SCG_RMAX},
+                              "evaluated here; the fit uses no failure labels)", "scg_fit": SCG_FIT, "scg_rmax": SCG_RMAX,
+                       "swc": "prompt frames of the teacher's and the student's conditioning multiplied (linear mel magnitude) by "
+                              "G = clip(1 - beta(S) N_b / M, G_MIN, 1), N_b = mean of the quietest 20% prompt frames per band; "
+                              "beta(S) = beta_max * clip((30 - S) / 10, 0, 1)", "swc_beta_max": SWC_BMAX, "swc_gain_floor": SWC_GMIN},
            "nfe": {str(k): v for k, v in COST.items()},
            "n_speakers": N_SPEAKERS, "conditions": list(CONDS), "theta_db": THETA, "alpha": ALPHA, "delta": DELTA, "folds": FOLDS, "seed": SEED,
            "theta_grid": THETA_GRID, "theta_lo_grid": LOW_GRID, "policies": POLICIES,
