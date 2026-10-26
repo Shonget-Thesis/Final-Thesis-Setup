@@ -23,3 +23,7 @@ The EXP-015 README records the numbers: beating the calibrated SNR gate needs a 
 - A team member asked for the comparison against SNR-only (fixed 20 dB gate) only. Computed exactly from committed outputs on the 360-case prelim set: SNR-only 86/360 failures at 14.40 NFE; SNR-only + cDEH 64/360 at 14.40 (McNemar 48 vs 26, p 0.014, five operators compared); SNR-only + low-drift veto 9/360 at 18.38 (p ≈ 1e-23). A per-case interpolation predicts that an enhancer removing about 10% of the noise damage beats SNR-only under the same routing, and about 25% without any SNR routing.
 - Added Prompt-Informed Environment Cancellation (`piec4`, `swcpiec4`; zero network cost) and controls (`enh8`, `piec8`) with a within-cleaned-system check; the plain teacher pass now runs to Step 8 in one pass; TF32 is disabled so a faster GPU gives the same comparison (no effect on a T4).
 - Checks: 53 tests pass; workspace check passes. Not run on a GPU. Estimate: 2.5–3 h on an A100, 6.5–7 h on a T4.
+
+## Follow-up: Trajectory Anomaly Score (same day)
+
+Added TAS gating (`tas`, `d4veto`, `<m>_tas`) and an "Against SNR-only" table with exact McNemar to the EXP-015 analysis. On the committed data the integrated analysis reproduces the offline result exactly: `tas` 12/360 at 18.20 NFE, `d4veto` 13/360 at 18.20, SNR-only 86/360 at 14.40. 54 tests pass; workspace check passes. Analysis-only change: the notebook and the synthesis are unchanged.

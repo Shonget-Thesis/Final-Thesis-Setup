@@ -82,6 +82,18 @@ class OperatorTests(unittest.TestCase):
         np.testing.assert_allclose(np.exp(out[0, 10:]), 0.2 * (1 - 0.1 / 0.2))
         np.testing.assert_array_equal(ng.piec_cancel(x, cond, 10, beta=0.0), x)
 
+    def test_tas_flags_only_trajectories_stiller_than_clean(self):
+        import numpy as np
+        rng = np.random.default_rng(3)
+        train = [{"cond": "clean", "ld": list(rng.normal(0.0, 0.1, 6))} for _ in range(50)]
+        score = ng.tas_fit(train)
+        self.assertGreater(score({"ld": [-1.0] * 6}), 50.0)      # far below the clean profile: premature stabilization
+        self.assertEqual(score({"ld": [1.0] * 6}), 0.0)          # more motion than clean: not flagged
+        gate = ng.gated(score, 5.0, 4)
+        self.assertEqual(gate({"snr": 30.0, "ld": [0.0] * 6}), 4)
+        self.assertEqual(gate({"snr": 30.0, "ld": [-1.0] * 6}), 8)
+        self.assertEqual(gate({"snr": 15.0, "ld": [0.0] * 6}), 8)
+
     def test_route_sends_inputs_by_snr_band(self):
         pol = ng.route(30.0, 22.0, "snng10")
         self.assertEqual(pol({"snr": 35.0}), 4)
@@ -126,6 +138,9 @@ class AnalyzeTests(unittest.TestCase):
         self.assertIn("SNR-Wiener Conditioning", report)
         self.assertIn("enh4_heavy", report)
         self.assertIn("## Early handover within the cleaned system", report)
+        self.assertIn("## Against SNR-only", report)
+        self.assertEqual(res["cross_validation"]["pooled"]["snr_only"]["vs_snr_only"]["fixed"], 0)
+        self.assertIn("tas", res["cross_validation"]["pooled"])
         self.assertEqual(sum(res["within_cleaned_system"]["piec4 judged against piec8"].values()), 0)
 
 
