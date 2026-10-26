@@ -34,6 +34,14 @@ class OperatorTests(unittest.TestCase):
         self.assertEqual(ng.antithetic_pick(near, far, anchor, 2), 1)
         self.assertEqual(ng.antithetic_pick(far, near, anchor, 2), -1)
 
+    def test_scg_gamma_raises_guidance_as_snr_falls_within_the_cap(self):
+        self.assertEqual(ng.scg_gamma(40.0, 2.5), 2.0)                     # predicted gap above clean level: no change
+        g = ng.SCG_FIT
+        self.assertAlmostEqual(ng.scg_gamma(20.0, 2.5), 2.0 * g["G_CLEAN"] / (g["A"] + g["B"] * 20.0))
+        self.assertEqual(ng.scg_gamma(20.0, 1.5), 3.0)                     # capped at 1.5 x 2
+        self.assertEqual(ng.scg_gamma(0.0, 2.5), 5.0)                      # floor on the predicted gap, then the cap
+        self.assertLess(ng.scg_gamma(25.0, 2.5), ng.scg_gamma(20.0, 2.5))
+
     def test_route_sends_inputs_by_snr_band(self):
         pol = ng.route(30.0, 22.0, "snng10")
         self.assertEqual(pol({"snr": 35.0}), 4)

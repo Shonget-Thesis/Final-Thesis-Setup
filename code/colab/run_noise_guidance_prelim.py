@@ -12,6 +12,11 @@ prompt's noise leaks into the generated voice. Two new methods are tested at the
   anti   Antithetic student pair. From the plain Step-4 endpoint, the student runs once with its
          usual noise eps and once with -eps; the output closer to the teacher's endpoint (generated
          frames) is kept. Cost 13 + 3 = 16 NFE.
+  scg    SNR-Compensated Guidance. Prompt noise shrinks the guidance gap g = v_c - v_u (EXP-012:
+         median ||g_4||/||v_c|| 0.236 clean, 0.116 at 15 dB). The CFG scale is raised by the factor the
+         prompt SNR predicts: gamma(S) = 2 * clip(G_CLEAN / max(A + B*S, G_FLOOR), 1, r_max), with the
+         line A + B*S fitted to g_4 against SNR on the EXP-012 development signals (prompts < 30 dB).
+         r_max = 2.5 (scg, full) or 1.5 (scg15, capped). No extra pass: Step 4 costs 13 NFE.
 
 Data: the EXP-012 Quick set (60 development speakers x 6 conditions); the plain Step-4 and Step-8
 labels are committed, so only the new outputs are synthesized and scored.
@@ -38,12 +43,15 @@ THESIS_ROOT = rf.THESIS_ROOT
 N_SPEAKERS, CONDS, NOISY = ex.N_SPEAKERS, ex.CONDS, ex.NOISY
 K, NOISE_FRAC = 4, 0.2
 ETAS = {"snng05": 0.5, "snng10": 1.0}
-OUTS = tuple(ETAS) + ("anti",)
-COST = {4: 13, 8: 21, "snng05": 18, "snng10": 18, "anti": 16}
+SCG_FIT = {"A": -0.0263, "B": 0.0078, "G_CLEAN": 0.236, "G_FLOOR": 0.02}   # EXP-012 signals.csv, prompts < 30 dB (R^2 0.60)
+SCG_RMAX = {"scg": 2.5, "scg15": 1.5}
+OUTS = tuple(ETAS) + ("anti",) + tuple(SCG_RMAX)
+COST = {4: 13, 8: 21, "snng05": 18, "snng10": 18, "anti": 16, "scg": 13, "scg15": 13}
 ALPHA, DELTA, FOLDS, SEED, THETA = ex.ALPHA, ex.DELTA, ex.FOLDS, ex.SEED, ex.THETA
 THETA_GRID = ex.GRIDS["theta"]                                   # 40 -> 20 dB
 LOW_GRID = [float(x) for x in range(40, 9, -1)]                  # theta_lo candidates, 40 -> 10 dB
 FIELDS = ["utt_id", "speaker_id", "condition", "prompt_snr", "d_4", "d4_stored", "noise_frames", "anti_pick"] + \
+         [f"gamma_{o}" for o in SCG_RMAX] + \
          [f"{m}_{o}" for o in OUTS for m in ("wer", "similarity", "utmos", "is_failure", "fail_wer", "fail_sim", "hypothesis")] + \
          ["wer_ref", "similarity_ref", "utc"]
 
@@ -60,28 +68,36 @@ def noise_prompt(step_cond, plen, frac=NOISE_FRAC):
     return nc, n
 
 
-def snng_endpoints(pipe, ctx, etas, k=K):
-    """Teacher Euler pass to step k with negative guidance from the noise-only prompt; returns {eta: x1hat(t_k)}."""
-    torch, sampler = pipe.torch, pipe.sampler
-    grid = sampler.SWAY_TEACHER_GRID
+def scg_gamma(snr, r_max, base=2.0, fit=SCG_FIT):
+    """SNR-compensated CFG scale: base * clip(G_CLEAN / max(A + B*snr, G_FLOOR), 1, r_max)."""
+    g_hat = max(fit["A"] + fit["B"] * snr, fit["G_FLOOR"])
+    return base * min(max(fit["G_CLEAN"] / g_hat, 1.0), r_max)
+
+
+def guided_endpoints(pipe, ctx, specs, k=K):
+    """Teacher Euler passes to step k, one per spec {name: (gamma, eta)}:
+    v = v_c + gamma (v_c - v_u) + eta (v_c - v_noise), the noise-only prompt used only when eta > 0.
+    Returns ({name: x1hat(t_k)}, number of noise frames)."""
+    torch = pipe.torch
+    grid = pipe.sampler.SWAY_TEACHER_GRID
     ncond, n = noise_prompt(ctx["step_cond"], ctx["prompt_len"])
     out = {}
     with torch.inference_mode():
-        for eta in etas:
+        for name, (gamma, eta) in specs.items():
             x = ctx["y0"].clone()
             for i in range(k + 1):
                 t = torch.tensor(grid[i], device=pipe.device, dtype=torch.float32)
                 kw = dict(x=x, text=ctx["text_ids"], time=t, mask=None)
                 vc = pipe.tts.teacher(cond=ctx["step_cond"], drop_audio_cond=False, drop_text=False, **kw)
                 vu = pipe.tts.teacher(cond=ctx["step_cond"], drop_audio_cond=True, drop_text=True, **kw)
-                v = vc + (vc - vu) * sampler.CFG_STRENGTH
+                v = vc + (vc - vu) * gamma
                 if eta:
                     vn = pipe.tts.teacher(cond=ncond, drop_audio_cond=False, drop_text=False, **kw)
                     v = v + eta * (vc - vn)
                 ep = x + (1.0 - grid[i]) * v
                 if i < k:
                     x = x + (grid[i + 1] - grid[i]) * v
-            out[eta] = ep
+            out[name] = ep
     return out, n
 
 
@@ -127,15 +143,21 @@ def run_cases(pipe, todo_items, conds, out_dir, csv_name="snng.csv", reproduce=F
         ctx = pipe.prepare(item, cond, item["input_seed"], out_dir)
         E, drift = pipe.teacher(ctx, tuple(range(K + 1)))
         plen = ctx["prompt_len"]
-        ends, nframes = snng_endpoints(pipe, ctx, (0.0,) + tuple(ETAS.values()) if reproduce else tuple(ETAS.values()))
+        cfg = pipe.sampler.CFG_STRENGTH
+        gammas = {o: scg_gamma(ctx["prompt_snr"], r, base=cfg) for o, r in SCG_RMAX.items()}
+        specs = {**{o: (cfg, eta) for o, eta in ETAS.items()}, **{o: (g, 0.0) for o, g in gammas.items()}}
+        if reproduce:
+            specs["plain"] = (cfg, 0.0)
+        ends, nframes = guided_endpoints(pipe, ctx, specs)
         xp, xm = student_x(pipe, ctx, E[K], 1.0), student_x(pipe, ctx, E[K], -1.0)
         with pipe.torch.inference_mode():
             pick = antithetic_pick(xp, xm, E[K], plen)
         row = {"utt_id": item["utt_id"], "speaker_id": item["speaker_id"], "condition": cond, "prompt_snr": ctx["prompt_snr"],
                "d_4": drift[4], "d4_stored": float(ref["d_4"]), "noise_frames": nframes, "anti_pick": pick,
+               **{f"gamma_{o}": g for o, g in gammas.items()},
                "wer_ref": float(ref["wer_ref"]), "similarity_ref": float(ref["similarity_ref"])}
         gt = pipe.ground_truth(item)
-        audios = {o: decode(pipe, ctx, student_x(pipe, ctx, ends[eta])) for o, eta in ETAS.items()}
+        audios = {o: decode(pipe, ctx, student_x(pipe, ctx, ends[o])) for o in tuple(ETAS) + tuple(SCG_RMAX)}
         if pick < 0:
             audios["anti"] = decode(pipe, ctx, xm)
         for o in OUTS:
@@ -149,8 +171,8 @@ def run_cases(pipe, todo_items, conds, out_dir, csv_name="snng.csv", reproduce=F
                         f"fail_wer_{o}": bool(diag["wer_failed"]), f"fail_sim_{o}": bool(diag["sim_failed"]), f"hypothesis_{o}": m["hypothesis"]})
         if reproduce:
             with pipe.torch.inference_mode():
-                diff = float((ends[0.0] - E[K]).abs().max())
-            repro.append({"utt_id": item["utt_id"], "condition": cond, "check": "snng eta=0 endpoint vs plain teacher endpoint", "max_abs_diff": diff})
+                diff = float((ends["plain"] - E[K]).abs().max())
+            repro.append({"utt_id": item["utt_id"], "condition": cond, "check": "guided loop (gamma=2, eta=0) vs plain teacher endpoint", "max_abs_diff": diff})
             E8, _ = pipe.teacher(ctx, (8,))
             for k, T in ((4, E[K]), (8, E8[8])):
                 m = pipe.score(decode(pipe, ctx, student_x(pipe, ctx, T)), item, gt)
@@ -304,10 +326,11 @@ def analyze(out, allow_partial=False):
 
 
 def render(res):
-    names = {"snng05": "SNNG η = 0.5 (18 NFE)", "snng10": "SNNG η = 1.0 (18 NFE)", "anti": "Antithetic pair (16 NFE)"}
+    names = {"snng05": "SNNG η = 0.5 (18 NFE)", "snng10": "SNNG η = 1.0 (18 NFE)", "anti": "Antithetic pair (16 NFE)",
+             "scg": "SNR-Compensated Guidance, r_max 2.5 (13 NFE)", "scg15": "SNR-Compensated Guidance, r_max 1.5 (13 NFE)"}
     d = res["drift_reproduction_max_abs_diff"]
     f4 = lambda x: "n/a" if x is None else f"{x:+.4f}"
-    L = ["# Preliminary test: Self-Noise Negative Guidance and the antithetic student pair", "",
+    L = ["# Preliminary test: Self-Noise Negative Guidance, SNR-Compensated Guidance and the antithetic student pair", "",
          f"{'**PARTIAL.** ' if res['partial'] else ''}Development speakers only ({N_SPEAKERS} speakers x {len(CONDS)} conditions: {', '.join(CONDS)}); "
          f"{res['cases']} of {res['expected_cases']} cases; preregistration `{res['preregistration_sha256'][:16]}…`. "
          "Every number is computed from the CSV files by `run_noise_guidance_prelim.py analyze`.", "",
@@ -350,10 +373,13 @@ def write_prereg(out, args):
     path = Path(out) / "preregistration.json"
     if path.exists():
         return json.loads(path.read_text(encoding="utf-8"))
-    pre = {"purpose": "Preliminary development test of Self-Noise Negative Guidance (SNNG) and the antithetic student pair at the Step-4 handover",
+    pre = {"purpose": "Preliminary development test of Self-Noise Negative Guidance (SNNG), SNR-Compensated Guidance (SCG) and the antithetic student pair at the Step-4 handover",
            "methods": {"snng": f"v = v_c + gamma (v_c - v_u) + eta (v_c - v_noise); noise-only prompt = the {int(NOISE_FRAC * 100)}% quietest prompt frames tiled; "
                                "teacher to Step 4 with this velocity, then the usual student", "etas": ETAS,
-                       "anti": "student with eps and with -eps from the plain Step-4 endpoint; keep the output closer to the endpoint on generated frames"},
+                       "anti": "student with eps and with -eps from the plain Step-4 endpoint; keep the output closer to the endpoint on generated frames",
+                       "scg": "teacher to Step 4 with CFG scale gamma(S) = 2 * clip(G_CLEAN / max(A + B*S, G_FLOOR), 1, r_max); "
+                              "A, B fitted to g_4 against prompt SNR on the EXP-012 development signals (prompts < 30 dB, the same 60 speakers "
+                              "evaluated here; the fit uses no failure labels)", "scg_fit": SCG_FIT, "scg_rmax": SCG_RMAX},
            "nfe": {str(k): v for k, v in COST.items()},
            "n_speakers": N_SPEAKERS, "conditions": list(CONDS), "theta_db": THETA, "alpha": ALPHA, "delta": DELTA, "folds": FOLDS, "seed": SEED,
            "theta_grid": THETA_GRID, "theta_lo_grid": LOW_GRID, "policies": POLICIES,
