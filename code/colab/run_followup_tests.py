@@ -448,8 +448,11 @@ class Pipeline:
         return self.sampler.run_student_completion(tts=self.tts, cond=ctx["cond"], text=ctx["text_ids"], teacher_endpoint=endpoint,
                                                    prompt_len=ctx["prompt_len"], input_seed=ctx["seed"])[1]
 
-    def prepare(self, item, condition, seed, out_dir, noise_seed=None):
-        """Prompt degradation, duration prediction, conditioning and initial noise for one case."""
+    def prepare(self, item, condition, seed, out_dir, noise_seed=None, prompt_transform=None):
+        """Prompt degradation, duration prediction, conditioning and initial noise for one case.
+
+        prompt_transform(prompt, sr), if given (for example a speech enhancer), is applied after the prompt SNR is
+        measured, so ctx["prompt_snr"] stays the SNR of the degraded prompt the scheduler would see."""
         torch, sampler = self.torch, self.sampler
         prompt_path = self.data_dir / item["prompt_wav_rel"]
         if not prompt_path.exists() or prompt_path.stat().st_size < 1000:
@@ -459,6 +462,8 @@ class Pipeline:
         track = self.babble_for(sr) if CONDITIONS[condition][0] == "babble" else None
         prompt = degrade(prompt, sr, condition, seed if noise_seed is None else noise_seed, track)
         prompt_snr = sampler.estimate_prompt_snr(prompt, sample_rate=sr)
+        if prompt_transform is not None:
+            prompt = prompt_transform(prompt, sr)
         tmp = Path(out_dir) / f"tmp_{item['utt_id']}_{condition}.wav"
         self.sf.write(str(tmp), prompt, sr)
         ref_text = self.preprocess_ref_audio_text(str(tmp), item["prompt_text"])[1]

@@ -1,0 +1,48 @@
+{
+  "description": "Outputs of the EXP-015 notebook run on 2026-10-26 (Colab NVIDIA A100-SXM4-40GB): noise-aware handover methods and TAS gating on the EXP-012 Quick set (60 development speakers x 6 conditions), plus the smoke test and its reproduction check. Byte-identical copies from the downloaded results zip; the runner copies inside the zip are not duplicated here. The stored Step-4/Step-8 references come from the Tesla T4; the smoke reproduction shows the A100 student draws differ (see the EXP-015 README).",
+  "source_zip": "DMOSpeech2_Noise_Guidance_Results.zip",
+  "source_zip_sha256": "5f5962809b51041be00e49cd1b3b786e32b3487d608238b0979e9d2a058afa65",
+  "thesis_commit_at_run": "bdee11ece9b532fc2fe9fd52419e3fa4396cbbb1",
+  "dmo_commit_at_run": "8a7868fc3345702a586173447f4869205b501f26",
+  "device": "NVIDIA A100-SXM4-40GB",
+  "excluded": [
+    "code/*.py (copies of the runners at the thesis commit above)"
+  ],
+  "files": [
+    {
+      "file": "NOISE_GUIDANCE_REPORT.md",
+      "bytes": 32797,
+      "sha256": "b96bdc9b8b85fe61d24d88ba25b883f2547814006a82c9911929f06e471b17b7"
+    },
+    {
+      "file": "preregistration.json",
+      "bytes": 6545,
+      "sha256": "8a3a32a08979c14281a970846223af49023d8eff6acf41728e49ecb926d54da3"
+    },
+    {
+      "file": "RUN_INFO.txt",
+      "bytes": 189,
+      "sha256": "01b0702567e8b75e43f5a2adb8f92314f3e437e7ed6a879d04039c96504fffdd"
+    },
+    {
+      "file": "smoke/reproduction.json",
+      "bytes": 2818,
+      "sha256": "d74f950e60a458d344651f416567b69a511eccc34cbd65b28d0823af8b451087"
+    },
+    {
+      "file": "smoke/snng.csv",
+      "bytes": 11090,
+      "sha256": "a392f4212412defe86c7b947216462604e9aebedbc121686613d0c561a8243cb"
+    },
+    {
+      "file": "snng.csv",
+      "bytes": 769391,
+      "sha256": "d3e831a9ed98dfa51ab528e43f82d8510d4d04c25d6ffb9d28395f38087b46d9"
+    },
+    {
+      "file": "snng_results.json",
+      "bytes": 117786,
+      "sha256": "489a2e6d79c3c709f357652ec24be8cd00f7dacfd15b5351725df9a419449e5c"
+    }
+  ]
+}

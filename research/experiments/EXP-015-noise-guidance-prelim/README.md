@@ -1,0 +1,64 @@
+# EXP-015: Preliminary test of noise-aware handover methods (PIEC, prompt enhancement, SWC, SCG, SNNG, antithetic pair)
+
+**Status:** run on 2026-10-26 on a Colab NVIDIA A100-SXM4-40GB (thesis `bdee11e`, Shonget-DMOSpeech2 `8a7868f`); results in [results/](results/MANIFEST.json). **Two candidates to propose: TAS and SWC**; see the [candidates report](../../reports/Ref_reports/PROPOSED_CANDIDATES_TAS_SWC_REPORT.md). The A100 student draws differ from the T4 references (see Results). Notebook `code/colab/DMOSpeech2_Noise_Guidance_Prelim.ipynb`, runner `code/colab/run_noise_guidance_prelim.py` (Colab T4; same setup cells as EXP-013/014).
+
+**Why:** EXP-013 and EXP-014 showed that most noisy failures at an early handover are speaker-similarity failures (the prompt's noise leaks into the voice) and that no zero-cost change at the handover makes noisy prompts safe. These methods spend a little compute to act on the cause. Requested by a team member as candidate solutions that may come with a new title and objectives.
+
+| Method | Definition | NFE at Step 4 |
+|---|---|---:|
+| SNNG (`snng05`, `snng10`) | Noise-only prompt = the prompt's quietest 20% of frames, tiled over the prompt length. Each teacher step: v = v_c + γ(v_c − v_u) + η(v_c − v_noise), γ = 2, η = 0.5 or 1.0. Teacher to Step 4 with this velocity, then the usual student. | 18 |
+| SNR-Compensated Guidance (`scg`, `scg15`) | Prompt noise shrinks the guidance gap g₄ = ‖v_c − v_u‖/‖v_c‖ (EXP-012: median 0.236 clean, 0.116 at 15 dB; Spearman with SNR 0.84). The CFG scale is raised by the factor the SNR predicts: γ(Ŝ) = 2·clip(0.236 / max(−0.0263 + 0.0078·Ŝ, 0.02), 1, r_max), r_max = 2.5 (`scg`) or 1.5 (`scg15`, γ ≤ 3). The line was fitted to g₄ against SNR on the EXP-012 signals of these same 60 speakers (prompts < 30 dB, R² 0.60); it uses no failure labels. | 13 |
+| Prompt-Informed Environment Cancellation (`piec4`, `swcpiec4`) | Zero-shot TTS copies the prompt's acoustic environment into the output; the environment floor is estimated from the prompt's quietest 20% of frames (per mel band, noisy conditioning) and cancelled from the generated frames of the final mel before the vocoder: G = clip(1 − β(Ŝ)·N_b/M, 0.1, 1), β(Ŝ) = clip((30 − Ŝ)/10, 0, 1). `swcpiec4` applies it to the SWC output. | 13 |
+| Controls (`enh8`, `piec8`) | The same cleaning on the Step-8 output; `enh4` and `piec4` are also judged against them ("early handover within the cleaned system"). Not candidates. | 21 |
+| SNR-routed prompt enhancement (`enh4`, `enh6`, `enhs4`) | The prompt is cleaned by a pretrained DNS64 Demucs enhancer (pip `denoiser` 0.1.5) before conditioning; `enh4`/`enh6` full cleaning with handover at Step 4/6, `enhs4` wet mix clip((30 − Ŝ)/10, 0, 1) at Step 4. The router SNR is that of the unenhanced prompt. New policy family `<m>_heavy`: plain Step 4 if Ŝ ≥ θ_hi, the method if Ŝ < θ_e, Step 8 in between (both calibrated). The enhancer's time is recorded and not counted in NFE. | 13 / 17 / 13 |
+| SNR-Wiener Conditioning (`swc`, `swc05`) | The prompt frames of the teacher's and the student's conditioning are cleaned before use: per mel band, noise floor N_b = mean linear magnitude of the prompt's quietest 20% of frames; gain G = clip(1 − β(Ŝ)·N_b/M, 0.1, 1); β(Ŝ) = β_max·clip((30 − Ŝ)/10, 0, 1), β_max = 1.0 (`swc`) or 0.5 (`swc05`). | 13 |
+| Antithetic pair (`anti`) | From the plain Step-4 endpoint, the student runs with ε and with −ε; the output nearer the teacher endpoint (generated frames) is kept. | 16 |
+
+**Data:** the EXP-012 Quick set (60 development speakers × clean, noisy15, Gaussian 18/20/22/25 dB = 360 cases); stored plain Step-4 and Step-8 labels are reused. The smoke test checks that SNNG with η = 0 reproduces the plain teacher endpoint and that the stored Step-4 and Step-8 scores are reproduced.
+
+**Preregistered:** C1 noisy Step-4 failures drop by at least 25% with p < 0.05; C2 clean failures rise by at most 1; C3 the calibrated route (plain Step 4 above the calibrated SNR gate, the method in a calibrated band below it, Step 8 below that) has lower mean NFE than the calibrated SNR gate with no more failures. Secondary, descriptive: average SIM and WER against Step 8 (paired Wilcoxon). Best method: most criteria passed, ties broken by lower route NFE.
+
+**Cost:** about 2.5–3 hours on an A100 or 6.5–7 hours on a T4 (estimate: one plain, two SNNG, two SCG and two SWC teacher passes, nine student runs and up to seven scored outputs per case).
+
+**Prior work (2026-10-26 web search):** a trained triple classifier-free guidance with a separate noise condition exists ([arXiv 2608.03011](https://arxiv.org/html/2608.03011v1)); noisy-prompt robustness is otherwise handled by prompt denoising or noise-augmented training ([arXiv 2505.13830](https://arxiv.org/abs/2505.13830), [arXiv 2406.05699](https://arxiv.org/pdf/2406.05699)). No training-free method was found that builds the negative condition from the prompt's own quiet frames. For SCG (2026-10-26 search): decoupled or selective CFG for style and speaker similarity exists (ReStyle-TTS, ACL Findings 2026; Selective CFG, arXiv 2509.19668, which also reports that image-domain CFG strategies often fail in speech); no method was found that sets the CFG scale from the prompt SNR to undo guidance attenuation. For SWC (2026-10-26 search): noisy prompts are known to degrade zero-shot TTS, and the usual remedies are separate trained enhancement front-ends, trained prompt denoisers or noise-augmented training; no training-free, SNR-scheduled spectral gain on the mel prompt inside the sampler was found. Antithetic variates are classic; their use at a teacher-to-student handover was not found. "Not found" is not proof of absence.
+
+**Caveats:** development evidence only, Gaussian noise only; the methods were chosen after seeing EXP-012 to EXP-014 data.
+
+## Why prompt enhancement was added (offline analysis, 2026-10-26, committed data only; exploratory)
+
+- **Required gain.** On noisy prompts, plain Step 4 fails 42% against Step 8 (32% on SIM). Shifting every noisy Step-4 output by a mean SIM gain μ gives noisy failures of 16% (μ = 0.02), 6.7% (0.05) and 2.3% (0.08) on SIM, so beating the calibrated SNR gate needs about μ ≈ 0.08 plus fewer WER failures.
+- **Achieved gains.** Mean SIM gain over plain Step 4 on noisy prompts: DEH +0.024, cDEH +0.022, DEH-half +0.010, SEA −0.001, TCR −0.028. Methods that act inside the sampler fall short by a factor of three or more.
+- **Headroom.** Step-8 SIM with the clean prompt minus Step-8 SIM with the noisy prompt (same speakers and seeds): +0.238 (15 dB), +0.196 (18), +0.151 (20), +0.109 (22), +0.059 (25). Only removing the prompt noise reaches μ ≈ 0.08.
+- **Oracle enhancement (exact under Definition 3.1).** The clean-prompt output judged against the noisy-prompt Step-8 reference: every input at Step 4 gives 14/360 failures (not certifiable at α = 0.05 with ~288 calibration cases; 3.9% needs n ≥ 610). Routed (plain Step 4 above θ_hi, oracle-enhanced Step 4 below θ_e, Step 8 between), out of fold: 11/360 failures at 14.64 NFE vs 7/360 at 18.71 for the calibrated SNR gate (−22%). With extra enhancer failures of 2%, 5% or 10%: 16.18, 17.40 and 18.16 NFE.
+- So a real enhancer can at best approach −22% here; how close it gets is what this run measures.
+
+## PIEC and the controls (added 2026-10-26)
+
+- **Prior work (2026-10-26 search):** the copying of the prompt's environment is documented for zero-shot TTS; remedies are trained denoisers (Lu et al., Interspeech 2025, arXiv 2505.13830), enhancement front-ends, or separation models that keep the background on purpose (DAIEN-TTS, arXiv 2608.03011; arXiv 2502.07345). No training-free method was found that estimates the environment from the prompt and cancels it from the generated mel.
+- **Prediction (exploratory, from the committed data):** against SNR-only (86/360 failures at 14.40 NFE), a method at the same routing beats it if it removes at least about 10% of the noise damage (per-case interpolation between each case's noisy-prompt and clean-prompt Step-4 output: 62/360 at 10%, 34/360 at 25%, 13/360 at 100%); without any SNR routing, about 25% is needed (63/360 at 13.00 NFE).
+- **Controls:** because cleaning can also improve the reference, the report judges the early cleaned output against the cleaned Step-8 output (`enh4` vs `enh8`, `piec4` vs `piec8`). A method that beats the uncleaned reference but fails this check gains from cleaning, not from the handover.
+
+## Trajectory Anomaly Score (TAS) and the comparison with SNR-only (added 2026-10-26)
+
+- **TAS:** the drift profile log(d₁..d₆) of the plain teacher pass is compared with the clean-prompt profiles of the training speakers (mean and covariance, no failure labels); the score is the squared Mahalanobis distance, counted only when the profile lies below the clean mean (the trajectory is too still: premature stabilization). Policy `tas`: plain Step 4 if Ŝ ≥ 20 dB and the score is at most τ̂ (certified by Learn-Then-Test on training speakers), else Step 8; `<m>_tas`: the same gate with method m at the handover; `d4veto`: the same with −d₄ as the score.
+- **Prior work:** DiffPath (Heng et al., NeurIPS 2024, arXiv 2405.11881) uses the rate of change and curvature of diffusion paths to detect out-of-distribution images. TAS instead detects corrupted conditioning (one-sided, premature stabilization) and drives a certified teacher-to-student handover; no such use was found.
+- **Offline result on committed data (exploratory; same 360 cases, so `tas` in this run is not independent evidence):** out of fold, SNR-only 86/360 failures (23.9%) at 14.40 NFE; `tas` 12/360 (3.3%) at 18.20 NFE, fixing 74 SNR-only failures and breaking none (exact McNemar p ≈ 1e-22); `d4veto` 13/360 at 18.20. At equal compute, no re-ranking of inputs (SNR, drift, guidance gap or learned combinations) beat SNR-only (85–89 failures).
+- The report adds an "Against SNR-only" table (every policy, pooled, out of fold, with exact McNemar). The drift profile comes from the committed EXP-012 signals of the same cases, so the analysis also works for runs started before this change.
+
+## Results (360 of 360 cases, 2026-10-26)
+
+From [NOISE_GUIDANCE_REPORT.md](results/NOISE_GUIDANCE_REPORT.md); out of fold, pooled Learn-Then-Test; exact McNemar against SNR-only on the same cases.
+
+| Policy | Failures | Risk | Mean NFE | vs SNR-only (fixed / new) |
+|---|---:|---:|---:|---|
+| SNR-only (20 dB) | 86/360 | 23.9% | 14.40 | — |
+| **SNR + TAS** | **12/360** | 3.3% | 18.20 | 74 / 0 (p ≈ 1e-22) |
+| **SNR + SWC below the calibrated gate** | **20/360** | 5.6% | **13.00** | 75 / 9 (p ≈ 4e-14) |
+| **SNR + SWC, heavy-noise routing** | **11/360** | 3.1% | 16.98 | 79 / 4 (p ≈ 4e-19) |
+| Calibrated SNR gate | 7/360 | 1.9% | 18.71 | 79 / 0 |
+
+- **SWC** at Step 4 on noisy prompts: speaker similarity +0.126 against the Step-8 reference (better in 90% of 300 cases, p ≈ 4e-44), WER −0.048; noisy Step-4 failures 126 → 21. It matches the pretrained enhancer (+0.117; 31 failures) without an extra network.
+- **Did not win:** SNNG (160–164 noisy failures), SCG (142–153), PIEC (156; WER +0.32), antithetic pair (124, no effect).
+- **Preregistered criteria:** C1 passed for SWC, SWC + PIEC and every enhancer variant; C2 failed for all except PIEC (clean failures, inflated by the hardware difference below); C3 (against the calibrated SNR gate) failed for all.
+- **Within the cleaned system:** enhanced Step 4 judged against enhanced Step 8 fails 18 of 360; PIEC on Step 4 against PIEC on Step 8 fails 123. No SWC-at-Step-8 control was run.
+- **Hardware caveat:** the smoke test reproduced the teacher exactly (endpoint and drift differences 0) but not the stored T4 student outputs (for example similarity 0.826 vs 0.903 at 20 dB). The student's noise is drawn on the GPU and evidently differs between GPU models, so new-method outputs are judged against T4 references made with a different student sample. SNR-only, the calibrated gate, the drift veto and TAS use only T4 outcomes and are unaffected; for the new methods the mismatch inflates failures. A same-hardware confirmation of SWC is the next step.

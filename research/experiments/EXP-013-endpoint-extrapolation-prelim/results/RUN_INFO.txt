@@ -1,0 +1,4 @@
+dmospeech2_commit: 8a7868fc3345702a586173447f4869205b501f26
+thesis_commit: 07639ea83efd956f0abebd82fd62da745777cfc2
+zipped_at_utc: 2026-10-25T15:20:08.635548Z
+device: Tesla T4
