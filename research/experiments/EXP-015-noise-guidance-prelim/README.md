@@ -1,6 +1,6 @@
 # EXP-015: Preliminary test of noise-aware handover methods (PIEC, prompt enhancement, SWC, SCG, SNNG, antithetic pair)
 
-**Status:** designed 2026-10-26, not run. Notebook `code/colab/DMOSpeech2_Noise_Guidance_Prelim.ipynb`, runner `code/colab/run_noise_guidance_prelim.py` (Colab T4; same setup cells as EXP-013/014).
+**Status:** run on 2026-10-26 on a Colab NVIDIA A100-SXM4-40GB (thesis `bdee11e`, Shonget-DMOSpeech2 `8a7868f`); results in [results/](results/MANIFEST.json). **Two candidates to propose: TAS and SWC**; see the [candidates report](../../reports/Ref_reports/PROPOSED_CANDIDATES_TAS_SWC_REPORT.md). The A100 student draws differ from the T4 references (see Results). Notebook `code/colab/DMOSpeech2_Noise_Guidance_Prelim.ipynb`, runner `code/colab/run_noise_guidance_prelim.py` (Colab T4; same setup cells as EXP-013/014).
 
 **Why:** EXP-013 and EXP-014 showed that most noisy failures at an early handover are speaker-similarity failures (the prompt's noise leaks into the voice) and that no zero-cost change at the handover makes noisy prompts safe. These methods spend a little compute to act on the cause. Requested by a team member as candidate solutions that may come with a new title and objectives.
 
@@ -44,3 +44,21 @@
 - **Prior work:** DiffPath (Heng et al., NeurIPS 2024, arXiv 2405.11881) uses the rate of change and curvature of diffusion paths to detect out-of-distribution images. TAS instead detects corrupted conditioning (one-sided, premature stabilization) and drives a certified teacher-to-student handover; no such use was found.
 - **Offline result on committed data (exploratory; same 360 cases, so `tas` in this run is not independent evidence):** out of fold, SNR-only 86/360 failures (23.9%) at 14.40 NFE; `tas` 12/360 (3.3%) at 18.20 NFE, fixing 74 SNR-only failures and breaking none (exact McNemar p ≈ 1e-22); `d4veto` 13/360 at 18.20. At equal compute, no re-ranking of inputs (SNR, drift, guidance gap or learned combinations) beat SNR-only (85–89 failures).
 - The report adds an "Against SNR-only" table (every policy, pooled, out of fold, with exact McNemar). The drift profile comes from the committed EXP-012 signals of the same cases, so the analysis also works for runs started before this change.
+
+## Results (360 of 360 cases, 2026-10-26)
+
+From [NOISE_GUIDANCE_REPORT.md](results/NOISE_GUIDANCE_REPORT.md); out of fold, pooled Learn-Then-Test; exact McNemar against SNR-only on the same cases.
+
+| Policy | Failures | Risk | Mean NFE | vs SNR-only (fixed / new) |
+|---|---:|---:|---:|---|
+| SNR-only (20 dB) | 86/360 | 23.9% | 14.40 | — |
+| **SNR + TAS** | **12/360** | 3.3% | 18.20 | 74 / 0 (p ≈ 1e-22) |
+| **SNR + SWC below the calibrated gate** | **20/360** | 5.6% | **13.00** | 75 / 9 (p ≈ 4e-14) |
+| **SNR + SWC, heavy-noise routing** | **11/360** | 3.1% | 16.98 | 79 / 4 (p ≈ 4e-19) |
+| Calibrated SNR gate | 7/360 | 1.9% | 18.71 | 79 / 0 |
+
+- **SWC** at Step 4 on noisy prompts: speaker similarity +0.126 against the Step-8 reference (better in 90% of 300 cases, p ≈ 4e-44), WER −0.048; noisy Step-4 failures 126 → 21. It matches the pretrained enhancer (+0.117; 31 failures) without an extra network.
+- **Did not win:** SNNG (160–164 noisy failures), SCG (142–153), PIEC (156; WER +0.32), antithetic pair (124, no effect).
+- **Preregistered criteria:** C1 passed for SWC, SWC + PIEC and every enhancer variant; C2 failed for all except PIEC (clean failures, inflated by the hardware difference below); C3 (against the calibrated SNR gate) failed for all.
+- **Within the cleaned system:** enhanced Step 4 judged against enhanced Step 8 fails 18 of 360; PIEC on Step 4 against PIEC on Step 8 fails 123. No SWC-at-Step-8 control was run.
+- **Hardware caveat:** the smoke test reproduced the teacher exactly (endpoint and drift differences 0) but not the stored T4 student outputs (for example similarity 0.826 vs 0.903 at 20 dB). The student's noise is drawn on the GPU and evidently differs between GPU models, so new-method outputs are judged against T4 references made with a different student sample. SNR-only, the calibrated gate, the drift veto and TAS use only T4 outcomes and are unaffected; for the new methods the mismatch inflates failures. A same-hardware confirmation of SWC is the next step.

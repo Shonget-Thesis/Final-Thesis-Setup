@@ -383,14 +383,29 @@
       "id": "EVAL-007",
       "title": "Preliminary test of noise-aware handover methods (PIEC, prompt enhancement, SWC, SCG, SNNG, antithetic pair)",
       "owner": "unassigned",
-      "status": "todo",
+      "status": "review",
       "updated": "2026-10-26",
       "acceptance": "The EXP-015 notebook runs on a Colab T4; the smoke checks pass (SNNG with eta = 0 equals the plain endpoint; stored Step-4 and Step-8 scores reproduced); preregistration.json predates the synthesis; the CSV, results JSON and generated report are committed with hashes; criteria C1-C3 and the selection rule are reported as computed.",
       "evidence": [
         "research/experiments/EXP-015-noise-guidance-prelim/README.md",
         "code/colab/DMOSpeech2_Noise_Guidance_Prelim.ipynb",
         "code/colab/run_noise_guidance_prelim.py",
-        "code/tests/test_noise_guidance.py"
+        "code/tests/test_noise_guidance.py",
+        "research/experiments/EXP-015-noise-guidance-prelim/results/MANIFEST.json",
+        "research/experiments/EXP-015-noise-guidance-prelim/results/NOISE_GUIDANCE_REPORT.md",
+        "research/reports/Ref_reports/PROPOSED_CANDIDATES_TAS_SWC_REPORT.md"
+      ],
+      "validation": "Run on a Colab A100 on 2026-10-26: 360 of 360 cases; preregistration written before synthesis; results committed with hashes. Deviation from the acceptance criterion: the run used an A100, and the smoke test reproduced the teacher exactly but not the stored T4 student outputs (GPU-dependent student noise), so new-method outputs are judged against T4 references made with a different student sample. As computed: SNR + TAS 12/360 vs SNR-only 86/360 (unaffected by the hardware difference); SNR + SWC 20/360 at 13.00 NFE and 11/360 at 16.98 NFE routed; C1 passed for SWC and the enhancer variants, C2 and C3 failed. Review: same-hardware confirmation (EVAL-008)."
+    },
+    {
+      "id": "EVAL-008",
+      "title": "Confirm the two candidates (TAS, SWC): same-hardware SWC run and an independent-speaker test",
+      "owner": "unassigned",
+      "status": "todo",
+      "updated": "2026-10-26",
+      "acceptance": "SWC and the plain Step-4/Step-8 references are synthesized on the same GPU (with an SWC-at-Step-8 control); TAS and SWC are tested with procedures and parameters fixed in advance on speakers not used in EXP-012 to EXP-015; preregistration predates synthesis; results committed with hashes.",
+      "evidence": [
+        "research/reports/Ref_reports/PROPOSED_CANDIDATES_TAS_SWC_REPORT.md"
       ],
       "validation": ""
     }
