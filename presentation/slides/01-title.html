@@ -1,0 +1,323 @@
+<!-- 0 TITLE -->
+<section class="scene s-title" data-ch="0" data-sec="" data-dur="20" data-title="Title">
+  <div class="t-badge b fade" data-t="150">
+    <span class="t-year">Academic Year 2026</span>
+  </div>
+
+  <h1 class="t-h b up" data-t="350">A Risk-Calibrated Adaptive Handover Method<br>for Teacher-Guided
+    Flow-Matching Text-to-Speech Inference</h1>
+
+  <div class="axis b fade" data-t="900">
+    <div class="rail"></div>
+    <div class="seg-s"></div>
+    <div class="seg-t"></div>
+    <div class="mk"></div>
+    <span class="lbl" style="left:0">t = 0 · noise</span>
+    <span class="lbl" style="right:0">t = 1 · speech</span>
+    <span class="lbl mid-lbl"><span class="bl">teacher</span> → <span style="color:var(--student)">student</span></span>
+  </div>
+
+  <div class="t-footer b fade" data-t="1400">
+    <div class="t-researchers">
+      <span class="names">Limpahan, M. V., Locsin, R., Sajol, R. J., Chiong, H.</span>
+    </div>
+    <div class="t-affiliation">
+      <span>Department of Computer Science</span>
+      <span class="bullet">•</span>
+      <span>Thesis Proposal</span>
+    </div>
+  </div>
+</section>
+
+<script type="text/slide-script">
+Good day. Our study is titled "A Risk-Calibrated Adaptive Handover Method for Teacher-Guided Flow-Matching Text-to-Speech Inference." In one line: today's fast speech synthesizers let a large teacher model start every utterance and a small student model finish it. We propose deciding, for each utterance, when that handover happens, and attaching a statistical guarantee to that decision.
+</script>
+
+<style>
+  /* ---------- S0 title ---------- */
+  .s-title {
+    justify-content: center;
+    gap: 36px;
+    padding: 55px 100px 50px;
+  }
+
+  .t-badge {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .t-badge .tag {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: .16em;
+    padding: 8px 18px;
+    border-radius: 6px;
+  }
+
+  .dot-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--blue);
+    box-shadow: 0 0 8px rgba(2, 132, 199, 0.6);
+    margin-right: 4px;
+  }
+
+  .t-year {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--dim);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  .t-h {
+    font-size: 64px;
+    font-weight: 850;
+    letter-spacing: -.025em;
+    line-height: 1.14;
+    text-transform: uppercase;
+    max-width: 42ch;
+    background: var(--blue-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+  }
+
+  .t-h span {
+    font-size: 64px;
+    font-weight: 850;
+    background: var(--blue-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .axis {
+    position: relative;
+    height: 130px;
+    margin-top: 10px;
+    width: 100%;
+  }
+
+  .axis .rail {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 56px;
+    height: 4px;
+    background: var(--line-2);
+    border-radius: 2px;
+  }
+
+  .axis .seg-t {
+    position: absolute;
+    left: 0;
+    top: 51px;
+    height: 14px;
+    background: var(--blue-grad);
+    box-shadow: 0 0 16px rgba(2, 132, 199, .45);
+    width: 29.3%;
+    border-radius: 3px;
+    animation: hand 9s cubic-bezier(.65, 0, .2, 1) infinite;
+  }
+
+  .axis .seg-s {
+    position: absolute;
+    right: 0;
+    top: 55px;
+    height: 6px;
+    background: var(--student);
+    opacity: .6;
+    left: 29.3%;
+    border-radius: 3px;
+    animation: hands 9s cubic-bezier(.65, 0, .2, 1) infinite
+  }
+
+  .axis .mk {
+    position: absolute;
+    top: 18px;
+    left: 29.3%;
+    width: 4px;
+    height: 78px;
+    background: var(--orange-grad);
+    box-shadow: 0 0 18px rgba(234, 88, 12, .55);
+    border-radius: 2px;
+    animation: handm 9s cubic-bezier(.65, 0, .2, 1) infinite;
+  }
+
+  .axis .mk::after {
+    content: "handover";
+    position: absolute;
+    top: -30px;
+    left: -6px;
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    background: var(--orange-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    white-space: nowrap;
+  }
+
+  .axis .lbl {
+    position: absolute;
+    top: 88px;
+    font-family: var(--mono);
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--dim);
+    letter-spacing: .1em;
+    text-transform: uppercase
+  }
+
+  .axis .mid-lbl {
+    left: 42%;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  @keyframes hand {
+
+    0%,
+    18% {
+      width: 29.3%
+    }
+
+    25%,
+    43% {
+      width: 7.6%
+    }
+
+    50%,
+    68% {
+      width: 16.85%
+    }
+
+    75%,
+    93% {
+      width: 11.8%
+    }
+
+    100% {
+      width: 29.3%
+    }
+  }
+
+  @keyframes hands {
+
+    0%,
+    18% {
+      left: 29.3%
+    }
+
+    25%,
+    43% {
+      left: 7.6%
+    }
+
+    50%,
+    68% {
+      left: 16.85%
+    }
+
+    75%,
+    93% {
+      left: 11.8%
+    }
+
+    100% {
+      left: 29.3%
+    }
+  }
+
+  @keyframes handm {
+
+    0%,
+    18% {
+      left: 29.3%
+    }
+
+    25%,
+    43% {
+      left: 7.6%
+    }
+
+    50%,
+    68% {
+      left: 16.85%
+    }
+
+    75%,
+    93% {
+      left: 11.8%
+    }
+
+    100% {
+      left: 29.3%
+    }
+  }
+
+  .t-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--line-2);
+    padding-top: 24px;
+    margin-top: 6px;
+    width: 100%;
+  }
+
+  .t-researchers {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .role-tag {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--blue-dark);
+    background: var(--blue-soft);
+    padding: 6px 12px;
+    border-radius: 4px;
+    border: 1px solid rgba(2, 132, 199, 0.25);
+  }
+
+  .t-researchers .names {
+    font-family: var(--display);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    background: var(--dark-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+  }
+
+  .t-affiliation {
+    font-family: var(--mono);
+    font-size: 15.5px;
+    font-weight: 400;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .t-affiliation .bullet {
+    color: var(--dim);
+  }
+</style>

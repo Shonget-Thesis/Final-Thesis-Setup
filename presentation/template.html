@@ -1,0 +1,1332 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Adaptive Handover Walkthrough</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@100..1000&family=Google+Sans:ital,wght@0,300..900;1,300..900&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <style>
+    [hidden] {
+      display: none !important
+    }
+
+    body {
+      margin: 0
+    }
+
+    /* Layout: a fixed 1600×900 stage scaled to fit full screen, styled with a luxury white field and ambient blue & orange gradient glows. */
+    :root {
+      --void: #F8FAFC;
+      --deep: #FFFFFF;
+      --panel: rgba(255, 255, 255, 0.90);
+      --line: rgba(15, 23, 42, 0.08);
+      --line-2: rgba(15, 23, 42, 0.16);
+      --fg: #0F172A;
+      --muted: #334155;
+      --dim: #64748B;
+
+      /* Teacher (Blue): vibrant sky-to-royal gradient */
+      --blue: #0284C7;
+      --blue-light: #38BDF8;
+      --blue-dark: #0369A1;
+      --blue-grad: linear-gradient(135deg, #0284C7 0%, #0070E0 55%, #1D4ED8 100%);
+      --blue-soft: rgba(2, 132, 199, 0.10);
+
+      /* Student */
+      --student: #64748B;
+
+      /* What this study adds (Orange): warm radiant amber-to-orange gradient */
+      --orange: #EA580C;
+      --orange-light: #FB923C;
+      --orange-dark: #C2410C;
+      --orange-grad: linear-gradient(135deg, #FB923C 0%, #EA580C 52%, #C2410C 100%);
+      --orange-soft: rgba(234, 88, 12, 0.10);
+
+      /* Sleek graphite black-to-dark-gray gradient */
+      --dark-grad: linear-gradient(135deg, #000000 0%, #182235 50%, #3E4C5E 100%);
+
+      --font-primary: "Google Sans Flex", "Google Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --display: var(--font-primary);
+      --body: var(--font-primary);
+      --mono: "Google Sans Flex", "Google Sans", sans-serif;
+      --math: "Computer Modern Serif", "KaTeX_Math", "KaTeX_Main", "CMU Serif", "Latin Modern Math", serif;
+      color-scheme: light;
+    }
+
+    html,
+    body {
+      background: var(--void);
+      color: var(--fg);
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: var(--body);
+      margin: 0;
+      padding: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    button {
+      font: inherit;
+      color: inherit;
+    }
+
+    #app {
+      width: 100vw;
+      height: 100vh;
+      max-width: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--void);
+      overflow: hidden;
+    }
+
+    #app:fullscreen {
+      width: 100vw;
+      height: 100vh;
+      max-width: none;
+      background: var(--void);
+      padding: 0;
+      margin: 0;
+      justify-content: center;
+    }
+
+    #viewport {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      border: none;
+    }
+
+    #stage {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1600px;
+      height: 900px;
+      transform-origin: 0 0;
+      overflow: hidden;
+      background:
+        radial-gradient(950px 650px at 92% 8%, rgba(2, 132, 199, 0.16) 0%, rgba(29, 78, 216, 0.04) 50%, transparent 75%),
+        radial-gradient(850px 600px at 6% 92%, rgba(234, 88, 12, 0.14) 0%, rgba(194, 65, 12, 0.03) 50%, transparent 75%),
+        linear-gradient(to right, rgba(15, 23, 42, 0.03) 1px, transparent 1px) 0 0 / 64px 64px,
+        linear-gradient(to bottom, rgba(15, 23, 42, 0.03) 1px, transparent 1px) 0 0 / 64px 64px,
+        radial-gradient(circle at 50% 40%, #FFFFFF 30%, #F8FAFC 100%);
+      background-blend-mode: normal;
+      box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(15, 23, 42, 0.06);
+    }
+
+    #stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(1300px 800px at 50% 50%, transparent 60%, rgba(241, 245, 249, 0.5));
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .cross {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      z-index: 2;
+      pointer-events: none
+    }
+
+    .cross::before,
+    .cross::after {
+      content: "";
+      position: absolute;
+      background: var(--line-2)
+    }
+
+    .cross::before {
+      left: 8px;
+      top: 0;
+      width: 1px;
+      height: 18px
+    }
+
+    .cross::after {
+      top: 8px;
+      left: 0;
+      height: 1px;
+      width: 18px
+    }
+
+    /* ---------- scenes ---------- */
+    .scene {
+      position: absolute;
+      inset: 0;
+      padding: 76px 100px 72px;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .5s ease, visibility 0s linear .5s;
+      z-index: 1
+    }
+
+    .scene.active {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity .5s ease;
+      z-index: 10;
+    }
+
+    .chrome {
+      position: absolute;
+      top: 28px;
+      left: 100px;
+      right: 100px;
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--mono);
+      font-weight: 500;
+      font-size: 16px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--dim)
+    }
+
+    .chrome .sec {
+      background: var(--blue-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .chrome b {
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .eyebrow {
+      font-family: var(--mono);
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      background: var(--blue-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0 0 14px;
+      display: inline-block;
+    }
+
+    .eyebrow.o {
+      background: var(--orange-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: var(--display);
+      text-transform: uppercase;
+      margin: 0;
+      text-wrap: balance;
+      line-height: 1.08;
+      background: var(--dark-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    h1 {
+      font-size: 66px;
+      font-weight: 850;
+      letter-spacing: -.02em;
+    }
+
+    h2 {
+      font-size: 52px;
+      font-weight: 800;
+      letter-spacing: -.015em;
+    }
+
+    h3 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: .01em;
+    }
+
+    p {
+      margin: 0;
+      font-weight: 400;
+    }
+
+    .lead {
+      font-size: 28px;
+      line-height: 1.42;
+      color: var(--muted);
+      font-weight: 400;
+      max-width: 48ch;
+    }
+
+    .lead strong,
+    .txt strong {
+      background: var(--dark-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      -webkit-box-decoration-break: clone;
+      box-decoration-break: clone;
+      font-weight: 700;
+      display: inline;
+    }
+
+    .txt {
+      font-size: 23px;
+      line-height: 1.46;
+      font-weight: 400;
+      color: var(--muted);
+    }
+
+    .mono {
+      font-family: var(--mono);
+      font-weight: 300;
+    }
+
+    .hl {
+      background: var(--orange-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline;
+    }
+
+    .bl {
+      background: var(--blue-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline;
+    }
+
+    .dl {
+      background: var(--dark-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline;
+    }
+
+    [style*="color:var(--student)"],
+    [style*="color: var(--student)"] {
+      -webkit-text-fill-color: var(--student);
+    }
+
+    [style*="color:var(--dim)"],
+    [style*="color: var(--dim)"] {
+      -webkit-text-fill-color: var(--dim);
+    }
+
+    .big {
+      font-family: var(--display);
+      font-stretch: 125%;
+      font-weight: 850;
+      font-size: 82px;
+      line-height: 1;
+      letter-spacing: -.01em;
+      background: var(--dark-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .big span {
+      -webkit-text-fill-color: initial;
+    }
+
+    .big .count {
+      background: var(--dark-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .math {
+      font-family: var(--math);
+      font-style: italic;
+      letter-spacing: .02em
+    }
+
+    .math .up {
+      font-style: normal
+    }
+
+    .eq {
+      font-family: var(--math);
+      font-size: 30px;
+      color: var(--fg);
+      padding: 16px 26px;
+      border-left: 4px solid var(--blue);
+      background: linear-gradient(90deg, rgba(2, 132, 199, 0.10) 0%, rgba(2, 132, 199, 0.02) 70%, transparent);
+      white-space: nowrap;
+      border-radius: 0 6px 6px 0;
+    }
+
+    .eq.o {
+      border-left-color: var(--orange);
+      background: linear-gradient(90deg, rgba(234, 88, 12, 0.10) 0%, rgba(234, 88, 12, 0.02) 70%, transparent);
+    }
+
+    .eq i {
+      font-style: italic
+    }
+
+    .eq small {
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 14px;
+      color: var(--dim);
+      letter-spacing: .08em;
+      display: block;
+      margin-top: 6px;
+      font-style: normal
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-weight: 500;
+      font-size: 15px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      padding: 7px 15px;
+      border: 1px solid var(--line-2);
+      color: var(--muted);
+      border-radius: 6px;
+    }
+
+    .tag.o {
+      border-color: rgba(234, 88, 12, .35);
+      background: linear-gradient(135deg, rgba(251, 146, 60, .14) 0%, rgba(234, 88, 12, .06) 100%);
+      color: var(--orange-dark);
+      font-weight: 600;
+    }
+
+    .tag.b {
+      border-color: rgba(2, 132, 199, .35);
+      background: linear-gradient(135deg, rgba(56, 189, 248, .14) 0%, rgba(2, 132, 199, .06) 100%);
+      color: var(--blue-dark);
+      font-weight: 600;
+    }
+
+    /* citation footer, LEMMiNO-style */
+    .cite {
+      position: absolute;
+      left: 100px;
+      right: 100px;
+      bottom: 24px;
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      font-family: var(--mono);
+      font-weight: 400;
+      font-size: 15px;
+      color: var(--dim);
+      letter-spacing: .02em;
+      line-height: 1.5
+    }
+
+    .cite::before {
+      content: "";
+      flex: none;
+      width: 34px;
+      height: 1px;
+      background: var(--blue);
+      transform: translateY(-4px)
+    }
+
+    .cite .k {
+      flex: none;
+      color: var(--muted);
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      font-size: 13px
+    }
+
+    .cite em {
+      font-style: italic
+    }
+
+    /* ---------- beats ---------- */
+    .b {
+      opacity: 0;
+      transition: opacity .7s ease, transform .9s cubic-bezier(.2, .75, .1, 1)
+    }
+
+    .b.up {
+      transform: translateY(26px)
+    }
+
+    .b.left {
+      transform: translateX(-30px)
+    }
+
+    .b.right {
+      transform: translateX(30px)
+    }
+
+    .b.pop {
+      transform: scale(.86)
+    }
+
+    .b.on {
+      opacity: 1;
+      transform: none
+    }
+
+    .b.grow {
+      opacity: 1;
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform 1.1s cubic-bezier(.6, 0, .2, 1)
+    }
+
+    .b.grow.on {
+      transform: scaleX(1)
+    }
+
+    .b.growy {
+      opacity: 1;
+      transform: scaleY(0);
+      transform-origin: center bottom;
+      transform-box: fill-box;
+      transition: transform 1s cubic-bezier(.6, 0, .2, 1)
+    }
+
+    .b.growy.on {
+      transform: scaleY(1)
+    }
+
+    .b.draw {
+      opacity: 1;
+      stroke-dasharray: var(--len, 3000);
+      stroke-dashoffset: var(--len, 3000);
+      transition: stroke-dashoffset 1.5s cubic-bezier(.6, 0, .2, 1)
+    }
+
+    .b.draw.on {
+      stroke-dashoffset: 0
+    }
+
+    svg .b {
+      transform-box: fill-box;
+      transform-origin: center
+    }
+
+    .scene.reset .b,
+    .scene.reset .b * {
+      transition: none !important
+    }
+
+    /* pass-cell bars */
+    .cells {
+      display: flex;
+      gap: 4px;
+      align-items: center
+    }
+
+    .cells i {
+      display: block;
+      width: 22px;
+      height: 34px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .35s ease, transform .35s ease;
+      transition-delay: calc(var(--i)*45ms)
+    }
+
+    .cells.on i {
+      opacity: 1;
+      transform: none
+    }
+
+    .cells i.t {
+      background: var(--blue-grad);
+      box-shadow: 0 0 8px rgba(2, 132, 199, .25);
+      border-radius: 2px;
+    }
+
+    .cells i.s {
+      background: linear-gradient(135deg, #CBD5E1 0%, #94A3B8 100%);
+      border-radius: 2px;
+    }
+
+    .cells i.v {
+      background: repeating-linear-gradient(135deg, #EA580C 0 3px, transparent 3px 8px);
+      outline: 1px solid #FB923C;
+      outline-offset: -1px;
+      border-radius: 2px;
+    }
+
+    .cells.sm i {
+      width: 16px;
+      height: 26px
+    }
+
+
+    /* ---------- grid helpers ---------- */
+    .two {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 56px;
+      flex: 1;
+      min-height: 0;
+      margin-top: 34px
+    }
+
+    .two.wide-r {
+      grid-template-columns: .85fr 1.15fr
+    }
+
+    .two.wide-l {
+      grid-template-columns: 1.2fr .8fr
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      min-width: 0
+    }
+
+    .panel {
+      border: 1px solid var(--line-2);
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(16px);
+      padding: 26px 30px;
+      position: relative;
+      box-shadow: 0 10px 30px -8px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+      border-radius: 8px;
+    }
+
+    .panel .ph {
+      font-family: var(--mono);
+      font-weight: 600;
+      font-size: 14.5px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 14px;
+    }
+
+
+    /* ---------- controls ---------- */
+    .timeline {
+      display: flex;
+      gap: 3px;
+      height: 22px;
+      align-items: center
+    }
+
+    .seg {
+      flex: 1;
+      height: 4px;
+      background: rgba(15, 23, 42, .08);
+      position: relative;
+      cursor: pointer;
+      border: 0;
+      padding: 0;
+      border-radius: 2px;
+      transition: background .2s ease;
+    }
+
+    .seg:hover {
+      background: rgba(2, 132, 199, .35);
+    }
+
+    .seg.done {
+      background: var(--blue);
+    }
+
+    .seg.cur {
+      background: rgba(15, 23, 42, .14);
+    }
+
+    .seg .f {
+      position: absolute;
+      inset: 0;
+      background: var(--orange-grad);
+      border-radius: 2px;
+      transform: scaleX(0);
+      transform-origin: left
+    }
+
+    .seg.cur.done .f {
+      transform: scaleX(1)
+    }
+
+    .seg.ch {
+      margin-left: 10px
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .cgroup {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap
+    }
+
+    .btn {
+      background: #FFFFFF;
+      border: 1px solid var(--line-2);
+      color: var(--fg);
+      font-family: var(--mono);
+      font-weight: 400;
+      font-size: 13px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      padding: 9px 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 38px;
+      border-radius: 3px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+      transition: all .2s ease;
+    }
+
+    .btn:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.15);
+    }
+
+    .btn.pri {
+      background: var(--orange-grad);
+      border-color: transparent;
+      color: #FFFFFF;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(234, 88, 12, 0.25);
+    }
+
+    .btn.pri:hover {
+      background: linear-gradient(135deg, #FB923C 0%, #EA580C 100%);
+      box-shadow: 0 4px 12px rgba(234, 88, 12, 0.35);
+    }
+
+    .btn[aria-pressed="true"] {
+      border-color: var(--blue);
+      color: var(--blue)
+    }
+
+    .counter {
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 14px;
+      color: var(--muted);
+      letter-spacing: .08em;
+      min-width: 0
+    }
+
+    .counter b {
+      color: var(--fg);
+      font-weight: 500
+    }
+
+    .chips .btn {
+      padding: 9px 11px
+    }
+
+    .kbd {
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 12px;
+      color: var(--dim);
+      letter-spacing: .06em
+    }
+
+    #scriptPanel {
+      border: 1px solid var(--line);
+      background: #FFFFFF;
+      padding: 18px 22px;
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 20px;
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+    }
+
+    #scriptPanel .sh {
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 13px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--orange);
+      line-height: 1.6
+    }
+
+    #scriptPanel .sh span {
+      display: block;
+      color: var(--dim)
+    }
+
+    #scriptText {
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--fg);
+      max-width: 80ch;
+      margin: 0
+    }
+
+    #full {
+      position: fixed;
+      inset: 0;
+      background: rgba(248, 250, 252, .96);
+      backdrop-filter: blur(20px);
+      z-index: 50;
+      overflow: auto;
+      padding-block: max(24px, env(safe-area-inset-top, 0px)) 40px;
+      padding-left: max(16px, env(safe-area-inset-left, 0px));
+      padding-right: max(16px, env(safe-area-inset-right, 0px))
+    }
+
+    #full .in {
+      max-width: 860px;
+      margin: 0 auto
+    }
+
+    #full header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      background: rgba(255, 255, 255, .95);
+      backdrop-filter: blur(12px);
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line-2);
+      z-index: 1
+    }
+
+    #full h2 {
+      font-size: 30px
+    }
+
+    #full article {
+      border-bottom: 1px solid var(--line);
+      padding: 22px 0
+    }
+
+    #full article .meta {
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 13px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--dim);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px
+    }
+
+    #full article h3 {
+      font-size: 22px;
+      margin: 8px 0 10px
+    }
+
+    #full article p {
+      font-size: 17.5px;
+      line-height: 1.65;
+      color: var(--muted)
+    }
+
+    #fullText {
+      white-space: pre-wrap
+    }
+
+    @media (max-width:700px) {
+      #scriptPanel {
+        grid-template-columns: 1fr
+      }
+
+      .kbd {
+        display: none
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+
+      .b,
+      .cells i {
+        transition: none !important
+      }
+
+      .axis .seg-t,
+      .axis .seg-s,
+      .axis .mk {
+        animation: none
+      }
+    }
+
+    @media print {
+      @page {
+        size: 1600px 900px;
+        margin: 0;
+      }
+
+      *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        animation: none !important;
+        transition: none !important;
+      }
+
+      html,
+      body {
+        width: 1600px !important;
+        height: auto !important;
+        min-height: 900px !important;
+        overflow: visible !important;
+        background: #F8FAFC !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      #app,
+      #viewport {
+        display: block !important;
+        position: static !important;
+        width: 1600px !important;
+        height: auto !important;
+        overflow: visible !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      #stage {
+        display: block !important;
+        position: static !important;
+        width: 1600px !important;
+        height: auto !important;
+        overflow: visible !important;
+        transform: none !important;
+        left: 0 !important;
+        top: 0 !important;
+        box-shadow: none !important;
+        background: none !important;
+      }
+
+      #stage::before,
+      .cross,
+      #full {
+        display: none !important;
+      }
+
+      .scene {
+        position: relative !important;
+        width: 1600px !important;
+        height: 900px !important;
+        min-height: 900px !important;
+        max-height: 900px !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        overflow: hidden !important;
+        margin: 0 !important;
+        padding: 76px 100px 72px !important;
+        background:
+          radial-gradient(950px 650px at 92% 8%, rgba(2, 132, 199, 0.16) 0%, rgba(29, 78, 216, 0.04) 50%, transparent 75%),
+          radial-gradient(850px 600px at 6% 92%, rgba(234, 88, 12, 0.14) 0%, rgba(194, 65, 12, 0.03) 50%, transparent 75%),
+          linear-gradient(to right, rgba(15, 23, 42, 0.03) 1px, transparent 1px) 0 0 / 64px 64px,
+          linear-gradient(to bottom, rgba(15, 23, 42, 0.03) 1px, transparent 1px) 0 0 / 64px 64px,
+          radial-gradient(circle at 50% 40%, #FFFFFF 30%, #F8FAFC 100%) !important;
+      }
+
+      .scene:last-child {
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+      }
+
+      .s-title {
+        padding: 55px 100px 50px !important;
+      }
+
+      .b {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+      }
+
+      .b.up,
+      .b.left,
+      .b.right,
+      .b.pop,
+      .b.fade {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+
+      .b.grow,
+      .b.grow.on {
+        opacity: 1 !important;
+        transform: scaleX(1) !important;
+      }
+
+      .b.growy,
+      .b.growy.on {
+        opacity: 1 !important;
+        transform: scaleY(1) !important;
+      }
+
+      .cells i,
+      .cells.on i {
+        transform: scaleY(1) !important;
+      }
+
+      .draw,
+      .draw.on {
+        stroke-dashoffset: 0 !important;
+      }
+
+      svg .b {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+    }
+
+    /* ---------- SLIDE_STYLES ---------- */
+    /* SLIDE_STYLES */
+  </style>
+</head>
+
+<body>
+
+  <div id="app">
+    <div id="viewport">
+      <div id="stage">
+        <i class="cross" style="left:24px;top:24px"></i><i class="cross" style="right:24px;top:24px"></i>
+        <i class="cross" style="left:24px;bottom:24px"></i><i class="cross" style="right:24px;bottom:24px"></i>
+
+        <!-- SLIDES -->
+
+      </div>
+    </div>
+  </div>
+
+  <div id="full" hidden>
+    <div class="in">
+      <header>
+        <h2>Presenter script</h2>
+        <div class="cgroup"><button class="btn" id="copyBtn">Copy all</button><button class="btn pri"
+            id="closeFull">Close</button></div>
+      </header>
+      <div id="fullList"></div>
+    </div>
+  </div>
+
+  <script>
+    const SCRIPT = [
+      <!-- SLIDE_SCRIPTS -->
+    ];
+
+
+    const CH = { 0: "Proposal", 1: "Chapter I · Introduction", 2: "Chapter II · Review of related literature", 3: "Chapter III · Methodology" };
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const stage = document.getElementById('stage');
+    const vp = document.getElementById('viewport');
+    const scenes = [...stage.querySelectorAll('.scene')];
+    let cur = 0, timers = [], playing = false, playTimer = null, pending = 0;
+
+    /* ---- build pass-cell bars ---- */
+    document.querySelectorAll('.cells').forEach(el => {
+      const t = +el.dataset.teacher || 0, s = +el.dataset.student || 0, v = +el.dataset.saved || 0; let i = 0, h = '';
+      for (let k = 0; k < t; k++) h += `<i class="t" style="--i:${i++}"></i>`;
+      for (let k = 0; k < s; k++) h += `<i class="s" style="--i:${i++}"></i>`;
+      for (let k = 0; k < v; k++) h += `<i class="v" style="--i:${i++}"></i>`;
+      el.innerHTML = h;
+    });
+
+    /* ---- chrome per scene ---- */
+    scenes.forEach((s, i) => {
+      const c = document.createElement('div'); c.className = 'chrome';
+      const sec = s.dataset.sec ? `<span class="sec">${s.dataset.sec}</span> · ` : '';
+      c.innerHTML = `<span>${sec}${CH[s.dataset.ch]}</span><b>${String(i + 1).padStart(2, '0')} / ${scenes.length}</b>`;
+      s.prepend(c);
+    });
+
+    /* ---- SVG builders ---- */
+    const NS = 'http://www.w3.org/2000/svg';
+    function el(tag, attrs, parent, text) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; parent.appendChild(e); return e; }
+    (function buildSway() {
+      const svg = document.getElementById('swaySvg'); if (!svg) return;
+      const X = u => 110 + u * 580, Y = t => 580 - t * 520, tt = u => 1 - Math.cos(Math.PI / 2 * u);
+      for (let g = 0; g <= 4; g++) { el('line', { class: 'gridl', x1: 110, x2: 690, y1: Y(g / 4), y2: Y(g / 4) }, svg); }
+      el('line', { class: 'ax', x1: 110, x2: 690, y1: 580, y2: 580 }, svg); el('line', { class: 'ax', x1: 110, x2: 110, y1: 60, y2: 580 }, svg);
+      el('text', { class: 'tick', x: 400, y: 620, 'text-anchor': 'middle' }, svg, 'grid position u = i / 16');
+      el('text', { class: 'tick', x: 96, y: Y(0) + 5, 'text-anchor': 'end' }, svg, '0');
+      el('text', { class: 'tick', x: 96, y: Y(.5) + 5, 'text-anchor': 'end' }, svg, '0.5');
+      el('text', { class: 'tick', x: 96, y: Y(1) + 5, 'text-anchor': 'end' }, svg, '1');
+      el('text', { class: 'tick', x: 30, y: 320, transform: 'rotate(-90 30 320)', 'text-anchor': 'middle' }, svg, 'flow time t');
+      el('rect', { class: 'b fade', 'data-t': 900, x: 110, y: Y(.25), width: 580, height: 580 - Y(.25), fill: 'rgba(2,132,199,.08)' }, svg);
+      el('line', { class: 'b fade', 'data-t': 900, x1: 110, x2: 690, y1: Y(.25), y2: Y(.25), stroke: 'var(--muted)', 'stroke-dasharray': '6 6' }, svg);
+      el('text', { class: 'b fade', 'data-t': 900, x: 686, y: Y(.25) - 10, 'text-anchor': 'end', fill: 'var(--muted)', 'font-size': 15 }, svg, 'switching argument s = 0.25');
+      let d = ''; for (let k = 0; k <= 100; k++) { const u = k / 100; d += (k ? 'L' : 'M') + X(u).toFixed(1) + ' ' + Y(tt(u)).toFixed(1); }
+      el('path', { class: 'b draw', 'data-t': 700, d, stroke: 'var(--blue)', 'stroke-width': 2.5, fill: 'none' }, svg);
+      const cand = { 4: 13, 5: 15, 6: 17, 8: 21 };
+      for (let i = 0; i <= 16; i++) {
+        const u = i / 16, c = cand[i];
+        el('circle', { class: 'b pop', 'data-t': 1300 + i * 70, cx: X(u), cy: Y(tt(u)), r: c ? 8 : 4.5, fill: c ? (i === 8 ? 'var(--fg)' : 'var(--orange)') : 'var(--blue)' }, svg);
+      }
+      const labs = [[4, 'step 4 · 13'], [5, 'step 5 · 15'], [6, 'step 6 · 17'], [8, 'step 8 · 21  reference']];
+      labs.forEach(([i, txt], n) => {
+        const u = i / 16, y = Y(tt(u));
+        const ly = [y + 34, y + 12, y - 12, y - 34][n];
+        el('line', { class: 'b fade', 'data-t': 2700 + n * 150, x1: X(u) + 10, y1: y, x2: X(u) + 60, y2: ly, stroke: 'var(--line-2)' }, svg);
+        el('text', { class: 'b fade', 'data-t': 2700 + n * 150, x: X(u) + 66, y: ly + 5, fill: i === 8 ? 'var(--fg)' : 'var(--orange)', 'font-size': 16 }, svg, txt);
+      });
+      el('text', { class: 'b fade', 'data-t': 2000, x: X(.07), y: Y(.62), fill: 'var(--dim)', 'font-size': 15 }, svg, 'half the 16 steps fall below t ≈ 0.29');
+    })();
+
+    (function buildDrift() {
+      const svg = document.getElementById('driftSvg'); if (!svg) return;
+      const X = i => 80 + (i - 1) * 95, Y = d => 340 - d * 250;
+      [4, 5, 6].forEach(i => el('rect', { class: 'b fade', 'data-t': 1200, x: X(i) - 30, y: 40, width: 60, height: 300, fill: 'rgba(234,88,12,.08)' }, svg));
+      el('rect', { class: 'b fade', 'data-t': 1200, x: X(8) - 30, y: 40, width: 60, height: 300, fill: 'rgba(15,23,42,.05)' }, svg);
+      el('line', { class: 'ax', x1: 50, x2: 790, y1: 340, y2: 340 }, svg);
+      for (let i = 1; i <= 8; i++) el('text', { class: 'tick', x: X(i), y: 368, 'text-anchor': 'middle' }, svg, i);
+      el('text', { class: 'tick', x: 790, y: 394, 'text-anchor': 'end', 'font-size': 14 }, svg, 'teacher step i  ·  shaded = candidates (4, 5, 6) and reference (8)');
+      el('line', { class: 'b fade', 'data-t': 1600, x1: 50, x2: 790, y1: Y(.5), y2: Y(.5), stroke: 'var(--fg)', 'stroke-dasharray': '6 5', 'stroke-width': 1.5 }, svg);
+      el('text', { class: 'b fade', 'data-t': 1600, x: 56, y: Y(.5) - 10, fill: 'var(--fg)', 'font-size': 15 }, svg, 'λ = 0.50');
+      const easy = [1.0, .95, .80, .675, .154, .10, .07, .05], hard = [1.15, 1.05, .95, .88, .80, .72, .66, .60];
+      const path = a => a.map((d, k) => (k ? 'L' : 'M') + X(k + 1) + ' ' + Y(Math.min(d, 1.18))).join(' ');
+      el('path', { class: 'b draw', 'data-t': 2000, d: path(hard), stroke: 'var(--student)', 'stroke-width': 2.5, fill: 'none' }, svg);
+      el('path', { class: 'b draw', 'data-t': 2400, d: path(easy.slice(0, 5)), stroke: 'var(--blue)', 'stroke-width': 3, fill: 'none' }, svg);
+      el('text', { class: 'b fade', 'data-t': 2600, x: X(2) + 12, y: 34, fill: 'var(--student)', 'font-size': 15 }, svg, 'hard input · never settles → reference, 21 passes');
+      el('circle', { class: 'b pop', 'data-t': 3600, cx: X(5), cy: Y(.154), r: 10, fill: 'var(--orange)' }, svg);
+      el('text', { class: 'b fade', 'data-t': 3700, x: X(5) + 18, y: Y(.154) + 5, fill: 'var(--orange)', 'font-size': 16 }, svg, 'easy: stops at step 5 · 15 passes');
+    })();
+
+    /* draw lengths */
+    document.querySelectorAll('.draw').forEach(p => { try { p.style.setProperty('--len', Math.ceil(p.getTotalLength()) + 2) } catch (e) { } });
+
+    /* ---- flow canvas ---- */
+    const flow = (function () {
+      const cv = document.getElementById('flowCanvas'); if (!cv) return { start() { }, stop() { } };
+      const ctx = cv.getContext('2d'), W = cv.width, H = cv.height, N = 1100;
+      const P = []; const rnd = () => { let u = 0, v = 0; while (!u) u = Math.random(); while (!v) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+      for (let k = 0; k < N; k++) {
+        const fx = Math.random(); const h = 1 + Math.floor(Math.random() * 7);
+        const f0 = 0.07 + 0.025 * Math.sin(fx * 9) + 0.015 * Math.sin(fx * 23);
+        const env = Math.exp(-((h - 2.5) ** 2) / 6);
+        const on = Math.sin(fx * 31) > -0.55;
+        const tx = W * (0.08 + 0.84 * fx), ty = H * (0.9 - Math.min(0.82, f0 * h * 1.45)) + rnd() * 4;
+        P.push({ x0: W * .5 + rnd() * W * .2, y0: H * .5 + rnd() * H * .2, x1: tx, y1: ty, a: on ? 0.35 + 0.6 * env : 0.12 });
+      }
+      const grid = [...Array(17)].map((_, i) => 1 - Math.cos(Math.PI / 2 * i / 16));
+      let raf = null, t0 = 0; const tRead = document.getElementById('tRead');
+      function frame(now) {
+        if (!t0) t0 = now; const cyc = 6800, e = (now - t0) % cyc; const stepMs = 300;
+        let t; if (e < 600) t = 0; else if (e < 600 + 16 * stepMs) { const s = (e - 600) / stepMs, i = Math.floor(s), f = s - i, ease = f < .7 ? (f / .7) ** 2 * (3 - 2 * f / .7) : 1; t = grid[i] + (grid[Math.min(16, i + 1)] - grid[i]) * ease; } else t = 1;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.32)'; ctx.fillRect(0, 0, W, H);
+        const teacher = t <= 0.2929;
+        for (const p of P) {
+          const x = (1 - t) * p.x0 + t * p.x1, y = (1 - t) * p.y0 + t * p.y1;
+          ctx.fillStyle = teacher ? `rgba(2, 132, 199, ${p.a})` : `rgba(100, 116, 139, ${p.a})`; ctx.fillRect(x, y, 5, 5);
+        }
+        tRead.textContent = t.toFixed(3); tRead.style.color = teacher ? 'var(--blue)' : 'var(--student)';
+        raf = requestAnimationFrame(frame);
+      }
+      return {
+        start() { if (raf || reduced) { if (reduced) { ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, W, H); for (const p of P) { ctx.fillStyle = `rgba(100, 116, 139, ${p.a})`; ctx.fillRect(p.x1, p.y1, 5, 5); } } return; } t0 = 0; ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, W, H); raf = requestAnimationFrame(frame); },
+        stop() { if (raf) cancelAnimationFrame(raf); raf = null; },
+        snapshot() {
+          if (raf) cancelAnimationFrame(raf);
+          raf = null;
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, W, H);
+          for (const p of P) {
+            ctx.fillStyle = `rgba(100, 116, 139, ${p.a})`;
+            ctx.fillRect(p.x1, p.y1, 5, 5);
+          }
+          if (tRead) {
+            tRead.textContent = '0.293';
+            tRead.style.color = 'var(--blue)';
+          }
+        }
+      };
+    })();
+
+    /* SLIDE_EXTRA_JS */
+
+    /* ---- counters ---- */
+    function runCount(e) {
+      const from = +e.dataset.from || 0, to = +e.dataset.to, dur = reduced ? 0 : 1300, st = performance.now();
+      function tick(n) { const k = dur ? Math.min(1, (n - st) / dur) : 1, v = Math.round(from + (to - from) * (1 - (1 - k) ** 3)); e.textContent = v; if (k < 1) requestAnimationFrame(tick); }
+      requestAnimationFrame(tick);
+    }
+    function fire(b) { if (b.classList.contains('on')) return; b.classList.add('on'); pending--; b.querySelectorAll('.count').forEach(runCount); }
+
+    function updateUI() {
+      try { history.replaceState(null, '', '#s' + (cur + 1)); } catch (e) { }
+    }
+    function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+    function enter(i) {
+      clearTimers(); clearTimeout(playTimer);
+      const prev = scenes[cur]; if (prev && prev.dataset.hook === 'flow' && i !== cur) flow.stop();
+      cur = Math.max(0, Math.min(scenes.length - 1, i));
+      const s = scenes[cur];
+      scenes.forEach(x => x.classList.toggle('active', x === s));
+      s.classList.add('reset');
+      const beats = [...s.querySelectorAll('.b')]; beats.forEach(b => b.classList.remove('on'));
+      s.querySelectorAll('.count').forEach(c => c.textContent = c.dataset.from || 0);
+      void s.offsetWidth; s.classList.remove('reset');
+      pending = beats.length;
+      beats.forEach(b => { const t = reduced ? 0 : (+b.dataset.t || 0); timers.push(setTimeout(() => fire(b), t + 120)); });
+      if (s.dataset.hook === 'flow') flow.start();
+      updateUI();
+      if (playing) { playTimer = setTimeout(() => { if (cur < scenes.length - 1) enter(cur + 1); else { playing = false; updateUI(); } }, (+s.dataset.dur) * 1000); }
+    }
+    function go(i) { enter(i); }
+    function complete() {
+      clearTimers();
+      if (scenes[cur]) {
+        scenes[cur].querySelectorAll('.b').forEach(b => {
+          b.classList.add('on');
+          b.querySelectorAll('.count').forEach(runCount);
+        });
+      }
+      pending = 0;
+    }
+
+    function next() {
+      const uncompleted = scenes[cur] ? scenes[cur].querySelectorAll('.b:not(.on)') : [];
+      if (!playing && uncompleted.length > 0) {
+        complete();
+        return;
+      }
+      if (cur < scenes.length - 1) {
+        enter(cur + 1);
+      } else {
+        enter(0);
+      }
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.target.closest && e.target.closest('input,textarea')) return;
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+        e.preventDefault();
+        next();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prev();
+      } else if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        if (document.fullscreenElement) document.exitFullscreen().catch(() => { });
+        else document.documentElement.requestFullscreen().catch(() => { });
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        go(0);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        go(scenes.length - 1);
+      } else if (e.key === 's' || e.key === 'S') {
+        const full = document.getElementById('full');
+        if (full) full.hidden = !full.hidden;
+      } else if (e.key === 'Escape') {
+        const full = document.getElementById('full');
+        if (full && !full.hidden) full.hidden = true;
+      } else if (e.key === '1') {
+        go(1); // Outline
+      } else if (e.key === '2') {
+        go(2); // Ch I
+      } else if (e.key === '3') {
+        go(7); // Ch II
+      } else if (e.key === '4') {
+        go(12); // Ch III
+      }
+    });
+
+    const full = document.getElementById('full');
+    if (full) {
+      document.getElementById('fullList').innerHTML = scenes.map((s, i) => `<article><div class="meta"><span>Scene ${String(i + 1).padStart(2, '0')} · ${CH[s.dataset.ch]}</span><span>~${s.dataset.dur}s</span></div><h3>${s.dataset.title}</h3><p>${SCRIPT[i]}</p></article>`).join('');
+      document.getElementById('closeFull')?.addEventListener('click', () => { full.hidden = true; });
+      document.getElementById('copyBtn')?.addEventListener('click', async (e) => {
+        const txt = scenes.map((s, i) => `SCENE ${i + 1} — ${s.dataset.title} (~${s.dataset.dur}s)\n${SCRIPT[i]}`).join('\n\n');
+        try { await navigator.clipboard.writeText(txt); e.target.textContent = 'Copied'; }
+        catch (err) { }
+        setTimeout(() => e.target.textContent = 'Copy all', 2200);
+      });
+    }
+
+    document.addEventListener('click', e => {
+      if (e.target.closest('#full, button, input, textarea, a')) return;
+      next();
+    });
+
+    /* ---- fit stage to full viewport ---- */
+    function fit() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const sc = Math.min(w / 1600, h / 900);
+      stage.style.transform = `scale(${sc})`;
+      stage.style.left = ((w - 1600 * sc) / 2) + 'px';
+      stage.style.top = ((h - 900 * sc) / 2) + 'px';
+      vp.style.width = w + 'px';
+      vp.style.height = h + 'px';
+    }
+    window.addEventListener('resize', fit);
+    document.addEventListener('fullscreenchange', fit);
+    /* ---- print preparation ---- */
+    function prepareForPrint() {
+      if (typeof flow !== 'undefined' && flow.snapshot) flow.snapshot();
+      document.querySelectorAll('.b').forEach(b => b.classList.add('on'));
+      document.querySelectorAll('.count').forEach(c => {
+        if (c.dataset.to !== undefined) c.textContent = c.dataset.to;
+      });
+      document.querySelectorAll('.draw').forEach(p => {
+        try { p.style.strokeDashoffset = '0'; } catch (e) {}
+      });
+    }
+    window.prepareForPrint = prepareForPrint;
+    window.addEventListener('beforeprint', prepareForPrint);
+
+    fit();
+    const m = /^#s(\d+)$/.exec(location.hash); enter(m ? (+m[1] - 1) : 0);
+  </script>
+</body>
+
+</html>
