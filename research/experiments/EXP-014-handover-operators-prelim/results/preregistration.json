@@ -1,0 +1,75 @@
+{
+  "purpose": "Preliminary development test of three zero-cost Step-4 handover operators: Teacher-Coupled Restart, coherence-gated DEH, Speech-Envelope Anchoring",
+  "operators": {
+    "tcr": "first student input = teacher state x(t_4) (tau_1 = t_4)",
+    "cdeh": "x1hat(t_4) + S(rho, 4) Delta_4 if cos(Delta_4, Delta_3) >= 0.2, else x1hat(t_4)",
+    "sea": "generated frames + 0.5 * (mu_prompt - mu_gen), per band, means over the louder half of the frames"
+  },
+  "n_speakers": 60,
+  "conditions": [
+    "clean",
+    "noisy15",
+    "gauss18",
+    "gauss20",
+    "gauss22",
+    "gauss25"
+  ],
+  "theta_db": 20.0,
+  "alpha": 0.05,
+  "delta": 0.1,
+  "folds": 5,
+  "seed": 2026,
+  "grids": {
+    "theta": [
+      40.0,
+      39.0,
+      38.0,
+      37.0,
+      36.0,
+      35.0,
+      34.0,
+      33.0,
+      32.0,
+      31.0,
+      30.0,
+      29.0,
+      28.0,
+      27.0,
+      26.0,
+      25.0,
+      24.0,
+      23.0,
+      22.0,
+      21.0,
+      20.0
+    ]
+  },
+  "policies": [
+    "reference",
+    "snr_only",
+    "snr_theta",
+    "tcr_theta",
+    "tcr_all",
+    "cdeh_theta",
+    "cdeh_all",
+    "sea_theta",
+    "sea_all"
+  ],
+  "primary_test": "each operator vs plain Step 4 on the noisy conditions pooled (exact McNemar, two-sided)",
+  "criteria": [
+    "C1 noisy Step-4 failures drop by at least 25% with p < 0.05",
+    "C2 clean Step-4 failures rise by at most 1",
+    "C3 pooled out-of-fold <op>_theta: lower mean NFE than snr_theta with no more failures"
+  ],
+  "selection_rule": "the operator passing the most criteria; ties broken by the lower pooled <op>_theta mean NFE",
+  "input_hashes": {
+    "research/evidence/benchmarks/gpu_grid_all1000.csv": "249191ec8b8454d10451185760b3b834c9f673bcfa866ce9b116770a8b4febd3",
+    "research/experiments/EXP-011-followup-t4/results/pilot/pilot_grid.csv": "4218fee03f945d7bde809165947a6c5067c872cb6418a8500945bc65bf39b7d2",
+    "research/experiments/EXP-012-consistency-gate-prelim/results/labels_new.csv": "98b91288c4bb75528a0f4d66dea0904ea93c055c3b1f0c1510ed9dd638c12882",
+    "code/colab/run_handover_operators_prelim.py": "d024f160e174e55428edb3fcb53e84d01929a1bdaebfd11e64ef0776a1028ae2"
+  },
+  "thesis_commit": "8614bf7b250b76024bb9838154ebe6ff6cad1d6f",
+  "dmo_commit": "8a7868fc3345702a586173447f4869205b501f26",
+  "sha256": "2a5d8ca27633b3dce3a975e967ef1de115eb4ffb0e669f2920cba0b9f585b9ca",
+  "created_utc": "2026-10-25T16:01:53.675017+00:00"
+}

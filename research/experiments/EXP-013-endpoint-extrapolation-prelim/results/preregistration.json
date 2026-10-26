@@ -1,0 +1,98 @@
+{
+  "purpose": "Preliminary development test of Drift-Extrapolated Handover (DEH) vs the plain Step-4 handover, SNR-only, a calibrated SNR gate and the drift window",
+  "operator": "T = x1hat(t_k) + beta * S(rho, m) * Delta_k on generated frames; rho = min(||Delta_k|| / ||Delta_{k-1}||, rho_max); S = rho (1 - rho^m) / (1 - rho)",
+  "k": 4,
+  "horizon": 8,
+  "rho_max": 0.95,
+  "variants_beta": {
+    "deh": 1.0,
+    "half": 0.5
+  },
+  "n_speakers": 60,
+  "speakers": "first 60 development speakers by utterance ID (the EXP-012 Quick set)",
+  "conditions": [
+    "clean",
+    "noisy15",
+    "gauss18",
+    "gauss20",
+    "gauss22",
+    "gauss25"
+  ],
+  "theta_db": 20.0,
+  "alpha": 0.05,
+  "delta": 0.1,
+  "folds": 5,
+  "seed": 2026,
+  "grids": {
+    "theta": [
+      40.0,
+      39.0,
+      38.0,
+      37.0,
+      36.0,
+      35.0,
+      34.0,
+      33.0,
+      32.0,
+      31.0,
+      30.0,
+      29.0,
+      28.0,
+      27.0,
+      26.0,
+      25.0,
+      24.0,
+      23.0,
+      22.0,
+      21.0,
+      20.0
+    ],
+    "lam_low": [
+      0.6,
+      0.55,
+      0.5,
+      0.45,
+      0.4,
+      0.35,
+      0.3,
+      0.25,
+      0.2,
+      0.15,
+      0.1,
+      0.05
+    ]
+  },
+  "policies": [
+    "reference",
+    "snr_only",
+    "snr_theta",
+    "drift_window",
+    "deh_snr_only",
+    "deh_theta",
+    "deh_window",
+    "deh_all",
+    "half_theta",
+    "half_all"
+  ],
+  "primary_test": "deh vs plain Step 4 on the noisy conditions pooled (exact McNemar, two-sided)",
+  "criteria": [
+    "C1 noisy Step-4 failures drop by at least 25% with p < 0.05",
+    "C2 clean Step-4 failures rise by at most 1",
+    "C3 pooled out-of-fold deh_theta: lower mean NFE than snr_theta with no more failures"
+  ],
+  "reused_labels": [
+    "research/evidence/benchmarks/gpu_grid_all1000.csv",
+    "research/experiments/EXP-011-followup-t4/results/pilot/pilot_grid.csv",
+    "research/experiments/EXP-012-consistency-gate-prelim/results/labels_new.csv"
+  ],
+  "input_hashes": {
+    "research/evidence/benchmarks/gpu_grid_all1000.csv": "249191ec8b8454d10451185760b3b834c9f673bcfa866ce9b116770a8b4febd3",
+    "research/experiments/EXP-011-followup-t4/results/pilot/pilot_grid.csv": "4218fee03f945d7bde809165947a6c5067c872cb6418a8500945bc65bf39b7d2",
+    "research/experiments/EXP-012-consistency-gate-prelim/results/labels_new.csv": "98b91288c4bb75528a0f4d66dea0904ea93c055c3b1f0c1510ed9dd638c12882",
+    "code/colab/run_endpoint_extrapolation_prelim.py": "90aec6467ed881602b1e62e4938b1d3c845f5337e98b82b340b5d3d54631cafe"
+  },
+  "thesis_commit": "07639ea83efd956f0abebd82fd62da745777cfc2",
+  "dmo_commit": "8a7868fc3345702a586173447f4869205b501f26",
+  "sha256": "a53f1ebb6cfa8b5067506ca6d628f6027f5e64b18553cdf7493b89e1b87abb78",
+  "created_utc": "2026-10-25T14:18:25.930136+00:00"
+}

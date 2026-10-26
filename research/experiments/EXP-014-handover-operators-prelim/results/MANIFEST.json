@@ -1,0 +1,47 @@
+{
+  "description": "Outputs of the EXP-014 notebook run on 2026-10-25 (Colab Tesla T4): three Step-4 handover operators on the EXP-012 Quick set, plus the smoke test and its reproduction check. Byte-identical copies from the downloaded results zip; the runner copies inside the zip are not duplicated here.",
+  "source_zip": "DMOSpeech2_Handover_Operators_Results.zip",
+  "source_zip_sha256": "a61f4e0e5a1b2d3d80c7759c30c3a5fd21faa25a99be3b48f2f1f8c7a47093bb",
+  "thesis_commit_at_run": "8614bf7b250b76024bb9838154ebe6ff6cad1d6f",
+  "dmo_commit_at_run": "8a7868fc3345702a586173447f4869205b501f26",
+  "excluded": [
+    "code/*.py (copies of the runners at the thesis commit above)"
+  ],
+  "files": [
+    {
+      "file": "HANDOVER_OPERATORS_REPORT.md",
+      "bytes": 4048,
+      "sha256": "57b5671be2a0ac94a4844d4602b9e7151ce7127272ce26b2614945e9b60799e5"
+    },
+    {
+      "file": "ops.csv",
+      "bytes": 244915,
+      "sha256": "34b9c021579426d1fc674e94b72808bb031b840122399d6462d84869d3c6fd6d"
+    },
+    {
+      "file": "ops_results.json",
+      "bytes": 10805,
+      "sha256": "1457f16a15ef3d6ccb94a89c668e2e9ab2ab347765ecdf4a31a5f8a82cc68bc4"
+    },
+    {
+      "file": "preregistration.json",
+      "bytes": 2410,
+      "sha256": "35914dc35fa72f847e6170809d5100766d2fe2d1dbd2c41284f4acfc1647aa9d"
+    },
+    {
+      "file": "RUN_INFO.txt",
+      "bytes": 176,
+      "sha256": "4e1e2d96d6df2fb05128b06a67c6e8b654c332b7fdcf6b7af4b9f88a24d73445"
+    },
+    {
+      "file": "smoke/ops.csv",
+      "bytes": 3231,
+      "sha256": "083d9ff3b6b9bbd07fe91cfe070ebba161393bd783952e13ffce0b13e0b594dd"
+    },
+    {
+      "file": "smoke/reproduction.json",
+      "bytes": 2042,
+      "sha256": "23208583623ebb550675902a2f07350c0ca81fda8e29b83baa41725c91949ef1"
+    }
+  ]
+}

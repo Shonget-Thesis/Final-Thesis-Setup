@@ -1,0 +1,4 @@
+dmospeech2_commit: 8a7868fc3345702a586173447f4869205b501f26
+thesis_commit: bdee11ece9b532fc2fe9fd52419e3fa4396cbbb1
+zipped_at_utc: 2026-10-26T14:12:30.697089Z
+device: NVIDIA A100-SXM4-40GB

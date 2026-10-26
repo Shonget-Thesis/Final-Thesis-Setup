@@ -1,0 +1,138 @@
+{
+  "purpose": "Preliminary development test of the proposed gates (SDC, low-drift veto, guidance contrast, stratified LTT) vs SNR-only and SNR + drift",
+  "n_speakers": 60,
+  "speakers": "first 60 development speakers by utterance ID (includes the 20 EXP-011 pilot speakers)",
+  "conditions": [
+    "clean",
+    "noisy15",
+    "gauss18",
+    "gauss20",
+    "gauss22",
+    "gauss25"
+  ],
+  "theta_db": 20.0,
+  "alpha": 0.05,
+  "delta": 0.1,
+  "folds": 5,
+  "seed": 2026,
+  "grids": {
+    "snr_drift": [
+      0.2,
+      0.25,
+      0.3,
+      0.35,
+      0.4,
+      0.45,
+      0.5,
+      0.55,
+      0.6,
+      0.65,
+      0.7,
+      0.75,
+      0.8,
+      0.85,
+      0.9,
+      0.95,
+      1.0,
+      1.05,
+      1.1,
+      1.15,
+      1.2
+    ],
+    "low_drift_veto": [
+      0.6,
+      0.55,
+      0.5,
+      0.45,
+      0.4,
+      0.35,
+      0.3,
+      0.25,
+      0.2,
+      0.15,
+      0.1,
+      0.05
+    ],
+    "sdc_gate": [
+      0.0,
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9,
+      1.0,
+      1.1,
+      1.2,
+      1.3,
+      1.4,
+      1.5
+    ],
+    "guidance_gate": [
+      1.0,
+      0.9,
+      0.8,
+      0.7,
+      0.6,
+      0.5,
+      0.4,
+      0.3,
+      0.2,
+      0.1,
+      0.0
+    ],
+    "sdc_guidance": [
+      0.0,
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9,
+      1.0,
+      1.1,
+      1.2,
+      1.3,
+      1.4,
+      1.5
+    ]
+  },
+  "candidates": [
+    4,
+    5,
+    6
+  ],
+  "reference_step": 8,
+  "policies": [
+    "reference",
+    "snr_only",
+    "snr_drift",
+    "low_drift_veto",
+    "sdc_gate",
+    "guidance_gate",
+    "sdc_guidance"
+  ],
+  "calibration": [
+    "pooled fixed-sequence LTT",
+    "stratified fixed-sequence LTT (intersection-union over conditions)"
+  ],
+  "reused_labels": [
+    "research/evidence/benchmarks/gpu_grid_all1000.csv (clean, noisy15)",
+    "research/experiments/EXP-011-followup-t4/results/pilot/pilot_grid.csv (20 pilot speakers, all conditions)"
+  ],
+  "input_hashes": {
+    "research/evidence/benchmarks/gpu_grid_all1000.csv": "249191ec8b8454d10451185760b3b834c9f673bcfa866ce9b116770a8b4febd3",
+    "research/experiments/EXP-011-followup-t4/results/pilot/pilot_grid.csv": "4218fee03f945d7bde809165947a6c5067c872cb6418a8500945bc65bf39b7d2",
+    "code/colab/run_consistency_gate_prelim.py": "5d83b1acdf668e7b13981a5df0f6e24e24602fe31e051d00190fd5273a2ce6e3"
+  },
+  "thesis_commit": "3d0b3ef0168bb4a4995ab6ed9e84d40d026ac3e6",
+  "dmo_commit": "8a7868fc3345702a586173447f4869205b501f26",
+  "sha256": "7cc969344e46fed44d080469ae94ba4f24458ffbe01d76ef13dc6df58ec6f3d0",
+  "created_utc": "2026-10-25T12:37:12.616542+00:00"
+}
