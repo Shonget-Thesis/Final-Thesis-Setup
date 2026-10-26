@@ -1,0 +1,89 @@
+<!-- 14 POLICY + PROPERTIES -->
+        <section class="scene" data-ch="3" data-sec="3.6" data-dur="40" data-title="Stopping Policy Formulation">
+          <p class="eyebrow b fade" data-t="100">Section 3.6 · Mathematical Formulation</p>
+          <h2 class="b up" data-t="250">Formulation of the Constrained Stopping Policy</h2>
+          <div class="two" style="grid-template-columns:1.05fr .95fr;margin-top:20px;gap:50px">
+            <div class="stack" style="gap:20px">
+              <div class="eq b left" data-t="700" style="font-size:26px;padding:16px 22px">min<sub>π</sub> E[ <i>C</i>(π(<i>x</i>)) ]
+                &nbsp; s.t. &nbsp; <i>R</i>(π) = E[ <i>f</i>(<i>x</i>, π(<i>x</i>)) ] ≤ α<small>cheapest policy whose
+                  added-failure risk stays under α</small></div>
+              <div class="eq o b left" data-t="1500" style="font-size:26px;padding:16px 22px">π<sub>λ</sub>(<i>x</i>) = first candidate
+                <i>i<sub>r</sub></i> with <i>d<sub>i<sub>r</sub></sub></i> ≤ λ and <i>Ŝ</i> ≥ θ, else
+                reference<small>walks the teacher steps in order · never later than step 8</small>
+              </div>
+              <div class="panel b up" data-t="2400" style="padding:24px 26px;border-radius:8px">
+                <div class="ph">Added failure · fixed before calibration</div>
+                <p class="txt" style="font-size:21px"><span class="math">f</span> = 1 if WER &gt;
+                  max(<strong>12.5%</strong>, WER<sub>ref</sub> + <strong>1 pt</strong>) &nbsp;or&nbsp; SIM &lt;
+                  SIM<sub>ref</sub> − <strong>0.02</strong>, on the same seeds.</p>
+              </div>
+              <p class="txt b up" data-t="3000" style="font-size:21px">Setting λ = ∞ gives the SNR-only rule; θ = −∞
+                gives stabilization only. <strong>One family, one calibration.</strong></p>
+            </div>
+            <div class="props">
+              <div class="prop b pop" data-t="3600"><span class="pn">Prop. 3.2</span>
+                <h3>Zero overhead</h3>
+                <p>Signals reuse the velocity already computed. No extra forward pass.</p>
+              </div>
+              <div class="prop b pop" data-t="4100"><span class="pn">Prop. 3.3</span>
+                <h3>Monotone cost</h3>
+                <p>A smaller λ never stops earlier, so cost rises as λ falls.</p>
+              </div>
+              <div class="prop b pop" data-t="4600"><span class="pn">Prop. 3.4</span>
+                <h3>Safe fallback</h3>
+                <p>Never more than 21 passes. No certified λ → exact reference output.</p>
+              </div>
+              <div class="prop b pop" data-t="5100"><span class="pn">Prop. 3.5</span>
+                <h3>Oracle bound</h3>
+                <p>No zero-risk policy beats the cheapest non-failing candidate per input.</p>
+              </div>
+            </div>
+          </div>
+          <footer class="cite b fade" data-t="2800"><span class="k">From</span><span>Proposal Eq. 3-11, 3-12, 3-15 and
+              Propositions 3.2–3.5 · WER: Radford et al. (2023) · SIM: S. Chen et al. (2022)</span></footer>
+        </section>
+
+<script type="text/slide-script">
+Formally, we seek the cheapest policy whose risk of added failures stays below alpha. An added failure means the output is clearly worse than the reference on the same input: its word error rate passes the ceiling and margin, or its speaker similarity drops by more than 0.02. The policy stops at the first candidate that passes both signals. We prove four properties: zero overhead, monotone cost in the threshold, a safe fallback to the reference, and an oracle lower bound.
+</script>
+
+<style>
+/* S14 */
+    .props {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px
+    }
+
+    .prop {
+      border: 1px solid var(--line-2);
+      padding: 22px 24px;
+      background: #FFFFFF;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+      border-radius: 8px;
+      min-height: 160px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .prop .pn {
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 14.5px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--orange)
+    }
+
+    .prop h3 {
+      font-size: 25px;
+      font-weight: 700;
+      margin: 10px 0 8px
+    }
+
+    .prop p {
+      font-size: 19.5px;
+      line-height: 1.42;
+      color: var(--muted)
+    }
+</style>

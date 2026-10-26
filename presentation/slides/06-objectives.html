@@ -1,0 +1,112 @@
+<!-- 5 OBJECTIVES -->
+        <section class="scene" data-ch="1" data-sec="1.3" data-dur="35" data-title="Research Objectives">
+          <p class="eyebrow b fade" data-t="100">Section 1.3 · Objectives of the Study</p>
+          <h2 class="b up" data-t="250">General &amp; Specific Research Objectives</h2>
+          <div class="objs">
+            <div class="obj b up" data-t="900">
+              <div class="on-line b grow" data-t="900"></div>
+              <div class="num">1</div>
+              <h3>Characterize</h3>
+              <p>Measure how WER, SIM, UTMOS, forward passes and runtime vary across candidate switching times and
+                inputs.</p>
+              <div class="out">→ quality–cost map</div>
+            </div>
+            <div class="obj b up" data-t="1500">
+              <div class="on-line b grow" data-t="1500"></div>
+              <div class="num">2</div>
+              <h3>Formulate</h3>
+              <p>Pose selection as constrained cost minimization; design a training-free policy with no extra network
+                evaluations; prove its properties.</p>
+              <div class="out">→ policy + 4 propositions</div>
+            </div>
+            <div class="obj b up" data-t="2100">
+              <div class="on-line b grow" data-t="2100"></div>
+              <div class="num">3</div>
+              <h3>Calibrate</h3>
+              <p>Use Learn-Then-Test to keep added-failure risk within a tolerance α at confidence 1 − δ; check it on
+                held-out speakers.</p>
+              <div class="out">→ certified threshold λ̂</div>
+            </div>
+            <div class="obj b up" data-t="2700">
+              <div class="on-line b grow" data-t="2700"></div>
+              <div class="num">4</div>
+              <h3>Compare</h3>
+              <p>Benchmark SNR-only, stabilization-only and combined variants against fixed switches and an oracle,
+                clean and noisy.</p>
+              <div class="out">→ does each signal add value?</div>
+            </div>
+          </div>
+          <footer class="cite b fade" data-t="3200"><span class="k">From</span><span>Proposal, Section 1.3 · all
+              pretrained weights frozen; training-free</span></footer>
+        </section>
+
+<script type="text/slide-script">
+Our general objective is to develop and evaluate a training-free, risk-calibrated method that selects the teacher's switching time per utterance. First, we will characterize how quality and cost change across switching times. Second, we will formulate selection as a constrained cost-minimization problem and design a policy with provable properties. Third, we will calibrate it with Learn-Then-Test. Fourth, we will compare its signals and benchmark it against fixed switching times and an oracle.
+</script>
+
+<style>
+/* S5 */
+    .objs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-top: 36px
+    }
+
+    .obj {
+      border: 1px solid var(--line-2);
+      background: #FFFFFF;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+      border-radius: 8px;
+      padding: 28px 24px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-height: 410px;
+      position: relative;
+    }
+
+    .obj .on-line {
+      position: absolute;
+      top: -1px;
+      left: -1px;
+      right: -1px;
+      height: 4px;
+      background: var(--orange-grad);
+      border-radius: 4px 4px 0 0;
+    }
+
+    .obj .num {
+      font-family: var(--display);
+      font-size: 78px;
+      font-weight: 850;
+      line-height: .8;
+      background: var(--orange-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .obj h3 {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .obj p {
+      font-size: 20px;
+      line-height: 1.45;
+      color: var(--muted)
+    }
+
+    .obj .out {
+      margin-top: auto;
+      font-family: var(--mono);
+      font-weight: 600;
+      font-size: 14.5px;
+      letter-spacing: .06em;
+      color: var(--blue);
+      text-transform: uppercase;
+      border-top: 1px solid var(--line);
+      padding-top: 14px
+    }
+</style>

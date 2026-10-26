@@ -1,0 +1,76 @@
+<!-- 2 BACKGROUND: FLOW MATCHING -->
+        <section class="scene" data-ch="1" data-sec="1.1" data-dur="35" data-title="Flow-Matching Speech Synthesis" data-hook="flow">
+          <div class="two wide-r" style="margin-top:10px;gap:56px">
+            <div class="stack" style="justify-content:center;gap:24px">
+              <p class="eyebrow b fade" data-t="100">Background of the study</p>
+              <h2 class="b up" data-t="250">Flow-Matching Formulation for Text-to-Speech</h2>
+              <p class="lead b up" data-t="800">A <strong>flow-matching</strong> model learns a velocity field that
+                moves random noise toward a mel-spectrogram along a nearly straight path.</p>
+              <div class="eq b left" data-t="1500"><i>dx</i>/<i>dt</i> = <i>v</i><sub>θ</sub>(<i>x</i>, <i>t</i>),
+                &nbsp; <i>t</i> ∈ [0, 1]<small>generation = integrate the field step by step</small></div>
+              <p class="txt b up" data-t="2300"><strong>Every step is one full network evaluation.</strong> F5-TTS, our
+                teacher, spaces its steps with sway sampling.</p>
+            </div>
+            <div class="flowbox b fade" data-t="500" style="align-self:center">
+              <canvas id="flowCanvas" width="1560" height="1200"></canvas>
+              <span class="fl" style="left:18px;top:16px">noise · t = 0</span>
+              <span class="fl" style="right:18px;bottom:14px">mel-spectrogram · t = 1</span>
+              <span class="tread">t = <span id="tRead">0.000</span></span>
+            </div>
+          </div>
+          <footer class="cite b fade" data-t="2800"><span class="k">Sources</span><span>Lipman et al. (2023), <em>Flow
+                matching for generative modeling</em>, ICLR · Liu et al. (2023), ICLR · Y. Chen et al. (2025),
+              <em>F5-TTS</em>, ACL</span></footer>
+        </section>
+
+<script type="text/slide-script">
+Text-to-speech converts written text into spoken audio. Many recent systems use flow matching. The model learns a velocity field that moves random noise toward speech along a nearly straight path, from time zero to time one. To generate, we follow that field step by step. F5-TTS, the teacher model in our study, applies this with a diffusion transformer and a step schedule called sway sampling. The key detail is that every step is a full evaluation of a large network.
+</script>
+
+<style>
+/* S2 flow canvas */
+    .flowbox {
+      position: relative;
+      border: 1px solid var(--line-2);
+      background: #FFFFFF;
+      box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+      border-radius: 8px;
+    }
+
+    #flowCanvas {
+      display: block;
+      width: 100%;
+      height: auto
+    }
+
+    .flowbox .fl {
+      position: absolute;
+      font-family: var(--mono);
+      font-weight: 500;
+      font-size: 15px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--dim)
+    }
+
+    .flowbox .tread {
+      position: absolute;
+      right: 18px;
+      top: 16px;
+      font-family: var(--mono);
+      font-weight: 500;
+      font-size: 22px;
+      background: var(--dark-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .flowbox .tread span {
+      background: var(--blue-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+</style>
+

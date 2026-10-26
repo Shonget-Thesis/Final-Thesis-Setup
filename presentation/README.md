@@ -2,10 +2,45 @@
 
 An animated, full-screen presentation of the thesis proposal (Chapters 1–3) for the proposal defense, styled with a starry cosmic field, monochrome gradients, blue shade gradients (`#38BDF8` to `#0070E0`) for the teacher, grey for the student, and warm orange shade gradients (`#FFA04D` to `#D84300`) for what this study adds, with LEMMiNO-style citation footers on every content scene.
 
-| File | What it is |
+| File / Directory | What it is |
 | --- | --- |
-| [index.html](index.html) | The walkthrough: 19 scenes, one HTML file, full-screen layout |
+| [index.html](index.html) | The compiled standalone walkthrough: 19 scenes, single HTML file, full-screen layout (double-click ready) |
+| [slides/](slides/) | 19 modular slide files containing slide markup, presenter script notes, and slide-specific styles |
+| [template.html](template.html) | Base HTML shell, layout, cosmic field background, typography, and presentation controller |
+| [build.py](build.py) | Fast builder (<30ms) to compile modular slides into `index.html` (supports `--watch`, `--serve`, `--sync-md`) |
 | [SCRIPT.md](SCRIPT.md) | The presenter script, one section per scene, about 11 minutes at the auto-play pace |
+
+## Editing slides
+
+Each slide is modular and located in `slides/` (e.g. `slides/01-title.html`, `slides/05-one-handover-for-every-input.html`).
+
+Inside each slide file, you'll find:
+1. `<section class="scene ...">` — The slide HTML markup.
+2. `<script type="text/slide-script">` — The spoken presenter script for that slide.
+3. `<style>` — CSS styling specific to that slide.
+4. `<script>` — Dynamic SVG or canvas animations (if applicable to that slide).
+
+### Compiling changes
+- **Build once**:
+  ```bash
+  python presentation/build.py
+  ```
+- **Auto-rebuild while editing (watch mode)**:
+  ```bash
+  python presentation/build.py --watch
+  ```
+- **Local dev server + watch mode**:
+  ```bash
+  python presentation/build.py --serve
+  ```
+- **Keep `SCRIPT.md` in sync**:
+  ```bash
+  python presentation/build.py --sync-md
+  ```
+- **Export to vector PDF with selectable text**:
+  ```bash
+  python presentation/build.py --pdf
+  ```
 
 ## Opening it
 

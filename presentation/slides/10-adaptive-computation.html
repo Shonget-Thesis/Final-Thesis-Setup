@@ -1,0 +1,149 @@
+<!-- 9 ADAPTIVE COMPUTATION -->
+        <section class="scene" data-ch="2" data-sec="2.4" data-dur="35" data-title="Input-Adaptive Computation">
+          <p class="eyebrow b fade" data-t="100">Section 2.4 · Related Literature</p>
+          <h2 class="b up" data-t="250">Input-Adaptive Computation &amp; Dynamic Inference</h2>
+          <table class="tbl">
+            <thead class="b fade" data-t="600">
+              <tr>
+                <th>Method</th>
+                <th>What is adapted</th>
+                <th>Decision signal</th>
+                <th>Rule</th>
+                <th>Guarantee</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="b left" data-t="1000">
+                <td>ACT<small>Graves, 2016</small></td>
+                <td>Internal steps per input</td>
+                <td>Learned halting unit</td>
+                <td>Learned</td>
+                <td class="none">None</td>
+              </tr>
+              <tr class="b left" data-t="1500">
+                <td>BranchyNet<small>Teerapittayanon et al., 2016</small></td>
+                <td>Exit layer</td>
+                <td>Classifier confidence</td>
+                <td>Tuned threshold</td>
+                <td class="none">None</td>
+              </tr>
+              <tr class="b left" data-t="2000">
+                <td>CALM<small>Schuster et al., 2022</small></td>
+                <td>Exit layer per token</td>
+                <td>Confidence or saturation</td>
+                <td>Calibrated threshold</td>
+                <td class="rc">Risk control</td>
+              </tr>
+              <tr class="b left" data-t="2500">
+                <td>Adaptive collaboration<small>Starodubcev et al., 2024</small></td>
+                <td>Whether the teacher refines</td>
+                <td>Quality estimator on a full student sample</td>
+                <td>Tuned threshold</td>
+                <td class="none">None</td>
+              </tr>
+              <tr class="us b left" data-t="3300">
+                <td>This study</td>
+                <td>Teacher-to-student switching time</td>
+                <td>Prompt SNR + endpoint stabilization</td>
+                <td>Calibrated threshold</td>
+                <td class="rc">Risk control (LTT)</td>
+              </tr>
+            </tbody>
+          </table>
+          <footer class="cite b fade" data-t="2200"><span class="k">Sources</span><span>Graves (2016) · Teerapittayanon
+              et al. (2016), ICPR · Schuster et al. (2022), NeurIPS · Starodubcev et al. (2024), CVPR · Mualem et al.
+              (2026), <em>ARIA</em></span></footer>
+        </section>
+
+<script type="text/slide-script">
+Choosing the switch per utterance is input-adaptive computation. Adaptive Computation Time and BranchyNet saved computation, but gave no statement of how much quality they lose. CALM, for language models, is our closest precedent: it calibrated its early-exit threshold with risk control. Adaptive teacher-student collaboration exists in image diffusion, but not for the handover time in speech. Our study adapts the switching time and attaches a calibrated guarantee.
+</script>
+
+<style>
+/* S9 table */
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 36px;
+      font-size: 21.5px
+    }
+
+    .tbl th {
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--dim);
+      text-align: left;
+      padding: 0 18px 16px;
+      border-bottom: 2px solid var(--line-2)
+    }
+
+    .tbl td {
+      padding: 22px 18px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      vertical-align: top;
+      line-height: 1.4
+    }
+
+    .tbl td:first-child {
+      background: var(--dark-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+    }
+
+    .tbl td small {
+      display: block;
+      font-family: var(--mono);
+      font-size: 14.5px;
+      color: var(--dim);
+      -webkit-text-fill-color: var(--dim);
+      font-weight: 400;
+      margin-top: 4px
+    }
+
+    .tbl tr.b {
+      transition: opacity .6s ease, transform .7s ease
+    }
+
+    .tbl .none {
+      color: var(--dim);
+      font-family: var(--mono);
+      font-weight: 500;
+      font-size: 16px;
+      letter-spacing: .1em;
+      text-transform: uppercase
+    }
+
+    .tbl .rc {
+      color: var(--blue);
+      font-family: var(--mono);
+      font-weight: 600;
+      font-size: 16px;
+      letter-spacing: .1em;
+      text-transform: uppercase
+    }
+
+    .tbl tr.us td {
+      background: var(--orange-soft);
+      color: var(--fg);
+      border-bottom: 2px solid var(--orange);
+      padding: 24px 18px;
+    }
+
+    .tbl tr.us td:first-child {
+      background: none;
+      -webkit-text-fill-color: var(--orange-dark);
+      color: var(--orange-dark);
+      font-weight: 800;
+    }
+
+    .tbl tr.us .rc {
+      color: var(--orange-dark);
+      font-weight: 700;
+    }
+</style>

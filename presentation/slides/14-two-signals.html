@@ -1,0 +1,99 @@
+<!-- 13 SIGNALS -->
+        <section class="scene" data-ch="3" data-sec="3.5.2" data-dur="40" data-title="Inference Decision Signals" data-hook="drift">
+          <p class="eyebrow b fade" data-t="100">Section 3.5.2 · Decision Features</p>
+          <h2 class="b up" data-t="250">Endpoint Stabilization &amp; Prompt Acoustic Quality Signals</h2>
+          <div class="two wide-l" style="margin-top:20px;gap:56px">
+            <div class="stack" style="gap:18px">
+              <div class="eq o b left" data-t="700" style="font-size:26px;padding:16px 22px"><i>d<sub>i</sub></i> = ‖
+                <i>x̂</i><sub>1</sub>(<i>t<sub>i</sub></i>) − <i>x̂</i><sub>1</sub>(<i>t<sub>i−1</sub></i>)
+                ‖<sub>M</sub> / ( ‖ <i>x̂</i><sub>1</sub>(<i>t<sub>i</sub></i>) ‖<sub>M</sub> + ϵ ), &nbsp;
+                <i>x̂</i><sub>1</sub> = <i>x<sub>t</sub></i> + (1 − <i>t</i>) <i>v</i><small>endpoint-stabilization
+                  score · small means the teacher’s guess has settled</small>
+              </div>
+              <svg id="driftSvg" viewBox="0 0 820 400" style="width:100%"></svg>
+            </div>
+            <div class="stack" style="gap:24px;justify-content:center">
+              <div class="eq o b left" data-t="4800" style="font-size:26px;padding:16px 22px"><i>Ŝ</i> = 10 log<sub>10</sub>(
+                <i>Ē</i><sub>top</sub> / <i>Ē</i><sub>bottom</sub> )<small>prompt SNR, from frame energies · gate θ = 20
+                  dB</small>
+              </div>
+              <div class="gauge b up" data-t="5300">
+                <div class="row"><span>Clean prompt</span><b>30.5 dB · gate open</b></div>
+                <div class="tr">
+                  <div class="fill b grow" data-t="5300" style="width:61%;background:var(--blue);border-radius:4px"></div>
+                  <div class="th" style="left:40%"></div>
+                </div>
+              </div>
+              <div class="gauge b up" data-t="5800">
+                <div class="row"><span>Noisy prompt</span><b class="hl">17.8 dB · go to reference</b></div>
+                <div class="tr">
+                  <div class="fill b grow" data-t="5800" style="width:35.6%;background:var(--orange);border-radius:4px"></div>
+                  <div class="th" style="left:40%"></div>
+                </div>
+                <div class="row" style="font-size:14px;color:var(--dim)"><span>0 dB</span><span>θ = 20</span><span>50
+                    dB</span></div>
+              </div>
+              <p class="txt b up" data-t="6600" style="font-size:21px">Development diagnostics suggest the <strong>SNR
+                  may carry most of the benefit</strong>. The stabilization score is kept as a <span
+                  class="hl">hypothesis to test</span>, not an assumption.</p>
+            </div>
+          </div>
+          <footer class="cite b fade" data-t="3000"><span class="k">Sources</span><span>Lipman et al. (2024), <em>Flow
+                matching guide and code</em> · Li et al. (2026) · Proposal Def. 3.2–3.3, Appendix A.4 and D.5
+              (illustrative values)</span></footer>
+        </section>
+
+<script type="text/slide-script">
+Two signals drive the decision. The endpoint-stabilization score measures how much the teacher's prediction of the final output changed since the last step; a small score means it has settled. In this illustration, the easy input settles by step five and stops there, at 15 passes; the hard input never settles and runs to the reference. The prompt SNR estimates how noisy the recording is. Both reuse values already computed, so the decision costs no extra forward pass. Our development diagnostic suggests the SNR may carry most of the benefit, so we treat the stabilization score as a hypothesis to test.
+</script>
+
+<style>
+/* S13 */
+    .gauge {
+      display: flex;
+      flex-direction: column;
+      gap: 12px
+    }
+
+    .gauge .tr {
+      position: relative;
+      height: 22px;
+      background: rgba(15, 23, 42, .06);
+      border-radius: 4px;
+    }
+
+    .gauge .fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0
+    }
+
+    .gauge .th {
+      position: absolute;
+      top: -6px;
+      bottom: -6px;
+      width: 3px;
+      background: var(--fg);
+      border-radius: 1px;
+    }
+
+    .gauge .row {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--mono);
+      font-weight: 500;
+      font-size: 17px;
+      color: var(--muted)
+    }
+
+    .gauge .row b {
+      background: var(--dark-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+      display: inline-block;
+    }
+</style>
+
