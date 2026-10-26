@@ -381,7 +381,7 @@
     },
     {
       "id": "EVAL-007",
-      "title": "Preliminary test of Self-Noise Negative Guidance, SNR-Compensated Guidance and the antithetic student pair",
+      "title": "Preliminary test of noise-aware handover methods (SNNG, SCG, SWC, antithetic pair)",
       "owner": "unassigned",
       "status": "todo",
       "updated": "2026-10-26",

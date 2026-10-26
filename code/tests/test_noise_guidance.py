@@ -42,6 +42,24 @@ class OperatorTests(unittest.TestCase):
         self.assertEqual(ng.scg_gamma(0.0, 2.5), 5.0)                      # floor on the predicted gap, then the cap
         self.assertLess(ng.scg_gamma(25.0, 2.5), ng.scg_gamma(20.0, 2.5))
 
+    def test_swc_strength_follows_the_snr_band(self):
+        self.assertEqual(ng.swc_beta(35.0, 1.0), 0.0)
+        self.assertEqual(ng.swc_beta(25.0, 1.0), 0.5)
+        self.assertEqual(ng.swc_beta(15.0, 0.5), 0.5)
+
+    def test_swc_quiets_noise_frames_keeps_speech_and_generated_frames(self):
+        import numpy as np
+        noise, speech = np.log(0.1), np.log(10.0)              # linear magnitude 0.1 (noise floor) vs 10 (speech)
+        cond = np.full((1, 12, 2), noise)
+        cond[0, 2:8, :] = speech                                 # prompt frames 0-9: 4 noise, 6 speech; 10-11 generated
+        cond[0, 10:, :] = 7.0
+        out = ng.swc_clean(cond, 10, beta=1.0)
+        np.testing.assert_allclose(np.exp(out[0, 0]), 0.1 * ng.SWC_GMIN)      # noise frame: gain at the floor
+        np.testing.assert_allclose(np.exp(out[0, 2]), 10.0 * (1 - 0.1 / 10.0))  # speech frame: 1% reduction
+        np.testing.assert_array_equal(out[0, 10:], cond[0, 10:])
+        np.testing.assert_array_equal(ng.swc_clean(cond, 10, beta=0.0), cond)
+        self.assertEqual(cond[0, 0, 0], noise)                  # input untouched
+
     def test_route_sends_inputs_by_snr_band(self):
         pol = ng.route(30.0, 22.0, "snng10")
         self.assertEqual(pol({"snr": 35.0}), 4)
@@ -82,7 +100,8 @@ class AnalyzeTests(unittest.TestCase):
         for c in ("noisy15", "gauss18", "gauss20"):
             self.assertEqual(noisy["per_condition"][c], 0)
         self.assertLess(noisy["mean_nfe"], base["mean_nfe"])
-        self.assertIn("Self-Noise Negative Guidance", report)
+        self.assertIn("noise-aware handover methods", report)
+        self.assertIn("SNR-Wiener Conditioning", report)
 
 
 if __name__ == "__main__":

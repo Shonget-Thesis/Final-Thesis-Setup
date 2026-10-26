@@ -19,3 +19,7 @@ Task: EVAL-007. Requested by a team member: a computational method in which the 
 ## Checks run
 
 - python -m unittest discover -s code/tests and python scripts/check_workspace.py: see below. torch is not installed locally; the Colab smoke test exercises the torch path. Not run on a GPU.
+
+## Follow-up: SNR-Wiener Conditioning (same day)
+
+Requested by a team member: more computational candidates in the same run, in case SCG and SNNG fail. SNR-Wiener Conditioning removes the prompt's noise from the conditioning before the teacher and student see it, with a strength set by the prompt SNR: per mel band, gain G = clip(1 − β(Ŝ)·N_b/M, 0.1, 1), N_b from the quietest 20% of prompt frames, β(Ŝ) = β_max·clip((30 − Ŝ)/10, 0, 1), β_max 1.0 and 0.5; 13 NFE. Added to `run_noise_guidance_prelim.py` (outputs `swc`, `swc05`), the notebook (estimate now 3.5–4 h), tests (gain floor, speech frames nearly unchanged, generated frames untouched, β = 0 identity) and the EXP-015 README with a prior-work note. 51 tests pass; workspace check passes. Not run on a GPU.
