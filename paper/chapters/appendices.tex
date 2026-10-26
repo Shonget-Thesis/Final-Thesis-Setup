@@ -360,7 +360,7 @@ The handover rule keeps the SNR gate and adds the score:
 \[
 \pi_{\mathrm{TAS}}(x)=\begin{cases}4 & \text{if } \hat S\ge\theta \text{ and } A(x)\le\hat\kappa,\\[2pt] k_{\text{ref}} & \text{otherwise,}\end{cases}
 \]
-where $\hat\kappa$ is the most permissive threshold certified by Algorithm~\ref{alg:ltt}, testing thresholds in increasing order.
+where $\theta$ is the SNR gate (20~dB in these studies, as in SNR-only) and $\hat\kappa$ is the most permissive threshold certified by Algorithm~\ref{alg:ltt}, testing thresholds in increasing order.
 
 \emph{Relation to prior work.} Mahalanobis distances are standard anomaly scores, and DiffPath uses the rate of change and curvature of diffusion paths to detect out-of-distribution images \parencite{heng2024diffpath}. TAS differs in what it detects (corrupted conditioning), in treating a trajectory that settles too early as a reason not to stop, the opposite of early-exit rules that stop once the output stops changing \parencite{schuster2022calm}, and in gating a calibrated teacher-to-student handover. To our knowledge this use has not been reported.
 
@@ -376,12 +376,18 @@ G_{f,b}=\min\Bigl\{1,\ \max\Bigl\{0.1,\ 1-\beta(\hat S)\,\frac{N_b}{m_{f,b}}\Big
 \end{gather*}
 so that prompts estimated at 30~dB or above are left unchanged and prompts at 20~dB or below are cleaned at full strength. The teacher then runs to step~4 and the student completes as usual, for 13 forward passes.
 
+\emph{Routing.} The prompt SNR also decides which inputs are cleaned. With two thresholds $\theta_{\mathrm{e}}\le\theta_{\mathrm{hi}}$, certified in turn by Algorithm~\ref{alg:ltt},
+\[
+\pi_{\mathrm{SWC}}(x)=\begin{cases}4 \text{ with the original prompt} & \text{if } \hat S\ge\theta_{\mathrm{hi}},\\[2pt] 4 \text{ with the cleaned prompt} & \text{if } \hat S<\theta_{\mathrm{e}},\\[2pt] k_{\text{ref}} & \text{otherwise.}\end{cases}
+\]
+Setting $\theta_{\mathrm{e}}=\theta_{\mathrm{hi}}$ cleans every input below the gate; a lower $\theta_{\mathrm{e}}$ cleans heavy noise only and sends moderately noisy prompts to the reference.
+
 \emph{Relation to prior work.} The gain is classical spectral subtraction with a minimum-energy noise estimate \parencite{boll1979spectral}, so SWC is not a new formula. What is new, to our knowledge, is applying it to the conditioning of a teacher-guided sampler, with the strength set by the prompt SNR, as a substitute for teacher computation that makes an early handover safe.
 
 \subsection{Results}
 \label{app:cand-results}
 
-Table~\ref{tab:candidates} compares the candidates with the SNR-only policy on the same 360 instances. On the 300 noisy instances, SWC's step-4 output was better than the reference output on average: speaker similarity rose by 0.126 (higher in 90\% of the instances; Wilcoxon signed-rank $p<10^{-40}$) and WER fell by 4.8 percentage points. With every input handed over at step~4, SWC failed on 21 of the 300 noisy instances, against 126 for the plain step-4 handover. Applied to every input estimated below the calibrated SNR gate, it had fewer failures and fewer forward passes than SNR-only; applied to heavy noise only, it kept the failure rate within the 5\% tolerance.
+Table~\ref{tab:candidates} compares the candidates with the SNR-only policy on the same 360 instances. On the 300 noisy instances, SWC's step-4 output was better than the reference output on average: speaker similarity rose by 0.126 (higher in 90\% of the instances; Wilcoxon signed-rank $p<10^{-40}$) and WER fell by 4.8 percentage points. With every input handed over at step~4, SWC failed on 21 of the 300 noisy instances, against 126 for the plain step-4 handover. With $\theta_{\mathrm{e}}=\theta_{\mathrm{hi}}$ (26~dB in every fold), every input below the gate was cleaned, and the policy had fewer failures and fewer forward passes than SNR-only; with heavy noise only ($\theta_{\mathrm{e}}$ between 18 and 21~dB), it kept the failure rate within the 5\% tolerance.
 
 TAS also kept the failure rate within the tolerance that SNR-only exceeds. It did not improve on a fixed SNR gate whose threshold was itself calibrated on these noise levels (7 failures at 18.71 forward passes; the difference from TAS is not significant, exact McNemar $p=0.23$), but it needs only clean prompts to model normal trajectories. The stopping rule of Definition~\ref{def:policy} certified no threshold on these instances and fell back to the reference for every input.
 
@@ -397,8 +403,8 @@ Other variants did not improve on the plain handover: guidance steered away from
 \midrule
 SNR-only ($\hat S\ge20$~dB) & 86 & 23.9\% & 14.40 & -- \\
 SNR + TAS & 12 & 3.3\% & 18.20 & 74 / 0 \\
-SNR + SWC below the calibrated gate & 20 & 5.6\% & 13.00 & 75 / 9 \\
-SNR + SWC for heavy noise only & 11 & 3.1\% & 16.98 & 79 / 4 \\
+SNR + SWC, $\theta_{\mathrm{e}}=\theta_{\mathrm{hi}}$ & 20 & 5.6\% & 13.00 & 75 / 9 \\
+SNR + SWC, heavy noise only ($\theta_{\mathrm{e}}<\theta_{\mathrm{hi}}$) & 11 & 3.1\% & 16.98 & 79 / 4 \\
 Reference for every input & 0 & 0.0\% & 21.00 & -- \\
 \bottomrule
 \end{tabularx}
