@@ -414,15 +414,20 @@
       "title": "Animated proposal-defense walkthrough (Chapters 1-3)",
       "owner": "Claude (presentation), for Mark Vincent D. Limpahan",
       "status": "review",
-      "updated": "2026-10-25",
+      "updated": "2026-10-27",
       "acceptance": "A self-contained presentation covering Chapters 1-3 with per-scene animation, citation footers, a slide (step) mode and a presenter script; opens from the repository without a build step; illustrative numbers are labeled and traced to the proposal appendices; the team confirms the content before the defense.",
       "evidence": [
         "presentation/index.html",
         "presentation/SCRIPT.md",
         "presentation/README.md",
-        "docs/progress/log/2026-10-25-defense-walkthrough.md"
+        "presentation/build.py",
+        "presentation/template.html",
+        "presentation/slides/01-title.html",
+        "presentation/proposal-defense-slides.pdf",
+        "docs/progress/log/2026-10-25-defense-walkthrough.md",
+        "docs/progress/log/2026-10-27-vector-slides-pdf.md"
       ],
-      "validation": "Opened presentation/index.html headlessly in Chromium from file://: standards mode, 19 scenes, no script errors, step navigation and hidden panels work. Content not yet reviewed by the team; slides predate the October 25 audit and EXP-001 pilot findings."
+      "validation": "Modularized slide structure (19 slides in presentation/slides/), fast template builder (build.py) with --watch, --serve, --sync-md, and --pdf options. Presentation updated to light theme with blue/orange/graphite gradients, responsive spacing, S11/S13 layout fixes, and loop navigation. proposal-defense-slides.pdf exported via headless Edge CDP with exact 1600x900 pages and verified selectable vector text."
     }
   ]
 }

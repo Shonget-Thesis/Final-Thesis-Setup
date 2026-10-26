@@ -1,0 +1,106 @@
+<!-- 11 GAP -->
+        <section class="scene" data-ch="2" data-sec="2.8" data-dur="30" data-title="Research Gap">
+          <p class="eyebrow o b fade" data-t="100">Section 2.8 · Literature Synthesis</p>
+          <h2 class="b up" data-t="250">Synthesis of Prior Work &amp; Identified Research Gap</h2>
+          <div class="reqs">
+            <div class="req b up" data-t="800"><span class="ic">Requirement 01</span>
+              <p>A per-utterance handover decision<span>made from signals the sampler already computes</span></p>
+            </div>
+            <div class="req b up" data-t="1500"><span class="ic">Requirement 02</span>
+              <p>All networks stay as released<span>no training, no fine-tuning, no extra forward pass</span></p>
+            </div>
+            <div class="req b up" data-t="2200"><span class="ic">Requirement 03</span>
+              <p>Added failures bounded with stated confidence<span>on new, unseen speakers</span></p>
+            </div>
+          </div>
+          <div class="merge">
+            <div class="ln b grow" data-t="3000"></div>
+            <div class="box b pop" data-t="3800">This study</div>
+          </div>
+          <p class="txt b fade" data-t="4300" style="margin-top:26px;font-size:21px;max-width:76ch">The gap concerns the
+            combination of these elements within the sources examined; it does not imply that no other adaptive
+            inference methods exist.</p>
+          <footer class="cite b fade" data-t="3000"><span class="k">From</span><span>Proposal, Section 2.8 and Table
+              2.2</span></footer>
+        </section>
+
+<script type="text/slide-script">
+Within the sources we examined, no single method combines three things for flow-matching speech synthesis: a per-utterance handover decision made from signals the sampler already computes; all networks kept as released; and a rate of added failures bounded with stated confidence on new speakers. This combination is the gap our study addresses.
+</script>
+
+<style>
+/* S11 gap */
+    .reqs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+      margin-top: 36px
+    }
+
+    .req {
+      border: 1px solid var(--line-2);
+      padding: 32px 28px;
+      min-height: 270px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: #FFFFFF;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+      border-radius: 8px;
+    }
+
+    .req .ic {
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--orange);
+      letter-spacing: .14em;
+      text-transform: uppercase
+    }
+
+    .req p {
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1.32;
+      background: var(--dark-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .req p span {
+      color: var(--muted);
+      -webkit-text-fill-color: var(--muted);
+      font-size: 20px;
+      font-weight: 400;
+      display: block;
+      margin-top: 10px;
+    }
+
+    .merge {
+      margin-top: 36px;
+      display: flex;
+      align-items: center;
+      gap: 24px
+    }
+
+    .merge .ln {
+      flex: 1;
+      height: 3px;
+      background: var(--orange-grad);
+      border-radius: 2px;
+    }
+
+    .merge .box {
+      font-family: var(--display);
+      font-stretch: 118%;
+      text-transform: uppercase;
+      font-weight: 800;
+      font-size: 30px;
+      color: #FFFFFF;
+      background: var(--orange-grad);
+      box-shadow: 0 4px 18px rgba(234, 88, 12, 0.35);
+      border-radius: 6px;
+      padding: 16px 32px;
+    }
+</style>

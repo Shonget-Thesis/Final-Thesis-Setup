@@ -1,0 +1,171 @@
+<!-- 12 ARCHITECTURE -->
+<section class="scene" data-ch="3" data-sec="3.2" data-dur="40" data-title="System Architecture">
+  <p class="eyebrow b fade" data-t="100">Section 3.2 · System Architecture</p>
+  <h2 class="b up" data-t="250">Modular Adaptive Handover Architecture</h2>
+  <svg viewBox="0 0 1380 560" style="width:100%;height:540px;margin-top:14px">
+    <defs>
+      <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+        <path d="M0 0L10 5L0 10z" fill="var(--muted)" />
+      </marker>
+      <marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+        <path d="M0 0L10 5L0 10z" fill="var(--orange)" />
+      </marker>
+      <marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+        <path d="M0 0L10 5L0 10z" fill="var(--blue)" />
+      </marker>
+    </defs>
+    <!-- wires -->
+    <path class="wire b draw" data-t="900" d="M200 290 H258" marker-end="url(#ar)" />
+    <path class="wire b draw" data-t="1400" d="M480 290 H518" marker-end="url(#ar)" />
+    <path class="wire b draw" data-t="1900" d="M775 290 H798" marker-end="url(#ar)" />
+    <path class="wire a b draw" data-t="2600" d="M110 240 V125 H518" marker-end="url(#ao)" />
+    <path class="wire a b draw" data-t="3000" d="M775 125 H880 V208" marker-end="url(#ao)" />
+    <path class="wire a b draw" data-t="3400" d="M880 450 V372" marker-end="url(#ao)" />
+    <path class="wire lp b draw" data-t="4100" d="M842 332 L820 410 H370 V342" marker-end="url(#ab)" />
+    <path class="wire b draw" data-t="4800" d="M962 290 H1018" marker-end="url(#ar)" />
+    <path class="wire b draw" data-t="5100" d="M1188 290 H1218" marker-end="url(#ar)" />
+    <text class="wl cb b fade" data-t="4300" x="470" y="400">no · Euler step to t<tspan dy="5" font-size="12">
+        i+1</tspan></text>
+    <text class="wl b fade" data-t="4900" x="970" y="278">yes</text>
+    <!-- nodes -->
+    <g class="node b fade" data-t="600">
+      <rect x="20" y="240" width="180" height="100" /><text class="hd" x="34" y="276">Input</text><text class="sm"
+        x="34" y="302">prompt audio,</text><text class="sm" x="34" y="322">prompt + target
+        text</text>
+    </g>
+    <g class="node t b fade" data-t="1100">
+      <rect x="260" y="240" width="220" height="100" /><text class="hd" x="276" y="276">Teacher</text><text class="sm"
+        x="276" y="302">guided step at t<tspan dy="4" font-size="12">i</tspan></text><text class="sm" x="276" y="322"
+        dy="-4">2 passes · frozen</text>
+    </g>
+    <g class="node a b fade" data-t="1600">
+      <rect x="520" y="240" width="255" height="100" /><text class="hd" x="536" y="274"
+        style="fill:var(--orange);font-size:15px;letter-spacing:.02em">Endpoint monitor</text><text class="sm" x="536" y="300">x̂₁(t<tspan dy="4"
+          font-size="12">i</tspan>
+        <tspan dy="-4">) and score d</tspan>
+        <tspan dy="4" font-size="12">i</tspan>
+      </text><text class="sm" x="536" y="322">0 extra passes</text>
+    </g>
+    <g class="node a b pop" data-t="2100">
+      <polygon points="880,208 962,290 880,372 798,290" /><text class="hd" x="880" y="286" text-anchor="middle"
+        style="fill:var(--orange);font-size:18px">Stop</text><text class="hd" x="880" y="306" text-anchor="middle"
+        style="fill:var(--orange);font-size:18px">here?</text>
+    </g>
+    <g class="node a b fade" data-t="2600">
+      <rect x="520" y="75" width="255" height="100" /><text class="hd" x="536" y="110" style="fill:var(--orange);font-size:15px;letter-spacing:.02em">Prompt
+        SNR</text><text class="sm" x="536" y="136">frame-energy estimate
+        Ŝ</text><text class="sm" x="536" y="156">gate θ · 0 passes</text>
+    </g>
+    <g class="node a b fade" data-t="3400">
+      <rect x="740" y="452" width="280" height="96" /><text class="hd" x="756" y="488"
+        style="fill:var(--orange)">Offline calibrator</text><text class="sm" x="756" y="512">Learn-Then-Test →
+        λ̂</text><text class="sm" x="756" y="532">runs once, before deployment</text>
+    </g>
+    <g class="node s b fade" data-t="4800">
+      <rect x="1020" y="240" width="168" height="100" /><text class="hd" x="1034" y="276">Student</text><text class="sm"
+        x="1034" y="302">restart τ = 0.0761</text><text class="sm" x="1034" y="322">3 passes ·
+        frozen</text>
+    </g>
+    <g class="node b fade" data-t="5100">
+      <rect x="1220" y="240" width="140" height="100" /><text class="hd" x="1234" y="276">Vocos</text><text class="sm"
+        x="1234" y="302">mel →</text><text class="sm" x="1234" y="322">waveform</text>
+    </g>
+    <!-- moving pulse -->
+    <g class="b fade" data-t="5600">
+      <circle r="7" fill="var(--blue)">
+        <animateMotion dur="3.6s" repeatCount="indefinite" path="M200 290 H880 L842 332 L820 410 H370 V290 H480" />
+      </circle>
+      <circle r="7" fill="var(--orange)">
+        <animateMotion dur="3.6s" begin="1.8s" repeatCount="indefinite" path="M775 290 H962 H1360" />
+      </circle>
+    </g>
+    <!-- legend -->
+    <g class="b fade" data-t="5600" font-family="var(--mono)" font-weight="500" font-size="15">
+      <rect x="1040" y="70" width="18" height="12" fill="rgba(2,132,199,.2)" stroke="var(--blue)" /><text x="1068"
+        y="81" fill="var(--muted)">released, frozen</text>
+      <rect x="1040" y="100" width="18" height="12" fill="rgba(234,88,12,.1)" stroke="var(--orange)"
+        stroke-dasharray="4 3" /><text x="1068" y="111" fill="var(--orange)">added by this study</text>
+    </g>
+  </svg>
+  <footer class="cite b fade" data-t="2600"><span class="k">Sources</span><span>Li et al. (2026), <em>DMOSpeech
+        2</em>, AAAI · Y. Chen et al. (2025), <em>F5-TTS</em> · Siuzdak (2024), <em>Vocos</em>, ICLR · Proposal
+      Figure 3.2</span></footer>
+</section>
+
+<script type="text/slide-script">
+Chapter Three. The method adds a decision layer to the released sampler without touching any network. At each teacher step, a controller reads the endpoint estimate and the prompt's signal-to-noise ratio. If both indicate the utterance has settled, the teacher stops and hands over to the student; otherwise it takes the next step. If no earlier candidate qualifies, it stops at the reference point. The threshold is set once, offline, by a calibrator.
+</script>
+
+<style>
+  /* S12 arch */
+  .node rect,
+  .node polygon {
+    fill: #FFFFFF;
+    stroke: var(--line-2);
+    stroke-width: 1.5;
+  }
+
+  .node.t rect {
+    stroke: var(--blue);
+    fill: rgba(2, 132, 199, .08);
+  }
+
+  .node.s rect {
+    stroke: var(--student);
+    fill: #FFFFFF;
+  }
+
+  .node.a rect,
+  .node.a polygon {
+    stroke: var(--orange);
+    stroke-dasharray: 7 6;
+    fill: rgba(234, 88, 12, .08);
+  }
+
+  .node text {
+    fill: var(--fg);
+    font-size: 17px
+  }
+
+  .node text.sm {
+    fill: var(--muted);
+    font-size: 15px
+  }
+
+  .node text.hd {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: .02em
+  }
+
+  .wire {
+    fill: none;
+    stroke: var(--muted);
+    stroke-width: 2
+  }
+
+  .wire.a {
+    stroke: var(--orange);
+    stroke-dasharray: 6 6
+  }
+
+  .wire.lp {
+    stroke: var(--blue)
+  }
+
+  .wl {
+    fill: var(--dim);
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .wl.o {
+    fill: var(--orange)
+  }
+
+  .wl.cb {
+    fill: var(--blue)
+  }
+</style>
