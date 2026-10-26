@@ -38,6 +38,7 @@ import json
 import random
 import statistics
 import sys
+import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -53,13 +54,16 @@ SCG_FIT = {"A": -0.0263, "B": 0.0078, "G_CLEAN": 0.236, "G_FLOOR": 0.02}   # EXP
 SCG_RMAX = {"scg": 2.5, "scg15": 1.5}
 SWC_SNR, SWC_GMIN = (30.0, 20.0), 0.1          # no cleaning at >= 30 dB, full strength at <= 20 dB; gain floor
 SWC_BMAX = {"swc": 1.0, "swc05": 0.5}
-OUTS = tuple(ETAS) + ("anti",) + tuple(SCG_RMAX) + tuple(SWC_BMAX)
-COST = {4: 13, 8: 21, "snng05": 18, "snng10": 18, "anti": 16, "scg": 13, "scg15": 13, "swc": 13, "swc05": 13}
+ENH = {"enh4": ("full", 4), "enh6": ("full", 6), "enhs4": ("snr", 4)}   # enhanced prompt: wet mix (full or SNR-scheduled), handover step
+OUTS = tuple(ETAS) + ("anti",) + tuple(SCG_RMAX) + tuple(SWC_BMAX) + tuple(ENH)
+COST = {4: 13, 8: 21, "snng05": 18, "snng10": 18, "anti": 16, "scg": 13, "scg15": 13, "swc": 13, "swc05": 13,
+        "enh4": 13, "enh6": 17, "enhs4": 13}
 ALPHA, DELTA, FOLDS, SEED, THETA = ex.ALPHA, ex.DELTA, ex.FOLDS, ex.SEED, ex.THETA
 THETA_GRID = ex.GRIDS["theta"]                                   # 40 -> 20 dB
 LOW_GRID = [float(x) for x in range(40, 9, -1)]                  # theta_lo candidates, 40 -> 10 dB
+HEAVY_GRID = [float(x) for x in range(10, 41)]                   # theta_e candidates, 10 -> 40 dB (method below theta_e)
 FIELDS = ["utt_id", "speaker_id", "condition", "prompt_snr", "d_4", "d4_stored", "noise_frames", "anti_pick"] + \
-         [f"gamma_{o}" for o in SCG_RMAX] + [f"beta_{o}" for o in SWC_BMAX] + \
+         [f"gamma_{o}" for o in SCG_RMAX] + [f"beta_{o}" for o in SWC_BMAX] + ["wet_enhs4", "snr_after_enh", "snr_after_enhs", "enh_ms"] + \
          [f"{m}_{o}" for o in OUTS for m in ("wer", "similarity", "utmos", "is_failure", "fail_wer", "fail_sim", "hypothesis")] + \
          ["wer_ref", "similarity_ref", "utc"]
 
@@ -157,6 +161,35 @@ def decode(pipe, ctx, x):
         return pipe.tts.vocos.decode(mel[..., ctx["prompt_len"]:]).cpu().numpy().squeeze()
 
 
+class Enhancer:
+    """Pretrained DNS64 Demucs speech enhancer (Defossez et al., 2020; pip package `denoiser`), 16 kHz.
+    __call__(wav, sr, wet) returns wet * enhanced + (1 - wet) * wav at the input sample rate."""
+
+    def __init__(self, torch, torchaudio, device):
+        from denoiser import pretrained
+        self.torch, self.F, self.device = torch, torchaudio.functional, device
+        self.model = pretrained.dns64().to(device).eval()
+        self.sr = self.model.sample_rate
+
+    def __call__(self, wav, sr, wet=1.0):
+        if wet <= 0:
+            return wav
+        torch = self.torch
+        x = torch.from_numpy(wav).float().to(self.device)[None, None]
+        x16 = self.F.resample(x, sr, self.sr) if sr != self.sr else x
+        with torch.inference_mode():
+            y = self.model(x16)
+        y = self.F.resample(y, self.sr, sr) if sr != self.sr else y
+        y = y[..., :x.shape[-1]]
+        y = torch.nn.functional.pad(y, (0, x.shape[-1] - y.shape[-1]))
+        return (wet * y + (1.0 - wet) * x)[0, 0].cpu().numpy().astype(wav.dtype)
+
+
+def enh_wet(snr, mode):
+    """Wet mix of the enhanced prompt: 1 for "full"; for "snr", 0 at 30 dB or above and 1 at 20 dB or below."""
+    return 1.0 if mode == "full" else swc_beta(snr, 1.0)
+
+
 def antithetic_pick(xp, xm, anchor, plen):
     """+1 if the eps output is at least as close to the teacher endpoint (generated frames) as the -eps output, else -1."""
     g = lambda a: a[:, plen:, :]
@@ -164,7 +197,7 @@ def antithetic_pick(xp, xm, anchor, plen):
 
 
 # -------------------------------------------------------------------------------- runs
-def run_cases(pipe, todo_items, conds, out_dir, csv_name="snng.csv", reproduce=False):
+def run_cases(pipe, todo_items, conds, out_dir, enhancer, csv_name="snng.csv", reproduce=False):
     path = Path(out_dir) / csv_name
     done = rf.done_keys(path, 1)
     stored = ex.stored_cases()
@@ -200,8 +233,30 @@ def run_cases(pipe, todo_items, conds, out_dir, csv_name="snng.csv", reproduce=F
         audios.update({o: decode(pipe, ctx, student_x(pipe, dict(ctx, cond=clean[o][1]), ends[o])) for o in SWC_BMAX})
         if pick < 0:
             audios["anti"] = decode(pipe, ctx, xm)
+        timing = {}
+
+        def enhance(wet):
+            def transform(wav, sr):
+                t0 = time.perf_counter()
+                out = enhancer(wav, sr, wet)
+                timing.setdefault("ms", (time.perf_counter() - t0) * 1000.0)
+                return out
+            return transform
+
+        snr_of = lambda c: pipe.sampler.estimate_prompt_snr(c["prompt"], sample_rate=c["sr"])
+        ctx_e = pipe.prepare(item, cond, item["input_seed"], out_dir, prompt_transform=enhance(1.0))
+        Ee, _ = pipe.teacher(ctx_e, (4, 6))
+        audios.update({o: decode(pipe, ctx_e, student_x(pipe, ctx_e, Ee[step])) for o, (mode, step) in ENH.items() if mode == "full"})
+        wet = enh_wet(ctx["prompt_snr"], "snr")
+        row.update({"wet_enhs4": wet, "snr_after_enh": snr_of(ctx_e)})
+        if wet > 0:
+            ctx_s = pipe.prepare(item, cond, item["input_seed"], out_dir, prompt_transform=enhance(wet))
+            Es, _ = pipe.teacher(ctx_s, (4,))
+            audios["enhs4"] = decode(pipe, ctx_s, student_x(pipe, ctx_s, Es[4]))
+            row["snr_after_enhs"] = snr_of(ctx_s)
+        row["enh_ms"] = timing.get("ms")
         for o in OUTS:
-            if o == "anti" and pick > 0:                    # the eps output is the stored plain Step-4 output
+            if (o == "anti" and pick > 0) or (o == "enhs4" and wet <= 0):   # identical to the stored plain Step-4 output
                 m = {"wer": float(s[4]["wer"]), "similarity": float(s[4]["similarity"]), "utmos": float(s[4]["utmos"]),
                      "hypothesis": s[4]["hypothesis"]}
             else:
@@ -272,7 +327,14 @@ def fixed_sequence(train, grid, make, stratified):
     return chosen
 
 
-POLICIES = ["reference", "snr_only", "snr_theta"] + [f"{o}_{k}" for o in OUTS for k in ("route", "noisy", "all")]
+def heavy(hi, e, o):
+    """Plain Step 4 if SNR >= hi; the method o if SNR < e (heavy noise); Step 8 in between (None = never)."""
+    hi = float("inf") if hi is None else hi
+    e = float("-inf") if e is None else e
+    return lambda r: 4 if r["snr"] >= hi else (o if r["snr"] < e else 8)
+
+
+POLICIES = ["reference", "snr_only", "snr_theta"] + [f"{o}_{k}" for o in OUTS for k in ("route", "heavy", "noisy", "all")]
 
 
 def fold_policy(name, train, stratified):
@@ -290,6 +352,9 @@ def fold_policy(name, train, stratified):
     if kind == "noisy":
         return route(hi, float("-inf"), o), (hi, "all below")
     top = float("inf") if hi is None else hi
+    if kind == "heavy":
+        e = fixed_sequence(train, [x for x in HEAVY_GRID if x <= top], lambda p: heavy(hi, p, o), stratified)
+        return heavy(hi, e, o), (hi, e)
     lo = fixed_sequence(train, [x for x in LOW_GRID if x < top], lambda p: route(hi, p, o), stratified)
     return route(hi, lo, o), (hi, lo)
 
@@ -356,8 +421,9 @@ def analyze(out, allow_partial=False):
         crit = {"C1": a[f"failures_{o}"] <= 0.75 * a["failures_4"] and a["p"] < 0.05 and a[f"failures_{o}"] < a["failures_4"],
                 "C2": b[f"failures_{o}"] <= b["failures_4"] + 1}
         if "cross_validation" in res:
-            x, y = res["cross_validation"]["pooled"][f"{o}_route"], res["cross_validation"]["pooled"]["snr_theta"]
-            crit["C3"] = x["mean_nfe"] < y["mean_nfe"] and x["failures"] <= y["failures"]
+            y = res["cross_validation"]["pooled"]["snr_theta"]
+            crit["C3"] = any(x["mean_nfe"] < y["mean_nfe"] and x["failures"] <= y["failures"]
+                             for x in (res["cross_validation"]["pooled"][f"{o}_{k}"] for k in ("route", "heavy")))
         res["criteria"][o] = crit
     (out / "snng_results.json").write_text(json.dumps(res, indent=2) + "\n", encoding="utf-8")
     (out / "NOISE_GUIDANCE_REPORT.md").write_text(render(res), encoding="utf-8")
@@ -368,10 +434,12 @@ def analyze(out, allow_partial=False):
 def render(res):
     names = {"snng05": "SNNG η = 0.5 (18 NFE)", "snng10": "SNNG η = 1.0 (18 NFE)", "anti": "Antithetic pair (16 NFE)",
              "scg": "SNR-Compensated Guidance, r_max 2.5 (13 NFE)", "scg15": "SNR-Compensated Guidance, r_max 1.5 (13 NFE)",
-             "swc": "SNR-Wiener Conditioning, β_max 1.0 (13 NFE)", "swc05": "SNR-Wiener Conditioning, β_max 0.5 (13 NFE)"}
+             "swc": "SNR-Wiener Conditioning, β_max 1.0 (13 NFE)", "swc05": "SNR-Wiener Conditioning, β_max 0.5 (13 NFE)",
+             "enh4": "Enhanced prompt, Step 4 (13 NFE)", "enh6": "Enhanced prompt, Step 6 (17 NFE)",
+             "enhs4": "SNR-scheduled enhanced prompt, Step 4 (13 NFE)"}
     d = res["drift_reproduction_max_abs_diff"]
     f4 = lambda x: "n/a" if x is None else f"{x:+.4f}"
-    L = ["# Preliminary test: noise-aware handover methods (SNNG, SCG, SWC, antithetic pair)", "",
+    L = ["# Preliminary test: noise-aware handover methods (SNNG, SCG, SWC, prompt enhancement, antithetic pair)", "",
          f"{'**PARTIAL.** ' if res['partial'] else ''}Development speakers only ({N_SPEAKERS} speakers x {len(CONDS)} conditions: {', '.join(CONDS)}); "
          f"{res['cases']} of {res['expected_cases']} cases; preregistration `{res['preregistration_sha256'][:16]}…`. "
          "Every number is computed from the CSV files by `run_noise_guidance_prelim.py analyze`.", "",
@@ -405,7 +473,8 @@ def render(res):
                      + " | ".join(str(v["per_condition"][c]) for c in CONDS) + " |")
         L += ["", "Chosen per fold: " + "; ".join(f"{n}: {v}" for n, v in res["chosen"][tag].items() if v and any(x is not None for x in v))]
     L += ["", "Policies: snr_theta = plain Step 4 if SNR ≥ θ (calibrated), else Step 8. <m>_route = plain Step 4 if SNR ≥ θ_hi (calibrated as snr_theta), "
-          "the method if θ_lo ≤ SNR < θ_hi (θ_lo calibrated next on the same fold), else Step 8. <m>_noisy = the method for every input below θ_hi. "
+          "the method if θ_lo ≤ SNR < θ_hi (θ_lo calibrated next on the same fold), else Step 8. <m>_heavy = plain Step 4 if SNR ≥ θ_hi, "
+          "the method if SNR < θ_e (heavy noise; θ_e calibrated next), else Step 8. <m>_noisy = the method for every input below θ_hi. "
           "<m>_all = the method for every input.", "", "Development evidence only; a claim needs a held-out test with the protocol frozen first."]
     return "\n".join(L) + "\n"
 
@@ -423,15 +492,16 @@ def write_prereg(out, args):
                               "evaluated here; the fit uses no failure labels)", "scg_fit": SCG_FIT, "scg_rmax": SCG_RMAX,
                        "swc": "prompt frames of the teacher's and the student's conditioning multiplied (linear mel magnitude) by "
                               "G = clip(1 - beta(S) N_b / M, G_MIN, 1), N_b = mean of the quietest 20% prompt frames per band; "
-                              "beta(S) = beta_max * clip((30 - S) / 10, 0, 1)", "swc_beta_max": SWC_BMAX, "swc_gain_floor": SWC_GMIN},
+                              "beta(S) = beta_max * clip((30 - S) / 10, 0, 1)", "swc_beta_max": SWC_BMAX, "swc_gain_floor": SWC_GMIN,
+                       "enh": "prompt cleaned by the pretrained DNS64 Demucs enhancer (pip denoiser 0.1.5) before conditioning, mixed wet*enhanced + (1-wet)*noisy; enh4/enh6: wet 1 at Steps 4/6; enhs4: wet = clip((30 - S)/10, 0, 1) at Step 4; the router SNR is that of the unenhanced prompt; enhancer time is recorded (enh_ms) and not counted in NFE", "enh_outputs": ENH},
            "nfe": {str(k): v for k, v in COST.items()},
            "n_speakers": N_SPEAKERS, "conditions": list(CONDS), "theta_db": THETA, "alpha": ALPHA, "delta": DELTA, "folds": FOLDS, "seed": SEED,
            "theta_grid": THETA_GRID, "theta_lo_grid": LOW_GRID, "policies": POLICIES,
            "primary_test": "each method vs plain Step 4 on the noisy conditions pooled (exact McNemar, two-sided)",
            "criteria": ["C1 noisy Step-4 failures drop by at least 25% with p < 0.05", "C2 clean Step-4 failures rise by at most 1",
-                        "C3 pooled out-of-fold <m>_route: lower mean NFE than snr_theta with no more failures"],
+                        "C3 pooled out-of-fold <m>_route or <m>_heavy: lower mean NFE than snr_theta with no more failures"],
            "secondary": "average SIM and WER vs Step 8, paired Wilcoxon, noisy and clean (descriptive)",
-           "selection_rule": "the method passing the most criteria; ties broken by the lower pooled <m>_route mean NFE",
+           "selection_rule": "the method passing the most criteria; ties broken by the lower pooled mean NFE of <m>_route or <m>_heavy",
            "input_hashes": {str(p.relative_to(THESIS_ROOT)).replace("\\", "/"): rf.sha256_file(p)
                             for p in (rf.T4_GRID, cg.PILOT_GRID, ex.EXP012 / "labels_new.csv", Path(__file__))},
            "thesis_commit": rf.git_head(THESIS_ROOT), "dmo_commit": rf.git_head(args.dmo_root)}
@@ -456,11 +526,12 @@ def main(argv=None):
         analyze(out, args.allow_partial)
         return
     pipe = rf.Pipeline(args.dmo_root, args.device)
+    enhancer = Enhancer(pipe.torch, pipe.torchaudio, pipe.device)
     if args.cmd == "smoke":
         out = out / "smoke"
         out.mkdir(exist_ok=True)
         its = [it for it in ex.items() if it["utt_id"] not in cg.pilot_utts()][:2]
-        repro = run_cases(pipe, its, ("clean", "gauss20"), out, reproduce=True)
+        repro = run_cases(pipe, its, ("clean", "gauss20"), out, enhancer, reproduce=True)
         (out / "reproduction.json").write_text(json.dumps(repro, indent=2) + "\n", encoding="utf-8")
         for r in repro:
             if "check" in r:
@@ -471,7 +542,7 @@ def main(argv=None):
         print(f"Smoke run complete: {out}")
         return
     write_prereg(out, args)
-    run_cases(pipe, ex.items(), CONDS, out)
+    run_cases(pipe, ex.items(), CONDS, out, enhancer)
     analyze(out)
 
 
