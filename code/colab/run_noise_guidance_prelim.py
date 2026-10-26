@@ -42,6 +42,7 @@ import csv
 import datetime
 import hashlib
 import json
+import math
 import random
 import statistics
 import sys
@@ -334,13 +335,16 @@ def run_cases(pipe, todo_items, conds, out_dir, enhancer, csv_name="snng.csv", r
 
 
 # ----------------------------------------------------------------------------- analysis
-def build_table(stored, rows):
+def build_table(stored, rows, signals=None):
+    """signals: (utt, cond) -> EXP-012 teacher-pass row, for the drift profile d_1..d_6 used by TAS."""
     table = []
     for r in rows:
         s = stored.get((r["utt_id"], r["condition"]))
         if s is not None:
+            g = (signals or {}).get((r["utt_id"], r["condition"]))
             table.append({"utt": r["utt_id"], "spk": r["speaker_id"], "cond": r["condition"], "snr": float(r["prompt_snr"]),
                           "d4": float(r["d_4"]), "d4_stored": float(r["d4_stored"]),
+                          "ld": [math.log(float(g[f"d_{i}"])) for i in range(1, 7)] if g else None,
                           "fail": {4: rf.is_true(s[4]["is_failure"]), 8: False, **{o: rf.is_true(r[f"is_failure_{o}"]) for o in OUTS}},
                           "sim": {4: float(s[4]["similarity"]), 8: float(s[8]["similarity"]), **{o: float(r[f"similarity_{o}"]) for o in OUTS}},
                           "wer": {4: float(s[4]["wer"]), 8: float(s[8]["wer"]), **{o: float(r[f"wer_{o}"]) for o in OUTS}}})
@@ -381,7 +385,30 @@ def heavy(hi, e, o):
     return lambda r: 4 if r["snr"] >= hi else (o if r["snr"] < e else 8)
 
 
-POLICIES = ["reference", "snr_only", "snr_theta"] + [f"{o}_{k}" for o in OUTS for k in ("route", "heavy", "noisy", "all")]
+def tas_fit(train):
+    """Trajectory Anomaly Score, fitted on the clean-prompt training cases only (no failure labels): squared Mahalanobis
+    distance of the drift profile log(d_1..d_6) from the clean mean, counted only when the profile lies below that mean
+    (the trajectory is too still: premature stabilization); 0 otherwise."""
+    import numpy as np
+    X = np.array([r["ld"] for r in train if r["cond"] == "clean" and r["ld"] is not None])
+    mu = X.mean(0)
+    Ci = np.linalg.inv(np.cov(X, rowvar=False) + 1e-3 * np.eye(X.shape[1]))
+
+    def score(r):
+        if r["ld"] is None:
+            return float("inf")
+        z = np.asarray(r["ld"]) - mu
+        return float(z @ Ci @ z) if z.mean() < 0 else 0.0
+    return score
+
+
+def gated(score, tau, o):
+    """The SNR-only gate plus a detector: output o if SNR >= 20 dB and score <= tau; Step 8 otherwise (None = never)."""
+    return lambda r: o if (tau is not None and r["snr"] >= THETA and score(r) <= tau) else 8
+
+
+POLICIES = ["reference", "snr_only", "snr_theta", "d4veto", "tas"] + \
+           [f"{o}_{k}" for o in OUTS for k in ("route", "heavy", "tas", "noisy", "all")]
 
 
 def fold_policy(name, train, stratified):
@@ -390,6 +417,12 @@ def fold_policy(name, train, stratified):
         return (lambda r: 8), None
     if name == "snr_only":
         return (lambda r: 4 if r["snr"] >= THETA else 8), None
+    if name in ("d4veto", "tas") or name.endswith("_tas"):
+        early = 4 if name in ("d4veto", "tas") else name.rsplit("_", 1)[0]
+        score = (lambda r: -r["d4"]) if name == "d4veto" else tas_fit(train)
+        grid = sorted({score(r) for r in train if r["snr"] >= THETA})              # conservative -> aggressive
+        tau = fixed_sequence(train, grid, lambda t: gated(score, t, early), stratified)
+        return gated(score, tau, early), tau
     hi = fixed_sequence(train, THETA_GRID, lambda p: route(p, None, None), stratified)
     if name == "snr_theta":
         return route(hi, None, None), hi
@@ -412,7 +445,7 @@ def cross_validate(table):
     fold = {s: i % FOLDS for i, s in enumerate(spks)}
     res, chosen = {}, {}
     for tag, strat in (("pooled", False), ("stratified", True)):
-        res[tag], chosen[tag] = {}, {}
+        res[tag], chosen[tag], vecs = {}, {}, {}
         for name in POLICIES:
             oof, ch = [], []
             for f in range(FOLDS):
@@ -424,6 +457,11 @@ def cross_validate(table):
                               "worst_condition_risk": max(per[c] / max(1, sum(r["cond"] == c for r, _ in oof)) for c in CONDS),
                               "per_condition": per}
             chosen[tag][name] = ch
+            failed = {id(r): bool(r["fail"][k]) for r, k in oof}
+            vecs[name] = [failed[id(r)] for r in table]
+        for name in POLICIES:                     # paired against SNR-only on the same cases
+            x, y, pv = rf.mcnemar_exact(vecs["snr_only"], vecs[name])
+            res[tag][name]["vs_snr_only"] = {"fixed": x, "broken": y, "p": pv}
     return res, chosen
 
 
@@ -455,7 +493,8 @@ def analyze(out, allow_partial=False):
     out = Path(out)
     prereg = json.loads((out / "preregistration.json").read_text(encoding="utf-8"))
     rows = rf.read_csv(out / "snng.csv", repair=True)
-    table = build_table(ex.stored_cases(), rows)
+    signals = {(r["utt_id"], r["condition"]): r for r in rf.read_csv(ex.EXP012 / "signals.csv")}
+    table = build_table(ex.stored_cases(), rows, signals)
     expected = N_SPEAKERS * len(CONDS)
     if len(table) < expected and not allow_partial:
         raise SystemExit(f"{len(table)} of {expected} cases; finish the run or pass --allow_partial")
@@ -513,6 +552,14 @@ def render(res):
     for name, t in res["paired_tests"].items():
         ks = [k for k in t if k.startswith("failures_")]
         L.append(f"- {name}: {t[ks[0]]} → {t[ks[1]]} of {t['n']} (p {t['p']:.4f})")
+    if "cross_validation" in res:
+        L += ["", "## Against SNR-only (pooled calibration, out of fold; exact McNemar on the same cases)", "",
+              "SNR-only = Step 4 if SNR ≥ 20 dB, else Step 8. Within limit = out-of-fold risk ≤ 5%.", "",
+              "| Policy | Failures | Risk | Within limit | Mean NFE | Fixed vs SNR-only | Broken | p |", "|---|---:|---:|---|---:|---:|---:|---:|"]
+        for n, v in res["cross_validation"]["pooled"].items():
+            c = v["vs_snr_only"]
+            L.append(f"| {n} | {v['failures']}/{v['n']} | {v['failures'] / v['n']:.1%} | {'yes' if v['failures'] / v['n'] <= ALPHA else 'no'} | "
+                     f"{v['mean_nfe']:.2f} | {c['fixed']} | {c['broken']} | {c['p']:.2g} |")
     L += ["", "## Early handover within the cleaned system", "",
           "The early cleaned output judged against the cleaned Step-8 output (Definition 3.1 thresholds). Low counts mean the early "
           "handover is safe within the cleaned system, not only better than the uncleaned reference.", ""]
@@ -536,7 +583,9 @@ def render(res):
         L += ["", "Chosen per fold: " + "; ".join(f"{n}: {v}" for n, v in res["chosen"][tag].items() if v and any(x is not None for x in v))]
     L += ["", "Policies: snr_theta = plain Step 4 if SNR ≥ θ (calibrated), else Step 8. <m>_route = plain Step 4 if SNR ≥ θ_hi (calibrated as snr_theta), "
           "the method if θ_lo ≤ SNR < θ_hi (θ_lo calibrated next on the same fold), else Step 8. <m>_heavy = plain Step 4 if SNR ≥ θ_hi, "
-          "the method if SNR < θ_e (heavy noise; θ_e calibrated next), else Step 8. <m>_noisy = the method for every input below θ_hi. "
+          "the method if SNR < θ_e (heavy noise; θ_e calibrated next), else Step 8. d4veto / tas = plain Step 4 if SNR ≥ 20 dB and the "
+          "detector (−d₄, or the Trajectory Anomaly Score of log d₁..d₆ fitted on clean training prompts) is below its certified threshold, "
+          "else Step 8; <m>_tas = the same gate with the method at the handover. <m>_noisy = the method for every input below θ_hi. "
           "<m>_all = the method for every input.", "", "Development evidence only; a claim needs a held-out test with the protocol frozen first."]
     return "\n".join(L) + "\n"
 
@@ -559,7 +608,10 @@ def write_prereg(out, args):
                        "piec": "generated frames of the final mel multiplied (linear magnitude) by G = clip(1 - beta(S) N_b / M, 0.1, 1), "
                                "N_b = mean of the quietest 20% prompt frames per band of the noisy conditioning; beta(S) = clip((30 - S) / 10, 0, 1); "
                                "piec4 on the plain Step-4 output, swcpiec4 on the SWC Step-4 output",
-                       "controls": "enh8 and piec8 are cleaned Step-8 outputs, used to judge enh4 and piec4 within the cleaned system; not candidates"},
+                       "controls": "enh8 and piec8 are cleaned Step-8 outputs, used to judge enh4 and piec4 within the cleaned system; not candidates",
+                       "tas": "Trajectory Anomaly Score: squared Mahalanobis distance of log(d_1..d_6) from the clean-prompt training mean (one-sided: "
+                              "only below the mean); hand over iff SNR >= 20 dB and score <= tau, tau certified by LTT; drift profile from the "
+                              "committed EXP-012 signals of the same cases"},
            "nfe": {str(k): v for k, v in COST.items()},
            "n_speakers": N_SPEAKERS, "conditions": list(CONDS), "theta_db": THETA, "alpha": ALPHA, "delta": DELTA, "folds": FOLDS, "seed": SEED,
            "theta_grid": THETA_GRID, "theta_lo_grid": LOW_GRID, "policies": POLICIES,
