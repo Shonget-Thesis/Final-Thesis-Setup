@@ -60,6 +60,16 @@ class OperatorTests(unittest.TestCase):
         np.testing.assert_array_equal(ng.swc_clean(cond, 10, beta=0.0), cond)
         self.assertEqual(cond[0, 0, 0], noise)                  # input untouched
 
+    def test_heavy_route_and_enhancement_schedule(self):
+        pol = ng.heavy(26.0, 22.0, "enh4")
+        self.assertEqual(pol({"snr": 30.0}), 4)            # clean: plain Step 4
+        self.assertEqual(pol({"snr": 24.0}), 8)            # mild noise: full teacher
+        self.assertEqual(pol({"snr": 18.0}), "enh4")       # heavy noise: enhanced prompt, Step 4
+        self.assertEqual(ng.heavy(None, None, "enh4")({"snr": 50.0}), 8)
+        self.assertEqual(ng.enh_wet(45.0, "full"), 1.0)
+        self.assertEqual(ng.enh_wet(35.0, "snr"), 0.0)
+        self.assertEqual(ng.enh_wet(18.0, "snr"), 1.0)
+
     def test_route_sends_inputs_by_snr_band(self):
         pol = ng.route(30.0, 22.0, "snng10")
         self.assertEqual(pol({"snr": 35.0}), 4)
@@ -102,6 +112,7 @@ class AnalyzeTests(unittest.TestCase):
         self.assertLess(noisy["mean_nfe"], base["mean_nfe"])
         self.assertIn("noise-aware handover methods", report)
         self.assertIn("SNR-Wiener Conditioning", report)
+        self.assertIn("enh4_heavy", report)
 
 
 if __name__ == "__main__":
