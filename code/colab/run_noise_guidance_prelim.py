@@ -227,6 +227,13 @@ def antithetic_pick(xp, xm, anchor, plen):
 
 
 # -------------------------------------------------------------------------------- runs
+def stored_metrics(row):
+    """Scores of a stored label row. The T4 grid (gpu_grid_all1000.csv) has no transcript column, so the
+    hypothesis is optional; the failure rule uses only WER and SIM."""
+    return {"wer": float(row["wer"]), "similarity": float(row["similarity"]), "utmos": float(row["utmos"]),
+            "hypothesis": row.get("hypothesis", "")}
+
+
 def run_cases(pipe, todo_items, conds, out_dir, enhancer, csv_name="snng.csv", reproduce=False):
     path = Path(out_dir) / csv_name
     done = rf.done_keys(path, 1)
@@ -303,8 +310,7 @@ def run_cases(pipe, todo_items, conds, out_dir, enhancer, csv_name="snng.csv", r
         for o in OUTS:
             k = same.get(o)
             if k in (4, 8):
-                m = {"wer": float(s[k]["wer"]), "similarity": float(s[k]["similarity"]), "utmos": float(s[k]["utmos"]),
-                     "hypothesis": s[k]["hypothesis"]}
+                m = stored_metrics(s[k])
             elif k is not None:
                 m = scored[k]
             else:

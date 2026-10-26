@@ -94,6 +94,17 @@ class OperatorTests(unittest.TestCase):
         self.assertEqual(gate({"snr": 30.0, "ld": [-1.0] * 6}), 8)
         self.assertEqual(gate({"snr": 15.0, "ld": [0.0] * 6}), 8)
 
+    def test_stored_metrics_accept_every_label_source(self):
+        # every source of the reused labels must work, including the T4 grid, which has no transcript column
+        stored = ng.ex.stored_cases()
+        for (u, c), s in stored.items():
+            for k in (4, 8):
+                m = ng.stored_metrics(s[k])
+                self.assertEqual(set(m), {"wer", "similarity", "utmos", "hypothesis"})
+        t4 = ng.rf.read_csv(ng.rf.T4_GRID)[0]
+        self.assertNotIn("hypothesis", t4)
+        self.assertEqual(ng.stored_metrics(t4)["hypothesis"], "")
+
     def test_route_sends_inputs_by_snr_band(self):
         pol = ng.route(30.0, 22.0, "snng10")
         self.assertEqual(pol({"snr": 35.0}), 4)

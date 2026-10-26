@@ -27,3 +27,7 @@ The EXP-015 README records the numbers: beating the calibrated SNR gate needs a 
 ## Follow-up: Trajectory Anomaly Score (same day)
 
 Added TAS gating (`tas`, `d4veto`, `<m>_tas`) and an "Against SNR-only" table with exact McNemar to the EXP-015 analysis. On the committed data the integrated analysis reproduces the offline result exactly: `tas` 12/360 at 18.20 NFE, `d4veto` 13/360 at 18.20, SNR-only 86/360 at 14.40. 54 tests pass; workspace check passes. Analysis-only change: the notebook and the synthesis are unchanged.
+
+## Fix after the first Colab smoke test (same day)
+
+The A100 smoke test stopped with `KeyError: 'hypothesis'`: when an output equals a stored one (for example the antithetic +eps output, or PIEC on a clean prompt), the runner copied the stored scores including the transcript, but the T4 grid (`gpu_grid_all1000.csv`), the source for clean prompts, has no transcript column. Stored scores are now read through `stored_metrics`, with the transcript optional (the failure rule uses only WER and SIM). A new test reads every stored label source. Before the crash the case had passed the enhancer, PIEC and the guided teacher passes. 55 tests pass.
