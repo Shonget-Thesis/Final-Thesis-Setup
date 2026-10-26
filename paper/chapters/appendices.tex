@@ -288,7 +288,40 @@ On 96 LibriSpeech pairs, the team tested accepting only part of the student's fi
 
 \subsection{Fixed Switching Times}
 
-This analysis used all 500 speakers of the three splits (Section~\ref{sec:data}), each under the clean and the 15~dB noisy prompt condition (1{,}000 instances), synthesized on the Tesla T4 GPU with the student restart fixed, evaluated with the models of Section~\ref{sec:measures}, and scored with the added-failure rule of Definition~\ref{def:failure} against the reference switching time $s=0.25$ (Step~8; \nolinkurl{code/analysis/problem_validation_t4.py}). With one switching time for every input, the failure rate rose as the switch moved earlier: 25.2\% (252 of 1{,}000) at $s=0.15$ (Step~6, 17 forward passes), 27.8\% at $s=0.10$ (Step~5, 15) and 33.4\% at $s=0.07$ (Step~4, 13). Almost all failures came from noisy prompts (247, 269 and 322 of 500) rather than clean ones (5, 9 and 12 of 500), and the same ordering held on each split separately. The cheapest switching time that did not fail varied between inputs: in hindsight it was Step~4 for 666 instances, Step~5 for 100, Step~6 for 55 and the reference for 179, all of them noisy. A per-input choice made in hindsight would therefore use 14.85 forward passes on average instead of 21 ($-29\%$), whereas no single earlier switching time is safe for every input. This per-input choice cannot be deployed, but it bounds what an adaptive rule can save, and the variation between inputs is the observation that motivates this study. Because the calibration and test splits enter this analysis and had already been inspected in earlier analyses, these figures are development evidence, and an independent evaluation needs data not used here. An earlier CPU version on 12 speakers (48 instances), with lighter evaluation models and a stricter failure rule, showed the same pattern.
+This analysis used all 500 speakers of the three splits (Section~\ref{sec:data}), each under the clean and the 15~dB noisy prompt condition (1{,}000 instances), synthesized on the Tesla T4 GPU with the student restart fixed, evaluated with the models of Section~\ref{sec:measures}, and scored with the added-failure rule of Definition~\ref{def:failure} against the reference switching time $s=0.25$ (Step~8; \nolinkurl{code/analysis/problem_validation_t4.py}). With one switching time for every input, the failure rate rose as the switch moved earlier, and almost all failures came from noisy prompts (Table~\ref{tab:fixed-fail}); the same ordering held on each split separately. The cheapest switching time that did not fail varied between inputs (Table~\ref{tab:fixed-oracle}), and the 179 instances that needed the reference were all noisy. A per-input choice made in hindsight would therefore use 14.85 forward passes on average instead of 21 ($-29\%$), whereas no single earlier switching time is safe for every input.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Added failures of each fixed switching time on 500 speakers under two prompt conditions (Tesla T4).}
+\label{tab:fixed-fail}
+\begin{tabular}{@{}l c r r r r@{}}
+\toprule
+\textbf{Switching time} & \textbf{Step} & \textbf{Passes} & \textbf{Clean (500)} & \textbf{Noisy (500)} & \textbf{All (1{,}000)} \\
+\midrule
+$s=0.07$ & 4 & 13 & 12 (2.4\%) & 322 (64.4\%) & 334 (33.4\%) \\
+$s=0.10$ & 5 & 15 & 9 (1.8\%) & 269 (53.8\%) & 278 (27.8\%) \\
+$s=0.15$ & 6 & 17 & 5 (1.0\%) & 247 (49.4\%) & 252 (25.2\%) \\
+$s=0.25$ (reference) & 8 & 21 & 0 & 0 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Cheapest switching time without an added failure for each instance, chosen in hindsight, and the resulting mean cost.}
+\label{tab:fixed-oracle}
+\begin{tabular}{@{}l r r r r r@{}}
+\toprule
+\textbf{Prompts} & \textbf{Step 4} & \textbf{Step 5} & \textbf{Step 6} & \textbf{Step 8} & \textbf{Mean passes} \\
+\midrule
+Clean (500) & 488 & 9 & 3 & 0 & 13.06 \\
+Noisy (500) & 178 & 91 & 52 & 179 & 16.64 \\
+All (1{,}000) & 666 & 100 & 55 & 179 & 14.85 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+ This per-input choice cannot be deployed, but it bounds what an adaptive rule can save, and the variation between inputs is the observation that motivates this study. Because the calibration and test splits enter this analysis and had already been inspected in earlier analyses, these figures are development evidence, and an independent evaluation needs data not used here. An earlier CPU version on 12 speakers (48 instances), with lighter evaluation models and a stricter failure rule, showed the same pattern.
 
 \subsection{Student Restart Level}
 
