@@ -70,6 +70,18 @@ class OperatorTests(unittest.TestCase):
         self.assertEqual(ng.enh_wet(35.0, "snr"), 0.0)
         self.assertEqual(ng.enh_wet(18.0, "snr"), 1.0)
 
+    def test_piec_cancels_the_prompt_environment_from_generated_frames_only(self):
+        import numpy as np
+        noise, speech = np.log(0.1), np.log(10.0)
+        cond = np.full((1, 12, 2), noise)
+        cond[0, 2:8, :] = speech                                 # prompt frames 0-9: quiet frames give the environment floor 0.1
+        x = np.full((1, 12, 2), np.log(0.2))                     # generated frames 10-11 carry a copied floor of 0.2
+        x[0, :10, :] = 3.0
+        out = ng.piec_cancel(x, cond, 10, beta=1.0)
+        np.testing.assert_array_equal(out[0, :10], x[0, :10])    # prompt frames unchanged
+        np.testing.assert_allclose(np.exp(out[0, 10:]), 0.2 * (1 - 0.1 / 0.2))
+        np.testing.assert_array_equal(ng.piec_cancel(x, cond, 10, beta=0.0), x)
+
     def test_route_sends_inputs_by_snr_band(self):
         pol = ng.route(30.0, 22.0, "snng10")
         self.assertEqual(pol({"snr": 35.0}), 4)
@@ -113,6 +125,8 @@ class AnalyzeTests(unittest.TestCase):
         self.assertIn("noise-aware handover methods", report)
         self.assertIn("SNR-Wiener Conditioning", report)
         self.assertIn("enh4_heavy", report)
+        self.assertIn("## Early handover within the cleaned system", report)
+        self.assertEqual(sum(res["within_cleaned_system"]["piec4 judged against piec8"].values()), 0)
 
 
 if __name__ == "__main__":
