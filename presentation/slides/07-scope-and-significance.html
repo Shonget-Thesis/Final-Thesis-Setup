@@ -1,0 +1,117 @@
+<!-- 6 SCOPE -->
+        <section class="scene" data-ch="1" data-sec="1.4–1.5" data-dur="30" data-title="Scope & Delimitations">
+          <p class="eyebrow b fade" data-t="100">Sections 1.4–1.5 · Scope &amp; Significance</p>
+          <h2 class="b up" data-t="250">Scope, Delimitations, &amp; Target Beneficiaries</h2>
+          <div class="two" style="margin-top:24px;gap:56px">
+            <div class="scope">
+              <div class="sc b left" data-t="700"><span class="m y">IN</span><span><strong>Only the switching time
+                    varies.</strong> Student restart level stays at the released default.</span></div>
+              <div class="sc b left" data-t="1050"><span class="m y">IN</span><span>Teacher, student, duration predictor
+                  and vocoder <strong>stay frozen</strong>.</span></div>
+              <div class="sc b left" data-t="1400"><span class="m y">IN</span><span>English zero-shot prompts from
+                  <strong>Seed-TTS test-en</strong>, clean and 15 dB noisy.</span></div>
+              <div class="sc b left" data-t="1750"><span class="m y">IN</span><span>All runs on an <strong>NVIDIA Tesla
+                    T4</strong> through Google Colab.</span></div>
+              <div class="sc b left" data-t="2100"><span class="m n">OUT</span><span>A per-utterance guarantee; the
+                  bound holds <strong>on average</strong> over inputs.</span></div>
+              <div class="sc b left" data-t="2450"><span class="m n">OUT</span><span>Building or testing an assistive
+                  app; clinical or learner outcomes.</span></div>
+            </div>
+            <div class="stack">
+              <p class="mono b fade" data-t="2800" style="font-size:15px;font-weight:600;letter-spacing:.14em;color:var(--dim)">WHO
+                BENEFITS</p>
+              <div class="who">
+                <div class="panel b up" data-t="3000">
+                  <h3>Speech researchers</h3>
+                  <p>A formulation, proofs and calibration for teacher-guided samplers in general.</p>
+                </div>
+                <div class="panel b up" data-t="3300">
+                  <h3>TTS developers</h3>
+                  <p>Lower cost with a stated bound, no retraining.</p>
+                </div>
+                <div class="panel b up" data-t="3600">
+                  <h3>Assistive-tech developers</h3>
+                  <p>Cheaper, predictable synthesis for personalized voices.</p>
+                </div>
+                <div class="panel b up" data-t="3900">
+                  <h3>Future researchers</h3>
+                  <p>A reusable protocol: disjoint calibration, fixed failure rule, exact cost.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <footer class="cite b fade" data-t="3000"><span class="k">Sources</span><span>Anastassiou et al. (2024),
+              <em>Seed-TTS</em> · Ardila et al. (2020), <em>Common Voice</em>, LREC · Muharib et al. (2024), JADD ·
+              Therrien et al. (2025), AAC</span></footer>
+        </section>
+
+<script type="text/slide-script">
+The study varies only the switching time. Every network stays frozen, and the student's restart level stays at the released default. We evaluate on English Seed-TTS prompts under clean and noisy conditions, on an NVIDIA Tesla T4 through Google Colab. The guarantee is statistical, not per utterance. Assistive communication for autistic users motivates efficient synthesis, but we will not build or evaluate any assistive application or clinical outcome. The results serve speech researchers, TTS developers, assistive-technology developers and future researchers.
+</script>
+
+<style>
+/* S6 */
+    .scope {
+      display: flex;
+      flex-direction: column;
+      gap: 15px
+    }
+
+    .sc {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 16px;
+      align-items: baseline;
+      font-size: 22px;
+      line-height: 1.42;
+      color: var(--muted)
+    }
+
+    .sc .m {
+      font-family: var(--mono);
+      font-size: 16px;
+      font-weight: 700
+    }
+
+    .sc .m.y {
+      color: var(--blue)
+    }
+
+    .sc .m.n {
+      color: var(--orange)
+    }
+
+    .sc strong {
+      background: var(--dark-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      -webkit-box-decoration-break: clone;
+      box-decoration-break: clone;
+      font-weight: 700;
+      display: inline;
+    }
+
+    .who {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px
+    }
+
+    .who .panel {
+      padding: 22px 24px;
+      border-radius: 8px;
+    }
+
+    .who .panel h3 {
+      font-size: 23px;
+      font-weight: 700;
+      margin-bottom: 8px
+    }
+
+    .who .panel p {
+      font-size: 19.5px;
+      line-height: 1.42;
+      color: var(--muted)
+    }
+</style>

@@ -1,0 +1,198 @@
+<!-- 15 CALIBRATION -->
+        <section class="scene" data-ch="3" data-sec="3.7" data-dur="40" data-title="Risk-Calibrated Threshold Selection">
+          <p class="eyebrow b fade" data-t="100">Section 3.7 · Risk Calibration Protocol</p>
+          <h2 class="b up" data-t="250">Risk-Calibrated Threshold Selection via Learn-Then-Test</h2>
+          <p class="mono b fade" data-t="600"
+            style="font-size:15px;font-weight:600;letter-spacing:.14em;color:var(--dim);margin-top:22px">SPEAKER-DISJOINT SPLITS ·
+            SEED-TTS TEST-EN · ONE UTTERANCE PER SPEAKER</p>
+          <div class="split b grow" data-t="700">
+            <div class="d"><span>Development</span><span>100</span></div>
+            <div class="c"><span>Calibration</span><span>200</span></div>
+            <div class="e"><span>Test</span><span>200</span></div>
+          </div>
+          <p class="mono b fade" data-t="1800"
+            style="font-size:15px;font-weight:600;letter-spacing:.14em;color:var(--dim);margin-top:26px">ILLUSTRATIVE · n = 100, α =
+            0.05, δ = 0.10 · p = P( Bin(n, α) ≤ failures )</p>
+          <div class="ltt">
+            <div class="lam ok b up" data-t="2200"><span class="mono" style="font-size:14px;color:var(--dim);font-weight:500">g = 1 ·
+                conservative</span><span class="lv">λ 0.40</span><span
+                class="r"><span>failures</span><b>0</b></span><span class="r"><span>p</span><b>0.0059</b></span><span
+                class="verdict">≤ δ · certify</span></div>
+            <div class="lam ok b up" data-t="3000"><span class="mono" style="font-size:14px;color:var(--dim);font-weight:500">g =
+                2</span><span class="lv">λ 0.50</span><span class="r"><span>failures</span><b>1</b></span><span
+                class="r"><span>p</span><b>0.0371</b></span><span class="verdict">≤ δ · certify</span></div>
+            <div class="lam no b up" data-t="3800"><span class="mono" style="font-size:14px;color:var(--dim);font-weight:500">g =
+                3</span><span class="lv">λ 0.60</span><span class="r"><span>failures</span><b>3</b></span><span
+                class="r"><span>p</span><b>0.2578</b></span><span class="verdict">&gt; δ · stop</span></div>
+            <div class="lam nt b up" data-t="4300"><span class="mono" style="font-size:14px;color:var(--dim);font-weight:500">g = 4 ·
+                aggressive</span><span class="lv">λ 0.70</span><span class="r"><span>failures</span><b>6</b></span><span
+                class="r"><span>p</span><b>—</b></span><span class="verdict">not tested</span></div>
+          </div>
+          <div class="lock"><span class="box b pop" data-t="4900">λ̂ = 0.50</span>
+            <p class="txt b up" data-t="5400" style="font-size:21px;max-width:68ch">Study protocol: α = 0.05, δ = 0.10,
+              grid 0.20 to 1.20 in steps of 0.05, fixed in advance. Verify on the <strong>held-out test split</strong>
+              and over <strong>100 random re-splits</strong>.</p>
+          </div>
+          <footer class="cite b fade" data-t="2600"><span class="k">Sources</span><span>Angelopoulos et al. (2025),
+              <em>Learn then test</em> · Bauer (1991), Stat. Med. · Clopper &amp; Pearson (1934) · Proposal Alg. 3.4,
+              Appendix A.6</span></footer>
+        </section>
+
+<script type="text/slide-script">
+We calibrate the threshold with Learn-Then-Test on speaker-disjoint data: 100 speakers for development, 200 for calibration and 200 for testing. Thresholds are tested from conservative to aggressive. Each gets a binomial p-value; we keep going while it is at most delta and stop at the first that is not. In this illustrative example, 0.40 and 0.50 pass and 0.60 fails, so we lock 0.50. We will verify the guarantee on held-out speakers and over 100 random re-splits.
+</script>
+
+<style>
+/* S15 */
+    .split {
+      display: flex;
+      height: 72px;
+      gap: 6px;
+      margin-top: 12px
+    }
+
+    .split div {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 22px;
+      font-family: var(--mono);
+      font-weight: 500;
+      font-size: 18px;
+      letter-spacing: .06em
+    }
+
+    .split .d {
+      flex: 100;
+      background: rgba(15, 23, 42, .06);
+      border-radius: 4px;
+    }
+
+    .split .d span {
+      background: var(--dark-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+    }
+
+    .split .c {
+      flex: 200;
+      background: var(--orange-grad);
+      color: #FFFFFF;
+      font-weight: 700;
+      border-radius: 4px;
+    }
+
+    .split .e {
+      flex: 200;
+      background: var(--blue-grad);
+      color: #FFFFFF;
+      font-weight: 700;
+      border-radius: 4px;
+    }
+
+    .ltt {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-top: 14px
+    }
+
+    .lam {
+      border: 1px solid var(--line-2);
+      padding: 22px 20px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+      background: #FFFFFF;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+      border-radius: 8px;
+    }
+
+    .lam .lv {
+      font-family: var(--display);
+      font-stretch: 118%;
+      font-size: 44px;
+      font-weight: 850;
+      background: var(--dark-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .lam .r {
+      font-family: var(--mono);
+      font-weight: 500;
+      font-size: 16px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between
+    }
+
+    .lam .r b {
+      background: var(--dark-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .lam .verdict {
+      margin-top: 8px;
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      padding: 8px 10px;
+      text-align: center;
+      border-radius: 4px;
+    }
+
+    .lam.ok {
+      border-color: var(--blue)
+    }
+
+    .lam.ok .verdict {
+      background: var(--blue-soft);
+      color: var(--blue)
+    }
+
+    .lam.no {
+      border-color: var(--dim)
+    }
+
+    .lam.no .verdict {
+      background: rgba(15, 23, 42, .06);
+      color: var(--muted)
+    }
+
+    .lam.nt {
+      opacity: .45
+    }
+
+    .lam.nt .verdict {
+      color: var(--dim)
+    }
+
+    .lock {
+      display: flex;
+      gap: 26px;
+      align-items: center;
+      margin-top: 26px
+    }
+
+    .lock .box {
+      font-family: var(--display);
+      font-stretch: 118%;
+      font-size: 38px;
+      font-weight: 850;
+      padding: 14px 28px;
+      border: 2px solid var(--orange);
+      background: var(--orange-soft);
+      border-radius: 6px;
+      color: var(--orange-dark);
+      box-shadow: 0 4px 16px rgba(234, 88, 12, 0.15);
+    }
+</style>
