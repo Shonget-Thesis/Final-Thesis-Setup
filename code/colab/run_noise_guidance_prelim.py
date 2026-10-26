@@ -525,6 +525,11 @@ def main(argv=None):
     if args.cmd == "analyze":
         analyze(out, args.allow_partial)
         return
+    import torch
+    # The stored references were computed on a Tesla T4 in FP32. On Ampere or newer GPUs (A100, L4, G4), keep full FP32
+    # instead of TF32 so a faster GPU changes speed, not the comparison; the smoke test reports any remaining difference.
+    torch.backends.cuda.matmul.allow_tf32 = False
+    torch.backends.cudnn.allow_tf32 = False
     pipe = rf.Pipeline(args.dmo_root, args.device)
     enhancer = Enhancer(pipe.torch, pipe.torchaudio, pipe.device)
     if args.cmd == "smoke":
