@@ -23,6 +23,13 @@ prompt's noise leaks into the generated voice. Two new methods are tested at the
              G = clip(1 - beta(S) * N_b / M, G_MIN, 1)
          with beta(S) = beta_max * clip((30 - S) / (30 - 20), 0, 1): no cleaning at 30 dB or above, full
          strength at 20 dB or below. beta_max = 1.0 (swc) or 0.5 (swc05). No extra pass: 13 NFE.
+  piec   Prompt-Informed Environment Cancellation. Zero-shot TTS copies the prompt's acoustic environment into
+         the output, so the environment is estimated from the prompt itself (per mel band, the mean linear
+         magnitude of the prompt's quietest 20% of frames) and cancelled from the GENERATED frames before the
+         vocoder: G = clip(1 - beta(S) * N_b / M, 0.1, 1), beta(S) as for SWC. piec4: plain Step 4 output;
+         swcpiec4: SWC Step-4 output (clean conditioning, then cancel the residual). No network cost: 13 NFE.
+  enh8, piec8  Controls, not candidates: the same cleaning applied to the full Step-8 output. They separate the
+         gain from cleaning from the safety of the early handover within the cleaned system.
 
 Data: the EXP-012 Quick set (60 development speakers x 6 conditions); the plain Step-4 and Step-8
 labels are committed, so only the new outputs are synthesized and scored.
@@ -54,16 +61,18 @@ SCG_FIT = {"A": -0.0263, "B": 0.0078, "G_CLEAN": 0.236, "G_FLOOR": 0.02}   # EXP
 SCG_RMAX = {"scg": 2.5, "scg15": 1.5}
 SWC_SNR, SWC_GMIN = (30.0, 20.0), 0.1          # no cleaning at >= 30 dB, full strength at <= 20 dB; gain floor
 SWC_BMAX = {"swc": 1.0, "swc05": 0.5}
-ENH = {"enh4": ("full", 4), "enh6": ("full", 6), "enhs4": ("snr", 4)}   # enhanced prompt: wet mix (full or SNR-scheduled), handover step
-OUTS = tuple(ETAS) + ("anti",) + tuple(SCG_RMAX) + tuple(SWC_BMAX) + tuple(ENH)
+ENH = {"enh4": ("full", 4), "enh6": ("full", 6), "enhs4": ("snr", 4), "enh8": ("full", 8)}   # wet mix, handover step
+PIEC = ("piec4", "swcpiec4", "piec8")
+CONTROLS = ("enh8", "piec8")                    # cleaned Step-8 outputs: references for the within-system check
+OUTS = tuple(ETAS) + ("anti",) + tuple(SCG_RMAX) + tuple(SWC_BMAX) + tuple(ENH) + PIEC
 COST = {4: 13, 8: 21, "snng05": 18, "snng10": 18, "anti": 16, "scg": 13, "scg15": 13, "swc": 13, "swc05": 13,
-        "enh4": 13, "enh6": 17, "enhs4": 13}
+        "enh4": 13, "enh6": 17, "enhs4": 13, "enh8": 21, "piec4": 13, "swcpiec4": 13, "piec8": 21}
 ALPHA, DELTA, FOLDS, SEED, THETA = ex.ALPHA, ex.DELTA, ex.FOLDS, ex.SEED, ex.THETA
 THETA_GRID = ex.GRIDS["theta"]                                   # 40 -> 20 dB
 LOW_GRID = [float(x) for x in range(40, 9, -1)]                  # theta_lo candidates, 40 -> 10 dB
 HEAVY_GRID = [float(x) for x in range(10, 41)]                   # theta_e candidates, 10 -> 40 dB (method below theta_e)
 FIELDS = ["utt_id", "speaker_id", "condition", "prompt_snr", "d_4", "d4_stored", "noise_frames", "anti_pick"] + \
-         [f"gamma_{o}" for o in SCG_RMAX] + [f"beta_{o}" for o in SWC_BMAX] + ["wet_enhs4", "snr_after_enh", "snr_after_enhs", "enh_ms"] + \
+         [f"gamma_{o}" for o in SCG_RMAX] + [f"beta_{o}" for o in SWC_BMAX] + ["wet_enhs4", "snr_after_enh", "snr_after_enhs", "enh_ms", "beta_piec"] + \
          [f"{m}_{o}" for o in OUTS for m in ("wer", "similarity", "utmos", "is_failure", "fail_wer", "fail_sim", "hypothesis")] + \
          ["wer_ref", "similarity_ref", "utc"]
 
@@ -94,19 +103,39 @@ def swc_beta(snr, beta_max, band=SWC_SNR):
 def swc_clean(cond, plen, beta, scale=1.0, frac=NOISE_FRAC, gmin=SWC_GMIN):
     """Spectral-subtraction gain on the prompt frames of a (log-mel / scale) conditioning tensor; torch or numpy.
     Noise per band = mean linear magnitude of the quietest frames; G = clip(1 - beta * N / M, gmin, 1)."""
-    is_torch = hasattr(cond, "clone")
-    out = cond.clone() if is_torch else cond.copy()
+    out = cond.clone() if hasattr(cond, "clone") else cond.copy()
     if beta <= 0:
         return out
+    noise, exp_, log_ = _prompt_noise_floor(cond, plen, scale, frac)
+    out[0, :plen, :] = _subtract(exp_(cond[0, :plen, :] * scale), noise, beta, gmin, log_) / scale
+    return out
+
+
+def _prompt_noise_floor(cond, plen, scale, frac):
+    """Mean linear magnitude per band of the quietest prompt frames, and the matching exp/log (torch or numpy)."""
+    is_torch = hasattr(cond, "clone")
     exp_, log_ = ((lambda a: a.exp()), (lambda a: a.log())) if is_torch else (__import__("numpy").exp, __import__("numpy").log)
     p = cond[0, :plen, :]
     energy = [float(p[i].mean()) for i in range(plen)]
     quiet = sorted(range(plen), key=lambda i: energy[i])[:max(1, int(frac * plen))]
-    lin = exp_(p * scale)
-    noise = lin[quiet].mean(0)
+    return exp_(p * scale)[quiet].mean(0), exp_, log_
+
+
+def _subtract(lin, noise, beta, gmin, log_):
     gain = 1.0 - beta * noise / lin
-    gain = gain.clamp(gmin, 1.0) if is_torch else gain.clip(gmin, 1.0)
-    out[0, :plen, :] = log_(lin * gain) / scale
+    gain = gain.clamp(gmin, 1.0) if hasattr(gain, "clamp") else gain.clip(gmin, 1.0)
+    return log_(lin * gain)
+
+
+def piec_cancel(x, cond, plen, beta, scale=1.0, frac=NOISE_FRAC, gmin=SWC_GMIN):
+    """Prompt-Informed Environment Cancellation on a generated mel state x (log-mel / scale; torch or numpy):
+    the environment floor is estimated from the quietest prompt frames of `cond` and cancelled from x's generated
+    frames only; prompt frames are left unchanged."""
+    out = x.clone() if hasattr(x, "clone") else x.copy()
+    if beta <= 0:
+        return out
+    noise, exp_, log_ = _prompt_noise_floor(cond, plen, scale, frac)
+    out[0, plen:, :] = _subtract(exp_(x[0, plen:, :] * scale), noise, beta, gmin, log_) / scale
     return out
 
 
@@ -208,7 +237,7 @@ def run_cases(pipe, todo_items, conds, out_dir, enhancer, csv_name="snng.csv", r
         s = stored[(item["utt_id"], cond)]
         ref = s[8]
         ctx = pipe.prepare(item, cond, item["input_seed"], out_dir)
-        E, drift = pipe.teacher(ctx, tuple(range(K + 1)))
+        E, drift = pipe.teacher(ctx, tuple(range(9)))          # one pass to Step 8: Steps 0-4 as before, Step 8 for the PIEC control
         plen = ctx["prompt_len"]
         cfg = pipe.sampler.CFG_STRENGTH
         gammas = {o: scg_gamma(ctx["prompt_snr"], r, base=cfg) for o, r in SCG_RMAX.items()}
@@ -230,7 +259,8 @@ def run_cases(pipe, todo_items, conds, out_dir, enhancer, csv_name="snng.csv", r
                "wer_ref": float(ref["wer_ref"]), "similarity_ref": float(ref["similarity_ref"])}
         gt = pipe.ground_truth(item)
         audios = {o: decode(pipe, ctx, student_x(pipe, ctx, ends[o])) for o in tuple(ETAS) + tuple(SCG_RMAX)}
-        audios.update({o: decode(pipe, ctx, student_x(pipe, dict(ctx, cond=clean[o][1]), ends[o])) for o in SWC_BMAX})
+        xs = {o: student_x(pipe, dict(ctx, cond=clean[o][1]), ends[o]) for o in SWC_BMAX}
+        audios.update({o: decode(pipe, ctx, x) for o, x in xs.items()})
         if pick < 0:
             audios["anti"] = decode(pipe, ctx, xm)
         timing = {}
@@ -245,7 +275,7 @@ def run_cases(pipe, todo_items, conds, out_dir, enhancer, csv_name="snng.csv", r
 
         snr_of = lambda c: pipe.sampler.estimate_prompt_snr(c["prompt"], sample_rate=c["sr"])
         ctx_e = pipe.prepare(item, cond, item["input_seed"], out_dir, prompt_transform=enhance(1.0))
-        Ee, _ = pipe.teacher(ctx_e, (4, 6))
+        Ee, _ = pipe.teacher(ctx_e, (4, 6, 8))
         audios.update({o: decode(pipe, ctx_e, student_x(pipe, ctx_e, Ee[step])) for o, (mode, step) in ENH.items() if mode == "full"})
         wet = enh_wet(ctx["prompt_snr"], "snr")
         row.update({"wet_enhs4": wet, "snr_after_enh": snr_of(ctx_e)})
@@ -255,12 +285,30 @@ def run_cases(pipe, todo_items, conds, out_dir, enhancer, csv_name="snng.csv", r
             audios["enhs4"] = decode(pipe, ctx_s, student_x(pipe, ctx_s, Es[4]))
             row["snr_after_enhs"] = snr_of(ctx_s)
         row["enh_ms"] = timing.get("ms")
+        b_p = swc_beta(ctx["prompt_snr"], 1.0)
+        row["beta_piec"] = b_p
+        if b_p > 0:
+            src = {"piec4": xp, "swcpiec4": xs["swc"], "piec8": student_x(pipe, ctx, E[8])}
+            with pipe.torch.inference_mode():
+                audios.update({o: decode(pipe, ctx, piec_cancel(x, ctx["cond"], plen, b_p, scale)) for o, x in src.items()})
+        same = {}                                           # outputs identical to one already scored or stored
+        if pick > 0:
+            same["anti"] = 4
+        if wet <= 0:
+            same["enhs4"] = 4
+        if b_p <= 0:
+            same.update({"piec4": 4, "swcpiec4": "swc", "piec8": 8})
+        scored = {}
         for o in OUTS:
-            if (o == "anti" and pick > 0) or (o == "enhs4" and wet <= 0):   # identical to the stored plain Step-4 output
-                m = {"wer": float(s[4]["wer"]), "similarity": float(s[4]["similarity"]), "utmos": float(s[4]["utmos"]),
-                     "hypothesis": s[4]["hypothesis"]}
+            k = same.get(o)
+            if k in (4, 8):
+                m = {"wer": float(s[k]["wer"]), "similarity": float(s[k]["similarity"]), "utmos": float(s[k]["utmos"]),
+                     "hypothesis": s[k]["hypothesis"]}
+            elif k is not None:
+                m = scored[k]
             else:
                 m = pipe.score(audios[o], item, gt)
+            scored[o] = m
             fail, diag = pipe.check_failure(m["wer"], row["wer_ref"], m["similarity"], row["similarity_ref"], config=pipe.cfg)
             row.update({f"wer_{o}": m["wer"], f"similarity_{o}": m["similarity"], f"utmos_{o}": m["utmos"], f"is_failure_{o}": bool(fail),
                         f"fail_wer_{o}": bool(diag["wer_failed"]), f"fail_sim_{o}": bool(diag["sim_failed"]), f"hypothesis_{o}": m["hypothesis"]})
@@ -268,8 +316,7 @@ def run_cases(pipe, todo_items, conds, out_dir, enhancer, csv_name="snng.csv", r
             with pipe.torch.inference_mode():
                 diff = float((ends["plain"] - E[K]).abs().max())
             repro.append({"utt_id": item["utt_id"], "condition": cond, "check": "guided loop (gamma=2, eta=0) vs plain teacher endpoint", "max_abs_diff": diff})
-            E8, _ = pipe.teacher(ctx, (8,))
-            for k, T in ((4, E[K]), (8, E8[8])):
+            for k, T in ((4, E[K]), (8, E[8])):
                 m = pipe.score(decode(pipe, ctx, student_x(pipe, ctx, T)), item, gt)
                 repro.append({"utt_id": item["utt_id"], "condition": cond, "step": k, "wer": m["wer"], "wer_stored": float(s[k]["wer"]),
                               "similarity": m["similarity"], "similarity_stored": float(s[k]["similarity"])})
@@ -396,6 +443,14 @@ def quality_vs_reference(table, o, conds):
     return out
 
 
+def within(table, early, late):
+    """Failures of the early output judged against the cleaned Step-8 output (Definition 3.1 thresholds), per condition."""
+    th = json.loads((THESIS_ROOT / "code/scheduling/failure_config.json").read_text(encoding="utf-8"))
+    bad = lambda r: r["wer"][early] > max(th["absolute_wer_ceiling"], r["wer"][late] + th["relative_wer_margin"]) or \
+        r["sim"][early] < r["sim"][late] - th["similarity_margin"]
+    return {c: sum(bad(r) for r in table if r["cond"] == c) for c in CONDS}
+
+
 def analyze(out, allow_partial=False):
     out = Path(out)
     prereg = json.loads((out / "preregistration.json").read_text(encoding="utf-8"))
@@ -415,6 +470,7 @@ def analyze(out, allow_partial=False):
                                 for o in OUTS}}
     if len({r["spk"] for r in table}) >= FOLDS:
         res["cross_validation"], res["chosen"] = cross_validate(table)
+    res["within_cleaned_system"] = {f"{a} judged against {b}": within(table, a, b) for a, b in (("enh4", "enh8"), ("piec4", "piec8"))}
     res["criteria"] = {}
     for o in OUTS:
         a, b = res["paired_tests"][f"{o} vs Step 4, noisy (primary)"], res["paired_tests"][f"{o} vs Step 4, clean"]
@@ -436,10 +492,11 @@ def render(res):
              "scg": "SNR-Compensated Guidance, r_max 2.5 (13 NFE)", "scg15": "SNR-Compensated Guidance, r_max 1.5 (13 NFE)",
              "swc": "SNR-Wiener Conditioning, β_max 1.0 (13 NFE)", "swc05": "SNR-Wiener Conditioning, β_max 0.5 (13 NFE)",
              "enh4": "Enhanced prompt, Step 4 (13 NFE)", "enh6": "Enhanced prompt, Step 6 (17 NFE)",
-             "enhs4": "SNR-scheduled enhanced prompt, Step 4 (13 NFE)"}
+             "enhs4": "SNR-scheduled enhanced prompt, Step 4 (13 NFE)", "enh8": "Enhanced prompt, Step 8 (control, 21 NFE)",
+             "piec4": "PIEC on Step 4 (13 NFE)", "swcpiec4": "SWC + PIEC, Step 4 (13 NFE)", "piec8": "PIEC on Step 8 (control, 21 NFE)"}
     d = res["drift_reproduction_max_abs_diff"]
     f4 = lambda x: "n/a" if x is None else f"{x:+.4f}"
-    L = ["# Preliminary test: noise-aware handover methods (SNNG, SCG, SWC, prompt enhancement, antithetic pair)", "",
+    L = ["# Preliminary test: noise-aware handover methods (PIEC, prompt enhancement, SWC, SCG, SNNG, antithetic pair)", "",
          f"{'**PARTIAL.** ' if res['partial'] else ''}Development speakers only ({N_SPEAKERS} speakers x {len(CONDS)} conditions: {', '.join(CONDS)}); "
          f"{res['cases']} of {res['expected_cases']} cases; preregistration `{res['preregistration_sha256'][:16]}…`. "
          "Every number is computed from the CSV files by `run_noise_guidance_prelim.py analyze`.", "",
@@ -456,6 +513,11 @@ def render(res):
     for name, t in res["paired_tests"].items():
         ks = [k for k in t if k.startswith("failures_")]
         L.append(f"- {name}: {t[ks[0]]} → {t[ks[1]]} of {t['n']} (p {t['p']:.4f})")
+    L += ["", "## Early handover within the cleaned system", "",
+          "The early cleaned output judged against the cleaned Step-8 output (Definition 3.1 thresholds). Low counts mean the early "
+          "handover is safe within the cleaned system, not only better than the uncleaned reference.", ""]
+    for name, per in res["within_cleaned_system"].items():
+        L.append(f"- {name}: {sum(per.values())} failures ({', '.join(f'{c} {v}' for c, v in per.items())})")
     L += ["", "## Average quality vs the Step-8 reference (paired; SIM higher is better, WER lower is better)", "",
           "| Method | Prompts | n | SIM mean diff | SIM better | SIM p | WER mean diff | WER p |", "|---|---|---:|---:|---:|---:|---:|---:|"]
     for o, q in res["quality_vs_step8"].items():
@@ -493,7 +555,11 @@ def write_prereg(out, args):
                        "swc": "prompt frames of the teacher's and the student's conditioning multiplied (linear mel magnitude) by "
                               "G = clip(1 - beta(S) N_b / M, G_MIN, 1), N_b = mean of the quietest 20% prompt frames per band; "
                               "beta(S) = beta_max * clip((30 - S) / 10, 0, 1)", "swc_beta_max": SWC_BMAX, "swc_gain_floor": SWC_GMIN,
-                       "enh": "prompt cleaned by the pretrained DNS64 Demucs enhancer (pip denoiser 0.1.5) before conditioning, mixed wet*enhanced + (1-wet)*noisy; enh4/enh6: wet 1 at Steps 4/6; enhs4: wet = clip((30 - S)/10, 0, 1) at Step 4; the router SNR is that of the unenhanced prompt; enhancer time is recorded (enh_ms) and not counted in NFE", "enh_outputs": ENH},
+                       "enh": "prompt cleaned by the pretrained DNS64 Demucs enhancer (pip denoiser 0.1.5) before conditioning, mixed wet*enhanced + (1-wet)*noisy; enh4/enh6: wet 1 at Steps 4/6; enhs4: wet = clip((30 - S)/10, 0, 1) at Step 4; the router SNR is that of the unenhanced prompt; enhancer time is recorded (enh_ms) and not counted in NFE", "enh_outputs": ENH,
+                       "piec": "generated frames of the final mel multiplied (linear magnitude) by G = clip(1 - beta(S) N_b / M, 0.1, 1), "
+                               "N_b = mean of the quietest 20% prompt frames per band of the noisy conditioning; beta(S) = clip((30 - S) / 10, 0, 1); "
+                               "piec4 on the plain Step-4 output, swcpiec4 on the SWC Step-4 output",
+                       "controls": "enh8 and piec8 are cleaned Step-8 outputs, used to judge enh4 and piec4 within the cleaned system; not candidates"},
            "nfe": {str(k): v for k, v in COST.items()},
            "n_speakers": N_SPEAKERS, "conditions": list(CONDS), "theta_db": THETA, "alpha": ALPHA, "delta": DELTA, "folds": FOLDS, "seed": SEED,
            "theta_grid": THETA_GRID, "theta_lo_grid": LOW_GRID, "policies": POLICIES,
@@ -501,7 +567,7 @@ def write_prereg(out, args):
            "criteria": ["C1 noisy Step-4 failures drop by at least 25% with p < 0.05", "C2 clean Step-4 failures rise by at most 1",
                         "C3 pooled out-of-fold <m>_route or <m>_heavy: lower mean NFE than snr_theta with no more failures"],
            "secondary": "average SIM and WER vs Step 8, paired Wilcoxon, noisy and clean (descriptive)",
-           "selection_rule": "the method passing the most criteria; ties broken by the lower pooled mean NFE of <m>_route or <m>_heavy",
+           "selection_rule": "among candidates (controls enh8 and piec8 excluded), the method passing the most criteria; ties broken by the lower pooled mean NFE of <m>_route or <m>_heavy",
            "input_hashes": {str(p.relative_to(THESIS_ROOT)).replace("\\", "/"): rf.sha256_file(p)
                             for p in (rf.T4_GRID, cg.PILOT_GRID, ex.EXP012 / "labels_new.csv", Path(__file__))},
            "thesis_commit": rf.git_head(THESIS_ROOT), "dmo_commit": rf.git_head(args.dmo_root)}

@@ -17,3 +17,9 @@ The EXP-015 README records the numbers: beating the calibrated SNR gate needs a 
 
 - python -m unittest discover -s code/tests (52 tests) and python scripts/check_workspace.py: pass. torch is not installed locally; the Colab smoke test exercises the enhancer and torch path. Not run on a GPU.
 - Scope note: the enhancer is an extra pretrained network, so it departs from the manuscript's "no extra network evaluations" statement; any manuscript use is a team and adviser decision.
+
+## Follow-up: PIEC, controls and the SNR-only comparison (same day)
+
+- A team member asked for the comparison against SNR-only (fixed 20 dB gate) only. Computed exactly from committed outputs on the 360-case prelim set: SNR-only 86/360 failures at 14.40 NFE; SNR-only + cDEH 64/360 at 14.40 (McNemar 48 vs 26, p 0.014, five operators compared); SNR-only + low-drift veto 9/360 at 18.38 (p ≈ 1e-23). A per-case interpolation predicts that an enhancer removing about 10% of the noise damage beats SNR-only under the same routing, and about 25% without any SNR routing.
+- Added Prompt-Informed Environment Cancellation (`piec4`, `swcpiec4`; zero network cost) and controls (`enh8`, `piec8`) with a within-cleaned-system check; the plain teacher pass now runs to Step 8 in one pass; TF32 is disabled so a faster GPU gives the same comparison (no effect on a T4).
+- Checks: 53 tests pass; workspace check passes. Not run on a GPU. Estimate: 2.5–3 h on an A100, 6.5–7 h on a T4.
