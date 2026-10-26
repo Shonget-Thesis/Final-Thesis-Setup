@@ -16,3 +16,7 @@ Branch `rhenelAudit`. Requested by a team member: add only a new appendix sectio
 ## Open
 
 - Whether to keep Appendix E in the proposal is a team and adviser decision; it is not adviser-approved.
+
+## Follow-up: candidate figures (same day)
+
+- `paper/figures/tas_handover_gate.jpg` (SNR + TAS handover gate) and `paper/figures/swc_conditioning.jpg` (SNR-Wiener Conditioning with SNR routing), drawn in the style of `handover_scheduling_architecture.jpg` (five panels, highlighted method panel, dashed offline-calibration box, caption) by `paper/figures/scripts/generate_candidate_figures.py`; formulas follow Appendix E. Generated only; not yet included in the manuscript.
