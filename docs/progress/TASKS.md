@@ -2,7 +2,7 @@
 
 Generated from tasks.json; edit the JSON and run python scripts/render_progress.py.
 
-todo: 7 | in_progress: 3 | blocked: 0 | review: 10 | done: 8
+todo: 7 | in_progress: 3 | blocked: 0 | review: 11 | done: 8
 
 | ID | Task | Owner | Status | Updated | Evidence |
 | --- | --- | --- | --- | --- | --- |
@@ -34,5 +34,6 @@ todo: 7 | in_progress: 3 | blocked: 0 | review: 10 | done: 8
 | EVAL-006 | Preliminary test of three zero-cost handover operators (TCR, coherence-gated DEH, SEA) | unassigned | done | 2026-10-26 | [README.md](../../research/experiments/EXP-014-handover-operators-prelim/README.md), [DMOSpeech2_Handover_Operators_Prelim.ipynb](../../code/colab/DMOSpeech2_Handover_Operators_Prelim.ipynb), [run_handover_operators_prelim.py](../../code/colab/run_handover_operators_prelim.py), [test_handover_operators.py](../../code/tests/test_handover_operators.py), [MANIFEST.json](../../research/experiments/EXP-014-handover-operators-prelim/results/MANIFEST.json), [HANDOVER_OPERATORS_REPORT.md](../../research/experiments/EXP-014-handover-operators-prelim/results/HANDOVER_OPERATORS_REPORT.md) |
 | EVAL-007 | Preliminary test of noise-aware handover methods (PIEC, prompt enhancement, SWC, SCG, SNNG, antithetic pair) | unassigned | review | 2026-10-26 | [README.md](../../research/experiments/EXP-015-noise-guidance-prelim/README.md), [DMOSpeech2_Noise_Guidance_Prelim.ipynb](../../code/colab/DMOSpeech2_Noise_Guidance_Prelim.ipynb), [run_noise_guidance_prelim.py](../../code/colab/run_noise_guidance_prelim.py), [test_noise_guidance.py](../../code/tests/test_noise_guidance.py), [MANIFEST.json](../../research/experiments/EXP-015-noise-guidance-prelim/results/MANIFEST.json), [NOISE_GUIDANCE_REPORT.md](../../research/experiments/EXP-015-noise-guidance-prelim/results/NOISE_GUIDANCE_REPORT.md), [PROPOSED_CANDIDATES_TAS_SWC_REPORT.md](../../research/reports/Ref_reports/PROPOSED_CANDIDATES_TAS_SWC_REPORT.md) |
 | EVAL-008 | Confirm the two candidates (TAS, SWC): same-hardware SWC run and an independent-speaker test | unassigned | todo | 2026-10-26 | [PROPOSED_CANDIDATES_TAS_SWC_REPORT.md](../../research/reports/Ref_reports/PROPOSED_CANDIDATES_TAS_SWC_REPORT.md) |
+| PRES-001 | Animated proposal-defense walkthrough (Chapters 1-3) | Claude (presentation), for Mark Vincent D. Limpahan | review | 2026-10-25 | [index.html](../../presentation/index.html), [SCRIPT.md](../../presentation/SCRIPT.md), [README.md](../../presentation/README.md), [2026-10-25-defense-walkthrough.md](../../docs/progress/log/2026-10-25-defense-walkthrough.md) |
 
 Completion requires acceptance evidence and a recorded validation. Unassigned owners need team assignment.
