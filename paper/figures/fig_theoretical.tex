@@ -1,0 +1,37 @@
+% Figure: theoretical framework (Chapter 1)
+\begin{figure}[!htbp]
+\centering
+\begin{adjustbox}{max width=\linewidth}
+\begin{tikzpicture}[
+  font=\figfont,
+  theory/.style={draw=frozenLine, fill=frozenFill, rounded corners=2pt, align=center, text width=3.7cm, minimum height=1.5cm, inner sep=3pt},
+  gives/.style={draw=newLine, fill=newFill, rounded corners=2pt, align=center, text width=4.4cm, minimum height=1.5cm, inner sep=3pt},
+  goal/.style={draw=newLine, very thick, fill=newFill, rounded corners=2pt, align=center, text width=3.2cm, minimum height=2.4cm, inner sep=4pt},
+  head/.style={font=\figfont\bfseries, align=center},
+  arr/.style={-{Stealth[length=2mm]}, thick}
+]
+\node[head] at (0,1.25) {Theory};
+\node[head] at (5.0,1.25) {What it gives the study};
+\node[head] at (10.0,1.25) {Proposed method};
+
+\node[theory] (t1) at (0,0)     {\textbf{Flow matching}\\straight paths from noise to speech};
+\node[theory] (t2) at (0,-2.0)  {\textbf{Knowledge distillation and teacher-guided sampling}};
+\node[theory] (t3) at (0,-4.0)  {\textbf{Input-adaptive computation}\\stop when enough is done};
+\node[theory] (t4) at (0,-6.0)  {\textbf{Statistical risk control}\\Learn-Then-Test};
+
+\node[gives] (g1) at (5.0,0)    {Endpoint estimate at every teacher step, at no extra cost, and a score of whether it has settled};
+\node[gives] (g2) at (5.0,-2.0) {A student that finishes from the teacher's state; the switching time sets the cost};
+\node[gives] (g3) at (5.0,-4.0) {A stopping rule that gives each utterance only the teacher steps it needs};
+\node[gives] (g4) at (5.0,-6.0) {A calibrated threshold with a bound on added failures: $\P(R\le\alpha)\ge1-\delta$};
+
+\node[goal] (goal) at (10.0,-3.0) {\textbf{Risk-calibrated adaptive handover}\\[2pt]switching time chosen per utterance};
+
+\foreach \i in {1,...,4} {
+  \draw[arr] (t\i) -- (g\i);
+  \draw[arr] (g\i.east) -- (goal.west);
+}
+\end{tikzpicture}
+\end{adjustbox}
+\caption{Theoretical framework of the study. Each body of theory supplies one part of the proposed method.}
+\label{fig:theoretical}
+\end{figure}

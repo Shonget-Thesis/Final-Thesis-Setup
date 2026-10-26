@@ -1,0 +1,3268 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Adaptive Handover Walkthrough</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@100..1000&family=Google+Sans:ital,wght@0,300..900;1,300..900&display=swap">
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css">
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <style>
+    [hidden] {
+      display: none !important
+    }
+
+    body {
+      margin: 0
+    }
+
+    /* Layout: a fixed 1600×900 stage scaled to fit full screen, on a black field with star-like cosmic field. */
+    :root {
+      --void: #000000;
+      --deep: #07090D;
+      --panel: #0D1219;
+      --line: rgba(255, 255, 255, .09);
+      --line-2: rgba(255, 255, 255, .18);
+      --fg: #FFFFFF;
+      --muted: #9CA3AF;
+      --dim: #5E6674;
+
+      /* Teacher (Blue): gradient of luminous cyan-blue to deep sapphire blue */
+      --blue: #00A1FF;
+      --blue-light: #38BDF8;
+      --blue-dark: #0070E0;
+      --blue-grad: linear-gradient(135deg, #38BDF8 0%, #00A1FF 50%, #0070E0 100%);
+      --blue-soft: rgba(0, 161, 255, .14);
+
+      /* Student */
+      --student: #BAC5D2;
+
+      /* What this study adds (Orange): gradient of bright warm amber to rich fiery orange */
+      --orange: #FC6A18;
+      --orange-light: #FFA04D;
+      --orange-dark: #D84300;
+      --orange-grad: linear-gradient(135deg, #FFA04D 0%, #FC6A18 52%, #D84300 100%);
+      --orange-soft: rgba(252, 106, 24, .16);
+
+      --font-primary: "Google Sans Flex", "Google Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --display: var(--font-primary);
+      --body: var(--font-primary);
+      --mono: "Google Sans Flex", "Google Sans", sans-serif;
+      --math: "Computer Modern Serif", "KaTeX_Math", "KaTeX_Main", "CMU Serif", "Latin Modern Math", serif;
+      color-scheme: dark;
+    }
+
+    html,
+    body {
+      background: var(--void);
+      color: var(--fg);
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: var(--body);
+      margin: 0;
+      padding: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    button {
+      font: inherit;
+      color: inherit;
+    }
+
+    #app {
+      width: 100vw;
+      height: 100vh;
+      max-width: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--void);
+      overflow: hidden;
+    }
+
+    #app:fullscreen {
+      width: 100vw;
+      height: 100vh;
+      max-width: none;
+      background: var(--void);
+      padding: 0;
+      margin: 0;
+      justify-content: center;
+    }
+
+    #viewport {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      border: none;
+    }
+
+    #stage {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1600px;
+      height: 900px;
+      transform-origin: 0 0;
+      overflow: hidden;
+      background:
+        radial-gradient(1100px 750px at 82% 14%, rgba(0, 161, 255, .15), transparent 65%),
+        radial-gradient(950px 650px at 14% 86%, rgba(252, 106, 24, .13), transparent 60%),
+        radial-gradient(circle at 50% 50%, rgba(13, 17, 24, .45), rgba(0, 0, 0, .96)),
+        radial-gradient(1px 1px at 35px 45px, rgba(255, 255, 255, .45) 100%, transparent 0) 0 0/72px 72px,
+        radial-gradient(1.6px 1.6px at 95px 115px, rgba(255, 255, 255, .75) 100%, transparent 0) 0 0/168px 168px,
+        radial-gradient(1.1px 1.1px at 140px 55px, rgba(56, 189, 248, .6) 100%, transparent 0) 0 0/134px 134px,
+        radial-gradient(1.5px 1.5px at 180px 145px, rgba(255, 160, 77, .55) 100%, transparent 0) 0 0/216px 216px,
+        radial-gradient(0.8px 0.8px at 55px 125px, rgba(255, 255, 255, .28) 100%, transparent 0) 0 0/94px 94px,
+        var(--void);
+      background-blend-mode: normal;
+    }
+
+    #stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(1200px 800px at 50% 50%, transparent 45%, rgba(0, 0, 0, .82));
+      pointer-events: none;
+      z-index: 0
+    }
+
+    .cross {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      z-index: 2;
+      pointer-events: none
+    }
+
+    .cross::before,
+    .cross::after {
+      content: "";
+      position: absolute;
+      background: var(--line-2)
+    }
+
+    .cross::before {
+      left: 8px;
+      top: 0;
+      width: 1px;
+      height: 18px
+    }
+
+    .cross::after {
+      top: 8px;
+      left: 0;
+      height: 1px;
+      width: 18px
+    }
+
+    /* ---------- scenes ---------- */
+    .scene {
+      position: absolute;
+      inset: 0;
+      padding: 96px 110px 92px;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .5s ease, visibility 0s linear .5s;
+      z-index: 1
+    }
+
+    .scene.active {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity .5s ease
+    }
+
+    .chrome {
+      position: absolute;
+      top: 34px;
+      left: 110px;
+      right: 110px;
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 15px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--dim)
+    }
+
+    .chrome .sec {
+      background: var(--blue-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .chrome b {
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .eyebrow {
+      font-family: var(--mono);
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      background: var(--blue-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0 0 14px;
+      display: inline-block;
+    }
+
+    .eyebrow.o {
+      background: var(--orange-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: var(--display);
+      text-transform: uppercase;
+      margin: 0;
+      text-wrap: balance;
+      line-height: 1.02;
+    }
+
+    h1 {
+      font-size: 50px;
+      font-weight: 700;
+      letter-spacing: -.01em;
+    }
+
+    h2 {
+      font-size: 58px;
+      font-weight: 700;
+      letter-spacing: -.01em;
+    }
+
+    h3 {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: .01em;
+    }
+
+    p {
+      margin: 0;
+      font-weight: 400;
+    }
+
+    .lead {
+      font-size: 26px;
+      line-height: 1.42;
+      color: var(--muted);
+      font-weight: 400;
+      max-width: 44ch;
+    }
+
+    .lead strong,
+    .txt strong {
+      color: var(--fg);
+      font-weight: 700;
+    }
+
+    .txt {
+      font-size: 22px;
+      line-height: 1.45;
+      font-weight: 400;
+      color: var(--muted);
+    }
+
+    .mono {
+      font-family: var(--mono);
+      font-weight: 300;
+    }
+
+    .hl {
+      background: var(--orange-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline;
+    }
+
+    .bl {
+      background: var(--blue-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline;
+    }
+
+    .math {
+      font-family: var(--math);
+      font-style: italic;
+      letter-spacing: .02em
+    }
+
+    .math .up {
+      font-style: normal
+    }
+
+    .eq {
+      font-family: var(--math);
+      font-size: 30px;
+      color: var(--fg);
+      padding: 14px 22px;
+      border-left: 3px solid var(--blue);
+      background: linear-gradient(90deg, rgba(0, 161, 255, .16), rgba(0, 112, 224, .04) 70%, transparent);
+      white-space: nowrap
+    }
+
+    .eq.o {
+      border-left-color: var(--orange);
+      background: linear-gradient(90deg, rgba(252, 106, 24, .18), rgba(216, 67, 0, .04) 70%, transparent);
+    }
+
+    .eq i {
+      font-style: italic
+    }
+
+    .eq small {
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 14px;
+      color: var(--dim);
+      letter-spacing: .08em;
+      display: block;
+      margin-top: 6px;
+      font-style: normal
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 14px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      padding: 6px 10px;
+      border: 1px solid var(--line-2);
+      color: var(--muted)
+    }
+
+    .tag.o {
+      border-color: rgba(252, 106, 24, .45);
+      background: linear-gradient(135deg, rgba(255, 160, 77, .12) 0%, rgba(216, 67, 0, .06) 100%);
+      color: #FFA559;
+    }
+
+    .tag.b {
+      border-color: rgba(0, 161, 255, .45);
+      background: linear-gradient(135deg, rgba(56, 189, 248, .12) 0%, rgba(0, 112, 224, .06) 100%);
+      color: #64CBFF;
+    }
+
+    /* citation footer, LEMMiNO-style */
+    .cite {
+      position: absolute;
+      left: 110px;
+      right: 110px;
+      bottom: 30px;
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 14.5px;
+      color: var(--dim);
+      letter-spacing: .02em;
+      line-height: 1.5
+    }
+
+    .cite::before {
+      content: "";
+      flex: none;
+      width: 34px;
+      height: 1px;
+      background: var(--blue);
+      transform: translateY(-4px)
+    }
+
+    .cite .k {
+      flex: none;
+      color: var(--muted);
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      font-size: 13px
+    }
+
+    .cite em {
+      font-style: italic
+    }
+
+    /* ---------- beats ---------- */
+    .b {
+      opacity: 0;
+      transition: opacity .7s ease, transform .9s cubic-bezier(.2, .75, .1, 1)
+    }
+
+    .b.up {
+      transform: translateY(26px)
+    }
+
+    .b.left {
+      transform: translateX(-30px)
+    }
+
+    .b.right {
+      transform: translateX(30px)
+    }
+
+    .b.pop {
+      transform: scale(.86)
+    }
+
+    .b.on {
+      opacity: 1;
+      transform: none
+    }
+
+    .b.grow {
+      opacity: 1;
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform 1.1s cubic-bezier(.6, 0, .2, 1)
+    }
+
+    .b.grow.on {
+      transform: scaleX(1)
+    }
+
+    .b.growy {
+      opacity: 1;
+      transform: scaleY(0);
+      transform-origin: center bottom;
+      transform-box: fill-box;
+      transition: transform 1s cubic-bezier(.6, 0, .2, 1)
+    }
+
+    .b.growy.on {
+      transform: scaleY(1)
+    }
+
+    .b.draw {
+      opacity: 1;
+      stroke-dasharray: var(--len, 3000);
+      stroke-dashoffset: var(--len, 3000);
+      transition: stroke-dashoffset 1.5s cubic-bezier(.6, 0, .2, 1)
+    }
+
+    .b.draw.on {
+      stroke-dashoffset: 0
+    }
+
+    svg .b {
+      transform-box: fill-box;
+      transform-origin: center
+    }
+
+    .scene.reset .b,
+    .scene.reset .b * {
+      transition: none !important
+    }
+
+    /* pass-cell bars */
+    .cells {
+      display: flex;
+      gap: 4px;
+      align-items: center
+    }
+
+    .cells i {
+      display: block;
+      width: 22px;
+      height: 34px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .35s ease, transform .35s ease;
+      transition-delay: calc(var(--i)*45ms)
+    }
+
+    .cells.on i {
+      opacity: 1;
+      transform: none
+    }
+
+    .cells i.t {
+      background: var(--blue-grad);
+      box-shadow: 0 0 8px rgba(0, 161, 255, .25);
+    }
+
+    .cells i.s {
+      background: linear-gradient(135deg, #D4DEE8 0%, #9EAAB8 100%);
+    }
+
+    .cells i.v {
+      background: repeating-linear-gradient(135deg, #FC6A18 0 3px, transparent 3px 8px);
+      outline: 1px solid #FFA04D;
+      outline-offset: -1px;
+    }
+
+    .cells.sm i {
+      width: 16px;
+      height: 26px
+    }
+
+    /* ---------- S0 title ---------- */
+    .s-title {
+      justify-content: center;
+      gap: 32px;
+    }
+
+    .t-h {
+      font-size: 52px;
+      font-weight: 700;
+      letter-spacing: -.015em;
+      line-height: 1.18;
+      text-transform: uppercase;
+      max-width: 38ch;
+      color: var(--fg);
+    }
+
+    .t-h span {
+      font-size: 52px;
+      font-weight: 700;
+      color: var(--fg);
+    }
+
+    .axis {
+      position: relative;
+      height: 120px;
+      margin-top: 22px
+    }
+
+    .axis .rail {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 56px;
+      height: 2px;
+      background: var(--line-2)
+    }
+
+    .axis .seg-t {
+      position: absolute;
+      left: 0;
+      top: 52px;
+      height: 10px;
+      background: var(--blue-grad);
+      box-shadow: 0 0 12px rgba(0, 161, 255, .35);
+      width: 29.3%;
+      animation: hand 9s cubic-bezier(.65, 0, .2, 1) infinite;
+    }
+
+    .axis .seg-s {
+      position: absolute;
+      right: 0;
+      top: 55px;
+      height: 4px;
+      background: var(--student);
+      opacity: .5;
+      left: 29.3%;
+      animation: hands 9s cubic-bezier(.65, 0, .2, 1) infinite
+    }
+
+    .axis .mk {
+      position: absolute;
+      top: 24px;
+      left: 29.3%;
+      width: 3px;
+      height: 66px;
+      background: var(--orange-grad);
+      box-shadow: 0 0 14px rgba(252, 106, 24, .45);
+      animation: handm 9s cubic-bezier(.65, 0, .2, 1) infinite;
+    }
+
+    .axis .mk::after {
+      content: "handover";
+      position: absolute;
+      top: -26px;
+      left: -4px;
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      background: var(--orange-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      white-space: nowrap;
+    }
+
+    .axis .lbl {
+      position: absolute;
+      top: 84px;
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 14px;
+      color: var(--dim);
+      letter-spacing: .1em;
+      text-transform: uppercase
+    }
+
+    @keyframes hand {
+
+      0%,
+      18% {
+        width: 29.3%
+      }
+
+      25%,
+      43% {
+        width: 7.6%
+      }
+
+      50%,
+      68% {
+        width: 16.85%
+      }
+
+      75%,
+      93% {
+        width: 11.8%
+      }
+
+      100% {
+        width: 29.3%
+      }
+    }
+
+    @keyframes hands {
+
+      0%,
+      18% {
+        left: 29.3%
+      }
+
+      25%,
+      43% {
+        left: 7.6%
+      }
+
+      50%,
+      68% {
+        left: 16.85%
+      }
+
+      75%,
+      93% {
+        left: 11.8%
+      }
+
+      100% {
+        left: 29.3%
+      }
+    }
+
+    @keyframes handm {
+
+      0%,
+      18% {
+        left: 29.3%
+      }
+
+      25%,
+      43% {
+        left: 7.6%
+      }
+
+      50%,
+      68% {
+        left: 16.85%
+      }
+
+      75%,
+      93% {
+        left: 11.8%
+      }
+
+      100% {
+        left: 29.3%
+      }
+    }
+
+    .t-authors {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      font-family: var(--body);
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 1.4;
+      letter-spacing: .01em;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      padding-top: 20px;
+    }
+
+    .t-authors span {
+      color: var(--muted);
+    }
+
+    /* ---------- S1 outline ---------- */
+    .outline {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 36px;
+      margin-top: 48px;
+      flex: 1
+    }
+
+    .ocol {
+      border-top: 2px solid var(--line-2);
+      padding-top: 22px;
+      position: relative
+    }
+
+    .ocol .rn {
+      font-family: var(--display);
+      font-size: 110px;
+      font-weight: 800;
+      line-height: .8;
+      background: var(--blue-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .ocol.c3 .rn {
+      background: var(--orange-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .ocol h3 {
+      margin: 18px 0 18px;
+      font-size: 28px
+    }
+
+    .ocol ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px
+    }
+
+    .ocol li {
+      font-size: 21px;
+      color: var(--muted);
+      display: flex;
+      gap: 14px
+    }
+
+    .ocol li span {
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 15px;
+      color: var(--dim);
+      padding-top: 4px;
+      flex: none;
+      width: 34px
+    }
+
+    .ocol .bar {
+      position: absolute;
+      top: -2px;
+      left: 0;
+      height: 3px;
+      width: 100%;
+      background: var(--blue-grad);
+    }
+
+    .ocol.c3 .bar {
+      background: var(--orange-grad);
+    }
+
+    /* ---------- grid helpers ---------- */
+    .two {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 56px;
+      flex: 1;
+      min-height: 0;
+      margin-top: 34px
+    }
+
+    .two.wide-r {
+      grid-template-columns: .85fr 1.15fr
+    }
+
+    .two.wide-l {
+      grid-template-columns: 1.2fr .8fr
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      min-width: 0
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(18, 23, 32, 0.78) 0%, rgba(9, 13, 18, 0.88) 100%);
+      padding: 22px 24px;
+      position: relative;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .panel .ph {
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 14px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 12px
+    }
+
+    /* S2 flow canvas */
+    .flowbox {
+      position: relative;
+      border: 1px solid var(--line);
+      background: rgba(9, 13, 18, .6)
+    }
+
+    #flowCanvas {
+      display: block;
+      width: 100%;
+      height: auto
+    }
+
+    .flowbox .fl {
+      position: absolute;
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 14px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--dim)
+    }
+
+    .flowbox .tread {
+      position: absolute;
+      right: 18px;
+      top: 16px;
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 20px;
+      color: var(--fg)
+    }
+
+    .flowbox .tread span {
+      color: var(--blue)
+    }
+
+    /* S3 */
+    .trio {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 26px;
+      margin-top: 34px
+    }
+
+    .big {
+      font-family: var(--display);
+      font-stretch: 125%;
+      font-weight: 800;
+      font-size: 76px;
+      line-height: 1;
+      letter-spacing: -.01em
+    }
+
+    .passrow {
+      margin-top: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px
+    }
+
+    .passrow .cells i {
+      width: 52px;
+      height: 46px
+    }
+
+    .legend {
+      display: flex;
+      gap: 28px;
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 15px;
+      color: var(--muted);
+      letter-spacing: .06em;
+      align-items: center
+    }
+
+    .legend i {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      margin-right: 8px;
+      vertical-align: -2px
+    }
+
+    /* S4 */
+    .inrow {
+      display: grid;
+      grid-template-columns: 210px 1fr;
+      align-items: center;
+      gap: 18px
+    }
+
+    .inrow .nm {
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 16px;
+      letter-spacing: .06em;
+      color: var(--muted)
+    }
+
+    .inrow .nm b {
+      display: block;
+      font-family: var(--display);
+      font-stretch: 112%;
+      font-size: 22px;
+      color: var(--fg);
+      text-transform: uppercase;
+      letter-spacing: 0
+    }
+
+    .probs {
+      display: flex;
+      flex-direction: column;
+      gap: 18px
+    }
+
+    .prob {
+      display: grid;
+      grid-template-columns: 70px 1fr;
+      gap: 14px;
+      align-items: baseline;
+      border-top: 1px solid var(--line);
+      padding-top: 14px
+    }
+
+    .prob .n {
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 16px;
+      color: var(--orange)
+    }
+
+    .prob p {
+      font-size: 21px;
+      line-height: 1.38;
+      color: var(--muted)
+    }
+
+    .prob p strong {
+      color: var(--fg);
+      font-weight: 600
+    }
+
+    /* S5 */
+    .objs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-top: 30px
+    }
+
+    .obj {
+      border: 1px solid var(--line);
+      background: rgba(9, 13, 18, .8);
+      padding: 24px 22px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 330px;
+      position: relative
+    }
+
+    .obj .on-line {
+      position: absolute;
+      top: -1px;
+      left: -1px;
+      right: -1px;
+      height: 3px;
+      background: var(--orange-grad);
+    }
+
+    .obj .num {
+      font-family: var(--display);
+      font-size: 64px;
+      font-weight: 800;
+      line-height: .8;
+      background: var(--orange-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .obj h3 {
+      font-size: 25px
+    }
+
+    .obj p {
+      font-size: 18.5px;
+      line-height: 1.42;
+      color: var(--muted)
+    }
+
+    .obj .out {
+      margin-top: auto;
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 13.5px;
+      letter-spacing: .06em;
+      color: var(--blue);
+      text-transform: uppercase;
+      border-top: 1px solid var(--line);
+      padding-top: 12px
+    }
+
+    /* S6 */
+    .scope {
+      display: flex;
+      flex-direction: column;
+      gap: 12px
+    }
+
+    .sc {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 14px;
+      align-items: baseline;
+      font-size: 21px;
+      line-height: 1.38;
+      color: var(--muted)
+    }
+
+    .sc .m {
+      font-family: var(--mono);
+      font-size: 15px;
+      font-weight: 600
+    }
+
+    .sc .m.y {
+      color: var(--blue)
+    }
+
+    .sc .m.n {
+      color: var(--orange)
+    }
+
+    .sc strong {
+      color: var(--fg);
+      font-weight: 600
+    }
+
+    .who {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px
+    }
+
+    .who .panel h3 {
+      font-size: 21px;
+      margin-bottom: 8px
+    }
+
+    .who .panel p {
+      font-size: 18px;
+      line-height: 1.4;
+      color: var(--muted)
+    }
+
+    /* S7 chain */
+    .chain {
+      position: relative;
+      margin-top: 60px;
+      flex: 1
+    }
+
+    .chain svg.cl {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 22px;
+      overflow: visible
+    }
+
+    .lk .dot {
+      display: block;
+      width: 22px;
+      height: 22px;
+      margin-bottom: 34px
+    }
+
+    .links {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 18px;
+      position: relative
+    }
+
+    .lk {
+      display: flex;
+      flex-direction: column;
+      gap: 12px
+    }
+
+    .lk h3 {
+      font-size: 22px;
+      line-height: 1.05
+    }
+
+    .lk .g {
+      font-size: 17.5px;
+      line-height: 1.4;
+      color: var(--muted)
+    }
+
+    .lk .g b {
+      display: block;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--blue);
+      font-weight: 500;
+      margin-bottom: 3px
+    }
+
+    .lk .x {
+      font-size: 17.5px;
+      line-height: 1.4;
+      color: var(--dim)
+    }
+
+    .lk .x b {
+      display: block;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--dim);
+      font-weight: 500;
+      margin-bottom: 3px
+    }
+
+    .lk.us h3 {
+      color: var(--orange)
+    }
+
+    .lk.us .g b {
+      color: var(--orange)
+    }
+
+    /* S8 */
+    svg text {
+      font-family: var(--mono);
+      font-weight: 300;
+    }
+
+    .ax {
+      stroke: var(--line-2);
+      stroke-width: 1.5;
+      fill: none
+    }
+
+    .gridl {
+      stroke: var(--line);
+      stroke-width: 1;
+      fill: none
+    }
+
+    .tick {
+      fill: var(--dim);
+      font-size: 16px
+    }
+
+    .costs {
+      display: flex;
+      flex-direction: column;
+      gap: 16px
+    }
+
+    .crow {
+      display: grid;
+      grid-template-columns: 200px 1fr 110px;
+      gap: 14px;
+      align-items: center;
+      border-top: 1px solid var(--line);
+      padding-top: 14px
+    }
+
+    .crow .k {
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.35
+    }
+
+    .crow .k b {
+      display: block;
+      color: var(--fg);
+      font-size: 18px;
+      font-weight: 500
+    }
+
+    .crow .c {
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 15px;
+      color: var(--orange);
+      text-align: right;
+      line-height: 1.35
+    }
+
+    .crow .c b {
+      display: block;
+      font-family: var(--display);
+      font-stretch: 118%;
+      font-size: 30px;
+      color: var(--fg);
+      font-weight: 700
+    }
+
+    .crow.ref .c {
+      color: var(--dim)
+    }
+
+    /* S9 table */
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 34px;
+      font-size: 19.5px
+    }
+
+    .tbl th {
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 13.5px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--dim);
+      text-align: left;
+      padding: 0 16px 12px;
+      border-bottom: 1px solid var(--line-2)
+    }
+
+    .tbl td {
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      vertical-align: top;
+      line-height: 1.35
+    }
+
+    .tbl td:first-child {
+      color: var(--fg);
+      font-weight: 600
+    }
+
+    .tbl td small {
+      display: block;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--dim);
+      font-weight: 300;
+      margin-top: 3px
+    }
+
+    .tbl tr.b {
+      transition: opacity .6s ease, transform .7s ease
+    }
+
+    .tbl .none {
+      color: var(--dim);
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 15px;
+      letter-spacing: .1em;
+      text-transform: uppercase
+    }
+
+    .tbl .rc {
+      color: var(--blue);
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 15px;
+      letter-spacing: .1em;
+      text-transform: uppercase
+    }
+
+    .tbl tr.us td {
+      background: var(--orange-soft);
+      color: var(--fg);
+      border-bottom: 1px solid var(--orange)
+    }
+
+    .tbl tr.us td:first-child {
+      color: var(--orange)
+    }
+
+    .tbl tr.us .rc {
+      color: var(--orange)
+    }
+
+    /* S10 */
+    .promise {
+      font-family: var(--math);
+      font-size: 66px;
+      color: var(--fg);
+      margin: 34px 0 8px;
+      white-space: nowrap
+    }
+
+    .promise i {
+      font-style: italic
+    }
+
+    .hbar {
+      display: grid;
+      grid-template-columns: 230px 1fr 90px;
+      gap: 16px;
+      align-items: center
+    }
+
+    .hbar .nm {
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 15px;
+      color: var(--muted);
+      letter-spacing: .04em
+    }
+
+    .hbar .tr {
+      height: 26px;
+      position: relative
+    }
+
+    .hbar .fill {
+      height: 100%
+    }
+
+    .hbar .v {
+      font-family: var(--display);
+      font-stretch: 118%;
+      font-size: 30px;
+      font-weight: 700
+    }
+
+    /* S11 gap */
+    .reqs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+      margin-top: 44px
+    }
+
+    .req {
+      border: 1px solid var(--line-2);
+      padding: 26px 24px;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background: rgba(9, 13, 18, .8)
+    }
+
+    .req .ic {
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 14px;
+      color: var(--orange);
+      letter-spacing: .14em;
+      text-transform: uppercase
+    }
+
+    .req p {
+      font-size: 23px;
+      line-height: 1.35;
+      color: var(--fg)
+    }
+
+    .req p span {
+      color: var(--muted);
+      font-size: 19px;
+      display: block;
+      margin-top: 8px
+    }
+
+    .merge {
+      margin-top: 30px;
+      display: flex;
+      align-items: center;
+      gap: 22px
+    }
+
+    .merge .ln {
+      flex: 1;
+      height: 2px;
+      background: var(--orange)
+    }
+
+    .merge .box {
+      font-family: var(--display);
+      font-stretch: 118%;
+      text-transform: uppercase;
+      font-weight: 700;
+      font-size: 28px;
+      color: var(--void);
+      background: var(--orange);
+      padding: 14px 24px
+    }
+
+    /* S12 arch */
+    .node rect,
+    .node polygon {
+      fill: var(--panel);
+      stroke: var(--line-2);
+      stroke-width: 1.5
+    }
+
+    .node.t rect {
+      stroke: var(--blue);
+      fill: rgba(0, 161, 255, .10)
+    }
+
+    .node.s rect {
+      stroke: var(--student)
+    }
+
+    .node.a rect,
+    .node.a polygon {
+      stroke: var(--orange);
+      stroke-dasharray: 7 6;
+      fill: rgba(252, 106, 24, .08)
+    }
+
+    .node text {
+      fill: var(--fg);
+      font-size: 17px
+    }
+
+    .node text.sm {
+      fill: var(--muted);
+      font-size: 14px
+    }
+
+    .node text.hd {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 19px;
+      text-transform: uppercase;
+      letter-spacing: .02em
+    }
+
+    .wire {
+      fill: none;
+      stroke: var(--muted);
+      stroke-width: 1.8
+    }
+
+    .wire.a {
+      stroke: var(--orange);
+      stroke-dasharray: 6 6
+    }
+
+    .wire.lp {
+      stroke: var(--blue)
+    }
+
+    .wl {
+      fill: var(--dim);
+      font-size: 14px
+    }
+
+    .wl.o {
+      fill: var(--orange)
+    }
+
+    .wl.cb {
+      fill: var(--blue)
+    }
+
+    /* S13 */
+    .gauge {
+      display: flex;
+      flex-direction: column;
+      gap: 10px
+    }
+
+    .gauge .tr {
+      position: relative;
+      height: 16px;
+      background: rgba(167, 178, 191, .10)
+    }
+
+    .gauge .fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0
+    }
+
+    .gauge .th {
+      position: absolute;
+      top: -8px;
+      bottom: -8px;
+      width: 2px;
+      background: var(--fg)
+    }
+
+    .gauge .row {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 15px;
+      color: var(--muted)
+    }
+
+    .gauge .row b {
+      color: var(--fg);
+      font-weight: 500
+    }
+
+    /* S14 */
+    .props {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px
+    }
+
+    .prop {
+      border: 1px solid var(--line);
+      padding: 18px 20px;
+      background: rgba(9, 13, 18, .8)
+    }
+
+    .prop .pn {
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 13px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--orange)
+    }
+
+    .prop h3 {
+      font-size: 21px;
+      margin: 8px 0 6px
+    }
+
+    .prop p {
+      font-size: 17.5px;
+      line-height: 1.4;
+      color: var(--muted)
+    }
+
+    /* S15 */
+    .split {
+      display: flex;
+      height: 64px;
+      gap: 4px;
+      margin-top: 10px
+    }
+
+    .split div {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 16px;
+      letter-spacing: .06em
+    }
+
+    .split .d {
+      flex: 100;
+      background: rgba(167, 178, 191, .16);
+      color: var(--fg)
+    }
+
+    .split .c {
+      flex: 200;
+      background: var(--orange);
+      color: var(--void);
+      font-weight: 600
+    }
+
+    .split .e {
+      flex: 200;
+      background: var(--blue);
+      color: var(--void);
+      font-weight: 600
+    }
+
+    .ltt {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 8px
+    }
+
+    .lam {
+      border: 1px solid var(--line-2);
+      padding: 18px 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+      background: rgba(9, 13, 18, .85)
+    }
+
+    .lam .lv {
+      font-family: var(--display);
+      font-stretch: 118%;
+      font-size: 40px;
+      font-weight: 800
+    }
+
+    .lam .r {
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 15px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between
+    }
+
+    .lam .verdict {
+      margin-top: 6px;
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 14px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      padding: 6px 8px;
+      text-align: center
+    }
+
+    .lam.ok {
+      border-color: var(--blue)
+    }
+
+    .lam.ok .verdict {
+      background: var(--blue-soft);
+      color: var(--blue)
+    }
+
+    .lam.no {
+      border-color: var(--dim)
+    }
+
+    .lam.no .verdict {
+      background: rgba(167, 178, 191, .1);
+      color: var(--muted)
+    }
+
+    .lam.nt {
+      opacity: .45
+    }
+
+    .lam.nt .verdict {
+      color: var(--dim)
+    }
+
+    .lock {
+      display: flex;
+      gap: 22px;
+      align-items: center;
+      margin-top: 22px
+    }
+
+    .lock .box {
+      font-family: var(--display);
+      font-stretch: 118%;
+      font-size: 34px;
+      font-weight: 800;
+      padding: 12px 24px;
+      border: 2px solid var(--orange);
+      color: var(--orange)
+    }
+
+    /* S16 */
+    .lanes {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 26px
+    }
+
+    .lane {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 16px;
+      align-items: center
+    }
+
+    .lane .ln {
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 14px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      line-height: 1.3
+    }
+
+    .lane .ln b {
+      display: block;
+      color: var(--fg);
+      font-family: var(--display);
+      font-stretch: 112%;
+      font-size: 19px;
+      letter-spacing: 0
+    }
+
+    .lane .ln small {
+      color: var(--dim);
+      font-size: 12.5px
+    }
+
+    .steps {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .step {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid var(--line);
+      padding: 9px 12px;
+      font-size: 16.5px;
+      color: var(--muted);
+      background: rgba(9, 13, 18, .85)
+    }
+
+    .step b {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--blue);
+      font-weight: 500
+    }
+
+    .lane.o3 .step {
+      border-color: rgba(252, 106, 24, .45)
+    }
+
+    .lane.o3 .step b {
+      color: var(--orange)
+    }
+
+    .meas {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 22px
+    }
+
+    .meas .panel p {
+      font-size: 17px;
+      line-height: 1.45;
+      color: var(--muted)
+    }
+
+    .meas .panel p b {
+      color: var(--fg);
+      font-weight: 600
+    }
+
+    /* S17 */
+    .proto {
+      display: flex;
+      flex-direction: column;
+      gap: 18px
+    }
+
+    .proto .r {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 14px;
+      align-items: center
+    }
+
+    .proto .r .nm {
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.3
+    }
+
+    .proto .r .nm b {
+      display: block;
+      color: var(--fg);
+      font-size: 16px;
+      font-weight: 500
+    }
+
+    .note {
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 13.5px;
+      color: var(--dim);
+      letter-spacing: .06em;
+      line-height: 1.5
+    }
+
+    /* S18 */
+    .s-end {
+      justify-content: center
+    }
+
+    .trip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 44px
+    }
+
+    .trip div {
+      border-top: 3px solid var(--orange);
+      padding-top: 18px
+    }
+
+    .trip h3 {
+      font-size: 44px;
+      font-stretch: 125%
+    }
+
+    .trip p {
+      font-size: 20px;
+      line-height: 1.4;
+      color: var(--muted);
+      margin-top: 10px
+    }
+
+    .thanks {
+      font-family: var(--display);
+      font-stretch: 125%;
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 118px;
+      line-height: .9;
+      margin-top: 56px
+    }
+
+    .thanks span {
+      color: transparent;
+      -webkit-text-stroke: 1.5px var(--blue)
+    }
+
+    /* ---------- controls ---------- */
+    .timeline {
+      display: flex;
+      gap: 3px;
+      height: 22px;
+      align-items: center
+    }
+
+    .seg {
+      flex: 1;
+      height: 4px;
+      background: rgba(167, 178, 191, .18);
+      position: relative;
+      cursor: pointer;
+      border: 0;
+      padding: 0
+    }
+
+    .seg:hover {
+      background: rgba(167, 178, 191, .4)
+    }
+
+    .seg.done {
+      background: var(--muted)
+    }
+
+    .seg.cur {
+      background: rgba(167, 178, 191, .3)
+    }
+
+    .seg .f {
+      position: absolute;
+      inset: 0;
+      background: var(--orange);
+      transform: scaleX(0);
+      transform-origin: left
+    }
+
+    .seg.cur.done .f {
+      transform: scaleX(1)
+    }
+
+    .seg.ch {
+      margin-left: 10px
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .cgroup {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap
+    }
+
+    .btn {
+      background: transparent;
+      border: 1px solid var(--line-2);
+      color: var(--fg);
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 13px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      padding: 9px 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 38px
+    }
+
+    .btn:hover {
+      border-color: var(--fg)
+    }
+
+    .btn.pri {
+      background: var(--orange);
+      border-color: var(--orange);
+      color: #000;
+      font-weight: 600
+    }
+
+    .btn.pri:hover {
+      background: #ff7d33
+    }
+
+    .btn[aria-pressed="true"] {
+      border-color: var(--blue);
+      color: var(--blue)
+    }
+
+    .counter {
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 14px;
+      color: var(--muted);
+      letter-spacing: .08em;
+      min-width: 0
+    }
+
+    .counter b {
+      color: var(--fg);
+      font-weight: 500
+    }
+
+    .chips .btn {
+      padding: 9px 11px
+    }
+
+    .kbd {
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 12px;
+      color: var(--dim);
+      letter-spacing: .06em
+    }
+
+    #scriptPanel {
+      border: 1px solid var(--line);
+      background: var(--deep);
+      padding: 18px 22px;
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 20px
+    }
+
+    #scriptPanel .sh {
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 13px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--orange);
+      line-height: 1.6
+    }
+
+    #scriptPanel .sh span {
+      display: block;
+      color: var(--dim)
+    }
+
+    #scriptText {
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--fg);
+      max-width: 80ch;
+      margin: 0
+    }
+
+    #full {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .92);
+      z-index: 50;
+      overflow: auto;
+      padding-block: max(24px, env(safe-area-inset-top, 0px)) 40px;
+      padding-left: max(16px, env(safe-area-inset-left, 0px));
+      padding-right: max(16px, env(safe-area-inset-right, 0px))
+    }
+
+    #full .in {
+      max-width: 860px;
+      margin: 0 auto
+    }
+
+    #full header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      background: #000;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+      z-index: 1
+    }
+
+    #full h2 {
+      font-size: 30px
+    }
+
+    #full article {
+      border-bottom: 1px solid var(--line);
+      padding: 22px 0
+    }
+
+    #full article .meta {
+      font-family: var(--mono);
+      font-weight: 300;
+      font-size: 13px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--dim);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px
+    }
+
+    #full article h3 {
+      font-size: 22px;
+      margin: 8px 0 10px
+    }
+
+    #full article p {
+      font-size: 17.5px;
+      line-height: 1.65;
+      color: var(--muted)
+    }
+
+    #fullText {
+      white-space: pre-wrap
+    }
+
+    @media (max-width:700px) {
+      #scriptPanel {
+        grid-template-columns: 1fr
+      }
+
+      .kbd {
+        display: none
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+
+      .b,
+      .cells i {
+        transition: none !important
+      }
+
+      .axis .seg-t,
+      .axis .seg-s,
+      .axis .mk {
+        animation: none
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="app">
+    <div id="viewport">
+      <div id="stage">
+        <i class="cross" style="left:24px;top:24px"></i><i class="cross" style="right:24px;top:24px"></i>
+        <i class="cross" style="left:24px;bottom:24px"></i><i class="cross" style="right:24px;bottom:24px"></i>
+
+        <!-- 0 TITLE -->
+        <section class="scene s-title" data-ch="0" data-sec="" data-dur="20" data-title="Title">
+          <h1 class="t-h b up" data-t="350">A Risk-Calibrated Adaptive Handover Method<br>for Teacher-Guided Flow-Matching Text-to-Speech Inference</h1>
+          <div class="axis b fade" data-t="900">
+            <div class="rail"></div>
+            <div class="seg-s"></div>
+            <div class="seg-t"></div>
+            <div class="mk"></div>
+            <span class="lbl" style="left:0">t = 0 · noise</span>
+            <span class="lbl" style="right:0">t = 1 · speech</span>
+            <span class="lbl" style="left:44%"><span class="bl">teacher</span> → <span
+                style="color:var(--student)">student</span></span>
+          </div>
+          <div class="t-authors b fade" data-t="1400"><span>(Limpahan, M.V., Locsin, R., Sajol R. J. 2026. A Risk-Calibrated Adaptive Handover Method for Teacher-Guided Flow-Matching Text-to-Speech Inference)</span></div>
+        </section>
+
+        <!-- 1 OUTLINE -->
+        <section class="scene" data-ch="0" data-sec="Outline" data-dur="25" data-title="Outline">
+          <p class="eyebrow b fade" data-t="100">The walkthrough</p>
+          <h2 class="b up" data-t="250">Three chapters, one decision</h2>
+          <div class="outline">
+            <div class="ocol c1 b up" data-t="700">
+              <div class="bar b grow" data-t="700"></div>
+              <div class="rn">I</div>
+              <h3>Introduction</h3>
+              <ul>
+                <li><span>1.1</span>Background of the study</li>
+                <li><span>1.2</span>Problem statement</li>
+                <li><span>1.3</span>Objectives</li>
+                <li><span>1.4</span>Significance</li>
+                <li><span>1.5</span>Scope and limitations</li>
+              </ul>
+            </div>
+            <div class="ocol c2 b up" data-t="1300">
+              <div class="bar b grow" data-t="1300"></div>
+              <div class="rn">II</div>
+              <h3>Review of literature</h3>
+              <ul>
+                <li><span>2.1</span>Flow matching and its cost</li>
+                <li><span>2.3</span>Teacher-guided sampling</li>
+                <li><span>2.4</span>Input-adaptive computation</li>
+                <li><span>2.5</span>Statistical risk control</li>
+                <li><span>2.8</span>Research gap</li>
+              </ul>
+            </div>
+            <div class="ocol c3 b up" data-t="1900">
+              <div class="bar b grow" data-t="1900"></div>
+              <div class="rn">III</div>
+              <h3>Methodology</h3>
+              <ul>
+                <li><span>3.1</span>System architecture</li>
+                <li><span>3.5</span>Signals, policy and properties</li>
+                <li><span>3.6</span>Calibration with a guarantee</li>
+                <li><span>3.7</span>Benchmarking and robustness</li>
+                <li><span>App.</span>Expected outputs</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2 BACKGROUND: FLOW MATCHING -->
+        <section class="scene" data-ch="1" data-sec="1.1" data-dur="35" data-title="Speech from noise" data-hook="flow">
+          <div class="two wide-r" style="margin-top:0">
+            <div class="stack" style="justify-content:center">
+              <p class="eyebrow b fade" data-t="100">Background of the study</p>
+              <h2 class="b up" data-t="250">Speech,<br>generated from noise</h2>
+              <p class="lead b up" data-t="800">A <strong>flow-matching</strong> model learns a velocity field that
+                moves random noise toward a mel-spectrogram along a nearly straight path.</p>
+              <div class="eq b left" data-t="1500"><i>dx</i>/<i>dt</i> = <i>v</i><sub>θ</sub>(<i>x</i>, <i>t</i>),
+                &nbsp; <i>t</i> ∈ [0, 1]<small>generation = integrate the field step by step</small></div>
+              <p class="txt b up" data-t="2300"><strong>Every step is one full network evaluation.</strong> F5-TTS, our
+                teacher, spaces its steps with sway sampling.</p>
+            </div>
+            <div class="flowbox b fade" data-t="500" style="align-self:center">
+              <canvas id="flowCanvas" width="1560" height="1200"></canvas>
+              <span class="fl" style="left:18px;top:16px">noise · t = 0</span>
+              <span class="fl" style="right:18px;bottom:14px">mel-spectrogram · t = 1</span>
+              <span class="tread">t = <span id="tRead">0.000</span></span>
+            </div>
+          </div>
+          <footer class="cite b fade" data-t="2800"><span class="k">Sources</span><span>Lipman et al. (2023), <em>Flow
+                matching for generative modeling</em>, ICLR · Liu et al. (2023), ICLR · Y. Chen et al. (2025),
+              <em>F5-TTS</em>, ACL</span></footer>
+        </section>
+
+        <!-- 3 COST -->
+        <section class="scene" data-ch="1" data-sec="1.1" data-dur="35" data-title="Every step costs">
+          <p class="eyebrow b fade" data-t="100">Background of the study</p>
+          <h2 class="b up" data-t="250">Every step is a network call</h2>
+          <div class="trio">
+            <div class="panel b up" data-t="700">
+              <div class="ph">Guidance doubles it</div>
+              <div class="eq" style="font-size:25px;margin-bottom:12px"><i>v</i> = <i>v<sub>u</sub></i> +
+                <i>w</i>(<i>v<sub>c</sub></i> − <i>v<sub>u</sub></i>)</div>
+              <p class="txt" style="font-size:19px">Conditional + unconditional prediction: <strong>2 forward
+                  passes</strong> per guided teacher step.</p>
+            </div>
+            <div class="panel b up" data-t="1300">
+              <div class="ph">Distillation cuts steps</div>
+              <div class="big"><span class="count" data-from="128" data-to="4">128</span><span
+                  style="font-size:30px;color:var(--dim)"> steps</span></div>
+              <p class="txt" style="font-size:19px;margin-top:8px">DMOSpeech distilled the teacher into a
+                <strong>few-step student</strong>, 128 → 4.</p>
+            </div>
+            <div class="panel b up" data-t="1900">
+              <div class="ph">…but loses diversity</div>
+              <p class="txt" style="font-size:19px">The student’s prosody is less varied (<strong>mode
+                  shrinkage</strong>). DMOSpeech 2 lets the <span class="bl">teacher</span> run the first steps and the
+                <span style="color:var(--student)">student</span> finish.</p>
+            </div>
+          </div>
+          <div class="passrow">
+            <div class="legend b fade" data-t="2600"><span>Released sampler, switching time 0.25</span><span><i
+                  style="background:var(--blue)"></i>teacher 18</span><span><i
+                  style="background:var(--student)"></i>student 3</span></div>
+            <div class="cells b" data-t="2800" data-teacher="18" data-student="3"></div>
+            <div class="legend b fade" data-t="4000"><span class="big" style="font-size:44px;color:var(--fg)"><span
+                  class="count" data-from="0" data-to="21">0</span></span><span>forward passes for <strong
+                  style="color:var(--fg)">every</strong> utterance</span></div>
+          </div>
+          <footer class="cite b fade" data-t="3200"><span class="k">Sources</span><span>Ho &amp; Salimans (2022),
+              <em>Classifier-free diffusion guidance</em> · Li et al. (2025), <em>DMOSpeech</em>, ICML · Li et al.
+              (2026), <em>DMOSpeech 2</em>, AAAI</span></footer>
+        </section>
+
+        <!-- 4 PROBLEM -->
+        <section class="scene" data-ch="1" data-sec="1.2" data-dur="35" data-title="One handover for every input">
+          <p class="eyebrow b fade" data-t="100">Problem statement</p>
+          <h2 class="b up" data-t="250">One handover for every input</h2>
+          <div class="two wide-l">
+            <div class="stack" style="gap:20px;padding-top:12px;position:relative">
+              <div class="inrow b left" data-t="700">
+                <div class="nm"><b>Input A</b>clean, easy</div>
+                <div class="cells sm b" data-t="700" data-teacher="18" data-student="3"></div>
+              </div>
+              <div class="inrow b left" data-t="1000">
+                <div class="nm"><b>Input B</b>moderate</div>
+                <div class="cells sm b" data-t="1000" data-teacher="18" data-student="3"></div>
+              </div>
+              <div class="inrow b left" data-t="1300">
+                <div class="nm"><b>Input C</b>noisy prompt</div>
+                <div class="cells sm b" data-t="1300" data-teacher="18" data-student="3"></div>
+              </div>
+              <div class="b fade" data-t="2200"
+                style="position:absolute;left:587px;top:-10px;height:190px;border-left:2px dashed var(--orange)"></div>
+              <p class="mono b fade" data-t="2200"
+                style="font-size:15px;color:var(--orange);letter-spacing:.08em;margin-left:228px">FIXED HANDOVER
+                t<sub>h</sub> = 0.293 · 21 PASSES EACH</p>
+              <p class="lead b up" data-t="2900" style="margin-top:14px;font-size:25px">Too late wastes guided passes.
+                Too early may degrade speech. <strong>Does every utterance need 18 teacher passes?</strong></p>
+            </div>
+            <div class="probs">
+              <div class="prob b right" data-t="3600"><span class="n">1.2.1</span>
+                <p><strong>Uncharacterized effects.</strong> How the switching time changes WER, SIM, UTMOS and cost per
+                  utterance is unmeasured.</p>
+              </div>
+              <div class="prob b right" data-t="4100"><span class="n">1.2.2</span>
+                <p><strong>The handover boundary.</strong> Can inference-time signals pick an earlier switch without
+                  losing quality?</p>
+              </div>
+              <div class="prob b right" data-t="4600"><span class="n">1.2.3</span>
+                <p><strong>No reliability guarantee.</strong> Adaptive selection alone says nothing about the rate of
+                  added failures.</p>
+              </div>
+              <div class="prob b right" data-t="5100"><span class="n">1.2.4</span>
+                <p><strong>Application constraints.</strong> Faster synthesis is not evidence of benefit to autistic
+                  users.</p>
+              </div>
+            </div>
+          </div>
+          <footer class="cite b fade" data-t="2500"><span class="k">Sources</span><span>Li et al. (2026), <em>DMOSpeech
+                2</em>, AAAI · Ho &amp; Salimans (2022) · Angelopoulos et al. (2025), <em>Learn then test</em>, Ann.
+              Appl. Stat.</span></footer>
+        </section>
+
+        <!-- 5 OBJECTIVES -->
+        <section class="scene" data-ch="1" data-sec="1.3" data-dur="35" data-title="Objectives">
+          <p class="eyebrow b fade" data-t="100">Objectives of the study</p>
+          <h2 class="b up" data-t="250">Choose the switch per utterance,<br><span class="hl">with a bound on
+              failures</span></h2>
+          <div class="objs">
+            <div class="obj b up" data-t="900">
+              <div class="on-line b grow" data-t="900"></div>
+              <div class="num">1</div>
+              <h3>Characterize</h3>
+              <p>Measure how WER, SIM, UTMOS, forward passes and runtime vary across candidate switching times and
+                inputs.</p>
+              <div class="out">→ quality–cost map</div>
+            </div>
+            <div class="obj b up" data-t="1500">
+              <div class="on-line b grow" data-t="1500"></div>
+              <div class="num">2</div>
+              <h3>Formulate</h3>
+              <p>Pose selection as constrained cost minimization; design a training-free policy with no extra network
+                evaluations; prove its properties.</p>
+              <div class="out">→ policy + 4 propositions</div>
+            </div>
+            <div class="obj b up" data-t="2100">
+              <div class="on-line b grow" data-t="2100"></div>
+              <div class="num">3</div>
+              <h3>Calibrate</h3>
+              <p>Use Learn-Then-Test to keep added-failure risk within a tolerance α at confidence 1 − δ; check it on
+                held-out speakers.</p>
+              <div class="out">→ certified threshold λ̂</div>
+            </div>
+            <div class="obj b up" data-t="2700">
+              <div class="on-line b grow" data-t="2700"></div>
+              <div class="num">4</div>
+              <h3>Compare</h3>
+              <p>Benchmark SNR-only, stabilization-only and combined variants against fixed switches and an oracle,
+                clean and noisy.</p>
+              <div class="out">→ does each signal add value?</div>
+            </div>
+          </div>
+          <footer class="cite b fade" data-t="3200"><span class="k">From</span><span>Proposal, Section 1.3 · all
+              pretrained weights frozen; training-free</span></footer>
+        </section>
+
+        <!-- 6 SCOPE -->
+        <section class="scene" data-ch="1" data-sec="1.4–1.5" data-dur="30" data-title="Scope and significance">
+          <p class="eyebrow b fade" data-t="100">Significance · Scope and limitations</p>
+          <h2 class="b up" data-t="250">One variable. Everything else frozen.</h2>
+          <div class="two">
+            <div class="scope">
+              <div class="sc b left" data-t="700"><span class="m y">IN</span><span><strong>Only the switching time
+                    varies.</strong> Student restart level stays at the released default.</span></div>
+              <div class="sc b left" data-t="1050"><span class="m y">IN</span><span>Teacher, student, duration predictor
+                  and vocoder <strong>stay frozen</strong>.</span></div>
+              <div class="sc b left" data-t="1400"><span class="m y">IN</span><span>English zero-shot prompts from
+                  <strong>Seed-TTS test-en</strong>, clean and 15 dB noisy.</span></div>
+              <div class="sc b left" data-t="1750"><span class="m y">IN</span><span>All runs on an <strong>NVIDIA Tesla
+                    T4</strong> through Google Colab.</span></div>
+              <div class="sc b left" data-t="2100"><span class="m n">OUT</span><span>A per-utterance guarantee; the
+                  bound holds <strong>on average</strong> over inputs.</span></div>
+              <div class="sc b left" data-t="2450"><span class="m n">OUT</span><span>Building or testing an assistive
+                  app; clinical or learner outcomes.</span></div>
+            </div>
+            <div class="stack">
+              <p class="mono b fade" data-t="2800" style="font-size:14px;letter-spacing:.14em;color:var(--dim)">WHO
+                BENEFITS</p>
+              <div class="who">
+                <div class="panel b up" data-t="3000">
+                  <h3>Speech researchers</h3>
+                  <p>A formulation, proofs and calibration for teacher-guided samplers in general.</p>
+                </div>
+                <div class="panel b up" data-t="3300">
+                  <h3>TTS developers</h3>
+                  <p>Lower cost with a stated bound, no retraining.</p>
+                </div>
+                <div class="panel b up" data-t="3600">
+                  <h3>Assistive-tech developers</h3>
+                  <p>Cheaper, predictable synthesis for personalized voices.</p>
+                </div>
+                <div class="panel b up" data-t="3900">
+                  <h3>Future researchers</h3>
+                  <p>A reusable protocol: disjoint calibration, fixed failure rule, exact cost.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <footer class="cite b fade" data-t="3000"><span class="k">Sources</span><span>Anastassiou et al. (2024),
+              <em>Seed-TTS</em> · Ardila et al. (2020), <em>Common Voice</em>, LREC · Muharib et al. (2024), JADD ·
+              Therrien et al. (2025), AAC</span></footer>
+        </section>
+
+        <!-- 7 CHAIN -->
+        <section class="scene" data-ch="2" data-sec="2.1–2.8" data-dur="40" data-title="The chain of ideas">
+          <p class="eyebrow b fade" data-t="100">Review of related literature</p>
+          <h2 class="b up" data-t="250">The chain of ideas</h2>
+          <div class="chain">
+            <svg class="cl" viewBox="0 0 1380 22" preserveAspectRatio="none">
+              <path class="b draw" data-t="600" d="M11 11 H1176" stroke="var(--line-2)" stroke-width="2" fill="none" />
+              <path class="b draw" data-t="5200" d="M943 11 H1176" stroke="var(--orange)" stroke-width="3"
+                fill="none" />
+            </svg>
+            <div class="links">
+              <div class="lk b up" data-t="900"><svg class="dot" width="22" height="22" viewBox="0 0 22 22">
+                  <circle cx="11" cy="11" r="9" fill="var(--void)" stroke="var(--blue)" stroke-width="2" />
+                </svg>
+                <h3>Flow matching</h3>
+                <p class="g"><b>Gives</b>A trajectory, and a free estimate of the final output at every step</p>
+                <p class="x"><b>Leaves open</b>How a handover behaves</p>
+              </div>
+              <div class="lk b up" data-t="1700"><svg class="dot" width="22" height="22" viewBox="0 0 22 22">
+                  <circle cx="11" cy="11" r="9" fill="var(--void)" stroke="var(--blue)" stroke-width="2" />
+                </svg>
+                <h3>Distillation</h3>
+                <p class="g"><b>Gives</b>A cheap few-step student</p>
+                <p class="x"><b>Leaves open</b>Lost diversity; one config for all inputs</p>
+              </div>
+              <div class="lk b up" data-t="2500"><svg class="dot" width="22" height="22" viewBox="0 0 22 22">
+                  <circle cx="11" cy="11" r="9" fill="var(--void)" stroke="var(--blue)" stroke-width="2" />
+                </svg>
+                <h3>Teacher-guided sampling</h3>
+                <p class="g"><b>Gives</b>Diversity back; the handover as a design choice</p>
+                <p class="x"><b>Leaves open</b>Switch fixed for every utterance</p>
+              </div>
+              <div class="lk b up" data-t="3300"><svg class="dot" width="22" height="22" viewBox="0 0 22 22">
+                  <circle cx="11" cy="11" r="9" fill="var(--void)" stroke="var(--blue)" stroke-width="2" />
+                </svg>
+                <h3>Adaptive computation</h3>
+                <p class="g"><b>Gives</b>Spend effort only where it is needed</p>
+                <p class="x"><b>Leaves open</b>Mostly no bound on quality loss</p>
+              </div>
+              <div class="lk b up" data-t="4100"><svg class="dot" width="22" height="22" viewBox="0 0 22 22">
+                  <circle cx="11" cy="11" r="9" fill="var(--void)" stroke="var(--blue)" stroke-width="2" />
+                </svg>
+                <h3>Statistical risk control</h3>
+                <p class="g"><b>Gives</b>A threshold with a guarantee on new inputs</p>
+                <p class="x"><b>Leaves open</b>Not yet applied to TTS handover</p>
+              </div>
+              <div class="lk us b up" data-t="5200"><svg class="dot" width="22" height="22" viewBox="0 0 22 22">
+                  <circle cx="11" cy="11" r="10" fill="var(--orange)" />
+                </svg>
+                <h3>This study</h3>
+                <p class="g"><b>Combines</b>Per-utterance handover + calibrated bound, at no extra pass</p>
+              </div>
+            </div>
+          </div>
+          <footer class="cite b fade" data-t="2000"><span class="k">Sources</span><span>Lipman et al. (2023) · Yin et
+              al. (2024) · Li et al. (2025, 2026) · Graves (2016) · Schuster et al. (2022), <em>CALM</em>, NeurIPS ·
+              Angelopoulos et al. (2025)</span></footer>
+        </section>
+
+        <!-- 8 SWAY / HANDOVER -->
+        <section class="scene" data-ch="2" data-sec="2.1 · 2.3" data-dur="40" data-title="Where the switch lives"
+          data-hook="sway">
+          <p class="eyebrow b fade" data-t="100">Teacher-guided sampling and re-noising</p>
+          <h2 class="b up" data-t="250">Where the switch lives</h2>
+          <div class="two" style="grid-template-columns:.95fr 1.05fr;margin-top:20px">
+            <svg id="swaySvg" viewBox="0 0 760 640" style="width:100%;height:100%;max-height:640px"></svg>
+            <div class="stack" style="gap:16px;justify-content:center">
+              <p class="txt b up" data-t="3400">Sway sampling packs teacher steps near <span class="math">t</span> = 0.
+                The released code stops at the <strong>first grid point above</strong> <span class="math">s</span>.
+                Cost: <span class="math">C</span>(<span class="math">s</span>) = 2(<span class="math">k</span> + 1) + 3.
+              </p>
+              <div class="costs">
+                <div class="crow b left" data-t="3900">
+                  <div class="k"><b>s = 0.07</b>step 4 · t = 0.076</div>
+                  <div class="cells sm b" data-t="3900" data-teacher="10" data-student="3" data-saved="8"></div>
+                  <div class="c"><b>13</b>−8 · 38%</div>
+                </div>
+                <div class="crow b left" data-t="4300">
+                  <div class="k"><b>s = 0.10</b>step 5 · t = 0.118</div>
+                  <div class="cells sm b" data-t="4300" data-teacher="12" data-student="3" data-saved="6"></div>
+                  <div class="c"><b>15</b>−6 · 29%</div>
+                </div>
+                <div class="crow b left" data-t="4700">
+                  <div class="k"><b>s = 0.15</b>step 6 · t = 0.169</div>
+                  <div class="cells sm b" data-t="4700" data-teacher="14" data-student="3" data-saved="4"></div>
+                  <div class="c"><b>17</b>−4 · 19%</div>
+                </div>
+                <div class="crow ref b left" data-t="5100">
+                  <div class="k"><b>s = 0.25</b>step 8 · reference</div>
+                  <div class="cells sm b" data-t="5100" data-teacher="18" data-student="3"></div>
+                  <div class="c"><b>21</b>baseline</div>
+                </div>
+              </div>
+              <div class="eq b left" data-t="6000" style="font-size:25px"><i>x</i><sub>τ</sub> = (1 − τ) ε + τ
+                <i>x̃</i>, &nbsp; τ = 0.0761<small>student always re-noises the teacher’s estimate to the same
+                  level</small></div>
+            </div>
+          </div>
+          <footer class="cite b fade" data-t="2600"><span class="k">Sources</span><span>Y. Chen et al. (2025),
+              <em>F5-TTS</em>, ACL · Li et al. (2026), <em>DMOSpeech 2</em>, AAAI · Meng et al. (2022), <em>SDEdit</em>,
+              ICLR · Xu et al. (2023), NeurIPS</span></footer>
+        </section>
+
+        <!-- 9 ADAPTIVE COMPUTATION -->
+        <section class="scene" data-ch="2" data-sec="2.4" data-dur="35" data-title="Adaptive computation">
+          <p class="eyebrow b fade" data-t="100">Input-adaptive computation</p>
+          <h2 class="b up" data-t="250">Spend effort where it is needed</h2>
+          <table class="tbl">
+            <thead class="b fade" data-t="600">
+              <tr>
+                <th>Method</th>
+                <th>What is adapted</th>
+                <th>Decision signal</th>
+                <th>Rule</th>
+                <th>Guarantee</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="b left" data-t="1000">
+                <td>ACT<small>Graves, 2016</small></td>
+                <td>Internal steps per input</td>
+                <td>Learned halting unit</td>
+                <td>Learned</td>
+                <td class="none">None</td>
+              </tr>
+              <tr class="b left" data-t="1500">
+                <td>BranchyNet<small>Teerapittayanon et al., 2016</small></td>
+                <td>Exit layer</td>
+                <td>Classifier confidence</td>
+                <td>Tuned threshold</td>
+                <td class="none">None</td>
+              </tr>
+              <tr class="b left" data-t="2000">
+                <td>CALM<small>Schuster et al., 2022</small></td>
+                <td>Exit layer per token</td>
+                <td>Confidence or saturation</td>
+                <td>Calibrated threshold</td>
+                <td class="rc">Risk control</td>
+              </tr>
+              <tr class="b left" data-t="2500">
+                <td>Adaptive collaboration<small>Starodubcev et al., 2024</small></td>
+                <td>Whether the teacher refines</td>
+                <td>Quality estimator on a full student sample</td>
+                <td>Tuned threshold</td>
+                <td class="none">None</td>
+              </tr>
+              <tr class="us b left" data-t="3300">
+                <td>This study</td>
+                <td>Teacher-to-student switching time</td>
+                <td>Prompt SNR + endpoint stabilization</td>
+                <td>Calibrated threshold</td>
+                <td class="rc">Risk control (LTT)</td>
+              </tr>
+            </tbody>
+          </table>
+          <footer class="cite b fade" data-t="2200"><span class="k">Sources</span><span>Graves (2016) · Teerapittayanon
+              et al. (2016), ICPR · Schuster et al. (2022), NeurIPS · Starodubcev et al. (2024), CVPR · Mualem et al.
+              (2026), <em>ARIA</em></span></footer>
+        </section>
+
+        <!-- 10 RISK CONTROL -->
+        <section class="scene" data-ch="2" data-sec="2.5" data-dur="35" data-title="A promise you can check">
+          <p class="eyebrow b fade" data-t="100">Statistical risk control and calibration</p>
+          <h2 class="b up" data-t="250">A promise you can check</h2>
+          <div class="two" style="margin-top:6px">
+            <div class="stack">
+              <div class="promise b pop" data-t="800"><i>P</i>( <i>R</i>(<i>λ̂</i>) ≤ <span class="hl">α</span> ) ≥ 1 −
+                <span class="bl">δ</span></div>
+              <p class="lead b up" data-t="1500">“At most <span class="hl">5%</span> added failures, and this promise is
+                wrong with probability at most <span class="bl">10%</span>.”</p>
+              <p class="txt b up" data-t="2300"><strong>Learn-Then-Test</strong> turns each candidate threshold into a
+                hypothesis test and needs no monotonicity. Testing in a <strong>fixed order</strong> keeps the overall
+                error at δ.</p>
+            </div>
+            <div class="stack" style="justify-content:center;gap:24px">
+              <p class="mono b fade" data-t="3000" style="font-size:14px;letter-spacing:.14em;color:var(--dim)">INPUTS
+                NEEDED · α = 0.05, δ = 0.10, ZERO FAILURES</p>
+              <div class="eq b left" data-t="3200" style="font-size:26px">(1 − α)<sup><i>n</i></sup> ≤ δ &nbsp;⇒&nbsp;
+                <i>n</i> ≥ ln δ / ln(1 − α)</div>
+              <div class="hbar b fade" data-t="3800"><span class="nm">Exact binomial</span>
+                <div class="tr">
+                  <div class="fill b grow" data-t="3800" style="width:9.76%;background:var(--orange)"></div>
+                </div><span class="v hl"><span class="count" data-from="0" data-to="45">0</span></span>
+              </div>
+              <div class="hbar b fade" data-t="4300"><span class="nm">Hoeffding bound</span>
+                <div class="tr">
+                  <div class="fill b grow" data-t="4300" style="width:100%;background:var(--student);opacity:.6"></div>
+                </div><span class="v">≈<span class="count" data-from="0" data-to="461">0</span></span>
+              </div>
+              <p class="txt b up" data-t="5200" style="font-size:19px">The guarantee is <strong>marginal</strong> (on
+                average over inputs) and needs calibration and test inputs from the same distribution.</p>
+            </div>
+          </div>
+          <footer class="cite b fade" data-t="2600"><span class="k">Sources</span><span>Angelopoulos &amp; Bates (2023)
+              · Angelopoulos et al. (2025), Ann. Appl. Stat. · Clopper &amp; Pearson (1934) · Hoeffding (1963) · Bauer
+              (1991)</span></footer>
+        </section>
+
+        <!-- 11 GAP -->
+        <section class="scene" data-ch="2" data-sec="2.8" data-dur="30" data-title="The research gap">
+          <p class="eyebrow o b fade" data-t="100">Synthesis and research gap</p>
+          <h2 class="b up" data-t="250">No method combines all three</h2>
+          <div class="reqs">
+            <div class="req b up" data-t="800"><span class="ic">Requirement 01</span>
+              <p>A per-utterance handover decision<span>made from signals the sampler already computes</span></p>
+            </div>
+            <div class="req b up" data-t="1500"><span class="ic">Requirement 02</span>
+              <p>All networks stay as released<span>no training, no fine-tuning, no extra forward pass</span></p>
+            </div>
+            <div class="req b up" data-t="2200"><span class="ic">Requirement 03</span>
+              <p>Added failures bounded with stated confidence<span>on new, unseen speakers</span></p>
+            </div>
+          </div>
+          <div class="merge">
+            <div class="ln b grow" data-t="3000"></div>
+            <div class="box b pop" data-t="3800">This study</div>
+          </div>
+          <p class="txt b fade" data-t="4300" style="margin-top:22px;font-size:19px;max-width:70ch">The gap concerns the
+            combination of these elements within the sources examined; it does not imply that no other adaptive
+            inference methods exist.</p>
+          <footer class="cite b fade" data-t="3000"><span class="k">From</span><span>Proposal, Section 2.8 and Table
+              2.2</span></footer>
+        </section>
+
+        <!-- 12 ARCHITECTURE -->
+        <section class="scene" data-ch="3" data-sec="3.1" data-dur="40" data-title="Architecture">
+          <p class="eyebrow b fade" data-t="100">System architecture</p>
+          <h2 class="b up" data-t="250">A decision layer, not a new model</h2>
+          <svg viewBox="0 0 1380 560" style="width:100%;height:520px;margin-top:18px">
+            <defs>
+              <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                <path d="M0 0L10 5L0 10z" fill="var(--muted)" />
+              </marker>
+              <marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                <path d="M0 0L10 5L0 10z" fill="var(--orange)" />
+              </marker>
+              <marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                <path d="M0 0L10 5L0 10z" fill="var(--blue)" />
+              </marker>
+            </defs>
+            <!-- wires -->
+            <path class="wire b draw" data-t="900" d="M200 290 H258" marker-end="url(#ar)" />
+            <path class="wire b draw" data-t="1400" d="M480 290 H538" marker-end="url(#ar)" />
+            <path class="wire b draw" data-t="1900" d="M760 290 H798" marker-end="url(#ar)" />
+            <path class="wire a b draw" data-t="2600" d="M110 240 V125 H538" marker-end="url(#ao)" />
+            <path class="wire a b draw" data-t="3000" d="M760 125 H880 V208" marker-end="url(#ao)" />
+            <path class="wire a b draw" data-t="3400" d="M880 450 V372" marker-end="url(#ao)" />
+            <path class="wire lp b draw" data-t="4100" d="M842 332 L820 410 H370 V342" marker-end="url(#ab)" />
+            <path class="wire b draw" data-t="4800" d="M962 290 H1018" marker-end="url(#ar)" />
+            <path class="wire b draw" data-t="5100" d="M1188 290 H1218" marker-end="url(#ar)" />
+            <text class="wl cb b fade" data-t="4300" x="470" y="400">no · Euler step to t<tspan dy="5" font-size="11">
+                i+1</tspan></text>
+            <text class="wl b fade" data-t="4900" x="970" y="278">yes</text>
+            <!-- nodes -->
+            <g class="node b fade" data-t="600">
+              <rect x="20" y="240" width="180" height="100" /><text class="hd" x="34" y="276">Input</text><text
+                class="sm" x="34" y="302">prompt audio,</text><text class="sm" x="34" y="322">prompt + target
+                text</text>
+            </g>
+            <g class="node t b fade" data-t="1100">
+              <rect x="260" y="240" width="220" height="100" /><text class="hd" x="276" y="276">Teacher</text><text
+                class="sm" x="276" y="302">guided step at t<tspan dy="4" font-size="11">i</tspan></text><text class="sm"
+                x="276" y="322" dy="-4">2 passes · frozen</text>
+            </g>
+            <g class="node a b fade" data-t="1600">
+              <rect x="540" y="240" width="220" height="100" /><text class="hd" x="556" y="276"
+                style="fill:var(--orange)">Endpoint monitor</text><text class="sm" x="556" y="302">x̂₁(t<tspan dy="4"
+                  font-size="11">i</tspan>
+                <tspan dy="-4">) and score d</tspan>
+                <tspan dy="4" font-size="11">i</tspan>
+              </text><text class="sm" x="556" y="322">0 extra passes</text>
+            </g>
+            <g class="node a b pop" data-t="2100">
+              <polygon points="880,208 962,290 880,372 798,290" /><text class="hd" x="880" y="286" text-anchor="middle"
+                style="fill:var(--orange);font-size:17px">Stop</text><text class="hd" x="880" y="306"
+                text-anchor="middle" style="fill:var(--orange);font-size:17px">here?</text>
+            </g>
+            <g class="node a b fade" data-t="2600">
+              <rect x="540" y="75" width="220" height="100" /><text class="hd" x="556" y="111"
+                style="fill:var(--orange)">Prompt SNR</text><text class="sm" x="556" y="137">frame-energy estimate
+                Ŝ</text><text class="sm" x="556" y="157">gate θ · 0 passes</text>
+            </g>
+            <g class="node a b fade" data-t="3400">
+              <rect x="740" y="452" width="280" height="96" /><text class="hd" x="756" y="488"
+                style="fill:var(--orange)">Offline calibrator</text><text class="sm" x="756" y="512">Learn-Then-Test →
+                λ̂</text><text class="sm" x="756" y="532">runs once, before deployment</text>
+            </g>
+            <g class="node s b fade" data-t="4800">
+              <rect x="1020" y="240" width="168" height="100" /><text class="hd" x="1034" y="276">Student</text><text
+                class="sm" x="1034" y="302">restart τ = 0.0761</text><text class="sm" x="1034" y="322">3 passes ·
+                frozen</text>
+            </g>
+            <g class="node b fade" data-t="5100">
+              <rect x="1220" y="240" width="140" height="100" /><text class="hd" x="1234" y="276">Vocos</text><text
+                class="sm" x="1234" y="302">mel →</text><text class="sm" x="1234" y="322">waveform</text>
+            </g>
+            <!-- moving pulse -->
+            <g class="b fade" data-t="5600">
+              <circle r="7" fill="var(--blue)">
+                <animateMotion dur="3.6s" repeatCount="indefinite"
+                  path="M200 290 H880 L842 332 L820 410 H370 V290 H480" />
+              </circle>
+              <circle r="7" fill="var(--orange)">
+                <animateMotion dur="3.6s" begin="1.8s" repeatCount="indefinite" path="M760 290 H962 H1360" />
+              </circle>
+            </g>
+            <!-- legend -->
+            <g class="b fade" data-t="5600" font-family="var(--mono)" font-weight="300" font-size="14">
+              <rect x="1040" y="70" width="18" height="12" fill="rgba(0,161,255,.2)" stroke="var(--blue)" /><text
+                x="1068" y="81" fill="var(--muted)">released, frozen</text>
+              <rect x="1040" y="100" width="18" height="12" fill="rgba(252,106,24,.1)" stroke="var(--orange)"
+                stroke-dasharray="4 3" /><text x="1068" y="111" fill="var(--orange)">added by this study</text>
+            </g>
+          </svg>
+          <footer class="cite b fade" data-t="2600"><span class="k">Sources</span><span>Li et al. (2026), <em>DMOSpeech
+                2</em>, AAAI · Y. Chen et al. (2025), <em>F5-TTS</em> · Siuzdak (2024), <em>Vocos</em>, ICLR · Proposal
+              Figure 3.2</span></footer>
+        </section>
+
+        <!-- 13 SIGNALS -->
+        <section class="scene" data-ch="3" data-sec="3.5.2" data-dur="40" data-title="Two signals" data-hook="drift">
+          <p class="eyebrow b fade" data-t="100">Decision signals</p>
+          <h2 class="b up" data-t="250">Two signals, zero extra passes</h2>
+          <div class="two wide-l" style="margin-top:22px">
+            <div class="stack" style="gap:14px">
+              <div class="eq o b left" data-t="700" style="font-size:24px"><i>d<sub>i</sub></i> = ‖
+                <i>x̂</i><sub>1</sub>(<i>t<sub>i</sub></i>) − <i>x̂</i><sub>1</sub>(<i>t<sub>i−1</sub></i>)
+                ‖<sub>M</sub> / ( ‖ <i>x̂</i><sub>1</sub>(<i>t<sub>i</sub></i>) ‖<sub>M</sub> + ϵ ), &nbsp;
+                <i>x̂</i><sub>1</sub> = <i>x<sub>t</sub></i> + (1 − <i>t</i>) <i>v</i><small>endpoint-stabilization
+                  score · small means the teacher’s guess has settled</small></div>
+              <svg id="driftSvg" viewBox="0 0 820 400" style="width:100%"></svg>
+            </div>
+            <div class="stack" style="gap:22px;justify-content:center">
+              <div class="eq o b left" data-t="4800" style="font-size:24px"><i>Ŝ</i> = 10 log<sub>10</sub>(
+                <i>Ē</i><sub>top</sub> / <i>Ē</i><sub>bottom</sub> )<small>prompt SNR, from frame energies · gate θ = 20
+                  dB</small></div>
+              <div class="gauge b up" data-t="5300">
+                <div class="row"><span>Clean prompt</span><b>30.5 dB · gate open</b></div>
+                <div class="tr">
+                  <div class="fill b grow" data-t="5300" style="width:61%;background:var(--blue)"></div>
+                  <div class="th" style="left:40%"></div>
+                </div>
+              </div>
+              <div class="gauge b up" data-t="5800">
+                <div class="row"><span>Noisy prompt</span><b class="hl">17.8 dB · go to reference</b></div>
+                <div class="tr">
+                  <div class="fill b grow" data-t="5800" style="width:35.6%;background:var(--orange)"></div>
+                  <div class="th" style="left:40%"></div>
+                </div>
+                <div class="row" style="font-size:12.5px;color:var(--dim)"><span>0 dB</span><span>θ = 20</span><span>50
+                    dB</span></div>
+              </div>
+              <p class="txt b up" data-t="6600" style="font-size:18.5px">Development diagnostics suggest the <strong>SNR
+                  may carry most of the benefit</strong>. The stabilization score is kept as a <span
+                  class="hl">hypothesis to test</span>, not an assumption.</p>
+            </div>
+          </div>
+          <footer class="cite b fade" data-t="3000"><span class="k">Sources</span><span>Lipman et al. (2024), <em>Flow
+                matching guide and code</em> · Li et al. (2026) · Proposal Def. 3.2–3.3, Appendix A.4 and D.5
+              (illustrative values)</span></footer>
+        </section>
+
+        <!-- 14 POLICY + PROPERTIES -->
+        <section class="scene" data-ch="3" data-sec="3.5" data-dur="40" data-title="The stopping rule">
+          <p class="eyebrow b fade" data-t="100">Formulation and properties</p>
+          <h2 class="b up" data-t="250">The stopping rule</h2>
+          <div class="two" style="grid-template-columns:1.05fr .95fr;margin-top:24px">
+            <div class="stack" style="gap:16px">
+              <div class="eq b left" data-t="700" style="font-size:24px">min<sub>π</sub> E[ <i>C</i>(π(<i>x</i>)) ]
+                &nbsp; s.t. &nbsp; <i>R</i>(π) = E[ <i>f</i>(<i>x</i>, π(<i>x</i>)) ] ≤ α<small>cheapest policy whose
+                  added-failure risk stays under α</small></div>
+              <div class="eq o b left" data-t="1500" style="font-size:24px">π<sub>λ</sub>(<i>x</i>) = first candidate
+                <i>i<sub>r</sub></i> with <i>d<sub>i<sub>r</sub></sub></i> ≤ λ and <i>Ŝ</i> ≥ θ, else
+                reference<small>walks the teacher steps in order · never later than step 8</small></div>
+              <div class="panel b up" data-t="2400">
+                <div class="ph">Added failure · fixed before calibration</div>
+                <p class="txt" style="font-size:19px"><span class="math">f</span> = 1 if WER &gt;
+                  max(<strong>12.5%</strong>, WER<sub>ref</sub> + <strong>1 pt</strong>) &nbsp;or&nbsp; SIM &lt;
+                  SIM<sub>ref</sub> − <strong>0.02</strong>, on the same seeds.</p>
+              </div>
+              <p class="txt b up" data-t="3000" style="font-size:18.5px">Setting λ = ∞ gives the SNR-only rule; θ = −∞
+                gives stabilization only. <strong>One family, one calibration.</strong></p>
+            </div>
+            <div class="props">
+              <div class="prop b pop" data-t="3600"><span class="pn">Prop. 3.2</span>
+                <h3>Zero overhead</h3>
+                <p>Signals reuse the velocity already computed. No extra forward pass.</p>
+              </div>
+              <div class="prop b pop" data-t="4100"><span class="pn">Prop. 3.3</span>
+                <h3>Monotone cost</h3>
+                <p>A smaller λ never stops earlier, so cost rises as λ falls.</p>
+              </div>
+              <div class="prop b pop" data-t="4600"><span class="pn">Prop. 3.4</span>
+                <h3>Safe fallback</h3>
+                <p>Never more than 21 passes. No certified λ → exact reference output.</p>
+              </div>
+              <div class="prop b pop" data-t="5100"><span class="pn">Prop. 3.5</span>
+                <h3>Oracle bound</h3>
+                <p>No zero-risk policy beats the cheapest non-failing candidate per input.</p>
+              </div>
+            </div>
+          </div>
+          <footer class="cite b fade" data-t="2800"><span class="k">From</span><span>Proposal Eq. 3-11, 3-12, 3-15 and
+              Propositions 3.2–3.5 · WER: Radford et al. (2023) · SIM: S. Chen et al. (2022)</span></footer>
+        </section>
+
+        <!-- 15 CALIBRATION -->
+        <section class="scene" data-ch="3" data-sec="3.6" data-dur="40" data-title="Calibration">
+          <p class="eyebrow b fade" data-t="100">Calibration with a reliability guarantee</p>
+          <h2 class="b up" data-t="250">Test thresholds in a fixed order</h2>
+          <p class="mono b fade" data-t="600"
+            style="font-size:14px;letter-spacing:.14em;color:var(--dim);margin-top:26px">SPEAKER-DISJOINT SPLITS ·
+            SEED-TTS TEST-EN · ONE UTTERANCE PER SPEAKER</p>
+          <div class="split b grow" data-t="700">
+            <div class="d"><span>Development</span><span>100</span></div>
+            <div class="c"><span>Calibration</span><span>200</span></div>
+            <div class="e"><span>Test</span><span>200</span></div>
+          </div>
+          <p class="mono b fade" data-t="1800"
+            style="font-size:14px;letter-spacing:.14em;color:var(--dim);margin-top:30px">ILLUSTRATIVE · n = 100, α =
+            0.05, δ = 0.10 · p = P( Bin(n, α) ≤ failures )</p>
+          <div class="ltt">
+            <div class="lam ok b up" data-t="2200"><span class="mono" style="font-size:13px;color:var(--dim)">g = 1 ·
+                conservative</span><span class="lv">λ 0.40</span><span
+                class="r"><span>failures</span><b>0</b></span><span class="r"><span>p</span><b>0.0059</b></span><span
+                class="verdict">≤ δ · certify</span></div>
+            <div class="lam ok b up" data-t="3000"><span class="mono" style="font-size:13px;color:var(--dim)">g =
+                2</span><span class="lv">λ 0.50</span><span class="r"><span>failures</span><b>1</b></span><span
+                class="r"><span>p</span><b>0.0371</b></span><span class="verdict">≤ δ · certify</span></div>
+            <div class="lam no b up" data-t="3800"><span class="mono" style="font-size:13px;color:var(--dim)">g =
+                3</span><span class="lv">λ 0.60</span><span class="r"><span>failures</span><b>3</b></span><span
+                class="r"><span>p</span><b>0.2578</b></span><span class="verdict">&gt; δ · stop</span></div>
+            <div class="lam nt b up" data-t="4300"><span class="mono" style="font-size:13px;color:var(--dim)">g = 4 ·
+                aggressive</span><span class="lv">λ 0.70</span><span class="r"><span>failures</span><b>6</b></span><span
+                class="r"><span>p</span><b>—</b></span><span class="verdict">not tested</span></div>
+          </div>
+          <div class="lock"><span class="box b pop" data-t="4900">λ̂ = 0.50</span>
+            <p class="txt b up" data-t="5400" style="font-size:19px;max-width:62ch">Study protocol: α = 0.05, δ = 0.10,
+              grid 0.20 to 1.20 in steps of 0.05, fixed in advance. Verify on the <strong>held-out test split</strong>
+              and over <strong>100 random re-splits</strong>.</p>
+          </div>
+          <footer class="cite b fade" data-t="2600"><span class="k">Sources</span><span>Angelopoulos et al. (2025),
+              <em>Learn then test</em> · Bauer (1991), Stat. Med. · Clopper &amp; Pearson (1934) · Proposal Alg. 3.4,
+              Appendix A.6</span></footer>
+        </section>
+
+        <!-- 16 WORKFLOW -->
+        <section class="scene" data-ch="3" data-sec="3.2 · 3.7" data-dur="35" data-title="Workflow and benchmark">
+          <p class="eyebrow b fade" data-t="100">Research workflow · Benchmarking and robustness</p>
+          <h2 class="b up" data-t="250">Fifteen steps, each with its own data</h2>
+          <div class="lanes">
+            <div class="lane b left" data-t="600">
+              <div class="ln"><b>Setup</b><small>all splits</small></div>
+              <div class="steps"><span class="step"><b>1</b>Speaker splits</span><span class="step"><b>2</b>Clean + 15
+                  dB noisy</span><span class="step"><b>3</b>Check seed, fallback, pass count</span></div>
+            </div>
+            <div class="lane b left" data-t="1000">
+              <div class="ln"><b>Objective 1</b><small>development</small></div>
+              <div class="steps"><span class="step"><b>4</b>One teacher run, all candidates</span><span
+                  class="step"><b>5</b>Score + failures</span><span class="step"><b>6</b>Quality–cost map, fix θ</span>
+              </div>
+            </div>
+            <div class="lane b left" data-t="1400">
+              <div class="ln"><b>Objective 2</b><small>no data</small></div>
+              <div class="steps"><span class="step"><b>7</b>Problem, policy, proofs</span></div>
+            </div>
+            <div class="lane o3 b left" data-t="1800">
+              <div class="ln"><b>Objective 3</b><small>calibration, test</small></div>
+              <div class="steps"><span class="step"><b>8</b>Fix α, δ, grid</span><span class="step"><b>9</b>Binomial
+                  tests in order</span><span class="step"><b>10</b>Lock λ̂ or fall back</span><span
+                  class="step"><b>11</b>Held-out + 100 re-splits</span></div>
+            </div>
+            <div class="lane b left" data-t="2200">
+              <div class="ln"><b>Objective 4</b><small>test</small></div>
+              <div class="steps"><span class="step"><b>12</b>Run locked variants</span><span
+                  class="step"><b>13</b>Paired comparisons</span><span class="step"><b>14</b>Noise shift, n =
+                  50/100/200</span><span class="step"><b>15</b>Report all, incl. negative</span></div>
+            </div>
+          </div>
+          <div class="meas">
+            <div class="panel b up" data-t="3000">
+              <div class="ph">Compared methods</div>
+              <p>Fixed s ∈ {0.07, 0.10, 0.15, <b>0.25</b>} · SNR-only · SNR + fixed later step · stabilization only ·
+                <b>full policy</b> · cost-matched random · oracle</p>
+            </div>
+            <div class="panel b up" data-t="3500">
+              <div class="ph">Measures</div>
+              <p><b>WER</b> Whisper-large-v3 · <b>SIM</b> WavLM-Base+ SV · <b>UTMOS</b> · exact <b>forward passes</b> ·
+                runtime and RTF on the T4</p>
+            </div>
+            <div class="panel b up" data-t="4000">
+              <div class="ph">Statistics</div>
+              <p>Wilcoxon signed-rank + Holm · exact McNemar · TOST for equivalence · Clopper–Pearson intervals ·
+                bootstrap CIs</p>
+            </div>
+          </div>
+          <footer class="cite b fade" data-t="2600"><span class="k">Sources</span><span>Radford et al. (2023) · S. Chen
+              et al. (2022) · Saeki et al. (2022), <em>UTMOS</em> · Wilcoxon (1945) · Schuirmann (1987)</span></footer>
+        </section>
+
+        <!-- 17 EXPECTED -->
+        <section class="scene" data-ch="3" data-sec="App. B · C" data-dur="35" data-title="What we expect to see">
+          <p class="eyebrow b fade" data-t="100">Prototype and sample simulation</p>
+          <h2 class="b up" data-t="250">What we expect to see</h2>
+          <div class="two" style="margin-top:26px">
+            <div class="stack" style="gap:14px">
+              <p class="mono b fade" data-t="600" style="font-size:14px;letter-spacing:.14em;color:var(--dim)">PROTOTYPE
+                · HANDOVER PER INPUT</p>
+              <div class="proto">
+                <div class="r b left" data-t="900">
+                  <div class="nm"><b>Input A</b>clean, easy</div>
+                  <div class="cells sm b" data-t="900" data-teacher="10" data-student="3" data-saved="8"></div>
+                </div>
+                <div class="r b left" data-t="1400">
+                  <div class="nm"><b>Input B</b>moderate</div>
+                  <div class="cells sm b" data-t="1400" data-teacher="14" data-student="3" data-saved="4"></div>
+                </div>
+                <div class="r b left" data-t="1900">
+                  <div class="nm"><b>Input C</b>noisy, hard</div>
+                  <div class="cells sm b" data-t="1900" data-teacher="18" data-student="3"></div>
+                </div>
+              </div>
+              <div class="legend b fade" data-t="2600" style="flex-wrap:wrap;gap:18px"><span><i
+                    style="background:var(--blue)"></i>teacher</span><span><i
+                    style="background:var(--student)"></i>student</span><span><i
+                    style="background:repeating-linear-gradient(135deg,var(--orange) 0 3px,transparent 3px 7px);outline:1px solid var(--orange)"></i>saved</span>
+              </div>
+              <p class="txt b up" data-t="3000" style="font-size:19px">Easy inputs save up to <strong
+                  class="hl">38%</strong>. Hard inputs cost <strong>exactly the baseline</strong>, never more.</p>
+            </div>
+            <div class="stack" style="gap:10px">
+              <p class="mono b fade" data-t="3600" style="font-size:14px;letter-spacing:.14em;color:var(--dim)">
+                SIMULATION · P(R ≤ α) OVER 1,000 RUNS</p>
+              <svg viewBox="0 0 640 420" style="width:100%">
+                <line class="gridl" x1="70" x2="620" y1="40" y2="40" />
+                <line class="gridl" x1="70" x2="620" y1="200" y2="200" />
+                <line class="ax" x1="70" x2="620" y1="360" y2="360" />
+                <text class="tick" x="58" y="365" text-anchor="end">0</text><text class="tick" x="58" y="205"
+                  text-anchor="end">0.5</text><text class="tick" x="58" y="45" text-anchor="end">1</text>
+                <g class="b fade" data-t="3800">
+                  <rect class="b growy" data-t="3900" x="92" y="50.6" width="44" height="309.4" fill="var(--orange)" />
+                  <rect class="b growy" data-t="4000" x="144" y="223.4" width="44" height="136.6" fill="var(--student)"
+                    opacity=".55" />
+                  <rect class="b growy" data-t="4100" x="222" y="43.8" width="44" height="316.2" fill="var(--orange)" />
+                  <rect class="b growy" data-t="4200" x="274" y="232.3" width="44" height="127.7" fill="var(--student)"
+                    opacity=".55" />
+                  <rect class="b growy" data-t="4300" x="352" y="50.6" width="44" height="309.4" fill="var(--orange)" />
+                  <rect class="b growy" data-t="4400" x="404" y="225.6" width="44" height="134.4" fill="var(--student)"
+                    opacity=".55" />
+                  <rect class="b growy" data-t="4500" x="482" y="65.6" width="44" height="294.4" fill="var(--orange)" />
+                  <rect class="b growy" data-t="4600" x="534" y="209.9" width="44" height="150.1" fill="var(--student)"
+                    opacity=".55" />
+                  <text class="tick" x="140" y="388" text-anchor="middle">n = 50</text><text class="tick" x="270"
+                    y="388" text-anchor="middle">100</text><text class="tick" x="400" y="388"
+                    text-anchor="middle">200</text><text class="tick" x="530" y="388" text-anchor="middle">400</text>
+                </g>
+                <g class="b fade" data-t="5100">
+                  <line x1="70" x2="620" y1="72" y2="72" stroke="var(--fg)" stroke-dasharray="6 5" stroke-width="1.5" />
+                  <text x="616" y="64" text-anchor="end" fill="var(--fg)" font-size="15">required 1 − δ = 0.90</text>
+                </g>
+                <g class="b fade" data-t="5300" font-size="15">
+                  <rect x="80" y="400" width="14" height="12" fill="var(--orange)" /><text x="100" y="411"
+                    fill="var(--muted)">Learn-Then-Test 0.92–0.99</text>
+                  <rect x="340" y="400" width="14" height="12" fill="var(--student)" opacity=".55" /><text x="360"
+                    y="411" fill="var(--muted)">naive pick 0.40–0.47</text>
+                </g>
+              </svg>
+              <p class="note b fade" data-t="5600">Simulated data, not experimental results. LTT used 15.9–18.2 passes
+                on average vs 21 for the reference.</p>
+            </div>
+          </div>
+          <footer class="cite b fade" data-t="3000"><span class="k">From</span><span>Proposal Appendix B (Table B.1) and
+              Appendix C (Figure C.1) · costs exact by Proposition 3.1</span></footer>
+        </section>
+
+        <!-- 18 END -->
+        <section class="scene s-end" data-ch="0" data-sec="Summary" data-dur="20" data-title="Summary">
+          <p class="eyebrow o b fade" data-t="100">The contribution</p>
+          <h2 class="b up" data-t="250" style="font-size:54px;max-width:24ch">Per-utterance handover, with a certified
+            bound on added failures</h2>
+          <div class="trip">
+            <div class="b up" data-t="900">
+              <h3>Decide</h3>
+              <p>Stop the teacher once its guess settles and the prompt is clean. Zero extra passes.</p>
+            </div>
+            <div class="b up" data-t="1500">
+              <h3>Guarantee</h3>
+              <p>λ̂ calibrated so added failures ≤ α with probability ≥ 1 − δ.</p>
+            </div>
+            <div class="b up" data-t="2100">
+              <h3>Fall back</h3>
+              <p>Never costs more than the released sampler; no certificate means the reference.</p>
+            </div>
+          </div>
+          <div class="thanks b up" data-t="2900">Thank you. <span>Questions?</span></div>
+        </section>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="full" hidden>
+    <div class="in">
+      <header>
+        <h2>Presenter script</h2>
+        <div class="cgroup"><button class="btn" id="copyBtn">Copy all</button><button class="btn pri"
+            id="closeFull">Close</button></div>
+      </header>
+      <div id="fullList"></div>
+    </div>
+  </div>
+
+  <script>
+    const SCRIPT = [
+      `Good day. Our study is titled "A Risk-Calibrated Adaptive Handover Method for Teacher-Guided Flow-Matching Text-to-Speech Inference." In one line: today's fast speech synthesizers let a large teacher model start every utterance and a small student model finish it. We propose deciding, for each utterance, when that handover happens, and attaching a statistical guarantee to that decision.`,
+      `This presentation follows the three chapters of the proposal. Chapter One sets up the background, the problem and our objectives. Chapter Two reviews the work we build on, from flow matching to statistical risk control, and identifies the gap. Chapter Three describes the proposed method, how we will calibrate it, and how we will evaluate it.`,
+      `Text-to-speech converts written text into spoken audio. Many recent systems use flow matching. The model learns a velocity field that moves random noise toward speech along a nearly straight path, from time zero to time one. To generate, we follow that field step by step. F5-TTS, the teacher model in our study, applies this with a diffusion transformer and a step schedule called sway sampling. The key detail is that every step is a full evaluation of a large network.`,
+      `That cost doubles under classifier-free guidance, because each guided step runs the network twice: once with the condition and once without. Distillation trains a small student that needs only a few steps; DMOSpeech cut sampling from 128 steps to four. But the student loses diversity. DMOSpeech 2 restores it by letting the teacher run the first steps and the student finish. In the released code that costs 21 forward passes per utterance: 18 for the teacher and 3 for the student.`,
+      `The problem is that the handover point is fixed. Every input, easy or hard, clean or noisy, pays the same 18 teacher passes. A switch later than an utterance needs wastes computation; an earlier one may degrade speech. This raises four problems: the effects of the switching time are not characterized; the handover boundary is not chosen per input; an adaptive choice comes with no reliability guarantee; and the assistive motivation does not by itself show any benefit to users.`,
+      `Our general objective is to develop and evaluate a training-free, risk-calibrated method that selects the teacher's switching time per utterance. First, we will characterize how quality and cost change across switching times. Second, we will formulate selection as a constrained cost-minimization problem and design a policy with provable properties. Third, we will calibrate it with Learn-Then-Test. Fourth, we will compare its signals and benchmark it against fixed switching times and an oracle.`,
+      `The study varies only the switching time. Every network stays frozen, and the student's restart level stays at the released default. We evaluate on English Seed-TTS prompts under clean and noisy conditions, on an NVIDIA Tesla T4 through Google Colab. The guarantee is statistical, not per utterance. Assistive communication for autistic users motivates efficient synthesis, but we will not build or evaluate any assistive application or clinical outcome. The results serve speech researchers, TTS developers, assistive-technology developers and future researchers.`,
+      `Chapter Two follows one chain of ideas. Flow matching gives a trajectory and a free estimate of the final output at every step. Distillation gives a cheap student but loses diversity. Teacher-guided sampling restores diversity, at a cost set by one fixed switching time. Adaptive computation shows that effort can depend on the input. And statistical risk control shows that such a decision can carry a guarantee. Our study sits at the end of this chain.`,
+      `Here is where the switch lives. Sway sampling packs the teacher's steps near the start of the flow. The released code stops the teacher at the first grid point above the switching argument; for 0.25, that is step eight. Our candidates are steps four, five, six and eight, costing 13, 15, 17 and 21 forward passes. At the handover, the student re-noises the teacher's estimate to a fixed level, tau equals 0.0761. This helps explain why an earlier, imperfect handover can still work.`,
+      `Choosing the switch per utterance is input-adaptive computation. Adaptive Computation Time and BranchyNet saved computation, but gave no statement of how much quality they lose. CALM, for language models, is our closest precedent: it calibrated its early-exit threshold with risk control. Adaptive teacher-student collaboration exists in image diffusion, but not for the handover time in speech. Our study adapts the switching time and attaches a calibrated guarantee.`,
+      `A rule that stops early will sometimes fail. We cannot prevent every failure, but we can promise that failures are rare: the risk stays below a tolerance alpha, and the promise is wrong with probability at most delta. Exact binomial bounds make this practical. With zero failures, certifying five percent at ninety percent confidence needs 45 inputs, against about 461 for Hoeffding's bound. Learn-Then-Test extends this to choosing among many thresholds, tested in a fixed order.`,
+      `Within the sources we examined, no single method combines three things for flow-matching speech synthesis: a per-utterance handover decision made from signals the sampler already computes; all networks kept as released; and a rate of added failures bounded with stated confidence on new speakers. This combination is the gap our study addresses.`,
+      `Chapter Three. The method adds a decision layer to the released sampler without touching any network. At each teacher step, a controller reads the endpoint estimate and the prompt's signal-to-noise ratio. If both indicate the utterance has settled, the teacher stops and hands over to the student; otherwise it takes the next step. If no earlier candidate qualifies, it stops at the reference point. The threshold is set once, offline, by a calibrator.`,
+      `Two signals drive the decision. The endpoint-stabilization score measures how much the teacher's prediction of the final output changed since the last step; a small score means it has settled. In this illustration, the easy input settles by step five and stops there, at 15 passes; the hard input never settles and runs to the reference. The prompt SNR estimates how noisy the recording is. Both reuse values already computed, so the decision costs no extra forward pass. Our development diagnostic suggests the SNR may carry most of the benefit, so we treat the stabilization score as a hypothesis to test.`,
+      `Formally, we seek the cheapest policy whose risk of added failures stays below alpha. An added failure means the output is clearly worse than the reference on the same input: its word error rate passes the ceiling and margin, or its speaker similarity drops by more than 0.02. The policy stops at the first candidate that passes both signals. We prove four properties: zero overhead, monotone cost in the threshold, a safe fallback to the reference, and an oracle lower bound.`,
+      `We calibrate the threshold with Learn-Then-Test on speaker-disjoint data: 100 speakers for development, 200 for calibration and 200 for testing. Thresholds are tested from conservative to aggressive. Each gets a binomial p-value; we keep going while it is at most delta and stop at the first that is not. In this illustrative example, 0.40 and 0.50 pass and 0.60 fails, so we lock 0.50. We will verify the guarantee on held-out speakers and over 100 random re-splits.`,
+      `The workflow has fifteen steps across a common setup and four objectives, each on its own data. We will benchmark the calibrated policy against fixed switching times, an SNR-only rule, controls that separate the stabilization signal from simply waiting longer, and an offline oracle. We measure word error rate, speaker similarity, UTMOS, exact forward passes and runtime, with paired statistical tests, and repeat under noise shift and smaller calibration sets.`,
+      `What do we expect? Settled, easy inputs hand over early and save up to 38 percent of the forward passes; hard inputs keep the full teacher run and cost exactly the baseline. In simulation, Learn-Then-Test kept its promise at every calibration size, while a naive threshold choice exceeded the tolerance in more than half of the runs. These are simulations; real speech results are what this study will measure.`,
+      `To summarize: we decide the handover per utterance from signals the sampler already has; we bound the rate of added failures with a calibrated guarantee; and we never cost more than the released sampler. Thank you. We welcome your questions.`
+    ];
+
+    const CH = { 0: "Proposal", 1: "Chapter I · Introduction", 2: "Chapter II · Review of related literature", 3: "Chapter III · Methodology" };
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const stage = document.getElementById('stage');
+    const vp = document.getElementById('viewport');
+    const scenes = [...stage.querySelectorAll('.scene')];
+    let cur = 0, timers = [], playing = false, playTimer = null, pending = 0;
+
+    /* ---- build pass-cell bars ---- */
+    document.querySelectorAll('.cells').forEach(el => {
+      const t = +el.dataset.teacher || 0, s = +el.dataset.student || 0, v = +el.dataset.saved || 0; let i = 0, h = '';
+      for (let k = 0; k < t; k++) h += `<i class="t" style="--i:${i++}"></i>`;
+      for (let k = 0; k < s; k++) h += `<i class="s" style="--i:${i++}"></i>`;
+      for (let k = 0; k < v; k++) h += `<i class="v" style="--i:${i++}"></i>`;
+      el.innerHTML = h;
+    });
+
+    /* ---- chrome per scene ---- */
+    scenes.forEach((s, i) => {
+      const c = document.createElement('div'); c.className = 'chrome';
+      const sec = s.dataset.sec ? `<span class="sec">${s.dataset.sec}</span> · ` : '';
+      c.innerHTML = `<span>${sec}${CH[s.dataset.ch]}</span><b>${String(i + 1).padStart(2, '0')} / ${scenes.length}</b>`;
+      s.prepend(c);
+    });
+
+    /* ---- SVG builders ---- */
+    const NS = 'http://www.w3.org/2000/svg';
+    function el(tag, attrs, parent, text) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; parent.appendChild(e); return e; }
+    (function buildSway() {
+      const svg = document.getElementById('swaySvg'); if (!svg) return;
+      const X = u => 110 + u * 580, Y = t => 580 - t * 520, tt = u => 1 - Math.cos(Math.PI / 2 * u);
+      for (let g = 0; g <= 4; g++) { el('line', { class: 'gridl', x1: 110, x2: 690, y1: Y(g / 4), y2: Y(g / 4) }, svg); }
+      el('line', { class: 'ax', x1: 110, x2: 690, y1: 580, y2: 580 }, svg); el('line', { class: 'ax', x1: 110, x2: 110, y1: 60, y2: 580 }, svg);
+      el('text', { class: 'tick', x: 400, y: 620, 'text-anchor': 'middle' }, svg, 'grid position u = i / 16');
+      el('text', { class: 'tick', x: 96, y: Y(0) + 5, 'text-anchor': 'end' }, svg, '0');
+      el('text', { class: 'tick', x: 96, y: Y(.5) + 5, 'text-anchor': 'end' }, svg, '0.5');
+      el('text', { class: 'tick', x: 96, y: Y(1) + 5, 'text-anchor': 'end' }, svg, '1');
+      el('text', { class: 'tick', x: 30, y: 320, transform: 'rotate(-90 30 320)', 'text-anchor': 'middle' }, svg, 'flow time t');
+      el('rect', { class: 'b fade', 'data-t': 900, x: 110, y: Y(.25), width: 580, height: 580 - Y(.25), fill: 'rgba(0,161,255,.07)' }, svg);
+      el('line', { class: 'b fade', 'data-t': 900, x1: 110, x2: 690, y1: Y(.25), y2: Y(.25), stroke: 'var(--muted)', 'stroke-dasharray': '6 6' }, svg);
+      el('text', { class: 'b fade', 'data-t': 900, x: 686, y: Y(.25) - 10, 'text-anchor': 'end', fill: 'var(--muted)', 'font-size': 15 }, svg, 'switching argument s = 0.25');
+      let d = ''; for (let k = 0; k <= 100; k++) { const u = k / 100; d += (k ? 'L' : 'M') + X(u).toFixed(1) + ' ' + Y(tt(u)).toFixed(1); }
+      el('path', { class: 'b draw', 'data-t': 700, d, stroke: 'var(--blue)', 'stroke-width': 2.5, fill: 'none' }, svg);
+      const cand = { 4: 13, 5: 15, 6: 17, 8: 21 };
+      for (let i = 0; i <= 16; i++) {
+        const u = i / 16, c = cand[i];
+        el('circle', { class: 'b pop', 'data-t': 1300 + i * 70, cx: X(u), cy: Y(tt(u)), r: c ? 8 : 4.5, fill: c ? (i === 8 ? 'var(--fg)' : 'var(--orange)') : 'var(--blue)' }, svg);
+      }
+      const labs = [[4, 'step 4 · 13'], [5, 'step 5 · 15'], [6, 'step 6 · 17'], [8, 'step 8 · 21  reference']];
+      labs.forEach(([i, txt], n) => {
+        const u = i / 16, y = Y(tt(u));
+        const ly = [y + 34, y + 12, y - 12, y - 34][n];
+        el('line', { class: 'b fade', 'data-t': 2700 + n * 150, x1: X(u) + 10, y1: y, x2: X(u) + 60, y2: ly, stroke: 'var(--line-2)' }, svg);
+        el('text', { class: 'b fade', 'data-t': 2700 + n * 150, x: X(u) + 66, y: ly + 5, fill: i === 8 ? 'var(--fg)' : 'var(--orange)', 'font-size': 16 }, svg, txt);
+      });
+      el('text', { class: 'b fade', 'data-t': 2000, x: X(.07), y: Y(.62), fill: 'var(--dim)', 'font-size': 15 }, svg, 'half the 16 steps fall below t ≈ 0.29');
+    })();
+
+    (function buildDrift() {
+      const svg = document.getElementById('driftSvg'); if (!svg) return;
+      const X = i => 80 + (i - 1) * 95, Y = d => 340 - d * 250;
+      [4, 5, 6].forEach(i => el('rect', { class: 'b fade', 'data-t': 1200, x: X(i) - 30, y: 40, width: 60, height: 300, fill: 'rgba(252,106,24,.07)' }, svg));
+      el('rect', { class: 'b fade', 'data-t': 1200, x: X(8) - 30, y: 40, width: 60, height: 300, fill: 'rgba(167,178,191,.07)' }, svg);
+      el('line', { class: 'ax', x1: 50, x2: 790, y1: 340, y2: 340 }, svg);
+      for (let i = 1; i <= 8; i++) el('text', { class: 'tick', x: X(i), y: 368, 'text-anchor': 'middle' }, svg, i);
+      el('text', { class: 'tick', x: 790, y: 394, 'text-anchor': 'end', 'font-size': 14 }, svg, 'teacher step i  ·  shaded = candidates (4, 5, 6) and reference (8)');
+      el('line', { class: 'b fade', 'data-t': 1600, x1: 50, x2: 790, y1: Y(.5), y2: Y(.5), stroke: 'var(--fg)', 'stroke-dasharray': '6 5', 'stroke-width': 1.5 }, svg);
+      el('text', { class: 'b fade', 'data-t': 1600, x: 56, y: Y(.5) - 10, fill: 'var(--fg)', 'font-size': 15 }, svg, 'λ = 0.50');
+      const easy = [1.0, .95, .80, .675, .154, .10, .07, .05], hard = [1.15, 1.05, .95, .88, .80, .72, .66, .60];
+      const path = a => a.map((d, k) => (k ? 'L' : 'M') + X(k + 1) + ' ' + Y(Math.min(d, 1.18))).join(' ');
+      el('path', { class: 'b draw', 'data-t': 2000, d: path(hard), stroke: 'var(--student)', 'stroke-width': 2.5, fill: 'none' }, svg);
+      el('path', { class: 'b draw', 'data-t': 2400, d: path(easy.slice(0, 5)), stroke: 'var(--blue)', 'stroke-width': 3, fill: 'none' }, svg);
+      el('text', { class: 'b fade', 'data-t': 2600, x: X(2) + 12, y: 34, fill: 'var(--student)', 'font-size': 15 }, svg, 'hard input · never settles → reference, 21 passes');
+      el('circle', { class: 'b pop', 'data-t': 3600, cx: X(5), cy: Y(.154), r: 10, fill: 'var(--orange)' }, svg);
+      el('text', { class: 'b fade', 'data-t': 3700, x: X(5) + 18, y: Y(.154) + 5, fill: 'var(--orange)', 'font-size': 16 }, svg, 'easy: stops at step 5 · 15 passes');
+
+    })();
+
+    /* draw lengths */
+    document.querySelectorAll('.draw').forEach(p => { try { p.style.setProperty('--len', Math.ceil(p.getTotalLength()) + 2) } catch (e) { } });
+
+    /* ---- flow canvas ---- */
+    const flow = (function () {
+      const cv = document.getElementById('flowCanvas'); if (!cv) return { start() { }, stop() { } };
+      const ctx = cv.getContext('2d'), W = cv.width, H = cv.height, N = 1100;
+      const P = []; const rnd = () => { let u = 0, v = 0; while (!u) u = Math.random(); while (!v) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+      for (let k = 0; k < N; k++) {
+        const fx = Math.random(); const h = 1 + Math.floor(Math.random() * 7);
+        const f0 = 0.07 + 0.025 * Math.sin(fx * 9) + 0.015 * Math.sin(fx * 23);
+        const env = Math.exp(-((h - 2.5) ** 2) / 6);
+        const on = Math.sin(fx * 31) > -0.55;
+        const tx = W * (0.08 + 0.84 * fx), ty = H * (0.9 - Math.min(0.82, f0 * h * 1.45)) + rnd() * 4;
+        P.push({ x0: W * .5 + rnd() * W * .2, y0: H * .5 + rnd() * H * .2, x1: tx, y1: ty, a: on ? 0.35 + 0.6 * env : 0.12 });
+      }
+      const grid = [...Array(17)].map((_, i) => 1 - Math.cos(Math.PI / 2 * i / 16));
+      let raf = null, t0 = 0; const tRead = document.getElementById('tRead');
+      function frame(now) {
+        if (!t0) t0 = now; const cyc = 6800, e = (now - t0) % cyc; const stepMs = 300;
+        let t; if (e < 600) t = 0; else if (e < 600 + 16 * stepMs) { const s = (e - 600) / stepMs, i = Math.floor(s), f = s - i, ease = f < .7 ? (f / .7) ** 2 * (3 - 2 * f / .7) : 1; t = grid[i] + (grid[Math.min(16, i + 1)] - grid[i]) * ease; } else t = 1;
+        ctx.fillStyle = 'rgba(9,13,18,0.28)'; ctx.fillRect(0, 0, W, H);
+        const teacher = t <= 0.2929;
+        for (const p of P) {
+          const x = (1 - t) * p.x0 + t * p.x1, y = (1 - t) * p.y0 + t * p.y1;
+          ctx.fillStyle = teacher ? `rgba(0,161,255,${p.a})` : `rgba(201,210,220,${p.a})`; ctx.fillRect(x, y, 5, 5);
+        }
+        tRead.textContent = t.toFixed(3); tRead.style.color = teacher ? 'var(--blue)' : 'var(--student)';
+        raf = requestAnimationFrame(frame);
+      }
+      return {
+        start() { if (raf || reduced) { if (reduced) { ctx.fillStyle = '#090D12'; ctx.fillRect(0, 0, W, H); for (const p of P) { ctx.fillStyle = `rgba(201,210,220,${p.a})`; ctx.fillRect(p.x1, p.y1, 5, 5); } } return; } t0 = 0; ctx.fillStyle = '#090D12'; ctx.fillRect(0, 0, W, H); raf = requestAnimationFrame(frame); },
+        stop() { if (raf) cancelAnimationFrame(raf); raf = null; }
+      };
+    })();
+
+    /* ---- counters ---- */
+    function runCount(e) {
+      const from = +e.dataset.from || 0, to = +e.dataset.to, dur = reduced ? 0 : 1300, st = performance.now();
+      function tick(n) { const k = dur ? Math.min(1, (n - st) / dur) : 1, v = Math.round(from + (to - from) * (1 - (1 - k) ** 3)); e.textContent = v; if (k < 1) requestAnimationFrame(tick); }
+      requestAnimationFrame(tick);
+    }
+    function fire(b) { if (b.classList.contains('on')) return; b.classList.add('on'); pending--; b.querySelectorAll('.count').forEach(runCount); }
+
+    function updateUI() {
+      try { history.replaceState(null, '', '#s' + (cur + 1)); } catch (e) { }
+    }
+    function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+    function enter(i) {
+      clearTimers(); clearTimeout(playTimer);
+      const prev = scenes[cur]; if (prev && prev.dataset.hook === 'flow' && i !== cur) flow.stop();
+      cur = Math.max(0, Math.min(scenes.length - 1, i));
+      const s = scenes[cur];
+      scenes.forEach(x => x.classList.toggle('active', x === s));
+      s.classList.add('reset');
+      const beats = [...s.querySelectorAll('.b')]; beats.forEach(b => b.classList.remove('on'));
+      s.querySelectorAll('.count').forEach(c => c.textContent = c.dataset.from || 0);
+      void s.offsetWidth; s.classList.remove('reset');
+      pending = beats.length;
+      beats.forEach(b => { const t = reduced ? 0 : (+b.dataset.t || 0); timers.push(setTimeout(() => fire(b), t + 120)); });
+      if (s.dataset.hook === 'flow') flow.start();
+      updateUI();
+      if (playing) { playTimer = setTimeout(() => { if (cur < scenes.length - 1) enter(cur + 1); else { playing = false; updateUI(); } }, (+s.dataset.dur) * 1000); }
+    }
+    function go(i) { enter(i); }
+    function complete() { clearTimers(); scenes[cur].querySelectorAll('.b').forEach(fire); }
+    function next() { if (!playing && pending > 0) { complete(); return; } if (cur < scenes.length - 1) enter(cur + 1); }
+    function prev() { if (cur > 0) enter(cur - 1); }
+
+    document.addEventListener('keydown', e => {
+      if (e.target.closest && e.target.closest('input,textarea')) return;
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+        e.preventDefault();
+        next();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prev();
+      } else if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+        else document.documentElement.requestFullscreen().catch(() => {});
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        go(0);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        go(scenes.length - 1);
+      } else if (e.key === 's' || e.key === 'S') {
+        const full = document.getElementById('full');
+        if (full) full.hidden = !full.hidden;
+      } else if (e.key === 'Escape') {
+        const full = document.getElementById('full');
+        if (full && !full.hidden) full.hidden = true;
+      } else if (e.key === '1') {
+        go(1); // Outline
+      } else if (e.key === '2') {
+        go(2); // Ch I
+      } else if (e.key === '3') {
+        go(7); // Ch II
+      } else if (e.key === '4') {
+        go(12); // Ch III
+      }
+    });
+
+    const full = document.getElementById('full');
+    if (full) {
+      document.getElementById('fullList').innerHTML = scenes.map((s, i) => `<article><div class="meta"><span>Scene ${String(i + 1).padStart(2, '0')} · ${CH[s.dataset.ch]}</span><span>~${s.dataset.dur}s</span></div><h3>${s.dataset.title}</h3><p>${SCRIPT[i]}</p></article>`).join('');
+      document.getElementById('closeFull')?.addEventListener('click', () => { full.hidden = true; });
+      document.getElementById('copyBtn')?.addEventListener('click', async (e) => {
+        const txt = scenes.map((s, i) => `SCENE ${i + 1} — ${s.dataset.title} (~${s.dataset.dur}s)\n${SCRIPT[i]}`).join('\n\n');
+        try { await navigator.clipboard.writeText(txt); e.target.textContent = 'Copied'; }
+        catch (err) { }
+        setTimeout(() => e.target.textContent = 'Copy all', 2200);
+      });
+    }
+
+    stage.addEventListener('click', e => {
+      next();
+    });
+
+    /* ---- fit stage to full viewport ---- */
+    function fit() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const sc = Math.min(w / 1600, h / 900);
+      stage.style.transform = `scale(${sc})`;
+      stage.style.left = ((w - 1600 * sc) / 2) + 'px';
+      stage.style.top = ((h - 900 * sc) / 2) + 'px';
+      vp.style.width = w + 'px';
+      vp.style.height = h + 'px';
+    }
+    window.addEventListener('resize', fit);
+    document.addEventListener('fullscreenchange', fit);
+    fit();
+    const m = /^#s(\d+)$/.exec(location.hash); enter(m ? (+m[1] - 1) : 0);
+  </script>
+</body>
+
+</html>
