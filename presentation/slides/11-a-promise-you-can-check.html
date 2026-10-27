@@ -1,0 +1,98 @@
+<!-- 10 RISK CONTROL -->
+<section class="scene" data-ch="2" data-sec="2.5" data-dur="35" data-title="Statistical Risk Control">
+  <p class="eyebrow b fade" data-t="100">Section 2.5 · Theoretical Framework</p>
+  <h2 class="b up" data-t="250">Finite-Sample Statistical Guarantees &amp; Risk Control</h2>
+  <div class="two" style="margin-top:16px;gap:60px">
+    <div class="stack" style="gap:24px;justify-content:center">
+      <div class="promise b pop" data-t="800"><i>P</i>( <i>R</i>(<i>λ̂</i>) ≤ <span class="hl">α</span> ) ≥ 1 −
+        <span class="bl">δ</span>
+      </div>
+      <p class="lead b up" data-t="1500">“At most <span class="hl">5%</span> added failures, and this promise is
+        wrong with probability at most <span class="bl">10%</span>.”</p>
+      <p class="txt b up" data-t="2300"><strong>Learn-Then-Test</strong> turns each candidate threshold into a
+        hypothesis test and needs no monotonicity. Testing in a <strong>fixed order</strong> keeps the overall
+        error at δ.</p>
+    </div>
+    <div class="stack" style="justify-content:center;gap:24px">
+      <p class="mono b fade" data-t="3000" style="font-size:15px;font-weight:600;letter-spacing:.14em;color:var(--dim)">
+        INPUTS
+        NEEDED · α = 0.05, δ = 0.10, ZERO FAILURES</p>
+      <div class="eq b left" data-t="3200" style="font-size:38px;padding:14px 20px">(1 − α)<sup><i>n</i></sup> ≤ δ
+        &nbsp;⇒&nbsp;
+        <i>n</i> ≥ ln δ / ln(1 − α)
+      </div>
+      <div class="hbar b fade" data-t="3800"><span class="nm">Exact binomial</span>
+        <div class="tr">
+          <div class="fill b grow" data-t="3800" style="width:9.76%;background:var(--orange);border-radius:3px"></div>
+        </div><span class="v hl"><span class="count" data-from="0" data-to="45">0</span></span>
+      </div>
+      <div class="hbar b fade" data-t="4300"><span class="nm">Hoeffding bound</span>
+        <div class="tr">
+          <div class="fill b grow" data-t="4300"
+            style="width:100%;background:var(--student);opacity:.6;border-radius:3px"></div>
+        </div><span class="v">≈<span class="count" data-from="0" data-to="461">0</span></span>
+      </div>
+      <p class="txt b up" data-t="5200" style="font-size:21px">The guarantee is <strong>marginal</strong> (on
+        average over inputs) and needs calibration and test inputs from the same distribution.</p>
+    </div>
+  </div>
+  <footer class="cite b fade" data-t="2600"><span class="k">Sources</span><span>Angelopoulos &amp; Bates (2023)
+      · Angelopoulos et al. (2025), Ann. Appl. Stat. · Clopper &amp; Pearson (1934) · Hoeffding (1963) · Bauer
+      (1991)</span></footer>
+</section>
+
+<script type="text/slide-script">
+A rule that stops early will sometimes fail. We cannot prevent every failure, but we can promise that failures are rare: the risk stays below a tolerance alpha, and the promise is wrong with probability at most delta. Exact binomial bounds make this practical. With zero failures, certifying five percent at ninety percent confidence needs 45 inputs, against about 461 for Hoeffding's bound. Learn-Then-Test extends this to choosing among many thresholds, tested in a fixed order.
+</script>
+
+<style>
+  /* S10 */
+  .promise {
+    font-family: var(--math);
+    font-size: 40px;
+    background: var(--dark-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 13px 0 4px;
+    white-space: nowrap;
+    display: inline-block;
+  }
+
+  .promise i {
+    font-style: italic
+  }
+
+  .hbar {
+    display: grid;
+    grid-template-columns: 240px 1fr 100px;
+    gap: 20px;
+    align-items: center
+  }
+
+  .hbar .nm {
+    font-family: var(--mono);
+    font-weight: 500;
+    font-size: 17px;
+    color: var(--muted);
+    letter-spacing: .04em
+  }
+
+  .hbar .tr {
+    height: 30px;
+    position: relative;
+    background: var(--line);
+    border-radius: 3px;
+  }
+
+  .hbar .fill {
+    height: 100%
+  }
+
+  .hbar .v {
+    font-family: var(--display);
+    font-stretch: 118%;
+    font-size: 34px;
+    font-weight: 800
+  }
+</style>
