@@ -1,5 +1,5 @@
 <!-- 4 PROBLEM -->
-        <section class="scene" data-ch="1" data-sec="1.2" data-dur="35" data-title="Problem Statement">
+        <section class="scene" data-ch="1" data-sec="1.2" data-dur="80" data-title="Problem Statement">
           <p class="eyebrow b fade" data-t="100">Section 1.2 · Problem Statement</p>
           <h2 class="b up" data-t="250">Limitations of Static Handover Schedules Across Inputs</h2>
           <div class="two wide-l" style="margin-top:20px;gap:56px">
@@ -50,7 +50,7 @@
         </section>
 
 <script type="text/slide-script">
-The problem is that the handover point is fixed. Every input, easy or hard, clean or noisy, pays the same 18 teacher passes. A switch later than an utterance needs wastes computation; an earlier one may degrade speech. This raises four problems: the effects of the switching time are not characterized; the handover boundary is not chosen per input; an adaptive choice comes with no reliability guarantee; and the assistive motivation does not by itself show any benefit to users. Our preliminary T4 data already show this: on a thousand development instances, fixed early switches fail on a quarter to a third of inputs, almost all with noisy prompts, while choosing per input in hindsight would need under 15 of the 21 passes.
+This slide states the problem. On the left, three kinds of input: a clean and easy one, a moderate one, and one with a noisy voice prompt. With a fixed handover, the dashed orange line, all three pay the same 21 passes. Switching too late wastes teacher passes; switching too early may degrade the speech. So we ask: does every utterance really need 18 teacher passes? The orange box shows that this is not a hypothetical. In our preliminary runs on the Tesla T4, with 500 speakers and a clean and noisy version of each prompt, every fixed early switch failed on a quarter to a third of inputs, almost entirely the noisy ones, while clean prompts failed only one to two percent of the time. Choosing the switch per input in hindsight would need under 15 of the 21 passes. No single early switch is safe for everyone. On the right are the four specific problems this leaves: the effects are not characterized, we do not know which signals can pick the switch, adaptive selection alone gives no reliability guarantee, and speed by itself is not evidence of benefit to end users.
 </script>
 
 <style>

@@ -1,5 +1,5 @@
 <!-- 17 APPENDIX D: PRELIMINARY EXPERIMENTS -->
-        <section class="scene" data-ch="4" data-sec="App. D.1–D.3" data-dur="40" data-title="Appendix: Preliminary Experiments">
+        <section class="scene" data-ch="4" data-sec="App. D.1–D.3" data-dur="75" data-title="Appendix: Preliminary Experiments">
           <p class="eyebrow b fade" data-t="100">Appendix D.1–D.3 · Preliminary Experiments</p>
           <h2 class="b up" data-t="250">What the Earlier Runs Showed</h2>
           <div class="ap two" style="grid-template-columns:1.05fr .95fr;gap:44px">
@@ -39,7 +39,7 @@
         </section>
 
 <script type="text/slide-script">
-These are our preliminary results, all on development data. On the Tesla T4, with all 500 speakers under a clean and a noisy prompt, every fixed early switch fails on a quarter to a third of inputs, and almost all of those failures come from noisy prompts. Choosing per input in hindsight would need about 15 of the 21 passes. Restarting the student one level later departs from the reference more often, but that small run measures difference from the reference, not absolute quality, so we keep the default as a controlled setting. A cross-validated stabilization policy saved about ten percent with one added failure in 200, but chose its threshold with zero training failures, which is not a risk certificate. That is why Objective 3 uses Learn-Then-Test.
+This appendix slide holds our preliminary results; all of them are development evidence. The table on the left is the fixed-switching study on the Tesla T4, 500 speakers each with a clean and a noisy prompt. Read across each row: switching at step 4 fails on only 2.4 percent of clean prompts but 64 percent of noisy ones, and the pattern holds for steps 5 and 6; the reference never fails by definition. Choosing per input in hindsight would need 14.85 passes instead of 21, and every input that needed the reference was noisy. The top card on the right is the student restart level: restarting one level later departs from the j-equals-1 reference more often, but this small CPU run measures difference from the reference, not absolute quality, so we keep the default as a controlled setting. The bottom card is a cross-validated stabilization policy: it saved about ten percent with one added failure in 200, but its threshold was chosen with zero training failures, which is not a certificate. That is why Objective Three uses Learn-Then-Test.
 </script>
 
 <style>

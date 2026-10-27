@@ -1,5 +1,5 @@
 <!-- 18 APPENDIX D: SIGNAL DIAGNOSTIC -->
-        <section class="scene" data-ch="4" data-sec="App. D.4–D.5" data-dur="35" data-title="Appendix: Signal Diagnostic">
+        <section class="scene" data-ch="4" data-sec="App. D.4–D.5" data-dur="70" data-title="Appendix: Signal Diagnostic">
           <p class="eyebrow b fade" data-t="100">Appendix D.4–D.5 · Development-Split Signal Diagnostic</p>
           <h2 class="b up" data-t="250">How the Two Signals Behaved</h2>
           <div class="ap two" style="grid-template-columns:1fr 1fr;gap:48px">
@@ -40,7 +40,7 @@
         </section>
 
 <script type="text/slide-script">
-On the development speakers, the prompt SNR separated clean from noisy prompts completely, so a 20 decibel gate sent every noisy prompt to the reference. The stabilization score did not separate failures from passes on clean prompts, though that rests on only two or three failures. These figures come from the split that serves design decisions, so they motivate our tests rather than settle them. The plan is fixed in advance: measure discrimination, compare against controls, test prompts the SNR cannot see, and try richer zero-cost signals. If the score adds nothing, we recommend the SNR-gated policy and report the score as a negative result.
+This slide shows how the two signals behaved on the 100 development speakers. On the left, the SNR bars: clean prompts measured 23 to 50 decibels and noisy prompts 17 to 18, with the black line marking the 20-decibel gate. The two groups do not overlap, so the gate sent every noisy prompt to the reference. On the right, the stabilization score on clean prompts did not separate failures from passes, with an area under the curve of about 0.47, although that rests on only two or three failures. At lambda 0.50 the policy also waited longer than needed on most clean prompts. The bottom card is our plan to test the score properly, fixed before we look at the data: measure discrimination, compare against controls, test prompts that the SNR cannot detect, such as reverberation, and try richer zero-cost signals. If the score adds nothing, we will recommend the SNR-gated policy and report the score as a negative result.
 </script>
 
 <style>

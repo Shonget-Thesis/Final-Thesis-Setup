@@ -1,5 +1,5 @@
 <!-- 3 COST -->
-        <section class="scene" data-ch="1" data-sec="1.1" data-dur="45" data-title="Background: Flow Matching, Cost & Distillation">
+        <section class="scene" data-ch="1" data-sec="1.1" data-dur="60" data-title="Background: Flow Matching, Cost & Distillation">
           <p class="eyebrow b fade" data-t="100">Section 1.1 · Background of the Study</p>
           <h2 class="b up" data-t="250">Flow-Matching TTS: Cost &amp; Distillation Trade-Offs</h2>
           <div class="trio" style="grid-template-columns:repeat(4,1fr);gap:22px">
@@ -47,7 +47,7 @@
         </section>
 
 <script type="text/slide-script">
-Text-to-speech converts written text into speech. Many recent systems use flow matching: the model learns a velocity field that moves random noise toward speech step by step, and every step is a full evaluation of a large network. F5-TTS, our teacher, works this way. That cost doubles under classifier-free guidance, because each guided step runs the network twice: once with the condition and once without. Distillation trains a small student that needs only a few steps; DMOSpeech cut sampling from 128 steps to four. But the student loses diversity. DMOSpeech 2 restores it by letting the teacher run the first steps and the student finish. In the released code that costs 21 forward passes per utterance: 18 for the teacher and 3 for the student.
+Here is the background in four panels, read left to right. First panel: flow matching. The model learns a velocity field, dx over dt, that moves random noise toward a mel-spectrogram step by step. Every step is one full network evaluation, and F5-TTS, our teacher, works this way. Second panel: classifier-free guidance. Each guided step runs the network twice, once with the text condition and once without, so the cost doubles. Third panel: distillation. DMOSpeech trained a small student that needs four steps instead of 128. Fourth panel: the catch. The student's speech is less varied, which is called mode shrinkage, so DMOSpeech 2 lets the teacher run the first steps and the student finish. The bar at the bottom shows what that costs in the released code: 18 teacher passes and 3 student passes, 21 forward passes for every utterance, easy or hard.
 </script>
 
 <style>

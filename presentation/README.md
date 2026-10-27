@@ -8,7 +8,7 @@ An animated, full-screen presentation of the thesis proposal (Chapters 1–3) fo
 | [slides/](slides/) | 19 modular slide files containing slide markup, presenter script notes, and slide-specific styles |
 | [template.html](template.html) | Base HTML shell, layout, cosmic field background, typography, and presentation controller |
 | [build.py](build.py) | Fast builder (<30ms) to compile modular slides into `index.html` (supports `--watch`, `--serve`, `--sync-md`) |
-| [SCRIPT.md](SCRIPT.md) | The presenter script, one section per scene, about 13 minutes at the auto-play pace |
+| [SCRIPT.md](SCRIPT.md) | The presenter script, one section per scene, about 21 minutes at the auto-play pace (about 17 without the appendix) |
 
 ## Editing slides
 

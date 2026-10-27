@@ -1,5 +1,5 @@
 <!-- 13 GAP MAP -->
-        <section class="scene" data-ch="2" data-sec="2.4–2.8" data-dur="45" data-title="Gap Map of the Related Literature">
+        <section class="scene" data-ch="2" data-sec="2.4–2.8" data-dur="60" data-title="Gap Map of the Related Literature">
           <p class="eyebrow o b fade" data-t="100">Sections 2.4–2.8 · Literature Synthesis</p>
           <h2 class="b up" data-t="250">Where Prior Work Leaves the Gaps</h2>
           <div class="vn">
@@ -118,7 +118,7 @@
         </section>
 
 <script type="text/slide-script">
-Let us place the related work on three properties. The first is deciding per input. Adaptive Computation Time, BranchyNet, Adaptive Guidance and adaptive teacher-student collaboration all adapt to the input, but none states how much quality the saving may cost. The second is a calibrated risk bound. CALM and adaptive ASR correction have one, but for exit layers and recognition hypotheses, not for handing over from a teacher to a student in speech synthesis. The third is the handover itself. DMOSpeech 2 and T-Stitch switch between a large and a small model, but at one fixed or preset point for every input. Where all three meet, in the centre, we found no method in the sources we reviewed. That is where this study sits. This is a statement about the sources we examined, not a claim that no other adaptive method exists.
+This diagram turns the table into a picture of the gap. The three circles are three properties: in blue, deciding per input; in dark grey, a calibrated risk bound; and in light grey, at the bottom, a teacher-to-student handover. Each reviewed method sits where its properties overlap. ACT, BranchyNet and Adaptive Guidance are adaptive only. CALM and adaptive ASR correction are adaptive and bounded, but do not hand over between models. DMOSpeech 2 and T-Stitch hand over, but at a fixed or preset point. Adaptive teacher-student collaboration is adaptive with a handover, but has no bound. The cards on the right summarize these three gaps. The centre, where all three properties meet, is empty in the sources we reviewed. That is where this study sits. To be precise, this describes the sources we examined, not every adaptive method that exists.
 </script>
 
 <style>

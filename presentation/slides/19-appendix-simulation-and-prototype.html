@@ -1,5 +1,5 @@
 <!-- 17 EXPECTED -->
-        <section class="scene" data-ch="4" data-sec="App. B–C" data-dur="35" data-title="Appendix: Simulation and Prototype">
+        <section class="scene" data-ch="4" data-sec="App. B–C" data-dur="65" data-title="Appendix: Simulation and Prototype">
           <p class="eyebrow b fade" data-t="100">Appendices B–C · Simulation and Prototype</p>
           <h2 class="b up" data-t="250">Projected Computational Savings &amp; Simulation Findings</h2>
           <div class="two" style="margin-top:20px;gap:56px">
@@ -74,7 +74,7 @@
         </section>
 
 <script type="text/slide-script">
-What do we expect? Settled, easy inputs hand over early and save up to 38 percent of the forward passes; hard inputs keep the full teacher run and cost exactly the baseline. In simulation, Learn-Then-Test kept its promise at every calibration size, while a naive threshold choice exceeded the tolerance in more than half of the runs. These are simulations; real speech results are what this study will measure.
+The last appendix slide shows what we expect, from the simulation and the prototype in Appendices B and C. On the left, the prototype view: a clean, easy input hands over early and saves up to 38 percent, shown by the hatched orange cells; a moderate input saves less; a noisy, hard input keeps the full teacher run and costs exactly the baseline, never more. On the right is a simulation, with made-up data, not experimental results. Each pair of bars is a calibration size. The orange bars show how often Learn-Then-Test kept the true risk within the tolerance: 92 to 99 percent of the time, above the required 90. The grey bars are a naive rule that just picks the best-looking threshold: it met the tolerance only 40 to 47 percent of the time. The guarantee costs some computation, between 15.9 and 18.2 passes on average instead of 21. Thank you; we welcome your questions.
 </script>
 
 <style>
