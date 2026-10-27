@@ -1,117 +1,117 @@
 # Presenter script
 
-Read-aloud script for the animated walkthrough in [index.html](index.html). Timings are the auto-play durations of each scene (about 11 minutes in total).
+Read-aloud script for the animated walkthrough in [index.html](index.html). Timings are the auto-play durations of each scene (about 21 minutes in total).
 
 ## Scene 01 · Title
 
-*Proposal · about 20 s*
+*Proposal · about 45 s*
 
-Good day. Our study is titled "A Risk-Calibrated Adaptive Handover Method for Teacher-Guided Flow-Matching Text-to-Speech Inference." In one line: today's fast speech synthesizers let a large teacher model start every utterance and a small student model finish it. We propose deciding, for each utterance, when that handover happens, and attaching a statistical guarantee to that decision.
+Good day. Our proposal is titled "A Risk-Calibrated Adaptive Handover Method for Teacher-Guided Flow-Matching Text-to-Speech Inference." The line under the title is the whole idea in one picture. Speech is generated from noise at time zero to speech at time one. A large teacher model, in blue, does the first part of that journey, and a small, fast student, in grey, finishes it. The orange mark is the handover point. Today that point is fixed. Our study asks where it should be for each sentence, and how we can promise that moving it does not hurt quality.
 
 ## Scene 02 · Proposal Overview
 
-*Proposal · about 25 s*
+*Proposal · about 45 s*
 
-This presentation follows the three chapters of the proposal. Chapter One sets up the background, the problem and our objectives. Chapter Two reviews the work we build on, from flow matching to statistical risk control, and identifies the gap. Chapter Three describes the proposed method, how we will calibrate it, and how we will evaluate it.
+This is the path of the talk. In Chapter One we set up the background, show the problem with evidence from our own preliminary runs, and state our objectives and scope. Chapter Two is kept short: one comparison table of related methods and one diagram that shows the gap we fill. Chapter Three is most of the talk: the architecture, the decision signals and stopping rule, how we calibrate it with a statistical guarantee, the experimental plan, and finally our contribution. The appendix at the end holds our preliminary test results and supplementary material, which we can return to during questions.
 
-## Scene 03 · Flow-Matching Speech Synthesis
+## Scene 03 · Background: Flow Matching, Cost & Distillation
 
-*Chapter I · Introduction · about 35 s*
+*Chapter I · Introduction · about 60 s*
 
-Text-to-speech converts written text into spoken audio. Many recent systems use flow matching. The model learns a velocity field that moves random noise toward speech along a nearly straight path, from time zero to time one. To generate, we follow that field step by step. F5-TTS, the teacher model in our study, applies this with a diffusion transformer and a step schedule called sway sampling. The key detail is that every step is a full evaluation of a large network.
+Here is the background in four panels, read left to right. First panel: flow matching. The model learns a velocity field, dx over dt, that moves random noise toward a mel-spectrogram step by step. Every step is one full network evaluation, and F5-TTS, our teacher, works this way. Second panel: classifier-free guidance. Each guided step runs the network twice, once with the text condition and once without, so the cost doubles. Third panel: distillation. DMOSpeech trained a small student that needs four steps instead of 128. Fourth panel: the catch. The student's speech is less varied, which is called mode shrinkage, so DMOSpeech 2 lets the teacher run the first steps and the student finish. The bar at the bottom shows what that costs in the released code: 18 teacher passes and 3 student passes, 21 forward passes for every utterance, easy or hard.
 
-## Scene 04 · Sampling Cost & Distillation Trade-Offs
+## Scene 04 · Teacher-Guided TTS: Where This Study Works
 
-*Chapter I · Introduction · about 35 s*
+*Chapter I · Introduction · about 65 s*
 
-That cost doubles under classifier-free guidance, because each guided step runs the network twice: once with the condition and once without. Distillation trains a small student that needs only a few steps; DMOSpeech cut sampling from 128 steps to four. But the student loses diversity. DMOSpeech 2 restores it by letting the teacher run the first steps and the student finish. In the released code that costs 21 forward passes per utterance: 18 for the teacher and 3 for the student.
+This diagram shows the whole system and where we work. On the left is training, done once and by others: the F5-TTS teacher, and a student distilled from it. We do not retrain or change either model. On the right, in the orange box, is inference, which runs for every utterance. Text and a voice prompt go in, the teacher takes its steps, then hands over at the orange diamond, the student finishes, and speech comes out. Notice the counts above the boxes: 18 teacher passes and 3 student passes. Now the view zooms into inference, and then into the handover itself. The top card is how it works today: one fixed switch, at time 0.25, for every utterance. The bottom card is our study: we pick the switch per utterance, and we bound the risk with a calibrated guarantee. That single decision is our entire focus; everything else stays exactly as released.
 
 ## Scene 05 · Problem Statement
 
-*Chapter I · Introduction · about 35 s*
+*Chapter I · Introduction · about 80 s*
 
-The problem is that the handover point is fixed. Every input, easy or hard, clean or noisy, pays the same 18 teacher passes. A switch later than an utterance needs wastes computation; an earlier one may degrade speech. This raises four problems: the effects of the switching time are not characterized; the handover boundary is not chosen per input; an adaptive choice comes with no reliability guarantee; and the assistive motivation does not by itself show any benefit to users.
+This slide states the problem. On the left, three kinds of input: a clean and easy one, a moderate one, and one with a noisy voice prompt. With a fixed handover, the dashed orange line, all three pay the same 21 passes. Switching too late wastes teacher passes; switching too early may degrade the speech. So we ask: does every utterance really need 18 teacher passes? The orange box shows that this is not a hypothetical. In our preliminary runs on the Tesla T4, with 500 speakers and a clean and noisy version of each prompt, every fixed early switch failed on a quarter to a third of inputs, almost entirely the noisy ones, while clean prompts failed only one to two percent of the time. Choosing the switch per input in hindsight would need under 15 of the 21 passes. No single early switch is safe for everyone. On the right are the four specific problems this leaves: the effects are not characterized, we do not know which signals can pick the switch, adaptive selection alone gives no reliability guarantee, and speed by itself is not evidence of benefit to end users.
 
 ## Scene 06 · Research Objectives
 
-*Chapter I · Introduction · about 35 s*
+*Chapter I · Introduction · about 60 s*
 
-Our general objective is to develop and evaluate a training-free, risk-calibrated method that selects the teacher's switching time per utterance. First, we will characterize how quality and cost change across switching times. Second, we will formulate selection as a constrained cost-minimization problem and design a policy with provable properties. Third, we will calibrate it with Learn-Then-Test. Fourth, we will compare its signals and benchmark it against fixed switching times and an oracle.
+Our general objective is to develop and evaluate a training-free, risk-calibrated method that chooses the teacher's switching time per utterance. Each card is one specific objective, with its output written underneath. One, characterize: measure how word error rate, speaker similarity, predicted naturalness, forward passes and runtime change across switching times and inputs, which gives us a quality-cost map. Two, formulate: state the choice as a cost minimization with a limit on risk, design a policy that needs no extra network evaluations, and prove its properties, four propositions in all. Three, calibrate: use Learn-Then-Test so that the rate of added failures stays within a tolerance alpha with confidence one minus delta, and check this on held-out speakers. Four, compare: benchmark the SNR-only, stabilization-only and combined variants against fixed switching times and an oracle, on clean and noisy prompts, to see whether each signal adds value.
 
 ## Scene 07 · Scope & Delimitations
 
-*Chapter I · Introduction · about 30 s*
+*Chapter I · Introduction · about 65 s*
 
-The study varies only the switching time. Every network stays frozen, and the student's restart level stays at the released default. We evaluate on English Seed-TTS prompts under clean and noisy conditions, on an NVIDIA Tesla T4 through Google Colab. The guarantee is statistical, not per utterance. Assistive communication for autistic users motivates efficient synthesis, but we will not build or evaluate any assistive application or clinical outcome. The results serve speech researchers, TTS developers, assistive-technology developers and future researchers.
+On the left is what is in and out of scope. In scope: only the switching time varies, and the student's restart level stays at the released default as a controlled setting. All four networks, the teacher, student, duration predictor and vocoder, stay frozen. We use English zero-shot prompts from the Seed-TTS test set, each in a clean and a 15-decibel noisy version, and everything runs on an NVIDIA Tesla T4 through Google Colab. Out of scope, in grey: the guarantee holds on average over inputs, not for every single utterance, and we do not build or test an assistive application or measure clinical outcomes. On the right are the beneficiaries: speech researchers get a formulation and proofs that apply to teacher-guided samplers in general; TTS developers get lower cost with a stated bound and no retraining; assistive-technology developers get cheaper, predictable synthesis; and future researchers get a reusable protocol.
 
-## Scene 08 · Literature Synthesis
+## Scene 08 · Input-Adaptive Computation
 
-*Chapter II · Review of related literature · about 40 s*
+*Chapter II · Review of related literature · about 55 s*
 
-Chapter Two follows one chain of ideas. Flow matching gives a trajectory and a free estimate of the final output at every step. Distillation gives a cheap student but loses diversity. Teacher-guided sampling restores diversity, at a cost set by one fixed switching time. Adaptive computation shows that effort can depend on the input. And statistical risk control shows that such a decision can carry a guarantee. Our study sits at the end of this chain.
+Chapter Two places our work among input-adaptive methods, ones that spend more or less computation depending on the input. Read the table by its last column, the guarantee. ACT, BranchyNet, adaptive teacher-student collaboration, T-Stitch and Adaptive Guidance all adapt something, from the number of layers to which model runs each step, but none of them states a bound on how much quality is lost. Two rows do carry risk control: CALM, which calibrates early exit in language models, and adaptive ASR correction, which uses Learn-Then-Test, but for speech recognition, not synthesis. The highlighted bottom row is our study: we adapt the teacher-to-student switching time, decide from the prompt's SNR and the endpoint-stabilization score, use a calibrated threshold, and attach Learn-Then-Test risk control.
 
-## Scene 09 · Sampling Discretization & Handover
+## Scene 09 · Gap Map of the Related Literature
 
-*Chapter II · Review of related literature · about 40 s*
+*Chapter II · Review of related literature · about 60 s*
 
-Here is where the switch lives. Sway sampling packs the teacher's steps near the start of the flow. The released code stops the teacher at the first grid point above the switching argument; for 0.25, that is step eight. Our candidates are steps four, five, six and eight, costing 13, 15, 17 and 21 forward passes. At the handover, the student re-noises the teacher's estimate to a fixed level, tau equals 0.0761. This helps explain why an earlier, imperfect handover can still work.
+This diagram turns the table into a picture of the gap. The three circles are three properties: in blue, deciding per input; in dark grey, a calibrated risk bound; and in light grey, at the bottom, a teacher-to-student handover. Each reviewed method sits where its properties overlap. ACT, BranchyNet and Adaptive Guidance are adaptive only. CALM and adaptive ASR correction are adaptive and bounded, but do not hand over between models. DMOSpeech 2 and T-Stitch hand over, but at a fixed or preset point. Adaptive teacher-student collaboration is adaptive with a handover, but has no bound. The cards on the right summarize these three gaps. The centre, where all three properties meet, is empty in the sources we reviewed. That is where this study sits. To be precise, this describes the sources we examined, not every adaptive method that exists.
 
-## Scene 10 · Input-Adaptive Computation
+## Scene 10 · System Architecture
 
-*Chapter II · Review of related literature · about 35 s*
+*Chapter III · Methodology · about 65 s*
 
-Choosing the switch per utterance is input-adaptive computation. Adaptive Computation Time and BranchyNet saved computation, but gave no statement of how much quality they lose. CALM, for language models, is our closest precedent: it calibrated its early-exit threshold with risk control. Adaptive teacher-student collaboration exists in image diffusion, but not for the handover time in speech. Our study adapts the switching time and attaches a calibrated guarantee.
+Chapter Three starts with the architecture. Blue and grey boxes are the released, frozen parts; orange boxes are what this study adds. Follow the loop from the top. The input is the prompt audio and the prompt and target text. The teacher takes one guided step, costing two passes. The endpoint monitor then reads the teacher's current estimate of the final output and computes the stabilization score, at no extra cost because it reuses values already computed. In parallel, the prompt SNR is estimated once from frame energies. The decision box asks: stop here? If not, the teacher takes another Euler step and we loop. If yes, the student restarts from the teacher's estimate at its fixed level and finishes in three passes, and the Vocos vocoder turns the mel-spectrogram into a waveform. The threshold used in the decision comes from the offline calibrator, which runs Learn-Then-Test once, before deployment.
 
-## Scene 11 · Statistical Risk Control
+## Scene 11 · Sampling Discretization & Handover
 
-*Chapter II · Review of related literature · about 35 s*
+*Chapter III · Methodology · about 75 s*
 
-A rule that stops early will sometimes fail. We cannot prevent every failure, but we can promise that failures are rare: the risk stays below a tolerance alpha, and the promise is wrong with probability at most delta. Exact binomial bounds make this practical. With zero failures, certifying five percent at ninety percent confidence needs 45 inputs, against about 461 for Hoeffding's bound. Learn-Then-Test extends this to choosing among many thresholds, tested in a fixed order.
+This slide shows exactly where the switch can happen and what each choice costs. The curve on the left is the teacher's time grid under sway sampling: the steps are packed near the start, so half of the sixteen steps fall below time 0.29. The released code stops the teacher at the first grid point above the switching argument s, the dashed line at 0.25, which is step 8. Our candidates are the orange points, steps 4, 5 and 6. On the right, each bar is one candidate, with its cost from the formula two times k plus one, plus three. Stopping at step 4 costs 13 passes and saves 38 percent; step 5 costs 15 and saves 29; step 6 costs 17 and saves 19; and the reference costs 21. The box at the bottom explains why earlier handovers are possible: the student always re-noises the teacher's estimate to the same level, tau equals 0.0761, which matches the teacher's fourth grid point, so the student only needs a teacher state good enough to re-enter there.
 
-## Scene 12 · Research Gap
+## Scene 12 · Inference Decision Signals
 
-*Chapter II · Review of related literature · about 30 s*
+*Chapter III · Methodology · about 70 s*
 
-Within the sources we examined, no single method combines three things for flow-matching speech synthesis: a per-utterance handover decision made from signals the sampler already computes; all networks kept as released; and a rate of added failures bounded with stated confidence on new speakers. This combination is the gap our study addresses.
+The stopping decision uses two signals, both free to compute. The top formula is the endpoint-stabilization score. At each teacher step, we take the teacher's current guess of the final output and measure how much it changed since the last step, relative to its size. A small score means the guess has settled. The chart shows two illustrative inputs: the blue easy input drops below the threshold lambda at step 5 and hands over there, at 15 passes; the grey hard input never settles and runs to the reference. The right side is the second signal, the prompt SNR, estimated from the energies of the loudest and quietest frames. With a gate at 20 decibels, a clean prompt at 30.5 decibels may stop early, while a noisy one at 17.8 decibels goes straight to the reference. The note at the bottom is important: our development diagnostics suggest the SNR may carry most of the benefit, so we treat the stabilization score as a hypothesis to test, not an assumption.
 
-## Scene 13 · System Architecture
+## Scene 13 · Stopping Policy Formulation
 
-*Chapter III · Methodology · about 40 s*
+*Chapter III · Methodology · about 75 s*
 
-Chapter Three. The method adds a decision layer to the released sampler without touching any network. At each teacher step, a controller reads the endpoint estimate and the prompt's signal-to-noise ratio. If both indicate the utterance has settled, the teacher stops and hands over to the student; otherwise it takes the next step. If no earlier candidate qualifies, it stops at the reference point. The threshold is set once, offline, by a calibrator.
+This slide is the formal version. The top line is the problem: find the policy with the lowest expected cost whose risk of added failures stays below alpha. The policy we propose walks through the teacher's steps in order and stops at the first candidate step where the stabilization score is below lambda and the prompt SNR is above the gate theta; otherwise it uses the reference. It can never stop later than step 8. The middle box defines an added failure, fixed before calibration: the output fails if its word error rate exceeds the larger of 12.5 percent and the reference's rate plus one point, or if its speaker similarity drops more than 0.02 below the reference, on the same seeds. Setting lambda to infinity gives the SNR-only rule, and removing the gate gives stabilization only, so one family covers all variants. The four cards are the propositions we prove: zero overhead, cost that rises monotonically as lambda shrinks, a safe fallback that never exceeds 21 passes, and an oracle lower bound that tells us the best possible saving.
 
-## Scene 14 · Inference Decision Signals
+## Scene 14 · Risk-Calibrated Threshold Selection
 
-*Chapter III · Methodology · about 40 s*
+*Chapter III · Methodology · about 80 s*
 
-Two signals drive the decision. The endpoint-stabilization score measures how much the teacher's prediction of the final output changed since the last step; a small score means it has settled. In this illustration, the easy input settles by step five and stops there, at 15 passes; the hard input never settles and runs to the reference. The prompt SNR estimates how noisy the recording is. Both reuse values already computed, so the decision costs no extra forward pass. Our development diagnostic suggests the SNR may carry most of the benefit, so we treat the stabilization score as a hypothesis to test.
+Now, how do we choose lambda with a guarantee? The bar at the top shows our speaker-disjoint splits from Seed-TTS: 100 speakers for development, 200 for calibration in orange, and 200 for testing in blue, one utterance per speaker. The four cards walk through an illustrative calibration from Appendix A, with 100 inputs. Thresholds are tested from conservative to aggressive. Each gets a binomial p-value from its number of failures. Lambda 0.40, with zero failures, gives p equal to 0.0059, below delta, so it is certified. Lambda 0.50, with one failure, gives 0.0371, also certified. Lambda 0.60, with three failures, gives 0.2578, above delta, so testing stops and 0.70 is never tested. We lock lambda-hat at 0.50. The line at the bottom states the guarantee: with probability at least one minus delta, the added-failure rate on new speakers stays at or below alpha. It also shows the cost of certainty: with zero failures, certifying five percent at ninety percent confidence needs at least 45 inputs. We fix the grid in advance and verify on the held-out test split and on 100 random re-splits.
 
-## Scene 15 · Stopping Policy Formulation
+## Scene 15 · Experimental Workflow & Benchmarks
 
-*Chapter III · Methodology · about 40 s*
+*Chapter III · Methodology · about 70 s*
 
-Formally, we seek the cheapest policy whose risk of added failures stays below alpha. An added failure means the output is clearly worse than the reference on the same input: its word error rate passes the ceiling and margin, or its speaker similarity drops by more than 0.02. The policy stops at the first candidate that passes both signals. We prove four properties: zero overhead, monotone cost in the threshold, a safe fallback to the reference, and an oracle lower bound.
+This slide puts the whole study in order: fifteen steps across five rows. Setup prepares the speaker splits, creates clean and noisy prompts, and checks that the sampler is deterministic, that the fallback reproduces the reference, and that pass counts match the formula. Objective One, on the development split, is the exploratory stage: one teacher run per input, every candidate scored, and the quality-cost map used to fix the SNR gate. Objective Two needs no data; it is the formulation and proofs. Objectives Three and Four, in the confirmatory stage, use speakers never seen before: we fix alpha, delta and the grid, run the tests in order, lock lambda-hat or fall back, and then benchmark the locked variants with paired comparisons, a noise shift and different calibration sizes, reporting every result, including negative ones. The three panels list what we compare against, what we measure, and the statistical tests we use. The unit of analysis throughout is the speaker.
 
-## Scene 16 · Risk-Calibrated Threshold Selection
+## Scene 16 · Contribution and Summary
 
-*Chapter III · Methodology · about 40 s*
+*Chapter III · Methodology · about 80 s*
 
-We calibrate the threshold with Learn-Then-Test on speaker-disjoint data: 100 speakers for development, 200 for calibration and 200 for testing. Thresholds are tested from conservative to aggressive. Each gets a binomial p-value; we keep going while it is at most delta and stop at the first that is not. In this illustrative example, 0.40 and 0.50 pass and 0.60 fails, so we lock 0.50. We will verify the guarantee on held-out speakers and over 100 random re-splits.
+To close, here is what this study adds, row by row. When to hand over: prior work uses one switching time for every utterance, fixed at 0.25 in DMOSpeech 2 and preset in T-Stitch; we choose it per utterance, from the prompt's SNR and the stabilization score, signals the sampler already computes. How sure we can be: prior adaptive rules have no bound on quality loss, and the calibrated bounds that exist are for exit layers and recognition; we use a Learn-Then-Test threshold, so that added failures stay at or below five percent with at least ninety percent confidence, checked on held-out speakers. What it costs: some prior methods need training or an extra estimator; ours needs no training and no extra forward pass, and if no threshold is certified it falls back to the released sampler, so it never costs more. The bottom line states what we do not claim: a proven advantage of the hybrid, any change to duration prediction, or any model training. In summary: decide per utterance, bound the risk, never cost more. The following slides are the appendix with our preliminary results.
 
-## Scene 17 · Experimental Workflow & Benchmarks
+## Scene 17 · Appendix: Preliminary Experiments
 
-*Chapter III · Methodology · about 35 s*
+*Appendix · about 75 s*
 
-The workflow has fifteen steps across a common setup and four objectives, each on its own data. We will benchmark the calibrated policy against fixed switching times, an SNR-only rule, controls that separate the stabilization signal from simply waiting longer, and an offline oracle. We measure word error rate, speaker similarity, UTMOS, exact forward passes and runtime, with paired statistical tests, and repeat under noise shift and smaller calibration sets.
+This appendix slide holds our preliminary results; all of them are development evidence. The table on the left is the fixed-switching study on the Tesla T4, 500 speakers each with a clean and a noisy prompt. Read across each row: switching at step 4 fails on only 2.4 percent of clean prompts but 64 percent of noisy ones, and the pattern holds for steps 5 and 6; the reference never fails by definition. Choosing per input in hindsight would need 14.85 passes instead of 21, and every input that needed the reference was noisy. The top card on the right is the student restart level: restarting one level later departs from the j-equals-1 reference more often, but this small CPU run measures difference from the reference, not absolute quality, so we keep the default as a controlled setting. The bottom card is a cross-validated stabilization policy: it saved about ten percent with one added failure in 200, but its threshold was chosen with zero training failures, which is not a certificate. That is why Objective Three uses Learn-Then-Test.
 
-## Scene 18 · Projected Outcomes
+## Scene 18 · Appendix: Signal Diagnostic
 
-*Chapter III · Methodology · about 35 s*
+*Appendix · about 70 s*
 
-What do we expect? Settled, easy inputs hand over early and save up to 38 percent of the forward passes; hard inputs keep the full teacher run and cost exactly the baseline. In simulation, Learn-Then-Test kept its promise at every calibration size, while a naive threshold choice exceeded the tolerance in more than half of the runs. These are simulations; real speech results are what this study will measure.
+This slide shows how the two signals behaved on the 100 development speakers. On the left, the SNR bars: clean prompts measured 23 to 50 decibels and noisy prompts 17 to 18, with the black line marking the 20-decibel gate. The two groups do not overlap, so the gate sent every noisy prompt to the reference. On the right, the stabilization score on clean prompts did not separate failures from passes, with an area under the curve of about 0.47, although that rests on only two or three failures. At lambda 0.50 the policy also waited longer than needed on most clean prompts. The bottom card is our plan to test the score properly, fixed before we look at the data: measure discrimination, compare against controls, test prompts that the SNR cannot detect, such as reverberation, and try richer zero-cost signals. If the score adds nothing, we will recommend the SNR-gated policy and report the score as a negative result.
 
-## Scene 19 · Summary of Contributions
+## Scene 19 · Appendix: Simulation and Prototype
 
-*Proposal · about 20 s*
+*Appendix · about 65 s*
 
-To summarize: we decide the handover per utterance from signals the sampler already has; we bound the rate of added failures with a calibrated guarantee; and we never cost more than the released sampler. Thank you. We welcome your questions.
+The last appendix slide shows what we expect, from the simulation and the prototype in Appendices B and C. On the left, the prototype view: a clean, easy input hands over early and saves up to 38 percent, shown by the hatched orange cells; a moderate input saves less; a noisy, hard input keeps the full teacher run and costs exactly the baseline, never more. On the right is a simulation, with made-up data, not experimental results. Each pair of bars is a calibration size. The orange bars show how often Learn-Then-Test kept the true risk within the tolerance: 92 to 99 percent of the time, above the required 90. The grey bars are a naive rule that just picks the best-looking threshold: it met the tolerance only 40 to 47 percent of the time. The guarantee costs some computation, between 15.9 and 18.2 passes on average instead of 21. Thank you; we welcome your questions.

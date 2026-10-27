@@ -1,5 +1,5 @@
 <!-- 15 CALIBRATION -->
-        <section class="scene" data-ch="3" data-sec="3.7" data-dur="40" data-title="Risk-Calibrated Threshold Selection">
+        <section class="scene" data-ch="3" data-sec="3.7" data-dur="80" data-title="Risk-Calibrated Threshold Selection">
           <p class="eyebrow b fade" data-t="100">Section 3.7 · Risk Calibration Protocol</p>
           <h2 class="b up" data-t="250">Risk-Calibrated Threshold Selection via Learn-Then-Test</h2>
           <p class="mono b fade" data-t="600"
@@ -29,17 +29,14 @@
                 class="r"><span>p</span><b>—</b></span><span class="verdict">not tested</span></div>
           </div>
           <div class="lock"><span class="box b pop" data-t="4900">λ̂ = 0.50</span>
-            <p class="txt b up" data-t="5400" style="font-size:21px;max-width:68ch">Study protocol: α = 0.05, δ = 0.10,
-              grid 0.20 to 1.20 in steps of 0.05, fixed in advance. Verify on the <strong>held-out test split</strong>
-              and over <strong>100 random re-splits</strong>.</p>
+            <p class="txt b up" data-t="5400" style="font-size:20px;max-width:74ch">Guarantee: <strong>P(R(λ̂) ≤ α) ≥ 1 − δ</strong>, on average over new speakers. With zero failures, certifying α = 0.05 at δ = 0.10 needs <strong>45</strong> inputs (Hoeffding: ≈461). Protocol fixed in advance: grid 0.20–1.20 in steps of 0.05; verified on the <strong>held-out test split</strong> and <strong>100 re-splits</strong>.</p>
           </div>
           <footer class="cite b fade" data-t="2600"><span class="k">Sources</span><span>Angelopoulos et al. (2025),
-              <em>Learn then test</em> · Bauer (1991), Stat. Med. · Clopper &amp; Pearson (1934) · Proposal Alg. 3.4,
-              Appendix A.6</span></footer>
+              <em>Learn then test</em> · Bauer (1991), Stat. Med. · Clopper &amp; Pearson (1934) · Hoeffding (1963) · Proposal Alg. 3.4, Appendix A.6</span></footer>
         </section>
 
 <script type="text/slide-script">
-We calibrate the threshold with Learn-Then-Test on speaker-disjoint data: 100 speakers for development, 200 for calibration and 200 for testing. Thresholds are tested from conservative to aggressive. Each gets a binomial p-value; we keep going while it is at most delta and stop at the first that is not. In this illustrative example, 0.40 and 0.50 pass and 0.60 fails, so we lock 0.50. We will verify the guarantee on held-out speakers and over 100 random re-splits.
+Now, how do we choose lambda with a guarantee? The bar at the top shows our speaker-disjoint splits from Seed-TTS: 100 speakers for development, 200 for calibration in orange, and 200 for testing in blue, one utterance per speaker. The four cards walk through an illustrative calibration from Appendix A, with 100 inputs. Thresholds are tested from conservative to aggressive. Each gets a binomial p-value from its number of failures. Lambda 0.40, with zero failures, gives p equal to 0.0059, below delta, so it is certified. Lambda 0.50, with one failure, gives 0.0371, also certified. Lambda 0.60, with three failures, gives 0.2578, above delta, so testing stops and 0.70 is never tested. We lock lambda-hat at 0.50. The line at the bottom states the guarantee: with probability at least one minus delta, the added-failure rate on new speakers stays at or below alpha. It also shows the cost of certainty: with zero failures, certifying five percent at ninety percent confidence needs at least 45 inputs. We fix the grid in advance and verify on the held-out test split and on 100 random re-splits.
 </script>
 
 <style>

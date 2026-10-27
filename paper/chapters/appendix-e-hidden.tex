@@ -69,18 +69,18 @@ Other variants did not improve on the plain handover: guidance steered away from
 \caption{Candidate policies against SNR-only on 360 development instances (60 speakers; clean, and five noisy conditions of 60 instances each; out of fold, $\alpha=0.05$, $\delta=0.10$). Upper 95\% is the upper end of the exact two-sided 95\% interval for the failure rate over all 360 instances \parencite{clopper1934}; McNemar is the exact test against SNR-only. Of SNR-only's failures, TAS avoids 74 and adds none, SWC with $\theta_{\mathrm{e}}=\theta_{\mathrm{hi}}$ avoids 75 and adds 9, SWC on heavy noise avoids 79 and adds 4, and the calibrated SNR gate avoids 79 and adds none.}
 \label{tab:candidates}
 \setlength{\tabcolsep}{4pt}
-\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X r r r r r r@{}}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X r r r r r@{}}
 \toprule
-& \multicolumn{2}{c}{\textbf{Failures}} & & & & \\
+& \multicolumn{2}{c}{\textbf{Failures}} & & & \\
 \cmidrule(lr){2-3}
-\textbf{Policy} & \textbf{Clean} & \textbf{Noisy} & \textbf{Upper 95\%} & \textbf{Passes} & \textbf{Saving} & \textbf{McNemar} \\
+\textbf{Policy} & \textbf{Clean} & \textbf{Noisy} & \textbf{Upper 95\%} & \textbf{Passes} & \textbf{McNemar} \\
 \midrule
-SNR-only ($\hat S\ge20$~dB) & 2 & 84 & 28.6\% & 14.40 & 31.4\% & -- \\
-Calibrated SNR gate & 2 & 5 & 4.0\% & 18.71 & 10.9\% & $3{\times}10^{-24}$ \\
-\textbf{SNR + TAS} & 2 & 10 & 5.8\% & 18.20 & 13.3\% & $1{\times}10^{-22}$ \\
-\textbf{SNR + SWC}, $\theta_{\mathrm{e}}=\theta_{\mathrm{hi}}$ & 2 & 18 & 8.4\% & 13.00 & 38.1\% & $4{\times}10^{-14}$ \\
-\textbf{SNR + SWC}, heavy noise & 2 & 9 & 5.4\% & 16.98 & 19.1\% & $4{\times}10^{-19}$ \\
-Reference for every input & 0 & 0 & 1.0\% & 21.00 & 0.0\% & $3{\times}10^{-26}$ \\
+SNR-only ($\hat S\ge20$~dB) & 2 & 84 & 28.6\% & 14.40 & -- \\
+Calibrated SNR gate & 2 & 5 & 4.0\% & 18.71 & $3{\times}10^{-24}$ \\
+\textbf{SNR + TAS} & 2 & 10 & 5.8\% & 18.20 & $1{\times}10^{-22}$ \\
+\textbf{SNR + SWC}, $\theta_{\mathrm{e}}=\theta_{\mathrm{hi}}$ & 2 & 18 & 8.4\% & 13.00 & $4{\times}10^{-14}$ \\
+\textbf{SNR + SWC}, heavy noise & 2 & 9 & 5.4\% & 16.98 & $4{\times}10^{-19}$ \\
+Reference for every input & 0 & 0 & 1.0\% & 21.00 & $3{\times}10^{-26}$ \\
 \bottomrule
 \end{tabularx}
 \end{table}

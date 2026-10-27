@@ -1,8 +1,13 @@
 <!-- 3 COST -->
-        <section class="scene" data-ch="1" data-sec="1.1" data-dur="35" data-title="Sampling Cost & Distillation Trade-Offs">
-          <p class="eyebrow b fade" data-t="100">Section 1.1 · Computational Background</p>
-          <h2 class="b up" data-t="250">Sampling Complexity &amp; Distillation Trade-Offs</h2>
-          <div class="trio">
+        <section class="scene" data-ch="1" data-sec="1.1" data-dur="60" data-title="Background: Flow Matching, Cost & Distillation">
+          <p class="eyebrow b fade" data-t="100">Section 1.1 · Background of the Study</p>
+          <h2 class="b up" data-t="250">Flow-Matching TTS: Cost &amp; Distillation Trade-Offs</h2>
+          <div class="trio" style="grid-template-columns:repeat(4,1fr);gap:22px">
+            <div class="panel b up" data-t="500">
+              <div class="ph">Flow Matching</div>
+              <div class="eq" style="font-size:26px;margin-bottom:14px"><i>dx</i>/<i>dt</i> = <i>v</i><sub>θ</sub>(<i>x</i>, <i>t</i>)</div>
+              <p class="txt" style="font-size:19px">Noise moves to a mel-spectrogram step by step; <strong>each step is one network evaluation</strong>. F5-TTS is our teacher.</p>
+            </div>
             <div class="panel b up" data-t="700">
               <div class="ph">Classifier-Free Guidance (CFG)</div>
               <div class="eq" style="font-size:28px;margin-bottom:14px"><i>v</i> = <i>v<sub>u</sub></i> +
@@ -36,13 +41,13 @@
                   class="count" data-from="0" data-to="21">0</span></span><span>forward passes for <strong
                   class="dl">every</strong> utterance</span></div>
           </div>
-          <footer class="cite b fade" data-t="3200"><span class="k">Sources</span><span>Ho &amp; Salimans (2022),
+          <footer class="cite b fade" data-t="3200"><span class="k">Sources</span><span>Lipman et al. (2023) · Y. Chen et al. (2025), <em>F5-TTS</em> · Ho &amp; Salimans (2022),
               <em>Classifier-free diffusion guidance</em> · Li et al. (2025), <em>DMOSpeech</em>, ICML · Li et al.
               (2026), <em>DMOSpeech 2</em>, AAAI</span></footer>
         </section>
 
 <script type="text/slide-script">
-That cost doubles under classifier-free guidance, because each guided step runs the network twice: once with the condition and once without. Distillation trains a small student that needs only a few steps; DMOSpeech cut sampling from 128 steps to four. But the student loses diversity. DMOSpeech 2 restores it by letting the teacher run the first steps and the student finish. In the released code that costs 21 forward passes per utterance: 18 for the teacher and 3 for the student.
+Here is the background in four panels, read left to right. First panel: flow matching. The model learns a velocity field, dx over dt, that moves random noise toward a mel-spectrogram step by step. Every step is one full network evaluation, and F5-TTS, our teacher, works this way. Second panel: classifier-free guidance. Each guided step runs the network twice, once with the text condition and once without, so the cost doubles. Third panel: distillation. DMOSpeech trained a small student that needs four steps instead of 128. Fourth panel: the catch. The student's speech is less varied, which is called mode shrinkage, so DMOSpeech 2 lets the teacher run the first steps and the student finish. The bar at the bottom shows what that costs in the released code: 18 teacher passes and 3 student passes, 21 forward passes for every utterance, easy or hard.
 </script>
 
 <style>
