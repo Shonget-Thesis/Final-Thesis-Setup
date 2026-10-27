@@ -8,7 +8,7 @@ An animated, full-screen presentation of the thesis proposal (Chapters 1–3) fo
 | [slides/](slides/) | 19 modular slide files containing slide markup, presenter script notes, and slide-specific styles |
 | [template.html](template.html) | Base HTML shell, layout, cosmic field background, typography, and presentation controller |
 | [build.py](build.py) | Fast builder (<30ms) to compile modular slides into `index.html` (supports `--watch`, `--serve`, `--sync-md`) |
-| [SCRIPT.md](SCRIPT.md) | The presenter script, one section per scene, about 11 minutes at the auto-play pace |
+| [SCRIPT.md](SCRIPT.md) | The presenter script, one section per scene, about 13 minutes at the auto-play pace |
 
 ## Editing slides
 
@@ -42,11 +42,19 @@ Inside each slide file, you'll find:
   python presentation/build.py --pdf
   ```
 
+## Deck structure (compact version, 2026-10-27)
+
+- **Chapter I (slides 3–7):** background (flow matching, cost, distillation), the model at a glance (zooms into inference and the handover), the problem with the T4 evidence of Appendix D.1, objectives, scope.
+- **Chapter II (slides 8–9):** the comparative table of adaptive methods (all seven rows of Table 2.1) and the gap map.
+- **Chapter III (slides 10–16):** architecture, candidate switching times, the two signals, the stopping rule, calibration with the guarantee, research design and workflow, and contribution and summary.
+- **Appendix (slides 17–19):** preliminary experiments (D.1–D.3), the signal diagnostic (D.4–D.5), simulation and prototype (B–C).
+- There is no separate thank-you slide: stepping past the last appendix slide returns to the title.
+
 ## Opening it
 
 Open `index.html` in a current Chrome, Edge or Firefox (double-click works; no server needed). It loads Google Sans from Google Fonts (with variable weights for typography hierarchy and light weight for `--mono` labels/metadata) and Computer Modern for mathematical formulas, so present with an internet connection or fonts fall back to system fonts.
 
-- **← / →** (or **Space** / clicking the stage) steps through each beat and scene. If a scene is still building, the first press finishes it and the next moves on.
+- **← / →** (or **Space** / clicking the stage) steps through each beat and scene. If a scene is still building, the first press finishes it and the next moves on. The ‹ › buttons at the bottom right do the same; ‹ and the ← key go back one slide.
 - **F** toggles fullscreen to fill the entire display.
 - **1, 2, 3, 4** jumps directly to Outline, Chapter I, Chapter II, or Chapter III.
 - **Home / End** jumps to Title or Summary.
@@ -54,13 +62,13 @@ Open `index.html` in a current Chrome, Edge or Firefox (double-click works; no s
 
 ## Other copies
 
-- Editable Figma version with the same 19 scenes, motion timelines, script blocks and a click-through prototype: [Adaptive Handover — Proposal Deck](https://www.figma.com/design/MsZHwBo3nKbgjZMXXbhtGE). Edits made there are not synced to this file.
+- Editable Figma version with the original 19-scene version (it does not reflect the compact restructure), motion timelines, script blocks and a click-through prototype: [Adaptive Handover — Proposal Deck](https://www.figma.com/design/MsZHwBo3nKbgjZMXXbhtGE). Edits made there are not synced to this file.
 - A published copy of the page exists as a private claude.ai artifact on Mark Vincent D. Limpahan's account.
 
 ## Provenance and limits
 
 The content follows the proposal PDF of October 2026 (`paper/main.tex` as compiled then): Chapters 1–3, Appendix A's sample calculations, Appendix B's simulation and Appendix C's prototype figure. It adds no results of its own.
 
-- Numbers marked illustrative on the slides come from the appendices, not from experiments: the stabilization-score curves and SNR values on scene 14 (Appendix A.2–A.4), the λ 0.40–0.70 calibration walk-through on scene 16 (Appendix A.6), the per-input savings on scene 18 (Figure C.1) and the simulation bars on scene 18 (Table B.1).
-- The October 25 audit and the EXP-001 pilot postdate that PDF and are not reflected in the slides: on the T4 grid, Learn-Then-Test certifies λ̂ = 1.20 rather than the illustrative 0.50, the stabilization score shows no discrimination on clean development prompts, and the 20 dB SNR gate misses 18–22 dB white noise. See [STATUS.md](../docs/progress/STATUS.md). Update scenes 13–18 before presenting if the manuscript changes accordingly.
+- Numbers marked illustrative on the slides come from the appendices, not from experiments: the stabilization-score curves and SNR values on slide 12 (Appendix A.2–A.4), the λ 0.40–0.70 calibration walk-through on slide 14 (Appendix A.6), the per-input savings on slide 19 (Figure C.1) and the simulation bars on slide 19 (Table B.1).
+- The October 25 audit and the EXP-001 pilot postdate that PDF and are not reflected in the slides: on the T4 grid, Learn-Then-Test certifies λ̂ = 1.20 rather than the illustrative 0.50, the stabilization score shows no discrimination on clean development prompts, and the 20 dB SNR gate misses 18–22 dB white noise. See [STATUS.md](../docs/progress/STATUS.md). Update slides 10–15 before presenting if the manuscript changes accordingly.
 - Changes on the unmerged `paper/adviser-revisions` branch are not reflected either.
