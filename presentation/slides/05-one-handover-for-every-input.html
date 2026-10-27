@@ -21,11 +21,12 @@
               <p class="mono b fade" data-t="2200"
                 style="font-size:16px;font-weight:600;color:var(--orange);letter-spacing:.08em;margin-left:228px">FIXED HANDOVER
                 t<sub>h</sub> = 0.293 · 21 PASSES EACH</p>
-              <p class="lead b up" data-t="2900" style="margin-top:16px;font-size:26px">Too late wastes guided passes.
-                Too early may degrade speech. <strong>Does every utterance need 18 teacher passes?</strong></p>
+              <p class="lead b up" data-t="2900" style="margin-top:10px;font-size:24px">Too late wastes guided passes. Too early may degrade speech. <strong>Does every utterance need 18 teacher passes?</strong></p>
+              <div class="ev b up" data-t="3300"><span>Preliminary T4 evidence · Appendix D.1 · 1,000 instances</span>
+                <p>Fixed early switches fail on <b>25–33%</b> of inputs (noisy prompts 49–64%, clean 1.0–2.4%). A per-input choice in hindsight needs <b>14.85 of 21</b> passes (−29%). No single early switch is safe for every input.</p></div>
             </div>
             <div class="probs">
-              <div class="prob b right" data-t="3600"><span class="n">1.2.1</span>
+              <div class="prob b right" data-t="4000"><span class="n">1.2.1</span>
                 <p><strong>Uncharacterized effects.</strong> How the switching time changes WER, SIM, UTMOS and cost per
                   utterance is unmeasured.</p>
               </div>
@@ -45,14 +46,21 @@
           </div>
           <footer class="cite b fade" data-t="2500"><span class="k">Sources</span><span>Li et al. (2026), <em>DMOSpeech
                 2</em>, AAAI · Ho &amp; Salimans (2022) · Angelopoulos et al. (2025), <em>Learn then test</em>, Ann.
-              Appl. Stat.</span></footer>
+              Appl. Stat. · Proposal Appendix D.1 (development evidence)</span></footer>
         </section>
 
 <script type="text/slide-script">
-The problem is that the handover point is fixed. Every input, easy or hard, clean or noisy, pays the same 18 teacher passes. A switch later than an utterance needs wastes computation; an earlier one may degrade speech. This raises four problems: the effects of the switching time are not characterized; the handover boundary is not chosen per input; an adaptive choice comes with no reliability guarantee; and the assistive motivation does not by itself show any benefit to users.
+The problem is that the handover point is fixed. Every input, easy or hard, clean or noisy, pays the same 18 teacher passes. A switch later than an utterance needs wastes computation; an earlier one may degrade speech. This raises four problems: the effects of the switching time are not characterized; the handover boundary is not chosen per input; an adaptive choice comes with no reliability guarantee; and the assistive motivation does not by itself show any benefit to users. Our preliminary T4 data already show this: on a thousand development instances, fixed early switches fail on a quarter to a third of inputs, almost all with noisy prompts, while choosing per input in hindsight would need under 15 of the 21 passes.
 </script>
 
 <style>
+    .ev { border: 1.5px solid var(--orange); border-radius: 8px; padding: 14px 20px;
+      background: linear-gradient(135deg, rgba(251, 146, 60, .12), rgba(234, 88, 12, .04)) }
+    .ev span { font-family: var(--mono); font-size: 13px; font-weight: 700; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--orange) }
+    .ev p { font-size: 19px; line-height: 1.42; color: var(--muted); margin-top: 6px }
+    .ev b { color: var(--fg) }
+
 /* S4 */
     .inrow {
       display: grid;

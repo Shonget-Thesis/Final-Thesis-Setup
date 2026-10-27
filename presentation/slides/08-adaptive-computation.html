@@ -2,7 +2,7 @@
         <section class="scene" data-ch="2" data-sec="2.4" data-dur="35" data-title="Input-Adaptive Computation">
           <p class="eyebrow b fade" data-t="100">Section 2.4 · Related Literature</p>
           <h2 class="b up" data-t="250">Input-Adaptive Computation &amp; Dynamic Inference</h2>
-          <table class="tbl">
+          <table class="tbl cmp">
             <thead class="b fade" data-t="600">
               <tr>
                 <th>Method</th>
@@ -41,7 +41,28 @@
                 <td>Tuned threshold</td>
                 <td class="none">None</td>
               </tr>
-              <tr class="us b left" data-t="3300">
+              <tr class="b left" data-t="2800">
+                <td>T-Stitch<small>Pan et al., 2025</small></td>
+                <td>Which model runs each step</td>
+                <td>None</td>
+                <td>Preset switching point</td>
+                <td class="none">None</td>
+              </tr>
+              <tr class="b left" data-t="3100">
+                <td>Adaptive Guidance<small>Castillo et al., 2025</small></td>
+                <td>Whether to run the unguided pass</td>
+                <td>Agreement of guided and conditional updates</td>
+                <td>Tuned threshold</td>
+                <td class="none">None</td>
+              </tr>
+              <tr class="b left" data-t="3400">
+                <td>Adaptive ASR correction<small>Damri &amp; Laufer-Goldshtein, 2026</small></td>
+                <td>Hypotheses per input</td>
+                <td>ASR confidence scores</td>
+                <td>Calibrated threshold</td>
+                <td class="rc">Risk control (LTT)</td>
+              </tr>
+              <tr class="us b left" data-t="4000">
                 <td>This study</td>
                 <td>Teacher-to-student switching time</td>
                 <td>Prompt SNR + endpoint stabilization</td>
@@ -51,16 +72,18 @@
             </tbody>
           </table>
           <footer class="cite b fade" data-t="2200"><span class="k">Sources</span><span>Graves (2016) · Teerapittayanon
-              et al. (2016), ICPR · Schuster et al. (2022), NeurIPS · Starodubcev et al. (2024), CVPR · Mualem et al.
-              (2026), <em>ARIA</em></span></footer>
+              et al. (2016), ICPR · Schuster et al. (2022), NeurIPS · Starodubcev et al. (2024), CVPR · Pan et al. (2025) · Castillo et al. (2025) · Damri &amp; Laufer-Goldshtein (2026) · Proposal Table 2.1</span></footer>
         </section>
 
 <script type="text/slide-script">
-Choosing the switch per utterance is input-adaptive computation. Adaptive Computation Time and BranchyNet saved computation, but gave no statement of how much quality they lose. CALM, for language models, is our closest precedent: it calibrated its early-exit threshold with risk control. Adaptive teacher-student collaboration exists in image diffusion, but not for the handover time in speech. Our study adapts the switching time and attaches a calibrated guarantee.
+Choosing the switch per utterance is input-adaptive computation. Adaptive Computation Time and BranchyNet saved computation, but gave no statement of how much quality they lose. CALM, for language models, is our closest precedent: it calibrated its early-exit threshold with risk control. Adaptive teacher-student collaboration exists in image diffusion, but not for the handover time in speech. T-Stitch switches from a small to a large model at a preset point, Adaptive Guidance skips the unguided pass when updates agree, and adaptive ASR correction calibrates with Learn-Then-Test, but for recognition, not synthesis. Our study adapts the switching time and attaches a calibrated guarantee.
 </script>
 
 <style>
-/* S9 table */
+    .tbl.cmp { margin-top: 18px; font-size: 18.5px }
+    .tbl.cmp td { padding: 10px 16px; line-height: 1.3 }
+    .tbl.cmp td small { display: inline; margin: 0 0 0 8px; font-size: 13.5px }
+    /* S9 table */
     .tbl {
       width: 100%;
       border-collapse: collapse;
