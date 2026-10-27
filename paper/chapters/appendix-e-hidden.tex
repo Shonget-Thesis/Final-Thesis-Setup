@@ -1,0 +1,93 @@
+% !TEX root = ../main.tex
+% HIDDEN: Appendix E (Candidate Solutions: TAS and SWC).
+% Removed from the printed manuscript on 2026-10-27 at the team's request (commit 32cd196).
+% Kept here, not \input by main.tex, so the text and Table E.1 can be restored.
+% To show it again: add \input{chapters/appendix-e-hidden} after the appendices in main.tex.
+% Data: research/experiments/EXP-015-noise-guidance-prelim/.
+
+% =====================================================================
+\section[APPENDIX E.\ CANDIDATE SOLUTIONS]{Candidate Solutions}
+% =====================================================================
+\label{app:candidates}
+
+The preliminary experiments of Appendix~\ref{app:prelim} were followed by four development studies on Google Colab GPUs, which tested gates, handover operators and noise-aware variants of the sampler. Two candidates remain. They extend, and do not replace, the method of Chapter~\ref{sec:method}: the \emph{Trajectory Anomaly Score} (TAS) decides which inputs must not be handed over early, and \emph{SNR-Wiener Conditioning} (SWC) removes the prompt's noise so that more inputs can be handed over early. Both use the prompt SNR estimate of Definition~\ref{def:snr} and add no network evaluation. They are reported here as development evidence, and each will be tested on speakers not used here before it is adopted (Section~\ref{app:cand-limits}).
+
+The studies used the first 60 development speakers, each under six prompt conditions (the clean prompt and white Gaussian noise added at 15, 18, 20, 22 and 25~dB), giving 360 instances scored with the evaluation models of Section~\ref{sec:measures} and the added-failure rule of Definition~\ref{def:failure} against the reference switching time. Every threshold was certified by the fixed-sequence procedure of Algorithm~\ref{alg:ltt} ($\alpha=0.05$, $\delta=0.10$) on the training speakers of a five-fold speaker-grouped cross-validation, and all figures below are out of fold. The comparison baseline is the SNR-only policy: a handover at teacher step~4 (13 forward passes) if $\hat S\ge20$~dB, and the reference (21 forward passes) otherwise. On these instances it failed on 86 of 360 (23.9\%), because prompts with 18 to 22~dB of added noise are estimated above 20~dB and pass the gate.
+
+\subsection{Trajectory Anomaly Score}
+\label{app:cand-tas}
+
+\emph{Motivation.} By the endpoint formula of \Cref{eq:endpoint} and the Euler step of \Cref{eq:euler}, consecutive endpoint estimates differ by
+\[
+\hat x_1(t_i)-\hat x_1(t_{i-1}) = (1-t_i)\bigl(v(x_{t_i},t_i)-v(x_{t_{i-1}},t_{i-1})\bigr),
+\]
+so the stabilization score $d_i$ of Definition~\ref{def:stab} measures how much the generation direction is still changing. A noisy prompt weakens the conditioning: the median $d_4$ fell from 0.61 on clean prompts to 0.17 at 15~dB, together with the relative gap between the conditional and unconditional predictions (median 0.236 to 0.116). The trajectory therefore settles early because the condition carries less information, not because the output is ready. Under this \emph{premature stabilization}, the stopping rule of Definition~\ref{def:policy} hands noisy prompts over early, and on these instances no threshold of that rule could be certified.
+
+\emph{Definition.} For an input $x$, let $\mathbf z(x)=(\log d_1,\dots,\log d_6)$ collect the stabilization scores that the teacher pass already computes. From the clean prompts of the calibration speakers, without failure labels, estimate their mean $\boldsymbol\mu$ and covariance $\boldsymbol\Sigma$. The anomaly score counts only trajectories that are stiller than normal:
+\[
+A(x)=\begin{cases}(\mathbf z-\boldsymbol\mu)^{\top}\boldsymbol\Sigma^{-1}(\mathbf z-\boldsymbol\mu) & \text{if the mean component of } \mathbf z-\boldsymbol\mu \text{ is negative},\\[2pt] 0 & \text{otherwise.}\end{cases}
+\]
+The handover rule keeps the SNR gate and adds the score:
+\[
+\pi_{\mathrm{TAS}}(x)=\begin{cases}4 & \text{if } \hat S\ge\theta \text{ and } A(x)\le\hat\kappa,\\[2pt] k_{\text{ref}} & \text{otherwise,}\end{cases}
+\]
+where $\theta$ is the SNR gate (20~dB in these studies, as in SNR-only) and $\hat\kappa$ is the most permissive threshold certified by Algorithm~\ref{alg:ltt}, testing thresholds in increasing order.
+
+\emph{Relation to prior work.} Mahalanobis distances are standard anomaly scores, and DiffPath uses the rate of change and curvature of diffusion paths to detect out-of-distribution images \parencite{heng2024diffpath}. TAS differs in what it detects (corrupted conditioning), in treating a trajectory that settles too early as a reason not to stop, the opposite of early-exit rules that stop once the output stops changing \parencite{schuster2022calm}, and in gating a calibrated teacher-to-student handover. To our knowledge this use has not been reported.
+
+\subsection{SNR-Wiener Conditioning}
+\label{app:cand-swc}
+
+\emph{Motivation.} On the noisy prompts most failures were speaker-similarity failures: the generated voice inherits the prompt's noise. Changing only what the student receives at the handover, or steering the teacher's guidance, recovered at most 0.024 of speaker similarity, whereas the noise itself cost 0.06 to 0.24, measured on the same speakers and seeds with the clean and the noisy prompt.
+
+\emph{Definition.} Before the teacher and the student read the prompt, the prompt frames of their conditioning are cleaned in the model's own mel domain. For mel band $b$, let $N_b$ be the mean linear magnitude of the quietest 20\% of the prompt frames, and let $m_{f,b}$ be the magnitude of prompt frame $f$. Each prompt frame is multiplied by
+\begin{gather*}
+G_{f,b}=\min\Bigl\{1,\ \max\Bigl\{0.1,\ 1-\beta(\hat S)\,\frac{N_b}{m_{f,b}}\Bigr\}\Bigr\},\\
+\beta(\hat S)=\min\Bigl\{1,\ \max\Bigl\{0,\ \frac{30-\hat S}{10}\Bigr\}\Bigr\},
+\end{gather*}
+so that prompts estimated at 30~dB or above are left unchanged and prompts at 20~dB or below are cleaned at full strength. The teacher then runs to step~4 and the student completes as usual, for 13 forward passes.
+
+\emph{Routing.} The prompt SNR also decides which inputs are cleaned. With two thresholds $\theta_{\mathrm{e}}\le\theta_{\mathrm{hi}}$, certified in turn by Algorithm~\ref{alg:ltt},
+\[
+\pi_{\mathrm{SWC}}(x)=\begin{cases}4 \text{ with the original prompt} & \text{if } \hat S\ge\theta_{\mathrm{hi}},\\[2pt] 4 \text{ with the cleaned prompt} & \text{if } \hat S<\theta_{\mathrm{e}},\\[2pt] k_{\text{ref}} & \text{otherwise.}\end{cases}
+\]
+Setting $\theta_{\mathrm{e}}=\theta_{\mathrm{hi}}$ cleans every input below the gate; a lower $\theta_{\mathrm{e}}$ cleans heavy noise only and sends moderately noisy prompts to the reference.
+
+\emph{Relation to prior work.} The gain is classical spectral subtraction with a minimum-energy noise estimate \parencite{boll1979spectral}, so SWC is not a new formula. What is new, to our knowledge, is applying it to the conditioning of a teacher-guided sampler, with the strength set by the prompt SNR, as a substitute for teacher computation that makes an early handover safe.
+
+\subsection{Results}
+\label{app:cand-results}
+
+Table~\ref{tab:candidates} compares the candidates with the SNR-only policy on the same 360 instances. Both candidates removed most of SNR-only's failures, which fell mainly on the moderately noisy prompts, and SWC on heavy noise did so while saving 19.1\% of the forward passes. The thresholds were certified per fold on the training speakers; the pooled out-of-fold rates of TAS and of SWC on heavy noise (3.3\% and 3.1\%) lie below the 5\% tolerance, while the upper ends of their 95\% intervals over 360 instances (5.8\% and 5.4\%) lie slightly above it, which the larger calibration and test splits of Chapter~\ref{sec:method} would narrow. On the 300 noisy instances, SWC's step-4 output was better than the reference output on average: speaker similarity rose by 0.126 (higher in 90\% of the instances; Wilcoxon signed-rank $p<10^{-40}$) and WER fell by 4.8 percentage points. With every input handed over at step~4, SWC failed on 21 of the 300 noisy instances, against 126 for the plain step-4 handover. With $\theta_{\mathrm{e}}=\theta_{\mathrm{hi}}$ (26~dB in every fold), every input below the gate was cleaned, and the policy had fewer failures and fewer forward passes than SNR-only; with heavy noise only ($\theta_{\mathrm{e}}$ between 18 and 21~dB), it kept the failure rate within the 5\% tolerance.
+
+TAS also kept the failure rate within the tolerance that SNR-only exceeds. It did not improve on a fixed SNR gate whose threshold was itself calibrated on these noise levels (7 failures at 18.71 forward passes; the difference from TAS is not significant, exact McNemar $p=0.23$), but it needs only clean prompts to model normal trajectories. The stopping rule of Definition~\ref{def:policy} certified no threshold on these instances and fell back to the reference for every input.
+
+Other variants did not improve on the plain handover: guidance steered away from a noise-only prompt, a guidance scale raised with the SNR, an antithetic pair of student runs, and noise cancellation applied to the generated output instead of the prompt. A pretrained speech-enhancement network applied to the prompt helped about as much as SWC (speaker similarity $+0.117$) but adds a network to the pipeline.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Candidate policies against SNR-only on 360 development instances (60 speakers; clean, and five noisy conditions of 60 instances each; out of fold, $\alpha=0.05$, $\delta=0.10$). Upper 95\% is the upper end of the exact two-sided 95\% interval for the failure rate over all 360 instances \parencite{clopper1934}; McNemar is the exact test against SNR-only. Of SNR-only's failures, TAS avoids 74 and adds none, SWC with $\theta_{\mathrm{e}}=\theta_{\mathrm{hi}}$ avoids 75 and adds 9, SWC on heavy noise avoids 79 and adds 4, and the calibrated SNR gate avoids 79 and adds none.}
+\label{tab:candidates}
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X r r r r r@{}}
+\toprule
+& \multicolumn{2}{c}{\textbf{Failures}} & & & \\
+\cmidrule(lr){2-3}
+\textbf{Policy} & \textbf{Clean} & \textbf{Noisy} & \textbf{Upper 95\%} & \textbf{Passes} & \textbf{McNemar} \\
+\midrule
+SNR-only ($\hat S\ge20$~dB) & 2 & 84 & 28.6\% & 14.40 & -- \\
+Calibrated SNR gate & 2 & 5 & 4.0\% & 18.71 & $3{\times}10^{-24}$ \\
+\textbf{SNR + TAS} & 2 & 10 & 5.8\% & 18.20 & $1{\times}10^{-22}$ \\
+\textbf{SNR + SWC}, $\theta_{\mathrm{e}}=\theta_{\mathrm{hi}}$ & 2 & 18 & 8.4\% & 13.00 & $4{\times}10^{-14}$ \\
+\textbf{SNR + SWC}, heavy noise & 2 & 9 & 5.4\% & 16.98 & $4{\times}10^{-19}$ \\
+Reference for every input & 0 & 0 & 1.0\% & 21.00 & $3{\times}10^{-26}$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Limitations and Next Steps}
+\label{app:cand-limits}
+
+These results are development evidence. TAS was designed after premature stabilization was observed in these same instances, the added noise was white Gaussian noise only, and 60 speakers are fewer than the calibration and test splits of Chapter~\ref{sec:method}. The SWC outputs were synthesized on an A100 GPU and compared with reference outputs from the Tesla T4: the teacher reproduced exactly, but the student's random draws differ between the two GPUs, so each SWC output was judged against a reference made with different student noise. This adds disagreements that inflate the failure counts of SWC, while those of TAS and SNR-only, which use T4 outputs only, are unaffected. Before either candidate is adopted, the study will repeat SWC with its references on the same GPU, including an SWC output at the reference switching time to separate the gain from cleaning from the safety of the early handover; test both candidates, with their settings fixed in advance, on speakers not used here; and test prompts with babble, reverberation and telephone-band degradation, where the SNR estimate is less reliable and SWC's assumption of stationary noise is weakest.
+
+\FloatBarrier
