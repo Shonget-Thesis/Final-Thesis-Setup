@@ -1,11 +1,11 @@
 <!-- 6 SCOPE -->
-        <section class="scene" data-ch="1" data-sec="1.4–1.5" data-dur="30" data-title="Scope & Delimitations">
+        <section class="scene" data-ch="1" data-sec="1.4–1.5" data-dur="65" data-title="Scope & Delimitations">
           <p class="eyebrow b fade" data-t="100">Sections 1.4–1.5 · Scope &amp; Significance</p>
           <h2 class="b up" data-t="250">Scope, Delimitations, &amp; Target Beneficiaries</h2>
           <div class="two" style="margin-top:24px;gap:56px">
             <div class="scope">
               <div class="sc b left" data-t="700"><span class="m y">IN</span><span><strong>Only the switching time
-                    varies.</strong> Student restart level stays at the released default.</span></div>
+                    varies.</strong> Restart level fixed at the released default (j = 1) as a controlled setting.</span></div>
               <div class="sc b left" data-t="1050"><span class="m y">IN</span><span>Teacher, student, duration predictor
                   and vocoder <strong>stay frozen</strong>.</span></div>
               <div class="sc b left" data-t="1400"><span class="m y">IN</span><span>English zero-shot prompts from
@@ -46,7 +46,7 @@
         </section>
 
 <script type="text/slide-script">
-The study varies only the switching time. Every network stays frozen, and the student's restart level stays at the released default. We evaluate on English Seed-TTS prompts under clean and noisy conditions, on an NVIDIA Tesla T4 through Google Colab. The guarantee is statistical, not per utterance. Assistive communication for autistic users motivates efficient synthesis, but we will not build or evaluate any assistive application or clinical outcome. The results serve speech researchers, TTS developers, assistive-technology developers and future researchers.
+On the left is what is in and out of scope. In scope: only the switching time varies, and the student's restart level stays at the released default as a controlled setting. All four networks, the teacher, student, duration predictor and vocoder, stay frozen. We use English zero-shot prompts from the Seed-TTS test set, each in a clean and a 15-decibel noisy version, and everything runs on an NVIDIA Tesla T4 through Google Colab. Out of scope, in grey: the guarantee holds on average over inputs, not for every single utterance, and we do not build or test an assistive application or measure clinical outcomes. On the right are the beneficiaries: speech researchers get a formulation and proofs that apply to teacher-guided samplers in general; TTS developers get lower cost with a stated bound and no retraining; assistive-technology developers get cheaper, predictable synthesis; and future researchers get a reusable protocol.
 </script>
 
 <style>

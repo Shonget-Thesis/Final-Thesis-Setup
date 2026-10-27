@@ -1,5 +1,5 @@
 <!-- 5 OBJECTIVES -->
-        <section class="scene" data-ch="1" data-sec="1.3" data-dur="35" data-title="Research Objectives">
+        <section class="scene" data-ch="1" data-sec="1.3" data-dur="60" data-title="Research Objectives">
           <p class="eyebrow b fade" data-t="100">Section 1.3 · Objectives of the Study</p>
           <h2 class="b up" data-t="250">General &amp; Specific Research Objectives</h2>
           <div class="objs">
@@ -41,7 +41,7 @@
         </section>
 
 <script type="text/slide-script">
-Our general objective is to develop and evaluate a training-free, risk-calibrated method that selects the teacher's switching time per utterance. First, we will characterize how quality and cost change across switching times. Second, we will formulate selection as a constrained cost-minimization problem and design a policy with provable properties. Third, we will calibrate it with Learn-Then-Test. Fourth, we will compare its signals and benchmark it against fixed switching times and an oracle.
+Our general objective is to develop and evaluate a training-free, risk-calibrated method that chooses the teacher's switching time per utterance. Each card is one specific objective, with its output written underneath. One, characterize: measure how word error rate, speaker similarity, predicted naturalness, forward passes and runtime change across switching times and inputs, which gives us a quality-cost map. Two, formulate: state the choice as a cost minimization with a limit on risk, design a policy that needs no extra network evaluations, and prove its properties, four propositions in all. Three, calibrate: use Learn-Then-Test so that the rate of added failures stays within a tolerance alpha with confidence one minus delta, and check this on held-out speakers. Four, compare: benchmark the SNR-only, stabilization-only and combined variants against fixed switching times and an oracle, on clean and noisy prompts, to see whether each signal adds value.
 </script>
 
 <style>

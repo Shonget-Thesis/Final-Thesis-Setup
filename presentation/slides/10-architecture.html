@@ -1,5 +1,5 @@
 <!-- 12 ARCHITECTURE -->
-<section class="scene" data-ch="3" data-sec="3.2" data-dur="40" data-title="System Architecture">
+<section class="scene" data-ch="3" data-sec="3.2" data-dur="65" data-title="System Architecture">
   <p class="eyebrow b fade" data-t="100">Section 3.2 · System Architecture</p>
   <h2 class="b up" data-t="250">Modular Adaptive Handover Architecture</h2>
   <svg viewBox="0 0 1380 560" style="width:100%;height:540px;margin-top:14px">
@@ -93,7 +93,7 @@
 </section>
 
 <script type="text/slide-script">
-Chapter Three. The method adds a decision layer to the released sampler without touching any network. At each teacher step, a controller reads the endpoint estimate and the prompt's signal-to-noise ratio. If both indicate the utterance has settled, the teacher stops and hands over to the student; otherwise it takes the next step. If no earlier candidate qualifies, it stops at the reference point. The threshold is set once, offline, by a calibrator.
+Chapter Three starts with the architecture. Blue and grey boxes are the released, frozen parts; orange boxes are what this study adds. Follow the loop from the top. The input is the prompt audio and the prompt and target text. The teacher takes one guided step, costing two passes. The endpoint monitor then reads the teacher's current estimate of the final output and computes the stabilization score, at no extra cost because it reuses values already computed. In parallel, the prompt SNR is estimated once from frame energies. The decision box asks: stop here? If not, the teacher takes another Euler step and we loop. If yes, the student restarts from the teacher's estimate at its fixed level and finishes in three passes, and the Vocos vocoder turns the mel-spectrogram into a waveform. The threshold used in the decision comes from the offline calibrator, which runs Learn-Then-Test once, before deployment.
 </script>
 
 <style>

@@ -144,11 +144,13 @@ def sync_script_md(slide_data: list):
         "1": "Chapter I · Introduction",
         "2": "Chapter II · Review of related literature",
         "3": "Chapter III · Methodology",
+        "4": "Appendix",
     }
+    total_minutes = round(sum(int(s["meta"]["duration"]) for s in slide_data) / 60)
     md_lines = [
         "# Presenter script",
         "",
-        "Read-aloud script for the animated walkthrough in [index.html](index.html). Timings are the auto-play durations of each scene (about 11 minutes in total).",
+        f"Read-aloud script for the animated walkthrough in [index.html](index.html). Timings are the auto-play durations of each scene (about {total_minutes} minutes in total).",
         "",
     ]
     for idx, s in enumerate(slide_data):
