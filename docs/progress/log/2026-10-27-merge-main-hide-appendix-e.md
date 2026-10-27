@@ -16,3 +16,7 @@ Requested by a team member: bring in the latest main and the teammate's removal 
 ## Open
 
 - `presentation/PANEL_QA.md` still points to Appendix E and to the old Appendix D numbering (D.2–D.6 before endpoint cushioning was removed).
+
+## Follow-up: ethics to-do note removed (Chapter 3)
+
+- `paper/chapters/03-methodology.tex`, Ethical Considerations: removed the visible to-do note "check institutional requirements for any listening test". The sentence is unchanged otherwise. The check itself is still open: nobody has confirmed the institution's requirements for an internal listening check.
