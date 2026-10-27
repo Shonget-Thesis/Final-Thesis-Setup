@@ -1,5 +1,5 @@
 <!-- 8 SWAY / HANDOVER -->
-        <section class="scene" data-ch="3" data-sec="3.5" data-dur="40" data-title="Sampling Discretization & Handover"
+        <section class="scene" data-ch="3" data-sec="3.5" data-dur="75" data-title="Sampling Discretization & Handover"
           data-hook="sway">
           <p class="eyebrow b fade" data-t="100">Section 3.5 · Candidate Switching Times</p>
           <h2 class="b up" data-t="250">Sway Sampling Discretization &amp; Candidate Handover Boundaries</h2>
@@ -44,7 +44,7 @@
         </section>
 
 <script type="text/slide-script">
-Here is where the switch lives. Sway sampling packs the teacher's steps near the start of the flow. The released code stops the teacher at the first grid point above the switching argument; for 0.25, that is step eight. Our candidates are steps four, five, six and eight, costing 13, 15, 17 and 21 forward passes. At the handover, the student re-noises the teacher's estimate to a fixed level, tau equals 0.0761. This helps explain why an earlier, imperfect handover can still work.
+This slide shows exactly where the switch can happen and what each choice costs. The curve on the left is the teacher's time grid under sway sampling: the steps are packed near the start, so half of the sixteen steps fall below time 0.29. The released code stops the teacher at the first grid point above the switching argument s, the dashed line at 0.25, which is step 8. Our candidates are the orange points, steps 4, 5 and 6. On the right, each bar is one candidate, with its cost from the formula two times k plus one, plus three. Stopping at step 4 costs 13 passes and saves 38 percent; step 5 costs 15 and saves 29; step 6 costs 17 and saves 19; and the reference costs 21. The box at the bottom explains why earlier handovers are possible: the student always re-noises the teacher's estimate to the same level, tau equals 0.0761, which matches the teacher's fourth grid point, so the student only needs a teacher state good enough to re-enter there.
 </script>
 
 <style>

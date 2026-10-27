@@ -1,5 +1,5 @@
 <!-- 15 NOVELTY AND CONTRIBUTION -->
-        <section class="scene" data-ch="3" data-sec="Summary" data-dur="45" data-title="Contribution and Summary">
+        <section class="scene" data-ch="3" data-sec="Summary" data-dur="80" data-title="Contribution and Summary">
           <p class="eyebrow o b fade" data-t="100">Contribution &amp; Summary</p>
           <h2 class="b up" data-t="250">What This Study Adds</h2>
           <p class="nvl b fade" data-t="700">Within the sources reviewed, no method combines all three for flow-matching TTS.</p>
@@ -35,7 +35,7 @@
         </section>
 
 <script type="text/slide-script">
-Here is what is new, stated plainly. Within the sources we reviewed, no method combines three things. First, when to hand over. Prior work uses one switching time for every utterance. We choose it per utterance, from signals the sampler already computes: the prompt's signal-to-noise ratio and the endpoint-stabilization score. Second, how sure we can be. Adaptive rules usually give no bound on quality loss. We calibrate the threshold with Learn-Then-Test, so that added failures stay below alpha, five percent, with at least ninety percent confidence, and we check that on held-out speakers. Third, what it costs. No new training and no extra forward pass, and if no threshold can be certified, we fall back to the released sampler, so we never cost more. What we do not claim: a proven advantage of the hybrid over its parts, any change to duration prediction, or any new model training. To summarize: we decide the handover per utterance from signals the sampler already has, we bound the rate of added failures with a calibrated guarantee, and we never cost more than the released sampler.
+To close, here is what this study adds, row by row. When to hand over: prior work uses one switching time for every utterance, fixed at 0.25 in DMOSpeech 2 and preset in T-Stitch; we choose it per utterance, from the prompt's SNR and the stabilization score, signals the sampler already computes. How sure we can be: prior adaptive rules have no bound on quality loss, and the calibrated bounds that exist are for exit layers and recognition; we use a Learn-Then-Test threshold, so that added failures stay at or below five percent with at least ninety percent confidence, checked on held-out speakers. What it costs: some prior methods need training or an extra estimator; ours needs no training and no extra forward pass, and if no threshold is certified it falls back to the released sampler, so it never costs more. The bottom line states what we do not claim: a proven advantage of the hybrid, any change to duration prediction, or any model training. In summary: decide per utterance, bound the risk, never cost more. The following slides are the appendix with our preliminary results.
 </script>
 
 <style>

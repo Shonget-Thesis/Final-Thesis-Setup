@@ -1,5 +1,5 @@
 <!-- 9 ADAPTIVE COMPUTATION -->
-        <section class="scene" data-ch="2" data-sec="2.4" data-dur="35" data-title="Input-Adaptive Computation">
+        <section class="scene" data-ch="2" data-sec="2.4" data-dur="55" data-title="Input-Adaptive Computation">
           <p class="eyebrow b fade" data-t="100">Section 2.4 · Related Literature</p>
           <h2 class="b up" data-t="250">Input-Adaptive Computation &amp; Dynamic Inference</h2>
           <table class="tbl cmp">
@@ -76,7 +76,7 @@
         </section>
 
 <script type="text/slide-script">
-Choosing the switch per utterance is input-adaptive computation. Adaptive Computation Time and BranchyNet saved computation, but gave no statement of how much quality they lose. CALM, for language models, is our closest precedent: it calibrated its early-exit threshold with risk control. Adaptive teacher-student collaboration exists in image diffusion, but not for the handover time in speech. T-Stitch switches from a small to a large model at a preset point, Adaptive Guidance skips the unguided pass when updates agree, and adaptive ASR correction calibrates with Learn-Then-Test, but for recognition, not synthesis. Our study adapts the switching time and attaches a calibrated guarantee.
+Chapter Two places our work among input-adaptive methods, ones that spend more or less computation depending on the input. Read the table by its last column, the guarantee. ACT, BranchyNet, adaptive teacher-student collaboration, T-Stitch and Adaptive Guidance all adapt something, from the number of layers to which model runs each step, but none of them states a bound on how much quality is lost. Two rows do carry risk control: CALM, which calibrates early exit in language models, and adaptive ASR correction, which uses Learn-Then-Test, but for speech recognition, not synthesis. The highlighted bottom row is our study: we adapt the teacher-to-student switching time, decide from the prompt's SNR and the endpoint-stabilization score, use a calibrated threshold, and attach Learn-Then-Test risk control.
 </script>
 
 <style>

@@ -1,5 +1,5 @@
 <!-- 05 MODEL AT A GLANCE -->
-        <section class="scene" data-ch="1" data-sec="1.1" data-dur="50" data-title="Teacher-Guided TTS: Where This Study Works">
+        <section class="scene" data-ch="1" data-sec="1.1" data-dur="65" data-title="Teacher-Guided TTS: Where This Study Works">
           <p class="eyebrow b fade" data-t="100">Section 1.1 · The model at a glance</p>
           <h2 class="b up" data-t="250">Teacher-Guided TTS, and Where We Work</h2>
           <div class="mdl b fade" data-t="500">
@@ -127,7 +127,7 @@
         </section>
 
 <script type="text/slide-script">
-Here is the whole model in one outline. On the left, done once and by others: a large flow-matching teacher, F5-TTS, and a small student distilled from it. We do not train or change either one. On the right is inference, which happens for every utterance. The teacher runs the first steps, then hands over to the student to finish. In the released sampler that handover is one fixed point, eighteen teacher passes and three student passes, for everyone. Now we zoom in. Inside inference, the single open choice is where the handover falls. Today it is fixed at a switching time of 0.25 for every utterance. Our study picks it per utterance, and bounds the risk with a calibrated guarantee. That one decision is our focus, and the rest of the model stays exactly as released.
+This diagram shows the whole system and where we work. On the left is training, done once and by others: the F5-TTS teacher, and a student distilled from it. We do not retrain or change either model. On the right, in the orange box, is inference, which runs for every utterance. Text and a voice prompt go in, the teacher takes its steps, then hands over at the orange diamond, the student finishes, and speech comes out. Notice the counts above the boxes: 18 teacher passes and 3 student passes. Now the view zooms into inference, and then into the handover itself. The top card is how it works today: one fixed switch, at time 0.25, for every utterance. The bottom card is our study: we pick the switch per utterance, and we bound the risk with a calibrated guarantee. That single decision is our entire focus; everything else stays exactly as released.
 </script>
 
 <style>
