@@ -292,31 +292,32 @@ This analysis used all 500 speakers of the three splits (Section~\ref{sec:data})
 
 \begin{table}[!htbp]
 \centering\small
-\caption{Added failures of each fixed switching time on 500 speakers under two prompt conditions (Tesla T4).}
+\caption{Added failures of each fixed switching time on 500 speakers under two prompt conditions (Tesla T4), when every input uses the same switching time. Saving is the share of the reference's 21 forward passes that the switching time avoids; the last three columns count added failures (Definition~\ref{def:failure}). An earlier fixed switch saves more but fails more often, almost entirely on noisy prompts.}
 \label{tab:fixed-fail}
-\begin{tabular}{@{}l c r r r r@{}}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}l c r r r r r@{}}
 \toprule
-\textbf{Switching time} & \textbf{Step} & \textbf{Passes} & \textbf{Clean (500)} & \textbf{Noisy (500)} & \textbf{All (1{,}000)} \\
+\textbf{Switching time} & \textbf{Step} & \textbf{Passes} & \textbf{Saving} & \textbf{Clean (500)} & \textbf{Noisy (500)} & \textbf{All (1{,}000)} \\
 \midrule
-$s=0.07$ & 4 & 13 & 12 (2.4\%) & 322 (64.4\%) & 334 (33.4\%) \\
-$s=0.10$ & 5 & 15 & 9 (1.8\%) & 269 (53.8\%) & 278 (27.8\%) \\
-$s=0.15$ & 6 & 17 & 5 (1.0\%) & 247 (49.4\%) & 252 (25.2\%) \\
-$s=0.25$ (reference) & 8 & 21 & 0 & 0 & 0 \\
+$s=0.07$ & 4 & 13 & 38.1\% & 12 (2.4\%) & 322 (64.4\%) & 334 (33.4\%) \\
+$s=0.10$ & 5 & 15 & 28.6\% & 9 (1.8\%) & 269 (53.8\%) & 278 (27.8\%) \\
+$s=0.15$ & 6 & 17 & 19.0\% & 5 (1.0\%) & 247 (49.4\%) & 252 (25.2\%) \\
+$s=0.25$ (reference) & 8 & 21 & 0 & 0 & 0 & 0 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{table}[!htbp]
 \centering\small
-\caption{Cheapest switching time without an added failure for each instance, chosen in hindsight, and the resulting mean cost.}
+\caption{Cheapest switching time without an added failure for each instance, chosen in hindsight, and the resulting mean cost and saving against the reference's 21 forward passes. Unlike Table~\ref{tab:fixed-fail}, each input gets its own switching time, so there are no added failures by construction; the choice needs the outcomes in advance and only bounds what an adaptive rule can save.}
 \label{tab:fixed-oracle}
-\begin{tabular}{@{}l r r r r r@{}}
+\begin{tabular}{@{}l r r r r r r@{}}
 \toprule
-\textbf{Prompts} & \textbf{Step 4} & \textbf{Step 5} & \textbf{Step 6} & \textbf{Step 8} & \textbf{Mean passes} \\
+\textbf{Prompts} & \textbf{Step 4} & \textbf{Step 5} & \textbf{Step 6} & \textbf{Step 8} & \textbf{Mean passes} & \textbf{Saving} \\
 \midrule
-Clean (500) & 488 & 9 & 3 & 0 & 13.06 \\
-Noisy (500) & 178 & 91 & 52 & 179 & 16.64 \\
-All (1{,}000) & 666 & 100 & 55 & 179 & 14.85 \\
+Clean (500) & 488 & 9 & 3 & 0 & 13.06 & 37.8\% \\
+Noisy (500) & 178 & 91 & 52 & 179 & 16.64 & 20.8\% \\
+All (1{,}000) & 666 & 100 & 55 & 179 & 14.85 & 29.3\% \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -328,8 +329,84 @@ All (1{,}000) & 666 & 100 & 55 & 179 & 14.85 \\
 Restarting the student one grid point later ($j=2$) saves one forward pass but produced more failures than the released code's default $j=1$ at every switching time tested: 26 versus 11 of 48 at $s=0.07$, 13 versus 8 at $s=0.10$, 9 versus 8 at $s=0.15$, and 14 versus 0 at $s=0.25$. The restart level is therefore fixed at $j=1$ (Section~\ref{sec:baseline}), and the switching time is the only handover setting the study varies.
 
 \subsection{Stabilization Policy with a Cross-Validated Threshold}
+\label{app:prelim-cv}
 
-Unlike the other experiments in this appendix, this one was re-run on the Tesla T4 GPU with the evaluation models of Section~\ref{sec:measures}, on the 100 development speakers under the clean and the noisy15 prompt conditions (200 instances; \nolinkurl{code/analysis/cv_stabilization_t4.py}). The policy of Definition~\ref{def:policy}, with an SNR gate of 20~dB, was evaluated by four-fold speaker-grouped cross-validation. In each fold the threshold $\lambda$ was chosen on 75 speakers (150 instances) as the largest value in $\{0.20,0.25,\dots,0.60\}$ with zero added failures and frozen before scoring the 25 held-out speakers. The folds selected $\lambda=0.35$, 0.35, 0.35 and 0.50. Out of fold, mean cost fell from 21 to 18.88 forward passes ($-10.1\%$) with one added failure in 200 instances, against 50 of 200 for a fixed $s=0.15$, and the SNR gate sent all 100 noisy prompts to the reference, so the saving came from the clean prompts. The earlier CPU version of this experiment, on 12 speakers with lighter evaluation models, had selected the edge of the search range, $\lambda=0.60$, in every fold; on the T4 data the selected thresholds lie inside the range, and widening it to 1.20 leaves them unchanged. Two limitations remain. Selecting a threshold with zero training failures is not a risk certificate: with 75 training speakers and no failures, the smallest risk that can be certified at $\delta=0.10$ is about 3\% (Appendix~\ref{app:calc-ltt}). And the development split also served other design decisions, so these out-of-fold figures may be optimistic. Objective~3 replaces this selection with Learn-Then-Test on speaker-disjoint data with one utterance per speaker.
+Unlike the other experiments in this appendix, this one was re-run on the Tesla T4 GPU with the evaluation models of Section~\ref{sec:measures}, on the 100 development speakers under the clean and the noisy15 prompt conditions (200 instances; \nolinkurl{code/analysis/cv_stabilization_t4.py}). The policy of Definition~\ref{def:policy}, with an SNR gate of 20~dB, was evaluated by four-fold speaker-grouped cross-validation. In each fold the threshold $\lambda$ was chosen on 75 speakers (150 instances) as the largest value in $\{0.20,0.25,\dots,0.60\}$ with zero added failures and frozen before scoring the 25 held-out speakers. The folds selected $\lambda=0.35$, 0.35, 0.35 and 0.50. Out of fold, mean cost fell from 21 to 18.88 forward passes ($-10.1\%$) with one added failure in 200 instances, against 50 of 200 for a fixed $s=0.15$, and the SNR gate sent all 100 noisy prompts to the reference, so the saving came from the clean prompts. Tables~\ref{tab:cv-policies} and~\ref{tab:cv-quality} compare it on the same 200 instances with the methods of Chapter~\ref{sec:method} (Table~\ref{tab:methods}), measured and tested as planned there. Against every fixed early switching time the policy had far fewer added failures (exact McNemar $p<10^{-13}$ for each), and the upper end of its 95\% interval for the failure rate, 2.8\%, stayed below the 5\% tolerance. Against the reference it used significantly fewer forward passes (Wilcoxon signed-rank test on speaker-level values, Holm-adjusted $p<10^{-15}$), while its differences in WER, SIM and UTMOS were not significant (Holm-adjusted $p=1.00$ for each); a claim that its quality equals the reference's needs the two one-sided tests with margins fixed before the held-out test. On clean prompts it saved 20.2\% of the passes and chose Steps~4, 5 and~6 for 6, 28 and 52 inputs, so the choice adapted per input. The SNR-gated controls behaved similarly on these data: SNR-only, the SNR gate followed by Step~5 or Step~6, and a random assignment of the policy's own steps among the gated inputs (2{,}000 draws, mean 0.75 failures) all stayed within 0 to 3 failures, and none differed significantly from the policy (exact McNemar $p\ge0.50$). Stabilization alone, without the gate, found no threshold with zero training failures in any fold and kept every input at the reference, because noisy prompts stabilize early (Appendix~\ref{app:candidates}). With at most three failures per method, these data cannot separate the SNR-gated variants; the comparison on the test split (Section~\ref{sec:drift-plan}) is designed for that. The earlier CPU version of this experiment, on 12 speakers with lighter evaluation models, had selected the edge of the search range, $\lambda=0.60$, in every fold; on the T4 data the selected thresholds lie inside the range, and widening it to 1.20 leaves them unchanged. Two limitations remain. Selecting a threshold with zero training failures is not a risk certificate: with 75 training speakers and no failures, the smallest risk that can be certified at $\delta=0.10$ is about 3\% (Appendix~\ref{app:calc-ltt}). And the development split also served other design decisions, so these out-of-fold figures may be optimistic. Objective~3 replaces this selection with Learn-Then-Test on speaker-disjoint data with one utterance per speaker.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Compared methods of Chapter~\ref{sec:method} on the same 200 T4 development instances (100 speakers, clean and noisy15 prompts; \nolinkurl{code/analysis/cv_stabilization_t4.py}): added failures and cost. Stabilization only and the full policy are scored out of fold; cost-matched random is the mean over 2{,}000 random assignments of the full policy's steps among the gated inputs; the oracle needs the outcomes in advance and is shown as a bound. Upper 95\% is the upper end of the exact two-sided 95\% interval for the failure rate over all 200 instances \parencite{clopper1934}; McNemar is the exact test against the full policy.}
+\label{tab:cv-policies}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}l r r r r r r@{}}
+\toprule
+& \multicolumn{2}{c}{\textbf{Failures}} & & & & \\
+\cmidrule(lr){2-3}
+\textbf{Method} & \textbf{Clean} & \textbf{Noisy} & \textbf{Upper 95\%} & \textbf{Passes} & \textbf{Saving} & \textbf{McNemar} \\
+\midrule
+Fixed $s=0.07$ (Step 4) & 3 & 63 & 40.0\% & 13.00 & 38.1\% & $<10^{-13}$ \\
+Fixed $s=0.10$ (Step 5) & 2 & 49 & 32.1\% & 15.00 & 28.6\% & $<10^{-13}$ \\
+Fixed $s=0.15$ (Step 6) & 0 & 50 & 31.6\% & 17.00 & 19.0\% & $<10^{-13}$ \\
+Fixed $s=0.25$ (reference) & 0 & 0 & 1.8\% & 21.00 & 0.0\% & -- \\
+SNR-only (Step 4) & 3 & 0 & 4.3\% & 17.00 & 19.0\% & 0.50 \\
+SNR + fixed Step 5 & 2 & 0 & 3.6\% & 18.00 & 14.3\% & 1.00 \\
+SNR + fixed Step 6 & 0 & 0 & 1.8\% & 19.00 & 9.5\% & 1.00 \\
+Stabilization only & 0 & 0 & 1.8\% & 21.00 & 0.0\% & 1.00 \\
+\textbf{Full policy} & 1 & 0 & 2.8\% & 18.88 & 10.1\% & -- \\
+Cost-matched random & 0.75 & 0 & -- & 18.88 & 10.1\% & -- \\
+\midrule
+Oracle (hindsight) & 0 & 0 & 1.8\% & 14.70 & 30.0\% & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Mean quality of the compared methods on the instances of Table~\ref{tab:cv-policies}: WER with Whisper-large-v3, SIM with the WavLM-Base+ speaker verifier, and UTMOS. Over all instances, the mean WER of the fixed early switching times is dominated by a few noisy-prompt transcripts with many errors.}
+\label{tab:cv-quality}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}l r r r r r r@{}}
+\toprule
+& \multicolumn{3}{c}{\textbf{Clean (100)}} & \multicolumn{3}{c}{\textbf{All (200)}} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+\textbf{Method} & \textbf{WER} & \textbf{SIM} & \textbf{UTMOS} & \textbf{WER} & \textbf{SIM} & \textbf{UTMOS} \\
+\midrule
+Fixed $s=0.07$ (Step 4) & 2.04\% & 0.934 & 3.86 & 34.93\% & 0.814 & 2.55 \\
+Fixed $s=0.10$ (Step 5) & 2.08\% & 0.934 & 3.87 & 39.00\% & 0.816 & 2.56 \\
+Fixed $s=0.15$ (Step 6) & 2.17\% & 0.934 & 3.86 & 8.78\% & 0.817 & 2.56 \\
+Fixed $s=0.25$ (reference) & 2.27\% & 0.934 & 3.87 & 10.03\% & 0.821 & 2.56 \\
+SNR-only (Step 4) & 2.04\% & 0.934 & 3.86 & 9.91\% & 0.821 & 2.55 \\
+SNR + fixed Step 5 & 2.08\% & 0.934 & 3.87 & 9.93\% & 0.821 & 2.56 \\
+SNR + fixed Step 6 & 2.17\% & 0.934 & 3.86 & 9.98\% & 0.821 & 2.56 \\
+Stabilization only & 2.27\% & 0.934 & 3.87 & 10.03\% & 0.821 & 2.56 \\
+\textbf{Full policy} & 2.13\% & 0.934 & 3.88 & 9.95\% & 0.820 & 2.56 \\
+\midrule
+Oracle (hindsight) & 2.04\% & 0.934 & 3.86 & 6.74\% & 0.828 & 2.55 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The full policy was also timed with real early stopping on the Tesla T4 (\nolinkurl{research/evidence/benchmarks/gpu_timing_summary_by_condition.csv}), on the 200 test-split speakers under both prompt conditions, with GPU synchronization around a timed region that covered the prompt SNR estimate, the teacher steps with the stopping decision, the student and the vocoder (Table~\ref{tab:cv-runtime}). On clean prompts the mean synthesis time fell from 3.29~s at the reference to 2.40~s, 27\% less, which matches the 27\% fewer forward passes (15.30 instead of 21), so on this pipeline the pass saving carried over to time. Noisy prompts took 3.37~s under all three policies, so evaluating the gate and the stabilization score added no measurable time. Over both conditions the policy saved 0.44~s per utterance (95\% cluster-bootstrap interval 0.42 to 0.47~s). This run used $\lambda=0.50$, a value chosen from the earlier CPU labels rather than calibrated on the T4, and its speakers had been inspected in earlier analyses, so it is development evidence for the cost side of the method and not a test of its risk.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Measured synthesis time per utterance on the Tesla T4 with real early stopping (200 test-split speakers; mean time and real-time factor).}
+\label{tab:cv-runtime}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}l r r r r r@{}}
+\toprule
+& \multicolumn{3}{c}{\textbf{Clean}} & \multicolumn{2}{c}{\textbf{Noisy}} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-6}
+\textbf{Policy} & \textbf{Passes} & \textbf{Time} & \textbf{RTF} & \textbf{Time} & \textbf{RTF} \\
+\midrule
+Reference (Step 8) & 21.00 & 3.29~s & 0.73 & 3.37~s & 0.71 \\
+SNR-only (Step 4) & 13.08 & 2.06~s & 0.45 & 3.37~s & 0.71 \\
+Full policy ($\lambda=0.50$) & 15.30 & 2.40~s & 0.53 & 3.37~s & 0.71 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\emph{Verdict and trade-off.} Taken together, these results support per-input switching and show where its trade-off lies. Choosing the switching time per input removed almost all of the failures that a fixed early switch causes (1 against 50 to 66 of 200) while still saving 10.1\% of the forward passes overall, 20.2\% on clean prompts and 27\% of the measured synthesis time on clean prompts, with no significant change in WER, SIM or UTMOS. The trade-off is between saving and caution: SNR-only saved more (19.0\%) with three failures, the full policy saved less (10.1\%) with one, and both stayed within the 5\% tolerance at the upper end of their intervals. On these data the stabilization score made the policy more cautious, but its step choices could not yet be distinguished from the SNR-gated controls, and noisy prompts kept the reference cost because the gate sends them there. The calibration of Objective~3 will replace the cross-validated threshold with a certified one, and the held-out comparison of Objective~4 will decide which variant to recommend.
 
 \subsection{Development-Split Signal Diagnostic}
 \label{app:prelim-dev}
@@ -359,7 +436,7 @@ If the stabilization score adds no measurable value in these tests, the SNR-gate
 Endpoint cushioning & Partial acceptance of the student's first correction gave no detectable benefit & Not pursued; the handover itself is left unchanged \\
 Fixed switching times & On 1{,}000 T4 instances, the failure rate rises as the switch moves earlier (25\% to 33\%); the cheapest acceptable switch varies by input; a per-input choice in hindsight needs 14.85 of 21 passes & Motivates per-utterance switching (Objective~1) \\
 Student restart level & Restarting at $j=2$ adds failures at every switching time & Restart fixed at $j=1$; switching time is the only variable \\
-Cross-validated stabilization policy & On T4 development data, 10\% fewer passes with one added failure in 200 out of fold, but no risk certificate & Motivates the decision signals (Objective~2) and calibration with Learn-Then-Test (Objective~3) \\
+Cross-validated stabilization policy & On T4 development data, 10\% fewer passes with one added failure in 200 out of fold, and 27\% less synthesis time on clean prompts with real early stopping, but no risk certificate & Motivates the decision signals (Objective~2) and calibration with Learn-Then-Test (Objective~3) \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -420,7 +497,7 @@ Setting $\theta_{\mathrm{e}}=\theta_{\mathrm{hi}}$ cleans every input below the 
 \subsection{Results}
 \label{app:cand-results}
 
-Table~\ref{tab:candidates} compares the candidates with the SNR-only policy on the same 360 instances. On the 300 noisy instances, SWC's step-4 output was better than the reference output on average: speaker similarity rose by 0.126 (higher in 90\% of the instances; Wilcoxon signed-rank $p<10^{-40}$) and WER fell by 4.8 percentage points. With every input handed over at step~4, SWC failed on 21 of the 300 noisy instances, against 126 for the plain step-4 handover. With $\theta_{\mathrm{e}}=\theta_{\mathrm{hi}}$ (26~dB in every fold), every input below the gate was cleaned, and the policy had fewer failures and fewer forward passes than SNR-only; with heavy noise only ($\theta_{\mathrm{e}}$ between 18 and 21~dB), it kept the failure rate within the 5\% tolerance.
+Table~\ref{tab:candidates} compares the candidates with the SNR-only policy on the same 360 instances. Both candidates removed most of SNR-only's failures, which fell mainly on the moderately noisy prompts, and SWC on heavy noise did so while saving 19.1\% of the forward passes. The thresholds were certified per fold on the training speakers; the pooled out-of-fold rates of TAS and of SWC on heavy noise (3.3\% and 3.1\%) lie below the 5\% tolerance, while the upper ends of their 95\% intervals over 360 instances (5.8\% and 5.4\%) lie slightly above it, which the larger calibration and test splits of Chapter~\ref{sec:method} would narrow. On the 300 noisy instances, SWC's step-4 output was better than the reference output on average: speaker similarity rose by 0.126 (higher in 90\% of the instances; Wilcoxon signed-rank $p<10^{-40}$) and WER fell by 4.8 percentage points. With every input handed over at step~4, SWC failed on 21 of the 300 noisy instances, against 126 for the plain step-4 handover. With $\theta_{\mathrm{e}}=\theta_{\mathrm{hi}}$ (26~dB in every fold), every input below the gate was cleaned, and the policy had fewer failures and fewer forward passes than SNR-only; with heavy noise only ($\theta_{\mathrm{e}}$ between 18 and 21~dB), it kept the failure rate within the 5\% tolerance.
 
 TAS also kept the failure rate within the tolerance that SNR-only exceeds. It did not improve on a fixed SNR gate whose threshold was itself calibrated on these noise levels (7 failures at 18.71 forward passes; the difference from TAS is not significant, exact McNemar $p=0.23$), but it needs only clean prompts to model normal trajectories. The stopping rule of Definition~\ref{def:policy} certified no threshold on these instances and fell back to the reference for every input.
 
@@ -428,17 +505,21 @@ Other variants did not improve on the plain handover: guidance steered away from
 
 \begin{table}[!htbp]
 \centering\small
-\caption{Candidate policies against SNR-only on 360 development instances (out of fold, $\alpha=0.05$, $\delta=0.10$). Fixed and new count the SNR-only failures that a policy avoids and the failures it adds; exact McNemar $p<10^{-13}$ for each candidate.}
+\caption{Candidate policies against SNR-only on 360 development instances (60 speakers; clean, and five noisy conditions of 60 instances each; out of fold, $\alpha=0.05$, $\delta=0.10$). Upper 95\% is the upper end of the exact two-sided 95\% interval for the failure rate over all 360 instances \parencite{clopper1934}; McNemar is the exact test against SNR-only. Of SNR-only's failures, TAS avoids 74 and adds none, SWC with $\theta_{\mathrm{e}}=\theta_{\mathrm{hi}}$ avoids 75 and adds 9, SWC on heavy noise avoids 79 and adds 4, and the calibrated SNR gate avoids 79 and adds none.}
 \label{tab:candidates}
-\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X r r r r@{}}
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X r r r r r r@{}}
 \toprule
-\textbf{Policy} & \textbf{Failures} & \textbf{Rate} & \textbf{Mean passes} & \textbf{Fixed / new} \\
+& \multicolumn{2}{c}{\textbf{Failures}} & & & & \\
+\cmidrule(lr){2-3}
+\textbf{Policy} & \textbf{Clean} & \textbf{Noisy} & \textbf{Upper 95\%} & \textbf{Passes} & \textbf{Saving} & \textbf{McNemar} \\
 \midrule
-SNR-only ($\hat S\ge20$~dB) & 86 & 23.9\% & 14.40 & -- \\
-SNR + TAS & 12 & 3.3\% & 18.20 & 74 / 0 \\
-SNR + SWC, $\theta_{\mathrm{e}}=\theta_{\mathrm{hi}}$ & 20 & 5.6\% & 13.00 & 75 / 9 \\
-SNR + SWC, heavy noise only ($\theta_{\mathrm{e}}<\theta_{\mathrm{hi}}$) & 11 & 3.1\% & 16.98 & 79 / 4 \\
-Reference for every input & 0 & 0.0\% & 21.00 & -- \\
+SNR-only ($\hat S\ge20$~dB) & 2 & 84 & 28.6\% & 14.40 & 31.4\% & -- \\
+Calibrated SNR gate & 2 & 5 & 4.0\% & 18.71 & 10.9\% & $3{\times}10^{-24}$ \\
+\textbf{SNR + TAS} & 2 & 10 & 5.8\% & 18.20 & 13.3\% & $1{\times}10^{-22}$ \\
+\textbf{SNR + SWC}, $\theta_{\mathrm{e}}=\theta_{\mathrm{hi}}$ & 2 & 18 & 8.4\% & 13.00 & 38.1\% & $4{\times}10^{-14}$ \\
+\textbf{SNR + SWC}, heavy noise & 2 & 9 & 5.4\% & 16.98 & 19.1\% & $4{\times}10^{-19}$ \\
+Reference for every input & 0 & 0 & 1.0\% & 21.00 & 0.0\% & $3{\times}10^{-26}$ \\
 \bottomrule
 \end{tabularx}
 \end{table}
