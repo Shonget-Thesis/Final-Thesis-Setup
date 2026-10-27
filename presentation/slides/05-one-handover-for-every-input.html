@@ -1,0 +1,123 @@
+<!-- 4 PROBLEM -->
+        <section class="scene" data-ch="1" data-sec="1.2" data-dur="35" data-title="Problem Statement">
+          <p class="eyebrow b fade" data-t="100">Section 1.2 · Problem Statement</p>
+          <h2 class="b up" data-t="250">Limitations of Static Handover Schedules Across Inputs</h2>
+          <div class="two wide-l" style="margin-top:20px;gap:56px">
+            <div class="stack" style="gap:24px;padding-top:8px;position:relative">
+              <div class="inrow b left" data-t="700">
+                <div class="nm"><b>Input A</b>clean, easy</div>
+                <div class="cells sm b" data-t="700" data-teacher="18" data-student="3"></div>
+              </div>
+              <div class="inrow b left" data-t="1000">
+                <div class="nm"><b>Input B</b>moderate</div>
+                <div class="cells sm b" data-t="1000" data-teacher="18" data-student="3"></div>
+              </div>
+              <div class="inrow b left" data-t="1300">
+                <div class="nm"><b>Input C</b>noisy prompt</div>
+                <div class="cells sm b" data-t="1300" data-teacher="18" data-student="3"></div>
+              </div>
+              <div class="b fade" data-t="2200"
+                style="position:absolute;left:587px;top:-10px;height:210px;border-left:3px dashed var(--orange)"></div>
+              <p class="mono b fade" data-t="2200"
+                style="font-size:16px;font-weight:600;color:var(--orange);letter-spacing:.08em;margin-left:228px">FIXED HANDOVER
+                t<sub>h</sub> = 0.293 · 21 PASSES EACH</p>
+              <p class="lead b up" data-t="2900" style="margin-top:16px;font-size:26px">Too late wastes guided passes.
+                Too early may degrade speech. <strong>Does every utterance need 18 teacher passes?</strong></p>
+            </div>
+            <div class="probs">
+              <div class="prob b right" data-t="3600"><span class="n">1.2.1</span>
+                <p><strong>Uncharacterized effects.</strong> How the switching time changes WER, SIM, UTMOS and cost per
+                  utterance is unmeasured.</p>
+              </div>
+              <div class="prob b right" data-t="4100"><span class="n">1.2.2</span>
+                <p><strong>The handover boundary.</strong> Can inference-time signals pick an earlier switch without
+                  losing quality?</p>
+              </div>
+              <div class="prob b right" data-t="4600"><span class="n">1.2.3</span>
+                <p><strong>No reliability guarantee.</strong> Adaptive selection alone says nothing about the rate of
+                  added failures.</p>
+              </div>
+              <div class="prob b right" data-t="5100"><span class="n">1.2.4</span>
+                <p><strong>Application constraints.</strong> Faster synthesis is not evidence of benefit to autistic
+                  users.</p>
+              </div>
+            </div>
+          </div>
+          <footer class="cite b fade" data-t="2500"><span class="k">Sources</span><span>Li et al. (2026), <em>DMOSpeech
+                2</em>, AAAI · Ho &amp; Salimans (2022) · Angelopoulos et al. (2025), <em>Learn then test</em>, Ann.
+              Appl. Stat.</span></footer>
+        </section>
+
+<script type="text/slide-script">
+The problem is that the handover point is fixed. Every input, easy or hard, clean or noisy, pays the same 18 teacher passes. A switch later than an utterance needs wastes computation; an earlier one may degrade speech. This raises four problems: the effects of the switching time are not characterized; the handover boundary is not chosen per input; an adaptive choice comes with no reliability guarantee; and the assistive motivation does not by itself show any benefit to users.
+</script>
+
+<style>
+/* S4 */
+    .inrow {
+      display: grid;
+      grid-template-columns: 210px 1fr;
+      align-items: center;
+      gap: 18px
+    }
+
+    .inrow .nm {
+      font-family: var(--mono);
+      font-weight: 400;
+      font-size: 16.5px;
+      letter-spacing: .06em;
+      color: var(--muted)
+    }
+
+    .inrow .nm b {
+      display: block;
+      font-family: var(--display);
+      font-stretch: 112%;
+      font-size: 24px;
+      background: var(--dark-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+      letter-spacing: 0
+    }
+
+    .probs {
+      display: flex;
+      flex-direction: column;
+      gap: 16px
+    }
+
+    .prob {
+      display: grid;
+      grid-template-columns: 74px 1fr;
+      gap: 16px;
+      align-items: baseline;
+      border-top: 1px solid var(--line);
+      padding-top: 16px
+    }
+
+    .prob .n {
+      font-family: var(--mono);
+      font-weight: 600;
+      font-size: 17px;
+      color: var(--orange)
+    }
+
+    .prob p {
+      font-size: 22px;
+      line-height: 1.42;
+      color: var(--muted)
+    }
+
+    .prob p strong {
+      background: var(--dark-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      -webkit-box-decoration-break: clone;
+      box-decoration-break: clone;
+      font-weight: 700;
+      display: inline;
+    }
+</style>
