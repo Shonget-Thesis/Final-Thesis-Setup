@@ -5,7 +5,6 @@
 %   B  Sample Simulation
 %   C  Prototype
 %   D  Preliminary Experiments
-%   E  Candidate Solutions
 % Appendix chapters are lettered; their equations are unnumbered so they
 % do not enter the List of Equations.
 % =====================================================================
@@ -282,13 +281,9 @@ The three boxes at the bottom of Figure~\ref{fig:glance} correspond to what the 
 
 The team's earlier experiments are reported here as preliminary evidence. They motivated the architecture of Section~\ref{sec:architecture} and fixed several of its choices, but they are not evidence for the calibrated method. The fixed-switching analysis and the cross-validated stabilization policy were run on the Tesla T4 GPU with the evaluation models of Section~\ref{sec:measures}. The student-restart experiment used 12 speakers from Seed-TTS test-en \parencite{anastassiou2024seedtts} under four conditions: a clean prompt, the target duration shortened and lengthened by 15\%, and a prompt with white Gaussian noise added at 15~dB, giving 48 instances. It ran on a central processing unit (CPU) with one seed per instance, measured WER with Whisper-base \parencite{radford2023whisper} and SIM with a lightweight speaker encoder against the prompt, and is therefore not directly comparable with the measures of Section~\ref{sec:measures}. Table~\ref{tab:prelim} summarizes what each experiment found and what it changed in the design.
 
-\subsection{Endpoint Cushioning}
-
-On 96 LibriSpeech pairs, the team tested accepting only part of the student's first correction, $E = T + w(S-T)$, with a tanh-based weight $w = 1 - 0.26\tanh(\|S-T\|_2/\|T\|_2)$, a fixed weight, a cosine-derived weight and a displacement cap. Recomputed from the benchmark log, tanh did not differ significantly from direct transfer in peak spectral flux (mean $-0.41$, paired $t$-test $p=0.31$; 50 better, 39 worse, 7 tied), nor from a matched fixed weight ($p=0.19$). WER changed on only 9 of 96 pairs. The tanh weight ranged only from 0.845 to 0.891, so it behaved almost as a constant, and the cap never activated. The 96 pairs came from 7 speakers, one contributing 41. The student's first correction influences the output, but partial acceptance gave no detectable benefit, so this direction was not pursued as the contribution.
-
 \subsection{Fixed Switching Times}
 
-This analysis used all 500 speakers of the three splits (Section~\ref{sec:data}), each under the clean and the 15~dB noisy prompt condition (1{,}000 instances), synthesized on the Tesla T4 GPU with the student restart fixed, evaluated with the models of Section~\ref{sec:measures}, and scored with the added-failure rule of Definition~\ref{def:failure} against the reference switching time $s=0.25$ (Step~8; \nolinkurl{code/analysis/problem_validation_t4.py}). With one switching time for every input, the failure rate rose as the switch moved earlier, and almost all failures came from noisy prompts (Table~\ref{tab:fixed-fail}); the same ordering held on each split separately. The cheapest switching time that did not fail varied between inputs (Table~\ref{tab:fixed-oracle}), and the 179 instances that needed the reference were all noisy. A per-input choice made in hindsight would therefore use 14.85 forward passes on average instead of 21 ($-29\%$), whereas no single earlier switching time is safe for every input.
+This analysis used all 500 speakers of the three splits (Section~\ref{sec:data}), each under the clean and the 15~dB noisy prompt condition (1{,}000 instances), synthesized on the Tesla T4 GPU with the student restart fixed, evaluated with the models of Section~\ref{sec:measures}, and scored with the added-failure rule of Definition~\ref{def:failure} against the reference switching time $s=0.25$ (Step~8; \nolinkurl{code/analysis/problem_validation_t4.py}). With one switching time for every input, the failure rate rose as the switch moved earlier, and almost all failures came from noisy prompts (Table~\ref{tab:fixed-fail}); the same ordering held on each split separately. The cheapest switching time that did not fail varied between inputs (Table~\ref{tab:fixed-oracle}), and the 179 instances that needed the reference were all noisy. That noisy audio prompts degrade flow-matching zero-shot synthesis has been reported before \parencite{wang2024noise}. A per-input choice made in hindsight would therefore use 14.85 forward passes on average instead of 21 ($-29\%$), whereas no single earlier switching time is safe for every input.
 
 \begin{table}[!htbp]
 \centering\small
@@ -325,16 +320,16 @@ All (1{,}000) & 666 & 100 & 55 & 179 & 14.85 \\
 
 \subsection{Student Restart Level}
 
-Restarting the student one grid point later ($j=2$) saves one forward pass but produced more failures than the released code's default $j=1$ at every switching time tested: 26 versus 11 of 48 at $s=0.07$, 13 versus 8 at $s=0.10$, 9 versus 8 at $s=0.15$, and 14 versus 0 at $s=0.25$. The restart level is therefore fixed at $j=1$ (Section~\ref{sec:baseline}), and the switching time is the only handover setting the study varies.
+Restarting the student one grid point later ($j=2$, two student steps, the main configuration reported for DMOSpeech~2) saves one forward pass. Its outputs departed from the $j=1$ reference more often than those of the released default $j=1$ did, at every switching time tested: 26 versus 11 of 48 at $s=0.07$, 13 versus 8 at $s=0.10$, 9 versus 8 at $s=0.15$, and 14 versus 0 at $s=0.25$. Failures were counted against the $j=1$ reference output, so the zero at $s=0.25$ holds by construction; the counts show that $j=2$ differs from the reference, not that it is worse in absolute quality, and the comparison is small (48 instances, one seed, a CPU, lighter evaluation models). The restart level is therefore fixed at $j=1$, the released code's default (Section~\ref{sec:baseline}), as a controlled setting, and the switching time is the only handover setting the study varies. Whether $j=2$ is equally good in absolute terms is left to future work.
 
 \subsection{Stabilization Policy with a Cross-Validated Threshold}
 
-Unlike the other experiments in this appendix, this one was re-run on the Tesla T4 GPU with the evaluation models of Section~\ref{sec:measures}, on the 100 development speakers under the clean and the noisy15 prompt conditions (200 instances; \nolinkurl{code/analysis/cv_stabilization_t4.py}). The policy of Definition~\ref{def:policy}, with an SNR gate of 20~dB, was evaluated by four-fold speaker-grouped cross-validation. In each fold the threshold $\lambda$ was chosen on 75 speakers (150 instances) as the largest value in $\{0.20,0.25,\dots,0.60\}$ with zero added failures and frozen before scoring the 25 held-out speakers. The folds selected $\lambda=0.35$, 0.35, 0.35 and 0.50. Out of fold, mean cost fell from 21 to 18.88 forward passes ($-10.1\%$) with one added failure in 200 instances, against 50 of 200 for a fixed $s=0.15$, and the SNR gate sent all 100 noisy prompts to the reference, so the saving came from the clean prompts. The earlier CPU version of this experiment, on 12 speakers with lighter evaluation models, had selected the edge of the search range, $\lambda=0.60$, in every fold; on the T4 data the selected thresholds lie inside the range, and widening it to 1.20 leaves them unchanged. Two limitations remain. Selecting a threshold with zero training failures is not a risk certificate: with 75 training speakers and no failures, the smallest risk that can be certified at $\delta=0.10$ is about 3\% (Appendix~\ref{app:calc-ltt}). And the development split also served other design decisions, so these out-of-fold figures may be optimistic. Objective~3 replaces this selection with Learn-Then-Test on speaker-disjoint data with one utterance per speaker.
+Unlike the other experiments in this appendix, this one was re-run on the Tesla T4 GPU with the evaluation models of Section~\ref{sec:measures}, on the 100 development speakers under the clean and the noisy15 prompt conditions (200 instances; \nolinkurl{code/analysis/cv_stabilization_t4.py}). The policy of Definition~\ref{def:policy}, with an SNR gate of 20~dB, was evaluated by four-fold speaker-grouped cross-validation. In each fold the threshold $\lambda$ was chosen on 75 speakers (150 instances) as the largest value in $\{0.20,0.25,\dots,0.60\}$ with zero added failures and frozen before scoring the 25 held-out speakers. The folds selected $\lambda=0.35$, 0.35, 0.35 and 0.50. Out of fold, mean cost fell from 21 to 18.88 forward passes ($-10.1\%$) with one added failure in 200 instances, against 50 of 200 for a fixed $s=0.15$, and the SNR gate sent all 100 noisy prompts to the reference, so the saving came from the clean prompts. The earlier CPU version of this experiment, on 12 speakers with lighter evaluation models, had selected the edge of the search range, $\lambda=0.60$, in every fold; on the T4 data the selected thresholds lie inside the range, and widening it to 1.20 leaves them unchanged. Two limitations remain. Selecting a threshold with zero training failures is not a risk certificate: with 75 training speakers and no failures, the smallest risk that can be certified at $\delta=0.10$ is about 3\% (Appendix~\ref{app:calc-ltt}); after zero observed failures the upper confidence limit shrinks only in proportion to $1/n$, about $3/n$ at 95\% confidence \parencite{hanley1983zero}. And the development split also served other design decisions, so these out-of-fold figures may be optimistic, because reusing data that guided earlier choices to select and then report performance is a known source of selection bias \parencite{cawley2010overfitting}. Objective~3 replaces this selection with Learn-Then-Test on speaker-disjoint data with one utterance per speaker.
 
 \subsection{Development-Split Signal Diagnostic}
 \label{app:prelim-dev}
 
-A first diagnostic of the two signals was run on the 100 development speakers with the evaluation models of this study (Section~\ref{sec:measures}), each under the clean and the 15~dB noisy condition. The estimated prompt SNR separated the two conditions completely: 23.3 to 50.0~dB for clean prompts and 16.8 to 18.2~dB for noisy prompts, so a 20~dB gate sent every noisy prompt to the reference. Fixed early handovers failed on 49\% to 63\% of noisy prompts but on only 2\% to 4\% of clean ones. On clean prompts, the stabilization score $d_4$ did not separate Step-4 failures from passes (area under the receiver operating characteristic (ROC) curve about 0.47, based on only two to three failures), and at $\lambda=0.50$ the policy waited past Step~4 on 78 of the 100 clean prompts, of which 75 to 77 would already have passed at Step~4. These figures come from the development split alone, which serves design decisions, and the small number of clean failures makes the estimates imprecise. They motivate the comparisons of Appendix~\ref{app:drift-plan} but are not evidence for or against the stabilization score.
+A first diagnostic of the two signals was run on the 100 development speakers with the evaluation models of this study (Section~\ref{sec:measures}), each under the clean and the 15~dB noisy condition. The estimated prompt SNR separated the two conditions completely: 23.3 to 50.0~dB for clean prompts and 16.8 to 18.2~dB for noisy prompts, so a 20~dB gate sent every noisy prompt to the reference. Blind estimation of SNR from statistics of the waveform is established practice \parencite{kim2008wada}; the estimator of Definition~\ref{def:snr} uses a ratio of frame energies instead. Fixed early handovers failed on 49\% to 63\% of noisy prompts but on only 2\% to 4\% of clean ones. On clean prompts, the stabilization score $d_4$ did not separate Step-4 failures from passes (area under the receiver operating characteristic (ROC) curve about 0.47, based on only two to three failures), and at $\lambda=0.50$ the policy waited past Step~4 on 78 of the 100 clean prompts, of which 75 to 77 would already have passed at Step~4. These figures come from the development split alone, which serves design decisions, and the small number of clean failures makes the estimates imprecise. They motivate the comparisons of Appendix~\ref{app:drift-plan} but are not evidence for or against the stabilization score.
 
 \subsection{Plan for Further Investigation of the Stabilization Signal}
 \label{app:drift-plan}
@@ -356,96 +351,11 @@ If the stabilization score adds no measurable value in these tests, the SNR-gate
 \toprule
 \textbf{Experiment} & \textbf{Finding} & \textbf{Consequence for this study} \\
 \midrule
-Endpoint cushioning & Partial acceptance of the student's first correction gave no detectable benefit & Not pursued; the handover itself is left unchanged \\
 Fixed switching times & On 1{,}000 T4 instances, the failure rate rises as the switch moves earlier (25\% to 33\%); the cheapest acceptable switch varies by input; a per-input choice in hindsight needs 14.85 of 21 passes & Motivates per-utterance switching (Objective~1) \\
-Student restart level & Restarting at $j=2$ adds failures at every switching time & Restart fixed at $j=1$; switching time is the only variable \\
+Student restart level & Restarting at $j=2$ departs from the $j=1$ reference more often at every switching time (small CPU run; not a test of absolute quality) & Restart fixed at $j=1$ as a controlled setting; switching time is the only variable \\
 Cross-validated stabilization policy & On T4 development data, 10\% fewer passes with one added failure in 200 out of fold, but no risk certificate & Motivates the decision signals (Objective~2) and calibration with Learn-Then-Test (Objective~3) \\
 \bottomrule
 \end{tabularx}
 \end{table}
-
-\FloatBarrier
-
-
-% =====================================================================
-\section[APPENDIX E.\ CANDIDATE SOLUTIONS]{Candidate Solutions}
-% =====================================================================
-\label{app:candidates}
-
-The preliminary experiments of Appendix~\ref{app:prelim} were followed by four development studies on Google Colab GPUs, which tested gates, handover operators and noise-aware variants of the sampler. Two candidates remain. They extend, and do not replace, the method of Chapter~\ref{sec:method}: the \emph{Trajectory Anomaly Score} (TAS) decides which inputs must not be handed over early, and \emph{SNR-Wiener Conditioning} (SWC) removes the prompt's noise so that more inputs can be handed over early. Both use the prompt SNR estimate of Definition~\ref{def:snr} and add no network evaluation. They are reported here as development evidence, and each will be tested on speakers not used here before it is adopted (Section~\ref{app:cand-limits}).
-
-The studies used the first 60 development speakers, each under six prompt conditions (the clean prompt and white Gaussian noise added at 15, 18, 20, 22 and 25~dB), giving 360 instances scored with the evaluation models of Section~\ref{sec:measures} and the added-failure rule of Definition~\ref{def:failure} against the reference switching time. Every threshold was certified by the fixed-sequence procedure of Algorithm~\ref{alg:ltt} ($\alpha=0.05$, $\delta=0.10$) on the training speakers of a five-fold speaker-grouped cross-validation, and all figures below are out of fold. The comparison baseline is the SNR-only policy: a handover at teacher step~4 (13 forward passes) if $\hat S\ge20$~dB, and the reference (21 forward passes) otherwise. On these instances it failed on 86 of 360 (23.9\%), because prompts with 18 to 22~dB of added noise are estimated above 20~dB and pass the gate.
-
-\subsection{Trajectory Anomaly Score}
-\label{app:cand-tas}
-
-\emph{Motivation.} By the endpoint formula of \Cref{eq:endpoint} and the Euler step of \Cref{eq:euler}, consecutive endpoint estimates differ by
-\[
-\hat x_1(t_i)-\hat x_1(t_{i-1}) = (1-t_i)\bigl(v(x_{t_i},t_i)-v(x_{t_{i-1}},t_{i-1})\bigr),
-\]
-so the stabilization score $d_i$ of Definition~\ref{def:stab} measures how much the generation direction is still changing. A noisy prompt weakens the conditioning: the median $d_4$ fell from 0.61 on clean prompts to 0.17 at 15~dB, together with the relative gap between the conditional and unconditional predictions (median 0.236 to 0.116). The trajectory therefore settles early because the condition carries less information, not because the output is ready. Under this \emph{premature stabilization}, the stopping rule of Definition~\ref{def:policy} hands noisy prompts over early, and on these instances no threshold of that rule could be certified.
-
-\emph{Definition.} For an input $x$, let $\mathbf z(x)=(\log d_1,\dots,\log d_6)$ collect the stabilization scores that the teacher pass already computes. From the clean prompts of the calibration speakers, without failure labels, estimate their mean $\boldsymbol\mu$ and covariance $\boldsymbol\Sigma$. The anomaly score counts only trajectories that are stiller than normal:
-\[
-A(x)=\begin{cases}(\mathbf z-\boldsymbol\mu)^{\top}\boldsymbol\Sigma^{-1}(\mathbf z-\boldsymbol\mu) & \text{if the mean component of } \mathbf z-\boldsymbol\mu \text{ is negative},\\[2pt] 0 & \text{otherwise.}\end{cases}
-\]
-The handover rule keeps the SNR gate and adds the score:
-\[
-\pi_{\mathrm{TAS}}(x)=\begin{cases}4 & \text{if } \hat S\ge\theta \text{ and } A(x)\le\hat\kappa,\\[2pt] k_{\text{ref}} & \text{otherwise,}\end{cases}
-\]
-where $\theta$ is the SNR gate (20~dB in these studies, as in SNR-only) and $\hat\kappa$ is the most permissive threshold certified by Algorithm~\ref{alg:ltt}, testing thresholds in increasing order.
-
-\emph{Relation to prior work.} Mahalanobis distances are standard anomaly scores, and DiffPath uses the rate of change and curvature of diffusion paths to detect out-of-distribution images \parencite{heng2024diffpath}. TAS differs in what it detects (corrupted conditioning), in treating a trajectory that settles too early as a reason not to stop, the opposite of early-exit rules that stop once the output stops changing \parencite{schuster2022calm}, and in gating a calibrated teacher-to-student handover. To our knowledge this use has not been reported.
-
-\subsection{SNR-Wiener Conditioning}
-\label{app:cand-swc}
-
-\emph{Motivation.} On the noisy prompts most failures were speaker-similarity failures: the generated voice inherits the prompt's noise. Changing only what the student receives at the handover, or steering the teacher's guidance, recovered at most 0.024 of speaker similarity, whereas the noise itself cost 0.06 to 0.24, measured on the same speakers and seeds with the clean and the noisy prompt.
-
-\emph{Definition.} Before the teacher and the student read the prompt, the prompt frames of their conditioning are cleaned in the model's own mel domain. For mel band $b$, let $N_b$ be the mean linear magnitude of the quietest 20\% of the prompt frames, and let $m_{f,b}$ be the magnitude of prompt frame $f$. Each prompt frame is multiplied by
-\begin{gather*}
-G_{f,b}=\min\Bigl\{1,\ \max\Bigl\{0.1,\ 1-\beta(\hat S)\,\frac{N_b}{m_{f,b}}\Bigr\}\Bigr\},\\
-\beta(\hat S)=\min\Bigl\{1,\ \max\Bigl\{0,\ \frac{30-\hat S}{10}\Bigr\}\Bigr\},
-\end{gather*}
-so that prompts estimated at 30~dB or above are left unchanged and prompts at 20~dB or below are cleaned at full strength. The teacher then runs to step~4 and the student completes as usual, for 13 forward passes.
-
-\emph{Routing.} The prompt SNR also decides which inputs are cleaned. With two thresholds $\theta_{\mathrm{e}}\le\theta_{\mathrm{hi}}$, certified in turn by Algorithm~\ref{alg:ltt},
-\[
-\pi_{\mathrm{SWC}}(x)=\begin{cases}4 \text{ with the original prompt} & \text{if } \hat S\ge\theta_{\mathrm{hi}},\\[2pt] 4 \text{ with the cleaned prompt} & \text{if } \hat S<\theta_{\mathrm{e}},\\[2pt] k_{\text{ref}} & \text{otherwise.}\end{cases}
-\]
-Setting $\theta_{\mathrm{e}}=\theta_{\mathrm{hi}}$ cleans every input below the gate; a lower $\theta_{\mathrm{e}}$ cleans heavy noise only and sends moderately noisy prompts to the reference.
-
-\emph{Relation to prior work.} The gain is classical spectral subtraction with a minimum-energy noise estimate \parencite{boll1979spectral}, so SWC is not a new formula. What is new, to our knowledge, is applying it to the conditioning of a teacher-guided sampler, with the strength set by the prompt SNR, as a substitute for teacher computation that makes an early handover safe.
-
-\subsection{Results}
-\label{app:cand-results}
-
-Table~\ref{tab:candidates} compares the candidates with the SNR-only policy on the same 360 instances. On the 300 noisy instances, SWC's step-4 output was better than the reference output on average: speaker similarity rose by 0.126 (higher in 90\% of the instances; Wilcoxon signed-rank $p<10^{-40}$) and WER fell by 4.8 percentage points. With every input handed over at step~4, SWC failed on 21 of the 300 noisy instances, against 126 for the plain step-4 handover. With $\theta_{\mathrm{e}}=\theta_{\mathrm{hi}}$ (26~dB in every fold), every input below the gate was cleaned, and the policy had fewer failures and fewer forward passes than SNR-only; with heavy noise only ($\theta_{\mathrm{e}}$ between 18 and 21~dB), it kept the failure rate within the 5\% tolerance.
-
-TAS also kept the failure rate within the tolerance that SNR-only exceeds. It did not improve on a fixed SNR gate whose threshold was itself calibrated on these noise levels (7 failures at 18.71 forward passes; the difference from TAS is not significant, exact McNemar $p=0.23$), but it needs only clean prompts to model normal trajectories. The stopping rule of Definition~\ref{def:policy} certified no threshold on these instances and fell back to the reference for every input.
-
-Other variants did not improve on the plain handover: guidance steered away from a noise-only prompt, a guidance scale raised with the SNR, an antithetic pair of student runs, and noise cancellation applied to the generated output instead of the prompt. A pretrained speech-enhancement network applied to the prompt helped about as much as SWC (speaker similarity $+0.117$) but adds a network to the pipeline.
-
-\begin{table}[!htbp]
-\centering\small
-\caption{Candidate policies against SNR-only on 360 development instances (out of fold, $\alpha=0.05$, $\delta=0.10$). Fixed and new count the SNR-only failures that a policy avoids and the failures it adds; exact McNemar $p<10^{-13}$ for each candidate.}
-\label{tab:candidates}
-\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X r r r r@{}}
-\toprule
-\textbf{Policy} & \textbf{Failures} & \textbf{Rate} & \textbf{Mean passes} & \textbf{Fixed / new} \\
-\midrule
-SNR-only ($\hat S\ge20$~dB) & 86 & 23.9\% & 14.40 & -- \\
-SNR + TAS & 12 & 3.3\% & 18.20 & 74 / 0 \\
-SNR + SWC, $\theta_{\mathrm{e}}=\theta_{\mathrm{hi}}$ & 20 & 5.6\% & 13.00 & 75 / 9 \\
-SNR + SWC, heavy noise only ($\theta_{\mathrm{e}}<\theta_{\mathrm{hi}}$) & 11 & 3.1\% & 16.98 & 79 / 4 \\
-Reference for every input & 0 & 0.0\% & 21.00 & -- \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\subsection{Limitations and Next Steps}
-\label{app:cand-limits}
-
-These results are development evidence. TAS was designed after premature stabilization was observed in these same instances, the added noise was white Gaussian noise only, and 60 speakers are fewer than the calibration and test splits of Chapter~\ref{sec:method}. The SWC outputs were synthesized on an A100 GPU and compared with reference outputs from the Tesla T4: the teacher reproduced exactly, but the student's random draws differ between the two GPUs, so each SWC output was judged against a reference made with different student noise. This adds disagreements that inflate the failure counts of SWC, while those of TAS and SNR-only, which use T4 outputs only, are unaffected. Before either candidate is adopted, the study will repeat SWC with its references on the same GPU, including an SWC output at the reference switching time to separate the gain from cleaning from the safety of the early handover; test both candidates, with their settings fixed in advance, on speakers not used here; and test prompts with babble, reverberation and telephone-band degradation, where the SNR estimate is less reliable and SWC's assumption of stationary noise is weakest.
 
 \FloatBarrier

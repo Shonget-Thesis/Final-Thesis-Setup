@@ -1,0 +1,262 @@
+<!-- 13 GAP MAP -->
+        <section class="scene" data-ch="2" data-sec="2.4–2.8" data-dur="45" data-title="Gap Map of the Related Literature">
+          <p class="eyebrow o b fade" data-t="100">Sections 2.4–2.8 · Literature Synthesis</p>
+          <h2 class="b up" data-t="250">Where Prior Work Leaves the Gaps</h2>
+          <div class="vn">
+            <svg class="vsvg" viewBox="90 0 600 566" role="img"
+              aria-label="Venn diagram of three properties: per-input adaptive decision, calibrated risk bound, and teacher-to-student handover. Reviewed methods fall in single or paired regions; the centre, where all three meet, is where this study sits.">
+              <defs>
+                <linearGradient id="vnO" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#FB923C" />
+                  <stop offset="1" stop-color="#C2410C" />
+                </linearGradient>
+              </defs>
+
+              <!-- three sets -->
+              <circle class="b pop" data-t="700" cx="300" cy="200" r="175" fill="rgba(2,132,199,.09)" stroke="#0284C7" stroke-width="2" />
+              <circle class="b pop" data-t="1200" cx="480" cy="200" r="175" fill="rgba(15,23,42,.06)" stroke="#334155" stroke-width="2" />
+              <circle class="b pop" data-t="1700" cx="390" cy="356" r="175" fill="rgba(100,116,139,.10)" stroke="#64748B" stroke-width="2" />
+
+              <g class="vt b fade" data-t="900" fill="#0284C7">
+                <text x="96" y="22">PER-INPUT</text>
+                <text x="96" y="40">ADAPTIVE</text>
+              </g>
+              <g class="vt b fade" data-t="1400" fill="#334155" text-anchor="end">
+                <text x="684" y="22">CALIBRATED</text>
+                <text x="684" y="40">RISK BOUND</text>
+              </g>
+              <g class="vt b fade" data-t="1900" fill="#64748B" text-anchor="middle">
+                <text x="390" y="554">TEACHER → STUDENT HANDOVER</text>
+              </g>
+
+              <!-- adaptive only -->
+              <g class="vc b fade" data-t="2500">
+                <text x="232" y="98" text-anchor="middle">ACT</text>
+                <text x="232" y="118" text-anchor="middle">BranchyNet</text>
+                <text x="232" y="138" text-anchor="middle">Adaptive Guidance</text>
+                <circle class="vb" cx="160" cy="98" r="10" />
+                <text class="vn-n" x="160" y="102.5" text-anchor="middle">1</text>
+              </g>
+              <!-- bound only -->
+              <g class="vc b fade" data-t="2900">
+                <text x="548" y="108" text-anchor="middle">Learn-Then-Test</text>
+                <text class="vs" x="548" y="127" text-anchor="middle">the tool, not a handover</text>
+              </g>
+              <!-- adaptive + bound -->
+              <g class="vc b fade" data-t="3300">
+                <text x="390" y="100" text-anchor="middle">CALM</text>
+                <text x="390" y="120" text-anchor="middle">ASR correction</text>
+                <circle class="vb" cx="349" cy="95" r="10" />
+                <text class="vn-n" x="349" y="99.5" text-anchor="middle">2</text>
+              </g>
+              <!-- handover only -->
+              <g class="vc b fade" data-t="3700">
+                <text x="390" y="462" text-anchor="middle">DMOSpeech 2</text>
+                <text x="390" y="482" text-anchor="middle">T-Stitch</text>
+                <circle class="vb" cx="318" cy="458" r="10" />
+                <text class="vn-n" x="318" y="462.5" text-anchor="middle">3</text>
+              </g>
+              <!-- adaptive + handover -->
+              <g class="vc b fade" data-t="4100">
+                <text class="vsm" x="290" y="307" text-anchor="middle">Adaptive</text>
+                <text class="vsm" x="290" y="325" text-anchor="middle">collaboration</text>
+                <circle class="vb" cx="244" cy="301" r="10" />
+                <text class="vn-n" x="244" y="305.5" text-anchor="middle">1</text>
+              </g>
+              <!-- bound + handover -->
+              <g class="b fade" data-t="4500">
+                <text class="vs" x="496" y="312" text-anchor="middle">none found</text>
+              </g>
+
+              <!-- the empty centre -->
+              <g class="b pop" data-t="8600">
+                <circle cx="390" cy="262" r="42" fill="url(#vnO)" />
+                <circle class="vpulse" cx="390" cy="262" r="42" fill="none" stroke="#EA580C" stroke-width="2.5" />
+                <text x="390" y="258" fill="#fff" font-size="14" font-weight="800" text-anchor="middle" letter-spacing="1.5">THIS</text>
+                <text x="390" y="277" fill="#fff" font-size="14" font-weight="800" text-anchor="middle" letter-spacing="1.5">STUDY</text>
+              </g>
+            </svg>
+
+            <div class="vcards">
+              <div class="vcard b up" data-t="5000">
+                <span class="vk">1</span>
+                <div>
+                  <h3>Adaptive, but no bound on quality loss</h3>
+                  <p>Per-input rules built on a learned halting unit or a hand-tuned threshold. None states how much
+                    quality the saving may cost.</p>
+                </div>
+              </div>
+              <div class="vcard b up" data-t="5900">
+                <span class="vk">2</span>
+                <div>
+                  <h3>Bounded, but not for a handover</h3>
+                  <p>CALM and adaptive ASR correction calibrate a threshold with risk control, for exit layers and
+                    recognition hypotheses, not for a teacher-to-student switch in speech synthesis.</p>
+                </div>
+              </div>
+              <div class="vcard b up" data-t="6800">
+                <span class="vk">3</span>
+                <div>
+                  <h3>A handover, but one fixed for all inputs</h3>
+                  <p>DMOSpeech 2 switches at one time for every utterance; T-Stitch uses a preset switching point.
+                    Neither adapts to the input or bounds the risk.</p>
+                </div>
+              </div>
+              <div class="vcard vgap b up" data-t="9300">
+                <span class="vk o">★</span>
+                <div>
+                  <h3>The centre is unoccupied</h3>
+                  <p>No reviewed method pairs a per-utterance handover with a calibrated bound. This describes the
+                    sources examined, not every adaptive method that exists.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <footer class="cite b fade" data-t="2500"><span class="k">Sources</span><span>Graves (2016) · Teerapittayanon et
+              al. (2016) · Schuster et al. (2022) · Starodubcev et al. (2024) · Pan et al. (2025) · Castillo et al.
+              (2025) · Damri et al. (2026) · Li et al. (2026) · Angelopoulos et al. (2025) · Proposal Chapter II</span></footer>
+        </section>
+
+<script type="text/slide-script">
+Let us place the related work on three properties. The first is deciding per input. Adaptive Computation Time, BranchyNet, Adaptive Guidance and adaptive teacher-student collaboration all adapt to the input, but none states how much quality the saving may cost. The second is a calibrated risk bound. CALM and adaptive ASR correction have one, but for exit layers and recognition hypotheses, not for handing over from a teacher to a student in speech synthesis. The third is the handover itself. DMOSpeech 2 and T-Stitch switch between a large and a small model, but at one fixed or preset point for every input. Where all three meet, in the centre, we found no method in the sources we reviewed. That is where this study sits. This is a statement about the sources we examined, not a claim that no other adaptive method exists.
+</script>
+
+<style>
+/* S13 gap map */
+    .vn {
+      display: grid;
+      grid-template-columns: 600px 1fr;
+      gap: 56px;
+      margin-top: 22px;
+      align-items: start
+    }
+
+    .vsvg {
+      display: block;
+      width: 600px;
+      height: 566px;
+      overflow: visible
+    }
+
+    .vsvg text {
+      font-family: var(--font-primary);
+      font-size: 15px;
+      font-weight: 600;
+      fill: var(--fg)
+    }
+
+    .vsvg .vt text {
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      fill: inherit
+    }
+
+    .vsvg .vs {
+      font-size: 12.5px;
+      font-weight: 400;
+      fill: var(--dim)
+    }
+
+    .vsvg .vsm {
+      font-size: 14px
+    }
+
+    .vsvg .vb {
+      fill: var(--fg)
+    }
+
+    .vsvg .vn-n {
+      fill: #fff;
+      font-size: 12px;
+      font-weight: 800
+    }
+
+    .vpulse {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: vnPulse 2.4s ease-out infinite
+    }
+
+    @keyframes vnPulse {
+      from {
+        transform: scale(1);
+        opacity: .7
+      }
+
+      to {
+        transform: scale(1.7);
+        opacity: 0
+      }
+    }
+
+    .vcards {
+      display: flex;
+      flex-direction: column;
+      gap: 14px
+    }
+
+    .vcard {
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+      border: 1px solid var(--line-2);
+      border-radius: 8px;
+      background: #FFFFFF;
+      padding: 16px 22px;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04)
+    }
+
+    .vcard h3 {
+      font-size: 21px;
+      text-transform: none;
+      letter-spacing: 0;
+      margin-bottom: 6px
+    }
+
+    .vcard p {
+      font-size: 17.5px;
+      line-height: 1.42;
+      color: var(--muted)
+    }
+
+    .vk {
+      flex: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--fg);
+      color: #fff;
+      font-family: var(--mono);
+      font-weight: 800;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px
+    }
+
+    .vk.o {
+      background: var(--orange-grad)
+    }
+
+    .vcard.vgap {
+      border: 2px solid var(--orange);
+      background: linear-gradient(135deg, rgba(251, 146, 60, .14), rgba(234, 88, 12, .05))
+    }
+
+    .vcard.vgap h3 {
+      background: var(--orange-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent
+    }
+
+    @media print {
+      .vpulse {
+        animation: none;
+        opacity: 0
+      }
+    }
+</style>
