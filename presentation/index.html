@@ -897,6 +897,46 @@
       }
     }
 
+    /* back / next buttons, outside the stage so they never cover slide content */
+    .navbtns {
+      position: fixed;
+      right: 18px;
+      bottom: 16px;
+      display: flex;
+      gap: 8px;
+      z-index: 50;
+      opacity: .35;
+      transition: opacity .2s ease
+    }
+
+    .navbtns:hover,
+    .navbtns:focus-within {
+      opacity: 1
+    }
+
+    .navbtns button {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid var(--line-2);
+      background: rgba(255, 255, 255, .92);
+      color: var(--fg);
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, .10)
+    }
+
+    .navbtns button:hover {
+      border-color: var(--blue)
+    }
+
+    @media print {
+      .navbtns {
+        display: none !important
+      }
+    }
+
     @media print {
       @page {
         size: 1600px 900px;
@@ -1398,51 +1438,6 @@
       background: var(--orange-grad);
     }
 
-/* S2 flow canvas */
-    .flowbox {
-      position: relative;
-      border: 1px solid var(--line-2);
-      background: #FFFFFF;
-      box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
-      border-radius: 8px;
-    }
-
-    #flowCanvas {
-      display: block;
-      width: 100%;
-      height: auto
-    }
-
-    .flowbox .fl {
-      position: absolute;
-      font-family: var(--mono);
-      font-weight: 500;
-      font-size: 15px;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      color: var(--dim)
-    }
-
-    .flowbox .tread {
-      position: absolute;
-      right: 18px;
-      top: 16px;
-      font-family: var(--mono);
-      font-weight: 500;
-      font-size: 22px;
-      background: var(--dark-grad);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .flowbox .tread span {
-      background: var(--blue-grad);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
 /* S3 */
     .trio {
       display: grid;
@@ -1496,6 +1491,88 @@
       vertical-align: -2px;
       border-radius: 2px;
     }
+
+/* S05 model at a glance */
+    .mdl {
+      margin-top: 24px
+    }
+
+    .mdl svg {
+      display: block;
+      width: 1400px;
+      height: 520px;
+      border: 1px solid var(--line-2);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .72);
+      overflow: hidden
+    }
+
+    .mdl svg text {
+      font-family: var(--font-primary)
+    }
+
+    .mdl .mt {
+      font-family: var(--mono);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      fill: var(--dim)
+    }
+
+    .zm {
+      transform-box: view-box;
+      transform-origin: 0 0;
+      transition: transform 2s cubic-bezier(.65, 0, .25, 1)
+    }
+
+    /* stage 1 fills the lens with the inference box; stage 2 centres the handover */
+    .scene:has(.zA.on) .zm {
+      transform: translate(-515.5px, -78px) scale(1.3)
+    }
+
+    .scene:has(.zB.on) .zm {
+      transform: translate(-1861px, -416px) scale(2.6)
+    }
+
+    .zhide {
+      transition: opacity 1.2s ease
+    }
+
+    .scene:has(.zB.on) .zhide {
+      opacity: 0
+    }
+
+    .scene.reset .zm,
+    .scene.reset .zhide {
+      transition: none
+    }
+
+    /* printed pages show the whole outline with the callouts beside the handover */
+    @media print {
+      .zm {
+        transform: none !important
+      }
+
+      .zhide {
+        opacity: 1 !important
+      }
+
+      .ovt {
+        transform: translate(395px, 44px)
+      }
+
+      .ovb {
+        transform: translate(285px, -72px)
+      }
+    }
+
+.ev { border: 1.5px solid var(--orange); border-radius: 8px; padding: 14px 20px;
+      background: linear-gradient(135deg, rgba(251, 146, 60, .12), rgba(234, 88, 12, .04)) }
+    .ev span { font-family: var(--mono); font-size: 13px; font-weight: 700; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--orange) }
+    .ev p { font-size: 19px; line-height: 1.42; color: var(--muted); margin-top: 6px }
+    .ev b { color: var(--fg) }
 
 /* S4 */
     .inrow {
@@ -1695,183 +1772,10 @@
       color: var(--muted)
     }
 
-/* S7 chain */
-    .chain {
-      position: relative;
-      margin-top: 50px;
-      flex: 1
-    }
-
-    .chain svg.cl {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 22px;
-      overflow: visible
-    }
-
-    .lk .dot {
-      display: block;
-      width: 22px;
-      height: 22px;
-      margin-bottom: 30px
-    }
-
-    .links {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 20px;
-      position: relative
-    }
-
-    .lk {
-      display: flex;
-      flex-direction: column;
-      gap: 14px
-    }
-
-    .lk h3 {
-      font-size: 25px;
-      font-weight: 700;
-      line-height: 1.12
-    }
-
-    .lk .g {
-      font-size: 19px;
-      line-height: 1.42;
-      color: var(--muted)
-    }
-
-    .lk .g b {
-      display: block;
-      font-family: var(--mono);
-      font-size: 13.5px;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      color: var(--blue);
-      font-weight: 700;
-      margin-bottom: 4px
-    }
-
-    .lk .x {
-      font-size: 18.5px;
-      line-height: 1.42;
-      color: var(--dim)
-    }
-
-    .lk .x b {
-      display: block;
-      font-family: var(--mono);
-      font-size: 13.5px;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      color: var(--dim);
-      font-weight: 700;
-      margin-bottom: 4px
-    }
-
-    .lk.us {
-      background: var(--orange-soft);
-      border: 1px solid rgba(234, 88, 12, 0.25);
-      border-radius: 8px;
-      padding: 20px 16px;
-      margin: -20px -16px 0;
-    }
-
-    .lk.us h3 {
-      background: none;
-      -webkit-text-fill-color: var(--orange-dark);
-      color: var(--orange-dark);
-    }
-
-    .lk.us .g b {
-      color: var(--orange)
-    }
-
-/* S8 */
-    svg text {
-      font-family: var(--mono);
-      font-weight: 400;
-    }
-
-    .ax {
-      stroke: var(--line-2);
-      stroke-width: 2;
-      fill: none
-    }
-
-    .gridl {
-      stroke: var(--line);
-      stroke-width: 1;
-      fill: none
-    }
-
-    .tick {
-      fill: var(--dim);
-      font-size: 16px;
-      font-weight: 500;
-    }
-
-    .costs {
-      display: flex;
-      flex-direction: column;
-      gap: 16px
-    }
-
-    .crow {
-      display: grid;
-      grid-template-columns: 210px 1fr 120px;
-      gap: 16px;
-      align-items: center;
-      border-top: 1px solid var(--line);
-      padding-top: 16px
-    }
-
-    .crow .k {
-      font-family: var(--mono);
-      font-weight: 400;
-      font-size: 16px;
-      color: var(--muted);
-      line-height: 1.35
-    }
-
-    .crow .k b {
-      display: block;
-      background: var(--dark-grad);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-size: 20px;
-      font-weight: 700;
-    }
-
-    .crow .c {
-      font-family: var(--mono);
-      font-weight: 500;
-      font-size: 15.5px;
-      color: var(--orange);
-      text-align: right;
-      line-height: 1.35
-    }
-
-    .crow .c b {
-      display: block;
-      font-family: var(--display);
-      font-stretch: 118%;
-      font-size: 34px;
-      background: var(--dark-grad);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-weight: 800;
-    }
-
-    .crow.ref .c {
-      color: var(--dim)
-    }
-
-/* S9 table */
+.tbl.cmp { margin-top: 18px; font-size: 18.5px }
+    .tbl.cmp td { padding: 10px 16px; line-height: 1.3 }
+    .tbl.cmp td small { display: inline; margin: 0 0 0 8px; font-size: 13.5px }
+    /* S9 table */
     .tbl {
       width: 100%;
       border-collapse: collapse;
@@ -1958,129 +1862,142 @@
       font-weight: 700;
     }
 
-/* S10 */
-  .promise {
-    font-family: var(--math);
-    font-size: 40px;
-    background: var(--dark-grad);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin: 13px 0 4px;
-    white-space: nowrap;
-    display: inline-block;
-  }
-
-  .promise i {
-    font-style: italic
-  }
-
-  .hbar {
-    display: grid;
-    grid-template-columns: 240px 1fr 100px;
-    gap: 20px;
-    align-items: center
-  }
-
-  .hbar .nm {
-    font-family: var(--mono);
-    font-weight: 500;
-    font-size: 17px;
-    color: var(--muted);
-    letter-spacing: .04em
-  }
-
-  .hbar .tr {
-    height: 30px;
-    position: relative;
-    background: var(--line);
-    border-radius: 3px;
-  }
-
-  .hbar .fill {
-    height: 100%
-  }
-
-  .hbar .v {
-    font-family: var(--display);
-    font-stretch: 118%;
-    font-size: 34px;
-    font-weight: 800
-  }
-
-/* S11 gap */
-    .reqs {
+/* S13 gap map */
+    .vn {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 28px;
-      margin-top: 36px
+      grid-template-columns: 600px 1fr;
+      gap: 56px;
+      margin-top: 22px;
+      align-items: start
     }
 
-    .req {
-      border: 1px solid var(--line-2);
-      padding: 32px 28px;
-      min-height: 270px;
+    .vsvg {
+      display: block;
+      width: 600px;
+      height: 566px;
+      overflow: visible
+    }
+
+    .vsvg text {
+      font-family: var(--font-primary);
+      font-size: 15px;
+      font-weight: 600;
+      fill: var(--fg)
+    }
+
+    .vsvg .vt text {
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      fill: inherit
+    }
+
+    .vsvg .vs {
+      font-size: 12.5px;
+      font-weight: 400;
+      fill: var(--dim)
+    }
+
+    .vsvg .vsm {
+      font-size: 14px
+    }
+
+    .vsvg .vb {
+      fill: var(--fg)
+    }
+
+    .vsvg .vn-n {
+      fill: #fff;
+      font-size: 12px;
+      font-weight: 800
+    }
+
+    .vpulse {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: vnPulse 2.4s ease-out infinite
+    }
+
+    @keyframes vnPulse {
+      from {
+        transform: scale(1);
+        opacity: .7
+      }
+
+      to {
+        transform: scale(1.7);
+        opacity: 0
+      }
+    }
+
+    .vcards {
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      background: #FFFFFF;
-      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+      gap: 14px
+    }
+
+    .vcard {
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+      border: 1px solid var(--line-2);
       border-radius: 8px;
+      background: #FFFFFF;
+      padding: 16px 22px;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04)
     }
 
-    .req .ic {
+    .vcard h3 {
+      font-size: 21px;
+      text-transform: none;
+      letter-spacing: 0;
+      margin-bottom: 6px
+    }
+
+    .vcard p {
+      font-size: 17.5px;
+      line-height: 1.42;
+      color: var(--muted)
+    }
+
+    .vk {
+      flex: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--fg);
+      color: #fff;
       font-family: var(--mono);
-      font-weight: 700;
+      font-weight: 800;
       font-size: 15px;
-      color: var(--orange);
-      letter-spacing: .14em;
-      text-transform: uppercase
-    }
-
-    .req p {
-      font-size: 26px;
-      font-weight: 700;
-      line-height: 1.32;
-      background: var(--dark-grad);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .req p span {
-      color: var(--muted);
-      -webkit-text-fill-color: var(--muted);
-      font-size: 20px;
-      font-weight: 400;
-      display: block;
-      margin-top: 10px;
-    }
-
-    .merge {
-      margin-top: 36px;
       display: flex;
       align-items: center;
-      gap: 24px
+      justify-content: center;
+      margin-top: 2px
     }
 
-    .merge .ln {
-      flex: 1;
-      height: 3px;
-      background: var(--orange-grad);
-      border-radius: 2px;
+    .vk.o {
+      background: var(--orange-grad)
     }
 
-    .merge .box {
-      font-family: var(--display);
-      font-stretch: 118%;
-      text-transform: uppercase;
-      font-weight: 800;
-      font-size: 30px;
-      color: #FFFFFF;
+    .vcard.vgap {
+      border: 2px solid var(--orange);
+      background: linear-gradient(135deg, rgba(251, 146, 60, .14), rgba(234, 88, 12, .05))
+    }
+
+    .vcard.vgap h3 {
       background: var(--orange-grad);
-      box-shadow: 0 4px 18px rgba(234, 88, 12, 0.35);
-      border-radius: 6px;
-      padding: 16px 32px;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent
+    }
+
+    @media print {
+      .vpulse {
+        animation: none;
+        opacity: 0
+      }
     }
 
 /* S12 arch */
@@ -2154,6 +2071,88 @@
   .wl.cb {
     fill: var(--blue)
   }
+
+/* S8 */
+    svg text {
+      font-family: var(--mono);
+      font-weight: 400;
+    }
+
+    .ax {
+      stroke: var(--line-2);
+      stroke-width: 2;
+      fill: none
+    }
+
+    .gridl {
+      stroke: var(--line);
+      stroke-width: 1;
+      fill: none
+    }
+
+    .tick {
+      fill: var(--dim);
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .costs {
+      display: flex;
+      flex-direction: column;
+      gap: 16px
+    }
+
+    .crow {
+      display: grid;
+      grid-template-columns: 210px 1fr 120px;
+      gap: 16px;
+      align-items: center;
+      border-top: 1px solid var(--line);
+      padding-top: 16px
+    }
+
+    .crow .k {
+      font-family: var(--mono);
+      font-weight: 400;
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.35
+    }
+
+    .crow .k b {
+      display: block;
+      background: var(--dark-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .crow .c {
+      font-family: var(--mono);
+      font-weight: 500;
+      font-size: 15.5px;
+      color: var(--orange);
+      text-align: right;
+      line-height: 1.35
+    }
+
+    .crow .c b {
+      display: block;
+      font-family: var(--display);
+      font-stretch: 118%;
+      font-size: 34px;
+      background: var(--dark-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+    }
+
+    .crow.ref .c {
+      color: var(--dim)
+    }
 
 /* S13 */
     .gauge {
@@ -2504,6 +2503,222 @@
       display: inline-block;
     }
 
+/* S15 novelty */
+    .nvl {
+      font-size: 26px;
+      line-height: 1.4;
+      color: var(--muted);
+      margin-top: 12px
+    }
+
+    .nv {
+      display: grid;
+      grid-template-columns: 230px 1fr 1.25fr;
+      column-gap: 26px;
+      row-gap: 14px;
+      margin-top: 22px;
+      align-items: stretch
+    }
+
+    .nv .hd {
+      font-family: var(--mono);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--dim)
+    }
+
+    .nv .hd.o {
+      color: var(--orange)
+    }
+
+    .nv .k {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 24px;
+      line-height: 1.2;
+      color: var(--fg);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px
+    }
+
+    .nv .k span {
+      font-family: var(--mono);
+      font-size: 15px;
+      letter-spacing: .16em;
+      color: var(--orange)
+    }
+
+    .nv .ex,
+    .nv .us {
+      border-radius: 8px;
+      padding: 20px 26px;
+      line-height: 1.38;
+      display: flex;
+      align-items: center
+    }
+
+    .nv .ex p,
+    .nv .us p {
+      margin: 0
+    }
+
+    .nv .ex {
+      border: 1px solid var(--line-2);
+      background: #FFFFFF;
+      font-size: 20px;
+      color: var(--muted)
+    }
+
+    .nv .us {
+      border: 2px solid var(--orange);
+      background: linear-gradient(135deg, rgba(251, 146, 60, .15), rgba(234, 88, 12, .05));
+      font-size: 22px;
+      color: var(--fg);
+      box-shadow: 0 6px 22px rgba(234, 88, 12, .14)
+    }
+
+    .nv .us strong {
+      color: var(--orange-dark);
+      font-weight: 800
+    }
+
+    .nvn {
+      margin-top: 24px;
+      font-size: 19px;
+      color: var(--muted);
+      display: flex;
+      align-items: baseline;
+      gap: 18px
+    }
+
+    .nvn span {
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--dim);
+      flex: none
+    }
+
+/* S17 appendix: preliminary experiments */
+    .ap {
+      margin-top: 22px
+    }
+
+    .aph {
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--dim)
+    }
+
+    .tbl.apt {
+      font-size: 18px;
+      margin-top: 4px
+    }
+
+    .tbl.apt td {
+      padding: 12px 16px;
+      line-height: 1.3
+    }
+
+    .apt td.hi {
+      color: var(--orange-dark);
+      font-weight: 700
+    }
+
+    .ap .panel p {
+      font-size: 18px;
+      line-height: 1.45;
+      color: var(--muted)
+    }
+
+    .ap .panel p b {
+      color: var(--fg)
+    }
+
+/* S18 appendix: signal diagnostic */
+    .snr {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 18px 20px 14px;
+      border: 1px solid var(--line-2);
+      border-radius: 8px;
+      background: #FFFFFF
+    }
+
+    .axis-db {
+      position: relative;
+      height: 18px;
+      margin-left: 120px;
+      margin-right: 130px;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--dim)
+    }
+
+    .axis-db span {
+      position: absolute;
+      white-space: nowrap;
+      transform: translateX(-50%)
+    }
+
+    .rng {
+      display: grid;
+      grid-template-columns: 110px 1fr 120px;
+      gap: 10px;
+      align-items: center;
+      font-size: 17px
+    }
+
+    .rng .lab {
+      color: var(--muted)
+    }
+
+    .rng b {
+      font-weight: 700;
+      color: var(--fg);
+      font-size: 16px
+    }
+
+    .trk {
+      position: relative;
+      height: 16px;
+      background: rgba(15, 23, 42, .06);
+      border-radius: 8px
+    }
+
+    .trk i {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      border-radius: 8px
+    }
+
+    .trk i.cl {
+      background: var(--blue-grad)
+    }
+
+    .trk i.ns {
+      background: var(--orange-grad)
+    }
+
+    .trk i.gate {
+      width: 2px;
+      top: -6px;
+      bottom: -6px;
+      background: var(--fg);
+      border-radius: 0
+    }
+
 /* S17 */
     .proto {
       display: flex;
@@ -2550,75 +2765,14 @@
       letter-spacing: .04em;
       line-height: 1.5
     }
-
-/* S18 */
-    .s-end {
-      justify-content: center;
-      gap: 16px;
-    }
-
-    .trip {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 32px;
-      margin-top: 40px
-    }
-
-    .trip div {
-      border: 1px solid var(--line-2);
-      border-top: 4px solid var(--orange);
-      padding: 32px 30px;
-      background: #FFFFFF;
-      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
-      border-radius: 8px;
-      min-height: 200px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .trip h3 {
-      font-size: 48px;
-      font-stretch: 125%;
-      font-weight: 850;
-      background: var(--dark-grad);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .trip p {
-      font-size: 22px;
-      line-height: 1.45;
-      color: var(--muted);
-      margin-top: 14px
-    }
-
-    .thanks {
-      font-family: var(--display);
-      font-stretch: 125%;
-      font-weight: 850;
-      text-transform: uppercase;
-      font-size: 110px;
-      line-height: .9;
-      margin-top: 46px;
-      background: var(--dark-grad);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .thanks span {
-      background: var(--blue-grad);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
   </style>
 </head>
 
 <body>
 
   <div id="app">
+    <div class="navbtns"><button type="button" id="prevBtn" aria-label="Previous slide">‹</button><button type="button"
+        id="nextBtn" aria-label="Next slide">›</button></div>
     <div id="viewport">
       <div id="stage">
         <i class="cross" style="left:24px;top:24px"></i><i class="cross" style="right:24px;top:24px"></i>
@@ -2666,10 +2820,9 @@
               <h3>Introduction</h3>
               <ul>
                 <li><span>1.1</span>Background of the study</li>
-                <li><span>1.2</span>Problem statement</li>
+                <li><span>1.2</span>Problem and preliminary evidence</li>
                 <li><span>1.3</span>Objectives</li>
-                <li><span>1.4</span>Significance</li>
-                <li><span>1.5</span>Scope and limitations</li>
+                <li><span>1.4–1.5</span>Scope and significance</li>
               </ul>
             </div>
             <div class="ocol c2 b up" data-t="1300">
@@ -2677,11 +2830,8 @@
               <div class="rn">II</div>
               <h3>Review of literature</h3>
               <ul>
-                <li><span>2.1</span>Flow matching and its cost</li>
-                <li><span>2.3</span>Teacher-guided sampling</li>
-                <li><span>2.4</span>Input-adaptive computation</li>
-                <li><span>2.5</span>Statistical risk control</li>
-                <li><span>2.8</span>Research gap</li>
+                <li><span>2.4</span>Comparative table of adaptive methods</li>
+                <li><span>2.8</span>Gap map of the literature</li>
               </ul>
             </div>
             <div class="ocol c3 b up" data-t="1900">
@@ -2689,46 +2839,27 @@
               <div class="rn">III</div>
               <h3>Methodology</h3>
               <ul>
-                <li><span>3.1</span>System architecture</li>
-                <li><span>3.5</span>Signals, policy and properties</li>
-                <li><span>3.6</span>Calibration with a guarantee</li>
-                <li><span>3.7</span>Benchmarking and robustness</li>
-                <li><span>App.</span>Expected outputs</li>
+                <li><span>3.2</span>Architecture</li>
+                <li><span>3.5–3.6</span>Candidates, signals and policy</li>
+                <li><span>3.7</span>Calibration with a guarantee</li>
+                <li><span>3.1–3.8</span>Design, workflow and benchmarks</li>
+                <li><span>★</span>Contribution and summary</li>
+                <li><span>App.</span>Preliminary tests and supplementary data</li>
               </ul>
             </div>
           </div>
         </section>
 
-        <!-- 2 BACKGROUND: FLOW MATCHING -->
-        <section class="scene" data-ch="1" data-sec="1.1" data-dur="35" data-title="Flow-Matching Speech Synthesis" data-hook="flow">
-          <div class="two wide-r" style="margin-top:10px;gap:56px">
-            <div class="stack" style="justify-content:center;gap:24px">
-              <p class="eyebrow b fade" data-t="100">Background of the study</p>
-              <h2 class="b up" data-t="250">Flow-Matching Formulation for Text-to-Speech</h2>
-              <p class="lead b up" data-t="800">A <strong>flow-matching</strong> model learns a velocity field that
-                moves random noise toward a mel-spectrogram along a nearly straight path.</p>
-              <div class="eq b left" data-t="1500"><i>dx</i>/<i>dt</i> = <i>v</i><sub>θ</sub>(<i>x</i>, <i>t</i>),
-                &nbsp; <i>t</i> ∈ [0, 1]<small>generation = integrate the field step by step</small></div>
-              <p class="txt b up" data-t="2300"><strong>Every step is one full network evaluation.</strong> F5-TTS, our
-                teacher, spaces its steps with sway sampling.</p>
-            </div>
-            <div class="flowbox b fade" data-t="500" style="align-self:center">
-              <canvas id="flowCanvas" width="1560" height="1200"></canvas>
-              <span class="fl" style="left:18px;top:16px">noise · t = 0</span>
-              <span class="fl" style="right:18px;bottom:14px">mel-spectrogram · t = 1</span>
-              <span class="tread">t = <span id="tRead">0.000</span></span>
-            </div>
-          </div>
-          <footer class="cite b fade" data-t="2800"><span class="k">Sources</span><span>Lipman et al. (2023), <em>Flow
-                matching for generative modeling</em>, ICLR · Liu et al. (2023), ICLR · Y. Chen et al. (2025),
-              <em>F5-TTS</em>, ACL</span></footer>
-        </section>
-
         <!-- 3 COST -->
-        <section class="scene" data-ch="1" data-sec="1.1" data-dur="35" data-title="Sampling Cost & Distillation Trade-Offs">
-          <p class="eyebrow b fade" data-t="100">Section 1.1 · Computational Background</p>
-          <h2 class="b up" data-t="250">Sampling Complexity &amp; Distillation Trade-Offs</h2>
-          <div class="trio">
+        <section class="scene" data-ch="1" data-sec="1.1" data-dur="45" data-title="Background: Flow Matching, Cost & Distillation">
+          <p class="eyebrow b fade" data-t="100">Section 1.1 · Background of the Study</p>
+          <h2 class="b up" data-t="250">Flow-Matching TTS: Cost &amp; Distillation Trade-Offs</h2>
+          <div class="trio" style="grid-template-columns:repeat(4,1fr);gap:22px">
+            <div class="panel b up" data-t="500">
+              <div class="ph">Flow Matching</div>
+              <div class="eq" style="font-size:26px;margin-bottom:14px"><i>dx</i>/<i>dt</i> = <i>v</i><sub>θ</sub>(<i>x</i>, <i>t</i>)</div>
+              <p class="txt" style="font-size:19px">Noise moves to a mel-spectrogram step by step; <strong>each step is one network evaluation</strong>. F5-TTS is our teacher.</p>
+            </div>
             <div class="panel b up" data-t="700">
               <div class="ph">Classifier-Free Guidance (CFG)</div>
               <div class="eq" style="font-size:28px;margin-bottom:14px"><i>v</i> = <i>v<sub>u</sub></i> +
@@ -2762,9 +2893,137 @@
                   class="count" data-from="0" data-to="21">0</span></span><span>forward passes for <strong
                   class="dl">every</strong> utterance</span></div>
           </div>
-          <footer class="cite b fade" data-t="3200"><span class="k">Sources</span><span>Ho &amp; Salimans (2022),
+          <footer class="cite b fade" data-t="3200"><span class="k">Sources</span><span>Lipman et al. (2023) · Y. Chen et al. (2025), <em>F5-TTS</em> · Ho &amp; Salimans (2022),
               <em>Classifier-free diffusion guidance</em> · Li et al. (2025), <em>DMOSpeech</em>, ICML · Li et al.
               (2026), <em>DMOSpeech 2</em>, AAAI</span></footer>
+        </section>
+
+        <!-- 05 MODEL AT A GLANCE -->
+        <section class="scene" data-ch="1" data-sec="1.1" data-dur="50" data-title="Teacher-Guided TTS: Where This Study Works">
+          <p class="eyebrow b fade" data-t="100">Section 1.1 · The model at a glance</p>
+          <h2 class="b up" data-t="250">Teacher-Guided TTS, and Where We Work</h2>
+          <div class="mdl b fade" data-t="500">
+            <svg viewBox="0 0 1400 520" role="img"
+              aria-label="Outline of teacher-guided text-to-speech: a teacher and a distilled student are trained by others, then at inference the teacher runs the first steps and the student the rest. The handover point between them is where this study works.">
+              <defs>
+                <linearGradient id="mdT" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#0284C7" />
+                  <stop offset="1" stop-color="#1D4ED8" />
+                </linearGradient>
+                <linearGradient id="mdS" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#94A3B8" />
+                  <stop offset="1" stop-color="#64748B" />
+                </linearGradient>
+                <linearGradient id="mdO" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#FB923C" />
+                  <stop offset="1" stop-color="#C2410C" />
+                </linearGradient>
+                <marker id="mdArr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7"
+                  orient="auto-start-reverse">
+                  <path d="M0 0 L10 5 L0 10 z" fill="#64748B" />
+                </marker>
+                <marker id="mdArrO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6"
+                  orient="auto-start-reverse">
+                  <path d="M0 0 L10 5 L0 10 z" fill="#EA580C" />
+                </marker>
+              </defs>
+
+              <!-- everything that zooms -->
+              <g class="zm">
+                <!-- training: done once, by others -->
+                <text class="mt b fade" data-t="800" x="0" y="62">Training · done once, by others</text>
+                <g class="b up" data-t="1000">
+                  <rect x="0" y="90" width="400" height="120" rx="12" fill="url(#mdT)" />
+                  <text x="24" y="142" font-size="30" font-weight="800" fill="#fff">Teacher</text>
+                  <text x="24" y="172" font-size="17" fill="#fff" fill-opacity=".9">F5-TTS · flow matching</text>
+                  <text x="24" y="196" font-size="15" fill="#fff" fill-opacity=".8">slow and rich · two passes per step</text>
+                </g>
+                <g class="b fade" data-t="1700">
+                  <path d="M200 214 V284" stroke="#64748B" stroke-width="2.5" fill="none" marker-end="url(#mdArr)" />
+                  <text x="218" y="256" font-size="16" fill="#64748B">distillation</text>
+                </g>
+                <g class="b up" data-t="2100">
+                  <rect x="0" y="290" width="400" height="120" rx="12" fill="url(#mdS)" />
+                  <text x="24" y="342" font-size="30" font-weight="800" fill="#fff">Student</text>
+                  <text x="24" y="372" font-size="17" fill="#fff" fill-opacity=".9">DMOSpeech · few steps</text>
+                  <text x="24" y="396" font-size="15" fill="#fff" fill-opacity=".8">fast, but less varied</text>
+                </g>
+                <text class="b fade" data-t="2600" x="0" y="448" font-size="16" fill="#64748B">All networks stay as released:</text>
+                <text class="b fade" data-t="2600" x="0" y="470" font-size="16" fill="#64748B">no training, no fine-tuning here.</text>
+
+                <!-- inference: every utterance -->
+                <rect class="b fade" data-t="3000" x="470" y="70" width="930" height="380" rx="16"
+                  fill="rgba(234,88,12,.05)" stroke="#EA580C" stroke-width="2" stroke-dasharray="7 7" />
+                <text class="mt b fade" data-t="3200" x="495" y="104" fill="#EA580C">Inference · every utterance</text>
+
+                <g class="b up" data-t="3600">
+                  <rect x="500" y="215" width="120" height="90" rx="10" fill="#fff" stroke="#CBD5E1" stroke-width="1.5" />
+                  <text x="560" y="248" font-size="16" font-weight="600" fill="#0F172A" text-anchor="middle">text +</text>
+                  <text x="560" y="268" font-size="16" font-weight="600" fill="#0F172A" text-anchor="middle">voice</text>
+                  <text x="560" y="288" font-size="16" font-weight="600" fill="#0F172A" text-anchor="middle">prompt</text>
+                </g>
+                <path class="b fade" data-t="3900" d="M622 260 H648" stroke="#64748B" stroke-width="2.5" fill="none"
+                  marker-end="url(#mdArr)" />
+                <g class="b up" data-t="4200">
+                  <rect x="650" y="225" width="310" height="70" rx="10" fill="url(#mdT)" />
+                  <text x="805" y="267" font-size="21" font-weight="700" fill="#fff" text-anchor="middle">Teacher steps</text>
+                </g>
+                <g class="b pop" data-t="4900">
+                  <path d="M985 240 L1005 260 L985 280 L965 260 Z" fill="url(#mdO)" />
+                </g>
+                <text class="zhide b fade" data-t="5100" x="985" y="226" font-size="15" font-weight="700" fill="#EA580C"
+                  text-anchor="middle">handover</text>
+                <g class="b up" data-t="5300">
+                  <rect x="1010" y="225" width="180" height="70" rx="10" fill="url(#mdS)" />
+                  <text x="1100" y="267" font-size="19" font-weight="700" fill="#fff" text-anchor="middle">Student steps</text>
+                </g>
+                <path class="b fade" data-t="5700" d="M1192 260 H1218" stroke="#64748B" stroke-width="2.5" fill="none"
+                  marker-end="url(#mdArr)" />
+                <g class="b up" data-t="5900">
+                  <rect x="1220" y="215" width="150" height="90" rx="10" fill="#fff" stroke="#CBD5E1" stroke-width="1.5" />
+                  <text x="1295" y="257" font-size="19" font-weight="700" fill="#0F172A" text-anchor="middle">speech</text>
+                  <text x="1295" y="281" font-size="14" fill="#64748B" text-anchor="middle">mel → audio</text>
+                </g>
+                <text class="zhide b fade" data-t="6300" x="805" y="214" font-size="15" fill="#64748B" text-anchor="middle">18 forward passes</text>
+                <text class="zhide b fade" data-t="6300" x="1100" y="214" font-size="15" fill="#64748B" text-anchor="middle">3 forward passes</text>
+
+                <g class="b pop" data-t="7000">
+                  <rect x="1250" y="408" width="130" height="30" rx="15" fill="url(#mdO)" />
+                  <text x="1315" y="428" font-size="14" font-weight="800" fill="#fff" text-anchor="middle"
+                    letter-spacing="1.5">OUR FOCUS</text>
+                </g>
+
+                <!-- the range the switch can move over (shown once zoomed in) -->
+                <g class="b fade" data-t="12400">
+                  <path d="M905 306 H1065" stroke="#EA580C" stroke-width="3" fill="none" marker-start="url(#mdArrO)"
+                    marker-end="url(#mdArrO)" />
+                </g>
+              </g>
+
+              <!-- zoom triggers: invisible beats that tell CSS when to move the lens -->
+              <g class="b zA" data-t="8000"></g>
+              <g class="b zB" data-t="11000"></g>
+
+              <!-- callouts, drawn in screen space so they stay readable at any zoom -->
+              <g class="ov">
+                <g class="ovt"><g class="b up" data-t="13200">
+                  <rect x="500" y="36" width="400" height="100" rx="10" fill="#fff" fill-opacity=".96" stroke="#94A3B8" stroke-width="1.5" />
+                  <text x="520" y="64" font-size="13" font-weight="700" fill="#64748B" letter-spacing="2">TODAY · DMOSPEECH 2</text>
+                  <text x="520" y="94" font-size="21" font-weight="600" fill="#0F172A">One fixed switch, t = 0.25,</text>
+                  <text x="520" y="120" font-size="21" font-weight="600" fill="#0F172A">for every utterance</text>
+                </g></g>
+                <g class="ovb"><g class="b up" data-t="14400">
+                  <rect x="470" y="410" width="460" height="100" rx="10" fill="#fff" fill-opacity=".97" stroke="#EA580C" stroke-width="2.5" />
+                  <text x="490" y="438" font-size="13" font-weight="800" fill="#EA580C" letter-spacing="2">THIS STUDY</text>
+                  <text x="490" y="470" font-size="21" font-weight="700" fill="#0F172A">Pick the switch per utterance,</text>
+                  <text x="490" y="496" font-size="21" font-weight="700" fill="#0F172A">bounded by a calibrated guarantee</text>
+                </g></g>
+              </g>
+            </svg>
+          </div>
+          <footer class="cite b fade" data-t="3000"><span class="k">Sources</span><span>Y. Chen et al. (2025),
+              <em>F5-TTS</em> · Li et al. (2025), <em>DMOSpeech</em> · Li et al. (2026), <em>DMOSpeech 2</em> ·
+              Proposal Sections 1.1 and 3.2 (simplified outline)</span></footer>
         </section>
 
         <!-- 4 PROBLEM -->
@@ -2790,11 +3049,12 @@
               <p class="mono b fade" data-t="2200"
                 style="font-size:16px;font-weight:600;color:var(--orange);letter-spacing:.08em;margin-left:228px">FIXED HANDOVER
                 t<sub>h</sub> = 0.293 · 21 PASSES EACH</p>
-              <p class="lead b up" data-t="2900" style="margin-top:16px;font-size:26px">Too late wastes guided passes.
-                Too early may degrade speech. <strong>Does every utterance need 18 teacher passes?</strong></p>
+              <p class="lead b up" data-t="2900" style="margin-top:10px;font-size:24px">Too late wastes guided passes. Too early may degrade speech. <strong>Does every utterance need 18 teacher passes?</strong></p>
+              <div class="ev b up" data-t="3300"><span>Preliminary T4 evidence · Appendix D.1 · 1,000 instances</span>
+                <p>Fixed early switches fail on <b>25–33%</b> of inputs (noisy prompts 49–64%, clean 1.0–2.4%). A per-input choice in hindsight needs <b>14.85 of 21</b> passes (−29%). No single early switch is safe for every input.</p></div>
             </div>
             <div class="probs">
-              <div class="prob b right" data-t="3600"><span class="n">1.2.1</span>
+              <div class="prob b right" data-t="4000"><span class="n">1.2.1</span>
                 <p><strong>Uncharacterized effects.</strong> How the switching time changes WER, SIM, UTMOS and cost per
                   utterance is unmeasured.</p>
               </div>
@@ -2814,7 +3074,7 @@
           </div>
           <footer class="cite b fade" data-t="2500"><span class="k">Sources</span><span>Li et al. (2026), <em>DMOSpeech
                 2</em>, AAAI · Ho &amp; Salimans (2022) · Angelopoulos et al. (2025), <em>Learn then test</em>, Ann.
-              Appl. Stat.</span></footer>
+              Appl. Stat. · Proposal Appendix D.1 (development evidence)</span></footer>
         </section>
 
         <!-- 5 OBJECTIVES -->
@@ -2866,7 +3126,7 @@
           <div class="two" style="margin-top:24px;gap:56px">
             <div class="scope">
               <div class="sc b left" data-t="700"><span class="m y">IN</span><span><strong>Only the switching time
-                    varies.</strong> Student restart level stays at the released default.</span></div>
+                    varies.</strong> Restart level fixed at the released default (j = 1) as a controlled setting.</span></div>
               <div class="sc b left" data-t="1050"><span class="m y">IN</span><span>Teacher, student, duration predictor
                   and vocoder <strong>stay frozen</strong>.</span></div>
               <div class="sc b left" data-t="1400"><span class="m y">IN</span><span>English zero-shot prompts from
@@ -2906,115 +3166,11 @@
               Therrien et al. (2025), AAC</span></footer>
         </section>
 
-        <!-- 7 CHAIN -->
-        <section class="scene" data-ch="2" data-sec="2.1–2.8" data-dur="40" data-title="Literature Synthesis">
-          <p class="eyebrow b fade" data-t="100">Chapter II · Literature Synthesis</p>
-          <h2 class="b up" data-t="250">Theoretical Foundations &amp; Lineage of Prior Work</h2>
-          <div class="chain">
-            <svg class="cl" viewBox="0 0 1380 22" preserveAspectRatio="none">
-              <path class="b draw" data-t="600" d="M11 11 H1176" stroke="var(--line-2)" stroke-width="2" fill="none" />
-              <path class="b draw" data-t="5200" d="M943 11 H1176" stroke="var(--orange)" stroke-width="3"
-                fill="none" />
-            </svg>
-            <div class="links">
-              <div class="lk b up" data-t="900"><svg class="dot" width="22" height="22" viewBox="0 0 22 22">
-                  <circle cx="11" cy="11" r="9" fill="var(--void)" stroke="var(--blue)" stroke-width="2" />
-                </svg>
-                <h3>Flow matching</h3>
-                <p class="g"><b>Gives</b>A trajectory, and a free estimate of the final output at every step</p>
-                <p class="x"><b>Leaves open</b>How a handover behaves</p>
-              </div>
-              <div class="lk b up" data-t="1700"><svg class="dot" width="22" height="22" viewBox="0 0 22 22">
-                  <circle cx="11" cy="11" r="9" fill="var(--void)" stroke="var(--blue)" stroke-width="2" />
-                </svg>
-                <h3>Distillation</h3>
-                <p class="g"><b>Gives</b>A cheap few-step student</p>
-                <p class="x"><b>Leaves open</b>Lost diversity; one config for all inputs</p>
-              </div>
-              <div class="lk b up" data-t="2500"><svg class="dot" width="22" height="22" viewBox="0 0 22 22">
-                  <circle cx="11" cy="11" r="9" fill="var(--void)" stroke="var(--blue)" stroke-width="2" />
-                </svg>
-                <h3>Teacher-guided sampling</h3>
-                <p class="g"><b>Gives</b>Diversity back; the handover as a design choice</p>
-                <p class="x"><b>Leaves open</b>Switch fixed for every utterance</p>
-              </div>
-              <div class="lk b up" data-t="3300"><svg class="dot" width="22" height="22" viewBox="0 0 22 22">
-                  <circle cx="11" cy="11" r="9" fill="var(--void)" stroke="var(--blue)" stroke-width="2" />
-                </svg>
-                <h3>Adaptive computation</h3>
-                <p class="g"><b>Gives</b>Spend effort only where it is needed</p>
-                <p class="x"><b>Leaves open</b>Mostly no bound on quality loss</p>
-              </div>
-              <div class="lk b up" data-t="4100"><svg class="dot" width="22" height="22" viewBox="0 0 22 22">
-                  <circle cx="11" cy="11" r="9" fill="var(--void)" stroke="var(--blue)" stroke-width="2" />
-                </svg>
-                <h3>Statistical risk control</h3>
-                <p class="g"><b>Gives</b>A threshold with a guarantee on new inputs</p>
-                <p class="x"><b>Leaves open</b>Not yet applied to TTS handover</p>
-              </div>
-              <div class="lk us b up" data-t="5200"><svg class="dot" width="22" height="22" viewBox="0 0 22 22">
-                  <circle cx="11" cy="11" r="10" fill="var(--orange)" />
-                </svg>
-                <h3>This study</h3>
-                <p class="g"><b>Combines</b>Per-utterance handover + calibrated bound, at no extra pass</p>
-              </div>
-            </div>
-          </div>
-          <footer class="cite b fade" data-t="2000"><span class="k">Sources</span><span>Lipman et al. (2023) · Yin et
-              al. (2024) · Li et al. (2025, 2026) · Graves (2016) · Schuster et al. (2022), <em>CALM</em>, NeurIPS ·
-              Angelopoulos et al. (2025)</span></footer>
-        </section>
-
-        <!-- 8 SWAY / HANDOVER -->
-        <section class="scene" data-ch="2" data-sec="2.1–2.3" data-dur="40" data-title="Sampling Discretization & Handover"
-          data-hook="sway">
-          <p class="eyebrow b fade" data-t="100">Sections 2.1–2.3 · Guided Sampling Mechanics</p>
-          <h2 class="b up" data-t="250">Sway Sampling Discretization &amp; Candidate Handover Boundaries</h2>
-          <div class="two" style="grid-template-columns:.95fr 1.05fr;margin-top:16px;gap:50px">
-            <svg id="swaySvg" viewBox="0 0 760 640" style="width:100%;height:100%;max-height:640px"></svg>
-            <div class="stack" style="gap:20px;justify-content:center">
-              <p class="txt b up" data-t="3400">Sway sampling packs teacher steps near <span class="math">t</span> = 0.
-                The released code stops at the <strong>first grid point above</strong> <span class="math">s</span>.
-                Cost: <span class="math">C</span>(<span class="math">s</span>) = 2(<span class="math">k</span> + 1) + 3.
-              </p>
-              <div class="costs">
-                <div class="crow b left" data-t="3900">
-                  <div class="k"><b>s = 0.07</b>step 4 · t = 0.076</div>
-                  <div class="cells sm b" data-t="3900" data-teacher="10" data-student="3" data-saved="8"></div>
-                  <div class="c"><b>13</b>−8 · 38%</div>
-                </div>
-                <div class="crow b left" data-t="4300">
-                  <div class="k"><b>s = 0.10</b>step 5 · t = 0.118</div>
-                  <div class="cells sm b" data-t="4300" data-teacher="12" data-student="3" data-saved="6"></div>
-                  <div class="c"><b>15</b>−6 · 29%</div>
-                </div>
-                <div class="crow b left" data-t="4700">
-                  <div class="k"><b>s = 0.15</b>step 6 · t = 0.169</div>
-                  <div class="cells sm b" data-t="4700" data-teacher="14" data-student="3" data-saved="4"></div>
-                  <div class="c"><b>17</b>−4 · 19%</div>
-                </div>
-                <div class="crow ref b left" data-t="5100">
-                  <div class="k"><b>s = 0.25</b>step 8 · reference</div>
-                  <div class="cells sm b" data-t="5100" data-teacher="18" data-student="3"></div>
-                  <div class="c"><b>21</b>baseline</div>
-                </div>
-              </div>
-              <div class="eq b left" data-t="6000" style="font-size:27px"><i>x</i><sub>τ</sub> = (1 − τ) ε + τ
-                <i>x̃</i>, &nbsp; τ = 0.0761<small>student always re-noises the teacher’s estimate to the same
-                  level</small>
-              </div>
-            </div>
-          </div>
-          <footer class="cite b fade" data-t="2600"><span class="k">Sources</span><span>Y. Chen et al. (2025),
-              <em>F5-TTS</em>, ACL · Li et al. (2026), <em>DMOSpeech 2</em>, AAAI · Meng et al. (2022), <em>SDEdit</em>,
-              ICLR · Xu et al. (2023), NeurIPS</span></footer>
-        </section>
-
         <!-- 9 ADAPTIVE COMPUTATION -->
         <section class="scene" data-ch="2" data-sec="2.4" data-dur="35" data-title="Input-Adaptive Computation">
           <p class="eyebrow b fade" data-t="100">Section 2.4 · Related Literature</p>
           <h2 class="b up" data-t="250">Input-Adaptive Computation &amp; Dynamic Inference</h2>
-          <table class="tbl">
+          <table class="tbl cmp">
             <thead class="b fade" data-t="600">
               <tr>
                 <th>Method</th>
@@ -3053,7 +3209,28 @@
                 <td>Tuned threshold</td>
                 <td class="none">None</td>
               </tr>
-              <tr class="us b left" data-t="3300">
+              <tr class="b left" data-t="2800">
+                <td>T-Stitch<small>Pan et al., 2025</small></td>
+                <td>Which model runs each step</td>
+                <td>None</td>
+                <td>Preset switching point</td>
+                <td class="none">None</td>
+              </tr>
+              <tr class="b left" data-t="3100">
+                <td>Adaptive Guidance<small>Castillo et al., 2025</small></td>
+                <td>Whether to run the unguided pass</td>
+                <td>Agreement of guided and conditional updates</td>
+                <td>Tuned threshold</td>
+                <td class="none">None</td>
+              </tr>
+              <tr class="b left" data-t="3400">
+                <td>Adaptive ASR correction<small>Damri &amp; Laufer-Goldshtein, 2026</small></td>
+                <td>Hypotheses per input</td>
+                <td>ASR confidence scores</td>
+                <td>Calibrated threshold</td>
+                <td class="rc">Risk control (LTT)</td>
+              </tr>
+              <tr class="us b left" data-t="4000">
                 <td>This study</td>
                 <td>Teacher-to-student switching time</td>
                 <td>Prompt SNR + endpoint stabilization</td>
@@ -3063,77 +3240,126 @@
             </tbody>
           </table>
           <footer class="cite b fade" data-t="2200"><span class="k">Sources</span><span>Graves (2016) · Teerapittayanon
-              et al. (2016), ICPR · Schuster et al. (2022), NeurIPS · Starodubcev et al. (2024), CVPR · Mualem et al.
-              (2026), <em>ARIA</em></span></footer>
+              et al. (2016), ICPR · Schuster et al. (2022), NeurIPS · Starodubcev et al. (2024), CVPR · Pan et al. (2025) · Castillo et al. (2025) · Damri &amp; Laufer-Goldshtein (2026) · Proposal Table 2.1</span></footer>
         </section>
 
-        <!-- 10 RISK CONTROL -->
-<section class="scene" data-ch="2" data-sec="2.5" data-dur="35" data-title="Statistical Risk Control">
-  <p class="eyebrow b fade" data-t="100">Section 2.5 · Theoretical Framework</p>
-  <h2 class="b up" data-t="250">Finite-Sample Statistical Guarantees &amp; Risk Control</h2>
-  <div class="two" style="margin-top:16px;gap:60px">
-    <div class="stack" style="gap:24px;justify-content:center">
-      <div class="promise b pop" data-t="800"><i>P</i>( <i>R</i>(<i>λ̂</i>) ≤ <span class="hl">α</span> ) ≥ 1 −
-        <span class="bl">δ</span>
-      </div>
-      <p class="lead b up" data-t="1500">“At most <span class="hl">5%</span> added failures, and this promise is
-        wrong with probability at most <span class="bl">10%</span>.”</p>
-      <p class="txt b up" data-t="2300"><strong>Learn-Then-Test</strong> turns each candidate threshold into a
-        hypothesis test and needs no monotonicity. Testing in a <strong>fixed order</strong> keeps the overall
-        error at δ.</p>
-    </div>
-    <div class="stack" style="justify-content:center;gap:24px">
-      <p class="mono b fade" data-t="3000" style="font-size:15px;font-weight:600;letter-spacing:.14em;color:var(--dim)">
-        INPUTS
-        NEEDED · α = 0.05, δ = 0.10, ZERO FAILURES</p>
-      <div class="eq b left" data-t="3200" style="font-size:38px;padding:14px 20px">(1 − α)<sup><i>n</i></sup> ≤ δ
-        &nbsp;⇒&nbsp;
-        <i>n</i> ≥ ln δ / ln(1 − α)
-      </div>
-      <div class="hbar b fade" data-t="3800"><span class="nm">Exact binomial</span>
-        <div class="tr">
-          <div class="fill b grow" data-t="3800" style="width:9.76%;background:var(--orange);border-radius:3px"></div>
-        </div><span class="v hl"><span class="count" data-from="0" data-to="45">0</span></span>
-      </div>
-      <div class="hbar b fade" data-t="4300"><span class="nm">Hoeffding bound</span>
-        <div class="tr">
-          <div class="fill b grow" data-t="4300"
-            style="width:100%;background:var(--student);opacity:.6;border-radius:3px"></div>
-        </div><span class="v">≈<span class="count" data-from="0" data-to="461">0</span></span>
-      </div>
-      <p class="txt b up" data-t="5200" style="font-size:21px">The guarantee is <strong>marginal</strong> (on
-        average over inputs) and needs calibration and test inputs from the same distribution.</p>
-    </div>
-  </div>
-  <footer class="cite b fade" data-t="2600"><span class="k">Sources</span><span>Angelopoulos &amp; Bates (2023)
-      · Angelopoulos et al. (2025), Ann. Appl. Stat. · Clopper &amp; Pearson (1934) · Hoeffding (1963) · Bauer
-      (1991)</span></footer>
-</section>
+        <!-- 13 GAP MAP -->
+        <section class="scene" data-ch="2" data-sec="2.4–2.8" data-dur="45" data-title="Gap Map of the Related Literature">
+          <p class="eyebrow o b fade" data-t="100">Sections 2.4–2.8 · Literature Synthesis</p>
+          <h2 class="b up" data-t="250">Where Prior Work Leaves the Gaps</h2>
+          <div class="vn">
+            <svg class="vsvg" viewBox="90 0 600 566" role="img"
+              aria-label="Venn diagram of three properties: per-input adaptive decision, calibrated risk bound, and teacher-to-student handover. Reviewed methods fall in single or paired regions; the centre, where all three meet, is where this study sits.">
+              <defs>
+                <linearGradient id="vnO" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#FB923C" />
+                  <stop offset="1" stop-color="#C2410C" />
+                </linearGradient>
+              </defs>
 
-        <!-- 11 GAP -->
-        <section class="scene" data-ch="2" data-sec="2.8" data-dur="30" data-title="Research Gap">
-          <p class="eyebrow o b fade" data-t="100">Section 2.8 · Literature Synthesis</p>
-          <h2 class="b up" data-t="250">Synthesis of Prior Work &amp; Identified Research Gap</h2>
-          <div class="reqs">
-            <div class="req b up" data-t="800"><span class="ic">Requirement 01</span>
-              <p>A per-utterance handover decision<span>made from signals the sampler already computes</span></p>
-            </div>
-            <div class="req b up" data-t="1500"><span class="ic">Requirement 02</span>
-              <p>All networks stay as released<span>no training, no fine-tuning, no extra forward pass</span></p>
-            </div>
-            <div class="req b up" data-t="2200"><span class="ic">Requirement 03</span>
-              <p>Added failures bounded with stated confidence<span>on new, unseen speakers</span></p>
+              <!-- three sets -->
+              <circle class="b pop" data-t="700" cx="300" cy="200" r="175" fill="rgba(2,132,199,.09)" stroke="#0284C7" stroke-width="2" />
+              <circle class="b pop" data-t="1200" cx="480" cy="200" r="175" fill="rgba(15,23,42,.06)" stroke="#334155" stroke-width="2" />
+              <circle class="b pop" data-t="1700" cx="390" cy="356" r="175" fill="rgba(100,116,139,.10)" stroke="#64748B" stroke-width="2" />
+
+              <g class="vt b fade" data-t="900" fill="#0284C7">
+                <text x="96" y="22">PER-INPUT</text>
+                <text x="96" y="40">ADAPTIVE</text>
+              </g>
+              <g class="vt b fade" data-t="1400" fill="#334155" text-anchor="end">
+                <text x="684" y="22">CALIBRATED</text>
+                <text x="684" y="40">RISK BOUND</text>
+              </g>
+              <g class="vt b fade" data-t="1900" fill="#64748B" text-anchor="middle">
+                <text x="390" y="554">TEACHER → STUDENT HANDOVER</text>
+              </g>
+
+              <!-- adaptive only -->
+              <g class="vc b fade" data-t="2500">
+                <text x="232" y="98" text-anchor="middle">ACT</text>
+                <text x="232" y="118" text-anchor="middle">BranchyNet</text>
+                <text x="232" y="138" text-anchor="middle">Adaptive Guidance</text>
+                <circle class="vb" cx="160" cy="98" r="10" />
+                <text class="vn-n" x="160" y="102.5" text-anchor="middle">1</text>
+              </g>
+              <!-- bound only -->
+              <g class="vc b fade" data-t="2900">
+                <text x="548" y="108" text-anchor="middle">Learn-Then-Test</text>
+                <text class="vs" x="548" y="127" text-anchor="middle">the tool, not a handover</text>
+              </g>
+              <!-- adaptive + bound -->
+              <g class="vc b fade" data-t="3300">
+                <text x="390" y="100" text-anchor="middle">CALM</text>
+                <text x="390" y="120" text-anchor="middle">ASR correction</text>
+                <circle class="vb" cx="349" cy="95" r="10" />
+                <text class="vn-n" x="349" y="99.5" text-anchor="middle">2</text>
+              </g>
+              <!-- handover only -->
+              <g class="vc b fade" data-t="3700">
+                <text x="390" y="462" text-anchor="middle">DMOSpeech 2</text>
+                <text x="390" y="482" text-anchor="middle">T-Stitch</text>
+                <circle class="vb" cx="318" cy="458" r="10" />
+                <text class="vn-n" x="318" y="462.5" text-anchor="middle">3</text>
+              </g>
+              <!-- adaptive + handover -->
+              <g class="vc b fade" data-t="4100">
+                <text class="vsm" x="290" y="307" text-anchor="middle">Adaptive</text>
+                <text class="vsm" x="290" y="325" text-anchor="middle">collaboration</text>
+                <circle class="vb" cx="244" cy="301" r="10" />
+                <text class="vn-n" x="244" y="305.5" text-anchor="middle">1</text>
+              </g>
+              <!-- bound + handover -->
+              <g class="b fade" data-t="4500">
+                <text class="vs" x="496" y="312" text-anchor="middle">none found</text>
+              </g>
+
+              <!-- the empty centre -->
+              <g class="b pop" data-t="8600">
+                <circle cx="390" cy="262" r="42" fill="url(#vnO)" />
+                <circle class="vpulse" cx="390" cy="262" r="42" fill="none" stroke="#EA580C" stroke-width="2.5" />
+                <text x="390" y="258" fill="#fff" font-size="14" font-weight="800" text-anchor="middle" letter-spacing="1.5">THIS</text>
+                <text x="390" y="277" fill="#fff" font-size="14" font-weight="800" text-anchor="middle" letter-spacing="1.5">STUDY</text>
+              </g>
+            </svg>
+
+            <div class="vcards">
+              <div class="vcard b up" data-t="5000">
+                <span class="vk">1</span>
+                <div>
+                  <h3>Adaptive, but no bound on quality loss</h3>
+                  <p>Per-input rules built on a learned halting unit or a hand-tuned threshold. None states how much
+                    quality the saving may cost.</p>
+                </div>
+              </div>
+              <div class="vcard b up" data-t="5900">
+                <span class="vk">2</span>
+                <div>
+                  <h3>Bounded, but not for a handover</h3>
+                  <p>CALM and adaptive ASR correction calibrate a threshold with risk control, for exit layers and
+                    recognition hypotheses, not for a teacher-to-student switch in speech synthesis.</p>
+                </div>
+              </div>
+              <div class="vcard b up" data-t="6800">
+                <span class="vk">3</span>
+                <div>
+                  <h3>A handover, but one fixed for all inputs</h3>
+                  <p>DMOSpeech 2 switches at one time for every utterance; T-Stitch uses a preset switching point.
+                    Neither adapts to the input or bounds the risk.</p>
+                </div>
+              </div>
+              <div class="vcard vgap b up" data-t="9300">
+                <span class="vk o">★</span>
+                <div>
+                  <h3>The centre is unoccupied</h3>
+                  <p>No reviewed method pairs a per-utterance handover with a calibrated bound. This describes the
+                    sources examined, not every adaptive method that exists.</p>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="merge">
-            <div class="ln b grow" data-t="3000"></div>
-            <div class="box b pop" data-t="3800">This study</div>
-          </div>
-          <p class="txt b fade" data-t="4300" style="margin-top:26px;font-size:21px;max-width:76ch">The gap concerns the
-            combination of these elements within the sources examined; it does not imply that no other adaptive
-            inference methods exist.</p>
-          <footer class="cite b fade" data-t="3000"><span class="k">From</span><span>Proposal, Section 2.8 and Table
-              2.2</span></footer>
+          <footer class="cite b fade" data-t="2500"><span class="k">Sources</span><span>Graves (2016) · Teerapittayanon et
+              al. (2016) · Schuster et al. (2022) · Starodubcev et al. (2024) · Pan et al. (2025) · Castillo et al.
+              (2025) · Damri et al. (2026) · Li et al. (2026) · Angelopoulos et al. (2025) · Proposal Chapter II</span></footer>
         </section>
 
         <!-- 12 ARCHITECTURE -->
@@ -3230,9 +3456,54 @@
       Figure 3.2</span></footer>
 </section>
 
+        <!-- 8 SWAY / HANDOVER -->
+        <section class="scene" data-ch="3" data-sec="3.5" data-dur="40" data-title="Sampling Discretization & Handover"
+          data-hook="sway">
+          <p class="eyebrow b fade" data-t="100">Section 3.5 · Candidate Switching Times</p>
+          <h2 class="b up" data-t="250">Sway Sampling Discretization &amp; Candidate Handover Boundaries</h2>
+          <div class="two" style="grid-template-columns:.95fr 1.05fr;margin-top:16px;gap:50px">
+            <svg id="swaySvg" viewBox="0 0 760 640" style="width:100%;height:100%;max-height:640px"></svg>
+            <div class="stack" style="gap:20px;justify-content:center">
+              <p class="txt b up" data-t="3400">Sway sampling packs teacher steps near <span class="math">t</span> = 0.
+                The released code stops at the <strong>first grid point above</strong> <span class="math">s</span>.
+                Cost: <span class="math">C</span>(<span class="math">s</span>) = 2(<span class="math">k</span> + 1) + 3.
+              </p>
+              <div class="costs">
+                <div class="crow b left" data-t="3900">
+                  <div class="k"><b>s = 0.07</b>step 4 · t = 0.076</div>
+                  <div class="cells sm b" data-t="3900" data-teacher="10" data-student="3" data-saved="8"></div>
+                  <div class="c"><b>13</b>−8 · 38%</div>
+                </div>
+                <div class="crow b left" data-t="4300">
+                  <div class="k"><b>s = 0.10</b>step 5 · t = 0.118</div>
+                  <div class="cells sm b" data-t="4300" data-teacher="12" data-student="3" data-saved="6"></div>
+                  <div class="c"><b>15</b>−6 · 29%</div>
+                </div>
+                <div class="crow b left" data-t="4700">
+                  <div class="k"><b>s = 0.15</b>step 6 · t = 0.169</div>
+                  <div class="cells sm b" data-t="4700" data-teacher="14" data-student="3" data-saved="4"></div>
+                  <div class="c"><b>17</b>−4 · 19%</div>
+                </div>
+                <div class="crow ref b left" data-t="5100">
+                  <div class="k"><b>s = 0.25</b>step 8 · reference</div>
+                  <div class="cells sm b" data-t="5100" data-teacher="18" data-student="3"></div>
+                  <div class="c"><b>21</b>baseline</div>
+                </div>
+              </div>
+              <div class="eq b left" data-t="6000" style="font-size:27px"><i>x</i><sub>τ</sub> = (1 − τ) ε + τ
+                <i>x̃</i>, &nbsp; τ = 0.0761<small>student always re-noises the teacher’s estimate to the same
+                  level</small>
+              </div>
+            </div>
+          </div>
+          <footer class="cite b fade" data-t="2600"><span class="k">Sources</span><span>Y. Chen et al. (2025),
+              <em>F5-TTS</em>, ACL · Li et al. (2026), <em>DMOSpeech 2</em>, AAAI · Meng et al. (2022), <em>SDEdit</em>,
+              ICLR · Xu et al. (2023), NeurIPS</span></footer>
+        </section>
+
         <!-- 13 SIGNALS -->
-        <section class="scene" data-ch="3" data-sec="3.5.2" data-dur="40" data-title="Inference Decision Signals" data-hook="drift">
-          <p class="eyebrow b fade" data-t="100">Section 3.5.2 · Decision Features</p>
+        <section class="scene" data-ch="3" data-sec="3.6.2" data-dur="40" data-title="Inference Decision Signals" data-hook="drift">
+          <p class="eyebrow b fade" data-t="100">Section 3.6.2 · Decision Features</p>
           <h2 class="b up" data-t="250">Endpoint Stabilization &amp; Prompt Acoustic Quality Signals</h2>
           <div class="two wide-l" style="margin-top:20px;gap:56px">
             <div class="stack" style="gap:18px">
@@ -3271,7 +3542,7 @@
             </div>
           </div>
           <footer class="cite b fade" data-t="3000"><span class="k">Sources</span><span>Lipman et al. (2024), <em>Flow
-                matching guide and code</em> · Li et al. (2026) · Proposal Def. 3.2–3.3, Appendix A.4 and D.5
+                matching guide and code</em> · Li et al. (2026) · Proposal Def. 3.2–3.3, Appendix A.4 and D.4
               (illustrative values)</span></footer>
         </section>
 
@@ -3351,18 +3622,15 @@
                 class="r"><span>p</span><b>—</b></span><span class="verdict">not tested</span></div>
           </div>
           <div class="lock"><span class="box b pop" data-t="4900">λ̂ = 0.50</span>
-            <p class="txt b up" data-t="5400" style="font-size:21px;max-width:68ch">Study protocol: α = 0.05, δ = 0.10,
-              grid 0.20 to 1.20 in steps of 0.05, fixed in advance. Verify on the <strong>held-out test split</strong>
-              and over <strong>100 random re-splits</strong>.</p>
+            <p class="txt b up" data-t="5400" style="font-size:20px;max-width:74ch">Guarantee: <strong>P(R(λ̂) ≤ α) ≥ 1 − δ</strong>, on average over new speakers. With zero failures, certifying α = 0.05 at δ = 0.10 needs <strong>45</strong> inputs (Hoeffding: ≈461). Protocol fixed in advance: grid 0.20–1.20 in steps of 0.05; verified on the <strong>held-out test split</strong> and <strong>100 re-splits</strong>.</p>
           </div>
           <footer class="cite b fade" data-t="2600"><span class="k">Sources</span><span>Angelopoulos et al. (2025),
-              <em>Learn then test</em> · Bauer (1991), Stat. Med. · Clopper &amp; Pearson (1934) · Proposal Alg. 3.4,
-              Appendix A.6</span></footer>
+              <em>Learn then test</em> · Bauer (1991), Stat. Med. · Clopper &amp; Pearson (1934) · Hoeffding (1963) · Proposal Alg. 3.4, Appendix A.6</span></footer>
         </section>
 
         <!-- 16 WORKFLOW -->
-        <section class="scene" data-ch="3" data-sec="3.3–3.8" data-dur="35" data-title="Experimental Workflow & Benchmarks">
-          <p class="eyebrow b fade" data-t="100">Sections 3.3–3.8 · Experimental Protocol</p>
+        <section class="scene" data-ch="3" data-sec="3.1, 3.3–3.8" data-dur="40" data-title="Experimental Workflow & Benchmarks">
+          <p class="eyebrow b fade" data-t="100">Sections 3.1, 3.3–3.8 · Research Design &amp; Protocol</p>
           <h2 class="b up" data-t="250">Experimental Workflow, Baselines, &amp; Evaluation Metrics</h2>
           <div class="lanes">
             <div class="lane b left" data-t="600">
@@ -3371,7 +3639,7 @@
                   dB noisy</span><span class="step"><b>3</b>Check seed, fallback, pass count</span></div>
             </div>
             <div class="lane b left" data-t="1000">
-              <div class="ln"><b>Objective 1</b><small>development</small></div>
+              <div class="ln"><b>Objective 1</b><small>development · exploratory</small></div>
               <div class="steps"><span class="step"><b>4</b>One teacher run, all candidates</span><span
                   class="step"><b>5</b>Score + failures</span><span class="step"><b>6</b>Quality–cost map, fix θ</span>
               </div>
@@ -3381,13 +3649,13 @@
               <div class="steps"><span class="step"><b>7</b>Problem, policy, proofs</span></div>
             </div>
             <div class="lane o3 b left" data-t="1800">
-              <div class="ln"><b>Objective 3</b><small>calibration, test</small></div>
+              <div class="ln"><b>Objective 3</b><small>calibration, test · confirmatory</small></div>
               <div class="steps"><span class="step"><b>8</b>Fix α, δ, grid</span><span class="step"><b>9</b>Binomial
                   tests in order</span><span class="step"><b>10</b>Lock λ̂ or fall back</span><span
                   class="step"><b>11</b>Held-out + 100 re-splits</span></div>
             </div>
             <div class="lane b left" data-t="2200">
-              <div class="ln"><b>Objective 4</b><small>test</small></div>
+              <div class="ln"><b>Objective 4</b><small>test · confirmatory</small></div>
               <div class="steps"><span class="step"><b>12</b>Run locked variants</span><span
                   class="step"><b>13</b>Paired comparisons</span><span class="step"><b>14</b>Noise shift, n =
                   50/100/200</span><span class="step"><b>15</b>Report all, incl. negative</span></div>
@@ -3415,9 +3683,126 @@
               et al. (2022) · Saeki et al. (2022), <em>UTMOS</em> · Wilcoxon (1945) · Schuirmann (1987)</span></footer>
         </section>
 
+        <!-- 15 NOVELTY AND CONTRIBUTION -->
+        <section class="scene" data-ch="3" data-sec="Summary" data-dur="45" data-title="Contribution and Summary">
+          <p class="eyebrow o b fade" data-t="100">Contribution &amp; Summary</p>
+          <h2 class="b up" data-t="250">What This Study Adds</h2>
+          <p class="nvl b fade" data-t="700">Within the sources reviewed, no method combines all three for flow-matching TTS.</p>
+
+          <div class="nv">
+            <div class="hd b fade" data-t="1000"></div>
+            <div class="hd b fade" data-t="1000">Prior work</div>
+            <div class="hd o b fade" data-t="1000">This study</div>
+
+            <div class="k b up" data-t="1500"><span>01</span>When to hand over</div>
+            <div class="ex b up" data-t="1500"><p>One switching time for every utterance: fixed at 0.25 in DMOSpeech 2, preset in
+              T-Stitch.</p></div>
+            <div class="us b up" data-t="2300"><p>Chosen <strong>per utterance</strong>, from signals the sampler already computes: the
+              prompt’s SNR and the endpoint-stabilization score.</p></div>
+
+            <div class="k b up" data-t="3600"><span>02</span>How sure we can be</div>
+            <div class="ex b up" data-t="3600"><p>Adaptive rules use learned or hand-tuned thresholds with <b>no bound</b> on quality
+              loss. Calibrated bounds exist, but for exit layers and ASR hypotheses.</p></div>
+            <div class="us b up" data-t="4400"><p>A <strong>Learn-Then-Test</strong> threshold: added failures ≤ α = 0.05 with
+              probability ≥ 90%, checked on held-out speakers.</p></div>
+
+            <div class="k b up" data-t="5700"><span>03</span>What it costs</div>
+            <div class="ex b up" data-t="5700"><p>Some need extra training, or a quality estimator run on a full output.</p></div>
+            <div class="us b up" data-t="6500"><p><strong>No training and no extra forward pass.</strong> With no certified threshold it
+              falls back to the released sampler, so it never costs more.</p></div>
+          </div>
+
+          <p class="nvn b fade" data-t="7800"><span>Not claimed</span>A proven advantage of the hybrid over its parts, any change to
+            duration prediction, or any new model training.</p>
+
+          <footer class="cite b fade" data-t="2000"><span class="k">From</span><span>Proposal, Section 2.8, Section 3.7 and
+              Propositions 3.2 and 3.4</span></footer>
+        </section>
+
+        <!-- 17 APPENDIX D: PRELIMINARY EXPERIMENTS -->
+        <section class="scene" data-ch="4" data-sec="App. D.1–D.3" data-dur="40" data-title="Appendix: Preliminary Experiments">
+          <p class="eyebrow b fade" data-t="100">Appendix D.1–D.3 · Preliminary Experiments</p>
+          <h2 class="b up" data-t="250">What the Earlier Runs Showed</h2>
+          <div class="ap two" style="grid-template-columns:1.05fr .95fr;gap:44px">
+            <div class="stack" style="gap:14px">
+              <p class="aph b fade" data-t="600">D.1 · Fixed switching times · 500 speakers × clean and 15 dB noisy · Tesla T4</p>
+              <table class="tbl apt b fade" data-t="800">
+                <thead>
+                  <tr><th>Switch</th><th>Passes</th><th>Clean (500)</th><th>Noisy (500)</th><th>All (1,000)</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>s = 0.07</td><td>13</td><td>12 (2.4%)</td><td class="hi">322 (64.4%)</td><td>334 (33.4%)</td></tr>
+                  <tr><td>s = 0.10</td><td>15</td><td>9 (1.8%)</td><td class="hi">269 (53.8%)</td><td>278 (27.8%)</td></tr>
+                  <tr><td>s = 0.15</td><td>17</td><td>5 (1.0%)</td><td class="hi">247 (49.4%)</td><td>252 (25.2%)</td></tr>
+                  <tr><td>s = 0.25 · ref.</td><td>21</td><td>0</td><td>0</td><td>0</td></tr>
+                </tbody>
+              </table>
+              <p class="txt b up" data-t="1600" style="font-size:19px">A per-input choice in hindsight needs
+                <strong>14.85 of 21 passes (−29%)</strong>; the 179 instances that needed the reference were all noisy.</p>
+            </div>
+            <div class="stack" style="gap:16px">
+              <div class="panel b up" data-t="2300">
+                <div class="ph">D.2 · Student restart level</div>
+                <p>Restarting at j = 2 departs from the j = 1 reference more often (26 vs 11 of 48 at s = 0.07; 14 vs 0
+                  at s = 0.25, zero by construction). Small CPU run, not a test of absolute quality. <b>j = 1 is kept as
+                  a controlled setting.</b></p>
+              </div>
+              <div class="panel b up" data-t="3000">
+                <div class="ph">D.3 · Stabilization policy, cross-validated</div>
+                <p>100 development speakers, four folds: <b>18.88 passes (−10.1%)</b> with 1 added failure in 200,
+                  against 50 for a fixed s = 0.15. Chosen with zero training failures, so <b>no risk certificate</b>;
+                  Learn-Then-Test replaces this selection.</p>
+              </div>
+            </div>
+          </div>
+          <footer class="cite b fade" data-t="1200"><span class="k">From</span><span>Proposal Appendix D.1–D.3 and
+              Table D.1 · development evidence, not independent held-out validation</span></footer>
+        </section>
+
+        <!-- 18 APPENDIX D: SIGNAL DIAGNOSTIC -->
+        <section class="scene" data-ch="4" data-sec="App. D.4–D.5" data-dur="35" data-title="Appendix: Signal Diagnostic">
+          <p class="eyebrow b fade" data-t="100">Appendix D.4–D.5 · Development-Split Signal Diagnostic</p>
+          <h2 class="b up" data-t="250">How the Two Signals Behaved</h2>
+          <div class="ap two" style="grid-template-columns:1fr 1fr;gap:48px">
+            <div class="stack" style="gap:18px">
+              <p class="aph b fade" data-t="600">Prompt SNR · 100 development speakers</p>
+              <div class="snr b fade" data-t="900">
+                <div class="axis-db"><span style="left:0%">10 dB</span><span style="left:25%">20 dB</span><span
+                    style="left:50%">30 dB</span><span style="left:100%">50 dB</span></div>
+                <div class="rng"><span class="lab">Clean</span>
+                  <div class="trk"><i class="cl" style="left:33.25%;width:66.75%"></i><i class="gate"
+                      style="left:25%"></i></div><b>23.3–50.0 dB</b>
+                </div>
+                <div class="rng"><span class="lab">15 dB noisy</span>
+                  <div class="trk"><i class="ns" style="left:17%;width:3.5%"></i><i class="gate" style="left:25%"></i>
+                  </div><b>16.8–18.2 dB</b>
+                </div>
+              </div>
+              <p class="txt b up" data-t="1700" style="font-size:19px">The SNR <strong>separated the two conditions
+                  completely</strong>; a 20 dB gate sent every noisy prompt to the reference. Fixed early handovers failed
+                on 49–63% of noisy prompts but 2–4% of clean ones.</p>
+            </div>
+            <div class="stack" style="gap:16px">
+              <div class="panel b up" data-t="2400">
+                <div class="ph">Stabilization score d₄ on clean prompts</div>
+                <p>AUC ≈ <b>0.47</b> for Step-4 failures vs passes, from only two to three failures. At λ = 0.50 the
+                  policy waited past Step 4 on 78 of 100 clean prompts, of which 75–77 would already have passed.</p>
+              </div>
+              <div class="panel b up" data-t="3100">
+                <div class="ph">D.5 · Plan, fixed before the data are seen</div>
+                <p>1 Discrimination on development · 2 Controls on test (SNR + fixed later step, cost-matched random) · 3
+                  Prompts the SNR cannot see (reverberation, telephone band) · 4 Richer zero-cost signals. If the score
+                  adds nothing, the <b>SNR-gated policy</b> is recommended.</p>
+              </div>
+            </div>
+          </div>
+          <footer class="cite b fade" data-t="1200"><span class="k">From</span><span>Proposal Appendix D.4–D.5 ·
+              development split only; not evidence for or against the stabilization score</span></footer>
+        </section>
+
         <!-- 17 EXPECTED -->
-        <section class="scene" data-ch="3" data-sec="App. B–C" data-dur="35" data-title="Projected Outcomes">
-          <p class="eyebrow b fade" data-t="100">Appendices B–C · Simulation Findings</p>
+        <section class="scene" data-ch="4" data-sec="App. B–C" data-dur="35" data-title="Appendix: Simulation and Prototype">
+          <p class="eyebrow b fade" data-t="100">Appendices B–C · Simulation and Prototype</p>
           <h2 class="b up" data-t="250">Projected Computational Savings &amp; Simulation Findings</h2>
           <div class="two" style="margin-top:20px;gap:56px">
             <div class="stack" style="gap:20px;justify-content:center">
@@ -3490,27 +3875,6 @@
               Appendix C (Figure C.1) · costs exact by Proposition 3.1</span></footer>
         </section>
 
-        <!-- 18 END -->
-        <section class="scene s-end" data-ch="0" data-sec="Summary" data-dur="20" data-title="Summary of Contributions">
-          <p class="eyebrow o b fade" data-t="100">Synthesis &amp; Contributions</p>
-          <h2 class="b up" data-t="250" style="max-width:34ch">Summary of Contributions: Adaptive Handover with Statistical Guarantees</h2>
-          <div class="trip">
-            <div class="b up" data-t="900">
-              <h3>Decide</h3>
-              <p>Stop the teacher once its guess settles and the prompt is clean. Zero extra passes.</p>
-            </div>
-            <div class="b up" data-t="1500">
-              <h3>Guarantee</h3>
-              <p>λ̂ calibrated so added failures ≤ α with probability ≥ 1 − δ.</p>
-            </div>
-            <div class="b up" data-t="2100">
-              <h3>Fall back</h3>
-              <p>Never costs more than the released sampler; no certificate means the reference.</p>
-            </div>
-          </div>
-          <div class="thanks b up" data-t="2900">Thank you. <span>Questions?</span></div>
-        </section>
-
       </div>
     </div>
   </div>
@@ -3530,27 +3894,27 @@
     const SCRIPT = [
             `Good day. Our study is titled "A Risk-Calibrated Adaptive Handover Method for Teacher-Guided Flow-Matching Text-to-Speech Inference." In one line: today's fast speech synthesizers let a large teacher model start every utterance and a small student model finish it. We propose deciding, for each utterance, when that handover happens, and attaching a statistical guarantee to that decision.`,
       `This presentation follows the three chapters of the proposal. Chapter One sets up the background, the problem and our objectives. Chapter Two reviews the work we build on, from flow matching to statistical risk control, and identifies the gap. Chapter Three describes the proposed method, how we will calibrate it, and how we will evaluate it.`,
-      `Text-to-speech converts written text into spoken audio. Many recent systems use flow matching. The model learns a velocity field that moves random noise toward speech along a nearly straight path, from time zero to time one. To generate, we follow that field step by step. F5-TTS, the teacher model in our study, applies this with a diffusion transformer and a step schedule called sway sampling. The key detail is that every step is a full evaluation of a large network.`,
-      `That cost doubles under classifier-free guidance, because each guided step runs the network twice: once with the condition and once without. Distillation trains a small student that needs only a few steps; DMOSpeech cut sampling from 128 steps to four. But the student loses diversity. DMOSpeech 2 restores it by letting the teacher run the first steps and the student finish. In the released code that costs 21 forward passes per utterance: 18 for the teacher and 3 for the student.`,
-      `The problem is that the handover point is fixed. Every input, easy or hard, clean or noisy, pays the same 18 teacher passes. A switch later than an utterance needs wastes computation; an earlier one may degrade speech. This raises four problems: the effects of the switching time are not characterized; the handover boundary is not chosen per input; an adaptive choice comes with no reliability guarantee; and the assistive motivation does not by itself show any benefit to users.`,
+      `Text-to-speech converts written text into speech. Many recent systems use flow matching: the model learns a velocity field that moves random noise toward speech step by step, and every step is a full evaluation of a large network. F5-TTS, our teacher, works this way. That cost doubles under classifier-free guidance, because each guided step runs the network twice: once with the condition and once without. Distillation trains a small student that needs only a few steps; DMOSpeech cut sampling from 128 steps to four. But the student loses diversity. DMOSpeech 2 restores it by letting the teacher run the first steps and the student finish. In the released code that costs 21 forward passes per utterance: 18 for the teacher and 3 for the student.`,
+      `Here is the whole model in one outline. On the left, done once and by others: a large flow-matching teacher, F5-TTS, and a small student distilled from it. We do not train or change either one. On the right is inference, which happens for every utterance. The teacher runs the first steps, then hands over to the student to finish. In the released sampler that handover is one fixed point, eighteen teacher passes and three student passes, for everyone. Now we zoom in. Inside inference, the single open choice is where the handover falls. Today it is fixed at a switching time of 0.25 for every utterance. Our study picks it per utterance, and bounds the risk with a calibrated guarantee. That one decision is our focus, and the rest of the model stays exactly as released.`,
+      `The problem is that the handover point is fixed. Every input, easy or hard, clean or noisy, pays the same 18 teacher passes. A switch later than an utterance needs wastes computation; an earlier one may degrade speech. This raises four problems: the effects of the switching time are not characterized; the handover boundary is not chosen per input; an adaptive choice comes with no reliability guarantee; and the assistive motivation does not by itself show any benefit to users. Our preliminary T4 data already show this: on a thousand development instances, fixed early switches fail on a quarter to a third of inputs, almost all with noisy prompts, while choosing per input in hindsight would need under 15 of the 21 passes.`,
       `Our general objective is to develop and evaluate a training-free, risk-calibrated method that selects the teacher's switching time per utterance. First, we will characterize how quality and cost change across switching times. Second, we will formulate selection as a constrained cost-minimization problem and design a policy with provable properties. Third, we will calibrate it with Learn-Then-Test. Fourth, we will compare its signals and benchmark it against fixed switching times and an oracle.`,
       `The study varies only the switching time. Every network stays frozen, and the student's restart level stays at the released default. We evaluate on English Seed-TTS prompts under clean and noisy conditions, on an NVIDIA Tesla T4 through Google Colab. The guarantee is statistical, not per utterance. Assistive communication for autistic users motivates efficient synthesis, but we will not build or evaluate any assistive application or clinical outcome. The results serve speech researchers, TTS developers, assistive-technology developers and future researchers.`,
-      `Chapter Two follows one chain of ideas. Flow matching gives a trajectory and a free estimate of the final output at every step. Distillation gives a cheap student but loses diversity. Teacher-guided sampling restores diversity, at a cost set by one fixed switching time. Adaptive computation shows that effort can depend on the input. And statistical risk control shows that such a decision can carry a guarantee. Our study sits at the end of this chain.`,
-      `Here is where the switch lives. Sway sampling packs the teacher's steps near the start of the flow. The released code stops the teacher at the first grid point above the switching argument; for 0.25, that is step eight. Our candidates are steps four, five, six and eight, costing 13, 15, 17 and 21 forward passes. At the handover, the student re-noises the teacher's estimate to a fixed level, tau equals 0.0761. This helps explain why an earlier, imperfect handover can still work.`,
-      `Choosing the switch per utterance is input-adaptive computation. Adaptive Computation Time and BranchyNet saved computation, but gave no statement of how much quality they lose. CALM, for language models, is our closest precedent: it calibrated its early-exit threshold with risk control. Adaptive teacher-student collaboration exists in image diffusion, but not for the handover time in speech. Our study adapts the switching time and attaches a calibrated guarantee.`,
-      `A rule that stops early will sometimes fail. We cannot prevent every failure, but we can promise that failures are rare: the risk stays below a tolerance alpha, and the promise is wrong with probability at most delta. Exact binomial bounds make this practical. With zero failures, certifying five percent at ninety percent confidence needs 45 inputs, against about 461 for Hoeffding's bound. Learn-Then-Test extends this to choosing among many thresholds, tested in a fixed order.`,
-      `Within the sources we examined, no single method combines three things for flow-matching speech synthesis: a per-utterance handover decision made from signals the sampler already computes; all networks kept as released; and a rate of added failures bounded with stated confidence on new speakers. This combination is the gap our study addresses.`,
+      `Choosing the switch per utterance is input-adaptive computation. Adaptive Computation Time and BranchyNet saved computation, but gave no statement of how much quality they lose. CALM, for language models, is our closest precedent: it calibrated its early-exit threshold with risk control. Adaptive teacher-student collaboration exists in image diffusion, but not for the handover time in speech. T-Stitch switches from a small to a large model at a preset point, Adaptive Guidance skips the unguided pass when updates agree, and adaptive ASR correction calibrates with Learn-Then-Test, but for recognition, not synthesis. Our study adapts the switching time and attaches a calibrated guarantee.`,
+      `Let us place the related work on three properties. The first is deciding per input. Adaptive Computation Time, BranchyNet, Adaptive Guidance and adaptive teacher-student collaboration all adapt to the input, but none states how much quality the saving may cost. The second is a calibrated risk bound. CALM and adaptive ASR correction have one, but for exit layers and recognition hypotheses, not for handing over from a teacher to a student in speech synthesis. The third is the handover itself. DMOSpeech 2 and T-Stitch switch between a large and a small model, but at one fixed or preset point for every input. Where all three meet, in the centre, we found no method in the sources we reviewed. That is where this study sits. This is a statement about the sources we examined, not a claim that no other adaptive method exists.`,
       `Chapter Three. The method adds a decision layer to the released sampler without touching any network. At each teacher step, a controller reads the endpoint estimate and the prompt's signal-to-noise ratio. If both indicate the utterance has settled, the teacher stops and hands over to the student; otherwise it takes the next step. If no earlier candidate qualifies, it stops at the reference point. The threshold is set once, offline, by a calibrator.`,
+      `Here is where the switch lives. Sway sampling packs the teacher's steps near the start of the flow. The released code stops the teacher at the first grid point above the switching argument; for 0.25, that is step eight. Our candidates are steps four, five, six and eight, costing 13, 15, 17 and 21 forward passes. At the handover, the student re-noises the teacher's estimate to a fixed level, tau equals 0.0761. This helps explain why an earlier, imperfect handover can still work.`,
       `Two signals drive the decision. The endpoint-stabilization score measures how much the teacher's prediction of the final output changed since the last step; a small score means it has settled. In this illustration, the easy input settles by step five and stops there, at 15 passes; the hard input never settles and runs to the reference. The prompt SNR estimates how noisy the recording is. Both reuse values already computed, so the decision costs no extra forward pass. Our development diagnostic suggests the SNR may carry most of the benefit, so we treat the stabilization score as a hypothesis to test.`,
       `Formally, we seek the cheapest policy whose risk of added failures stays below alpha. An added failure means the output is clearly worse than the reference on the same input: its word error rate passes the ceiling and margin, or its speaker similarity drops by more than 0.02. The policy stops at the first candidate that passes both signals. We prove four properties: zero overhead, monotone cost in the threshold, a safe fallback to the reference, and an oracle lower bound.`,
-      `We calibrate the threshold with Learn-Then-Test on speaker-disjoint data: 100 speakers for development, 200 for calibration and 200 for testing. Thresholds are tested from conservative to aggressive. Each gets a binomial p-value; we keep going while it is at most delta and stop at the first that is not. In this illustrative example, 0.40 and 0.50 pass and 0.60 fails, so we lock 0.50. We will verify the guarantee on held-out speakers and over 100 random re-splits.`,
-      `The workflow has fifteen steps across a common setup and four objectives, each on its own data. We will benchmark the calibrated policy against fixed switching times, an SNR-only rule, controls that separate the stabilization signal from simply waiting longer, and an offline oracle. We measure word error rate, speaker similarity, UTMOS, exact forward passes and runtime, with paired statistical tests, and repeat under noise shift and smaller calibration sets.`,
-      `What do we expect? Settled, easy inputs hand over early and save up to 38 percent of the forward passes; hard inputs keep the full teacher run and cost exactly the baseline. In simulation, Learn-Then-Test kept its promise at every calibration size, while a naive threshold choice exceeded the tolerance in more than half of the runs. These are simulations; real speech results are what this study will measure.`,
-      `To summarize: we decide the handover per utterance from signals the sampler already has; we bound the rate of added failures with a calibrated guarantee; and we never cost more than the released sampler. Thank you. We welcome your questions.`
+      `A rule that stops early will sometimes fail, so we promise instead that failures are rare: the added-failure risk stays below alpha, and the promise is wrong with probability at most delta. With zero failures, certifying five percent at ninety percent confidence needs 45 inputs, against about 461 for Hoeffding's bound. We calibrate the threshold with Learn-Then-Test on speaker-disjoint data: 100 speakers for development, 200 for calibration and 200 for testing. Thresholds are tested from conservative to aggressive. Each gets a binomial p-value; we keep going while it is at most delta and stop at the first that is not. In this illustrative example, 0.40 and 0.50 pass and 0.60 fails, so we lock 0.50. We will verify the guarantee on held-out speakers and over 100 random re-splits.`,
+      `The workflow has fifteen steps across a common setup and four objectives, each on its own data. We will benchmark the calibrated policy against fixed switching times, an SNR-only rule, controls that separate the stabilization signal from simply waiting longer, and an offline oracle. We measure word error rate, speaker similarity, UTMOS, exact forward passes and runtime, with paired statistical tests, and repeat under noise shift and smaller calibration sets. The design has two stages on different speakers: an exploratory stage on the development split fixes the candidates and the SNR gate, and a confirmatory stage calibrates on one split and tests once on another, with the speaker as the unit of analysis.`,
+      `Here is what is new, stated plainly. Within the sources we reviewed, no method combines three things. First, when to hand over. Prior work uses one switching time for every utterance. We choose it per utterance, from signals the sampler already computes: the prompt's signal-to-noise ratio and the endpoint-stabilization score. Second, how sure we can be. Adaptive rules usually give no bound on quality loss. We calibrate the threshold with Learn-Then-Test, so that added failures stay below alpha, five percent, with at least ninety percent confidence, and we check that on held-out speakers. Third, what it costs. No new training and no extra forward pass, and if no threshold can be certified, we fall back to the released sampler, so we never cost more. What we do not claim: a proven advantage of the hybrid over its parts, any change to duration prediction, or any new model training. To summarize: we decide the handover per utterance from signals the sampler already has, we bound the rate of added failures with a calibrated guarantee, and we never cost more than the released sampler.`,
+      `These are our preliminary results, all on development data. On the Tesla T4, with all 500 speakers under a clean and a noisy prompt, every fixed early switch fails on a quarter to a third of inputs, and almost all of those failures come from noisy prompts. Choosing per input in hindsight would need about 15 of the 21 passes. Restarting the student one level later departs from the reference more often, but that small run measures difference from the reference, not absolute quality, so we keep the default as a controlled setting. A cross-validated stabilization policy saved about ten percent with one added failure in 200, but chose its threshold with zero training failures, which is not a risk certificate. That is why Objective 3 uses Learn-Then-Test.`,
+      `On the development speakers, the prompt SNR separated clean from noisy prompts completely, so a 20 decibel gate sent every noisy prompt to the reference. The stabilization score did not separate failures from passes on clean prompts, though that rests on only two or three failures. These figures come from the split that serves design decisions, so they motivate our tests rather than settle them. The plan is fixed in advance: measure discrimination, compare against controls, test prompts the SNR cannot see, and try richer zero-cost signals. If the score adds nothing, we recommend the SNR-gated policy and report the score as a negative result.`,
+      `What do we expect? Settled, easy inputs hand over early and save up to 38 percent of the forward passes; hard inputs keep the full teacher run and cost exactly the baseline. In simulation, Learn-Then-Test kept its promise at every calibration size, while a naive threshold choice exceeded the tolerance in more than half of the runs. These are simulations; real speech results are what this study will measure.`
     ];
 
 
-    const CH = { 0: "Proposal", 1: "Chapter I · Introduction", 2: "Chapter II · Review of related literature", 3: "Chapter III · Methodology" };
+    const CH = { 0: "Proposal", 1: "Chapter I · Introduction", 2: "Chapter II · Review of related literature", 3: "Chapter III · Methodology", 4: "Appendix" };
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const stage = document.getElementById('stage');
     const vp = document.getElementById('viewport');
@@ -3718,6 +4082,10 @@
       pending = 0;
     }
 
+    function prev() {
+      enter(cur > 0 ? cur - 1 : scenes.length - 1);
+    }
+
     function next() {
       const uncompleted = scenes[cur] ? scenes[cur].querySelectorAll('.b:not(.on)') : [];
       if (!playing && uncompleted.length > 0) {
@@ -3730,6 +4098,8 @@
         enter(0);
       }
     }
+
+    const firstOfChapter = c => Math.max(0, scenes.findIndex(s => +s.dataset.ch === c));
 
     document.addEventListener('keydown', e => {
       if (e.target.closest && e.target.closest('input,textarea')) return;
@@ -3758,11 +4128,11 @@
       } else if (e.key === '1') {
         go(1); // Outline
       } else if (e.key === '2') {
-        go(2); // Ch I
+        go(firstOfChapter(1)); // Ch I
       } else if (e.key === '3') {
-        go(7); // Ch II
+        go(firstOfChapter(2)); // Ch II
       } else if (e.key === '4') {
-        go(12); // Ch III
+        go(firstOfChapter(3)); // Ch III
       }
     });
 
@@ -3777,6 +4147,9 @@
         setTimeout(() => e.target.textContent = 'Copy all', 2200);
       });
     }
+
+    document.getElementById('prevBtn').addEventListener('click', () => prev());
+    document.getElementById('nextBtn').addEventListener('click', () => next());
 
     document.addEventListener('click', e => {
       if (e.target.closest('#full, button, input, textarea, a')) return;

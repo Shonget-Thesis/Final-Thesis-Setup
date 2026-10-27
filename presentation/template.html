@@ -897,6 +897,46 @@
       }
     }
 
+    /* back / next buttons, outside the stage so they never cover slide content */
+    .navbtns {
+      position: fixed;
+      right: 18px;
+      bottom: 16px;
+      display: flex;
+      gap: 8px;
+      z-index: 50;
+      opacity: .35;
+      transition: opacity .2s ease
+    }
+
+    .navbtns:hover,
+    .navbtns:focus-within {
+      opacity: 1
+    }
+
+    .navbtns button {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid var(--line-2);
+      background: rgba(255, 255, 255, .92);
+      color: var(--fg);
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, .10)
+    }
+
+    .navbtns button:hover {
+      border-color: var(--blue)
+    }
+
+    @media print {
+      .navbtns {
+        display: none !important
+      }
+    }
+
     @media print {
       @page {
         size: 1600px 900px;
@@ -1036,6 +1076,8 @@
 <body>
 
   <div id="app">
+    <div class="navbtns"><button type="button" id="prevBtn" aria-label="Previous slide">‹</button><button type="button"
+        id="nextBtn" aria-label="Next slide">›</button></div>
     <div id="viewport">
       <div id="stage">
         <i class="cross" style="left:24px;top:24px"></i><i class="cross" style="right:24px;top:24px"></i>
@@ -1064,7 +1106,7 @@
     ];
 
 
-    const CH = { 0: "Proposal", 1: "Chapter I · Introduction", 2: "Chapter II · Review of related literature", 3: "Chapter III · Methodology" };
+    const CH = { 0: "Proposal", 1: "Chapter I · Introduction", 2: "Chapter II · Review of related literature", 3: "Chapter III · Methodology", 4: "Appendix" };
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const stage = document.getElementById('stage');
     const vp = document.getElementById('viewport');
@@ -1232,6 +1274,10 @@
       pending = 0;
     }
 
+    function prev() {
+      enter(cur > 0 ? cur - 1 : scenes.length - 1);
+    }
+
     function next() {
       const uncompleted = scenes[cur] ? scenes[cur].querySelectorAll('.b:not(.on)') : [];
       if (!playing && uncompleted.length > 0) {
@@ -1244,6 +1290,8 @@
         enter(0);
       }
     }
+
+    const firstOfChapter = c => Math.max(0, scenes.findIndex(s => +s.dataset.ch === c));
 
     document.addEventListener('keydown', e => {
       if (e.target.closest && e.target.closest('input,textarea')) return;
@@ -1272,11 +1320,11 @@
       } else if (e.key === '1') {
         go(1); // Outline
       } else if (e.key === '2') {
-        go(2); // Ch I
+        go(firstOfChapter(1)); // Ch I
       } else if (e.key === '3') {
-        go(7); // Ch II
+        go(firstOfChapter(2)); // Ch II
       } else if (e.key === '4') {
-        go(12); // Ch III
+        go(firstOfChapter(3)); // Ch III
       }
     });
 
@@ -1291,6 +1339,9 @@
         setTimeout(() => e.target.textContent = 'Copy all', 2200);
       });
     }
+
+    document.getElementById('prevBtn').addEventListener('click', () => prev());
+    document.getElementById('nextBtn').addEventListener('click', () => next());
 
     document.addEventListener('click', e => {
       if (e.target.closest('#full, button, input, textarea, a')) return;
