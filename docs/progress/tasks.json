@@ -425,9 +425,22 @@
         "presentation/slides/01-title.html",
         "presentation/proposal-defense-slides.pdf",
         "docs/progress/log/2026-10-25-defense-walkthrough.md",
-        "docs/progress/log/2026-10-27-vector-slides-pdf.md"
+        "docs/progress/log/2026-10-27-vector-slides-pdf.md",
+        "docs/progress/log/2026-10-27-model-gap-novelty-slides.md",
+        "docs/progress/log/2026-10-27-compact-deck.md"
       ],
-      "validation": "Modularized slide structure (19 slides in presentation/slides/), fast template builder (build.py) with --watch, --serve, --sync-md, and --pdf options. Presentation updated to light theme with blue/orange/graphite gradients, responsive spacing, S11/S13 layout fixes, and loop navigation. proposal-defense-slides.pdf exported via headless Edge CDP with exact 1600x900 pages and verified selectable vector text."
+      "validation": "Modularized slide structure (19 slides in presentation/slides/), fast template builder (build.py) with --watch, --serve, --sync-md, and --pdf options. Presentation updated to light theme with blue/orange/graphite gradients, responsive spacing, S11/S13 layout fixes, and loop navigation. proposal-defense-slides.pdf exported via headless Edge CDP with exact 1600x900 pages and verified selectable vector text. 2026-10-27: three slides added (model outline with zoom into inference, literature gap Venn, novelty and contribution), 22 slides in total; each was rendered in headless Edge in its animated and printed state and checked for overlap and clipping; the team has not reviewed the content. Later the same day the deck was restructured to 20 slides (16 main, 4 appendix) with a back button; see the compact-deck log."
+    },
+    {
+      "id": "EVAL-009",
+      "title": "Follow-up check of the student restart level (j=1 versus j=2) on the T4",
+      "owner": "unassigned",
+      "status": "todo",
+      "updated": "2026-10-27",
+      "acceptance": "On the 100 development speakers, clean and 15 dB noisy, on the Colab T4 with identical seeds, j=1 and j=2 are run at switching times 0.07, 0.10, 0.15 and 0.25 and scored by WER and SIM against ground truth and against each setting's own reference; the hypothesis and decision rule are written down before synthesis; results and hashes are committed. If j=2 is no worse in absolute terms it is recorded as a possible extension; it does not change the proposal's scope.",
+      "evidence": [
+        "docs/progress/log/2026-10-27-restart-level-reasoning.md"
+      ]
     }
   ]
 }

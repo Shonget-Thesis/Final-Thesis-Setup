@@ -1,5 +1,5 @@
 <!-- 14 POLICY + PROPERTIES -->
-        <section class="scene" data-ch="3" data-sec="3.6" data-dur="40" data-title="Stopping Policy Formulation">
+        <section class="scene" data-ch="3" data-sec="3.6" data-dur="75" data-title="Stopping Policy Formulation">
           <p class="eyebrow b fade" data-t="100">Section 3.6 · Mathematical Formulation</p>
           <h2 class="b up" data-t="250">Formulation of the Constrained Stopping Policy</h2>
           <div class="two" style="grid-template-columns:1.05fr .95fr;margin-top:20px;gap:50px">
@@ -44,7 +44,7 @@
         </section>
 
 <script type="text/slide-script">
-Formally, we seek the cheapest policy whose risk of added failures stays below alpha. An added failure means the output is clearly worse than the reference on the same input: its word error rate passes the ceiling and margin, or its speaker similarity drops by more than 0.02. The policy stops at the first candidate that passes both signals. We prove four properties: zero overhead, monotone cost in the threshold, a safe fallback to the reference, and an oracle lower bound.
+This slide is the formal version. The top line is the problem: find the policy with the lowest expected cost whose risk of added failures stays below alpha. The policy we propose walks through the teacher's steps in order and stops at the first candidate step where the stabilization score is below lambda and the prompt SNR is above the gate theta; otherwise it uses the reference. It can never stop later than step 8. The middle box defines an added failure, fixed before calibration: the output fails if its word error rate exceeds the larger of 12.5 percent and the reference's rate plus one point, or if its speaker similarity drops more than 0.02 below the reference, on the same seeds. Setting lambda to infinity gives the SNR-only rule, and removing the gate gives stabilization only, so one family covers all variants. The four cards are the propositions we prove: zero overhead, cost that rises monotonically as lambda shrinks, a safe fallback that never exceeds 21 passes, and an oracle lower bound that tells us the best possible saving.
 </script>
 
 <style>

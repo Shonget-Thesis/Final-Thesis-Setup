@@ -1,0 +1,143 @@
+<!-- 15 NOVELTY AND CONTRIBUTION -->
+        <section class="scene" data-ch="3" data-sec="Summary" data-dur="80" data-title="Contribution and Summary">
+          <p class="eyebrow o b fade" data-t="100">Contribution &amp; Summary</p>
+          <h2 class="b up" data-t="250">What This Study Adds</h2>
+          <p class="nvl b fade" data-t="700">Within the sources reviewed, no method combines all three for flow-matching TTS.</p>
+
+          <div class="nv">
+            <div class="hd b fade" data-t="1000"></div>
+            <div class="hd b fade" data-t="1000">Prior work</div>
+            <div class="hd o b fade" data-t="1000">This study</div>
+
+            <div class="k b up" data-t="1500"><span>01</span>When to hand over</div>
+            <div class="ex b up" data-t="1500"><p>One switching time for every utterance: fixed at 0.25 in DMOSpeech 2, preset in
+              T-Stitch.</p></div>
+            <div class="us b up" data-t="2300"><p>Chosen <strong>per utterance</strong>, from signals the sampler already computes: the
+              prompt’s SNR and the endpoint-stabilization score.</p></div>
+
+            <div class="k b up" data-t="3600"><span>02</span>How sure we can be</div>
+            <div class="ex b up" data-t="3600"><p>Adaptive rules use learned or hand-tuned thresholds with <b>no bound</b> on quality
+              loss. Calibrated bounds exist, but for exit layers and ASR hypotheses.</p></div>
+            <div class="us b up" data-t="4400"><p>A <strong>Learn-Then-Test</strong> threshold: added failures ≤ α = 0.05 with
+              probability ≥ 90%, checked on held-out speakers.</p></div>
+
+            <div class="k b up" data-t="5700"><span>03</span>What it costs</div>
+            <div class="ex b up" data-t="5700"><p>Some need extra training, or a quality estimator run on a full output.</p></div>
+            <div class="us b up" data-t="6500"><p><strong>No training and no extra forward pass.</strong> With no certified threshold it
+              falls back to the released sampler, so it never costs more.</p></div>
+          </div>
+
+          <p class="nvn b fade" data-t="7800"><span>Not claimed</span>A proven advantage of the hybrid over its parts, any change to
+            duration prediction, or any new model training.</p>
+
+          <footer class="cite b fade" data-t="2000"><span class="k">From</span><span>Proposal, Section 2.8, Section 3.7 and
+              Propositions 3.2 and 3.4</span></footer>
+        </section>
+
+<script type="text/slide-script">
+To close, here is what this study adds, row by row. When to hand over: prior work uses one switching time for every utterance, fixed at 0.25 in DMOSpeech 2 and preset in T-Stitch; we choose it per utterance, from the prompt's SNR and the stabilization score, signals the sampler already computes. How sure we can be: prior adaptive rules have no bound on quality loss, and the calibrated bounds that exist are for exit layers and recognition; we use a Learn-Then-Test threshold, so that added failures stay at or below five percent with at least ninety percent confidence, checked on held-out speakers. What it costs: some prior methods need training or an extra estimator; ours needs no training and no extra forward pass, and if no threshold is certified it falls back to the released sampler, so it never costs more. The bottom line states what we do not claim: a proven advantage of the hybrid, any change to duration prediction, or any model training. In summary: decide per utterance, bound the risk, never cost more. The following slides are the appendix with our preliminary results.
+</script>
+
+<style>
+/* S15 novelty */
+    .nvl {
+      font-size: 26px;
+      line-height: 1.4;
+      color: var(--muted);
+      margin-top: 12px
+    }
+
+    .nv {
+      display: grid;
+      grid-template-columns: 230px 1fr 1.25fr;
+      column-gap: 26px;
+      row-gap: 14px;
+      margin-top: 22px;
+      align-items: stretch
+    }
+
+    .nv .hd {
+      font-family: var(--mono);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--dim)
+    }
+
+    .nv .hd.o {
+      color: var(--orange)
+    }
+
+    .nv .k {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 24px;
+      line-height: 1.2;
+      color: var(--fg);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px
+    }
+
+    .nv .k span {
+      font-family: var(--mono);
+      font-size: 15px;
+      letter-spacing: .16em;
+      color: var(--orange)
+    }
+
+    .nv .ex,
+    .nv .us {
+      border-radius: 8px;
+      padding: 20px 26px;
+      line-height: 1.38;
+      display: flex;
+      align-items: center
+    }
+
+    .nv .ex p,
+    .nv .us p {
+      margin: 0
+    }
+
+    .nv .ex {
+      border: 1px solid var(--line-2);
+      background: #FFFFFF;
+      font-size: 20px;
+      color: var(--muted)
+    }
+
+    .nv .us {
+      border: 2px solid var(--orange);
+      background: linear-gradient(135deg, rgba(251, 146, 60, .15), rgba(234, 88, 12, .05));
+      font-size: 22px;
+      color: var(--fg);
+      box-shadow: 0 6px 22px rgba(234, 88, 12, .14)
+    }
+
+    .nv .us strong {
+      color: var(--orange-dark);
+      font-weight: 800
+    }
+
+    .nvn {
+      margin-top: 24px;
+      font-size: 19px;
+      color: var(--muted);
+      display: flex;
+      align-items: baseline;
+      gap: 18px
+    }
+
+    .nvn span {
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--dim);
+      flex: none
+    }
+</style>

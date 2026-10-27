@@ -1,0 +1,121 @@
+<!-- 18 APPENDIX D: SIGNAL DIAGNOSTIC -->
+        <section class="scene" data-ch="4" data-sec="App. D.4–D.5" data-dur="70" data-title="Appendix: Signal Diagnostic">
+          <p class="eyebrow b fade" data-t="100">Appendix D.4–D.5 · Development-Split Signal Diagnostic</p>
+          <h2 class="b up" data-t="250">How the Two Signals Behaved</h2>
+          <div class="ap two" style="grid-template-columns:1fr 1fr;gap:48px">
+            <div class="stack" style="gap:18px">
+              <p class="aph b fade" data-t="600">Prompt SNR · 100 development speakers</p>
+              <div class="snr b fade" data-t="900">
+                <div class="axis-db"><span style="left:0%">10 dB</span><span style="left:25%">20 dB</span><span
+                    style="left:50%">30 dB</span><span style="left:100%">50 dB</span></div>
+                <div class="rng"><span class="lab">Clean</span>
+                  <div class="trk"><i class="cl" style="left:33.25%;width:66.75%"></i><i class="gate"
+                      style="left:25%"></i></div><b>23.3–50.0 dB</b>
+                </div>
+                <div class="rng"><span class="lab">15 dB noisy</span>
+                  <div class="trk"><i class="ns" style="left:17%;width:3.5%"></i><i class="gate" style="left:25%"></i>
+                  </div><b>16.8–18.2 dB</b>
+                </div>
+              </div>
+              <p class="txt b up" data-t="1700" style="font-size:19px">The SNR <strong>separated the two conditions
+                  completely</strong>; a 20 dB gate sent every noisy prompt to the reference. Fixed early handovers failed
+                on 49–63% of noisy prompts but 2–4% of clean ones.</p>
+            </div>
+            <div class="stack" style="gap:16px">
+              <div class="panel b up" data-t="2400">
+                <div class="ph">Stabilization score d₄ on clean prompts</div>
+                <p>AUC ≈ <b>0.47</b> for Step-4 failures vs passes, from only two to three failures. At λ = 0.50 the
+                  policy waited past Step 4 on 78 of 100 clean prompts, of which 75–77 would already have passed.</p>
+              </div>
+              <div class="panel b up" data-t="3100">
+                <div class="ph">D.5 · Plan, fixed before the data are seen</div>
+                <p>1 Discrimination on development · 2 Controls on test (SNR + fixed later step, cost-matched random) · 3
+                  Prompts the SNR cannot see (reverberation, telephone band) · 4 Richer zero-cost signals. If the score
+                  adds nothing, the <b>SNR-gated policy</b> is recommended.</p>
+              </div>
+            </div>
+          </div>
+          <footer class="cite b fade" data-t="1200"><span class="k">From</span><span>Proposal Appendix D.4–D.5 ·
+              development split only; not evidence for or against the stabilization score</span></footer>
+        </section>
+
+<script type="text/slide-script">
+This slide shows how the two signals behaved on the 100 development speakers. On the left, the SNR bars: clean prompts measured 23 to 50 decibels and noisy prompts 17 to 18, with the black line marking the 20-decibel gate. The two groups do not overlap, so the gate sent every noisy prompt to the reference. On the right, the stabilization score on clean prompts did not separate failures from passes, with an area under the curve of about 0.47, although that rests on only two or three failures. At lambda 0.50 the policy also waited longer than needed on most clean prompts. The bottom card is our plan to test the score properly, fixed before we look at the data: measure discrimination, compare against controls, test prompts that the SNR cannot detect, such as reverberation, and try richer zero-cost signals. If the score adds nothing, we will recommend the SNR-gated policy and report the score as a negative result.
+</script>
+
+<style>
+/* S18 appendix: signal diagnostic */
+    .snr {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 18px 20px 14px;
+      border: 1px solid var(--line-2);
+      border-radius: 8px;
+      background: #FFFFFF
+    }
+
+    .axis-db {
+      position: relative;
+      height: 18px;
+      margin-left: 120px;
+      margin-right: 130px;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--dim)
+    }
+
+    .axis-db span {
+      position: absolute;
+      white-space: nowrap;
+      transform: translateX(-50%)
+    }
+
+    .rng {
+      display: grid;
+      grid-template-columns: 110px 1fr 120px;
+      gap: 10px;
+      align-items: center;
+      font-size: 17px
+    }
+
+    .rng .lab {
+      color: var(--muted)
+    }
+
+    .rng b {
+      font-weight: 700;
+      color: var(--fg);
+      font-size: 16px
+    }
+
+    .trk {
+      position: relative;
+      height: 16px;
+      background: rgba(15, 23, 42, .06);
+      border-radius: 8px
+    }
+
+    .trk i {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      border-radius: 8px
+    }
+
+    .trk i.cl {
+      background: var(--blue-grad)
+    }
+
+    .trk i.ns {
+      background: var(--orange-grad)
+    }
+
+    .trk i.gate {
+      width: 2px;
+      top: -6px;
+      bottom: -6px;
+      background: var(--fg);
+      border-radius: 0
+    }
+</style>

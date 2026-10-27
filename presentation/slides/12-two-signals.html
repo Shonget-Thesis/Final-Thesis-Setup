@@ -1,6 +1,6 @@
 <!-- 13 SIGNALS -->
-        <section class="scene" data-ch="3" data-sec="3.5.2" data-dur="40" data-title="Inference Decision Signals" data-hook="drift">
-          <p class="eyebrow b fade" data-t="100">Section 3.5.2 · Decision Features</p>
+        <section class="scene" data-ch="3" data-sec="3.6.2" data-dur="70" data-title="Inference Decision Signals" data-hook="drift">
+          <p class="eyebrow b fade" data-t="100">Section 3.6.2 · Decision Features</p>
           <h2 class="b up" data-t="250">Endpoint Stabilization &amp; Prompt Acoustic Quality Signals</h2>
           <div class="two wide-l" style="margin-top:20px;gap:56px">
             <div class="stack" style="gap:18px">
@@ -39,12 +39,12 @@
             </div>
           </div>
           <footer class="cite b fade" data-t="3000"><span class="k">Sources</span><span>Lipman et al. (2024), <em>Flow
-                matching guide and code</em> · Li et al. (2026) · Proposal Def. 3.2–3.3, Appendix A.4 and D.5
+                matching guide and code</em> · Li et al. (2026) · Proposal Def. 3.2–3.3, Appendix A.4 and D.4
               (illustrative values)</span></footer>
         </section>
 
 <script type="text/slide-script">
-Two signals drive the decision. The endpoint-stabilization score measures how much the teacher's prediction of the final output changed since the last step; a small score means it has settled. In this illustration, the easy input settles by step five and stops there, at 15 passes; the hard input never settles and runs to the reference. The prompt SNR estimates how noisy the recording is. Both reuse values already computed, so the decision costs no extra forward pass. Our development diagnostic suggests the SNR may carry most of the benefit, so we treat the stabilization score as a hypothesis to test.
+The stopping decision uses two signals, both free to compute. The top formula is the endpoint-stabilization score. At each teacher step, we take the teacher's current guess of the final output and measure how much it changed since the last step, relative to its size. A small score means the guess has settled. The chart shows two illustrative inputs: the blue easy input drops below the threshold lambda at step 5 and hands over there, at 15 passes; the grey hard input never settles and runs to the reference. The right side is the second signal, the prompt SNR, estimated from the energies of the loudest and quietest frames. With a gate at 20 decibels, a clean prompt at 30.5 decibels may stop early, while a noisy one at 17.8 decibels goes straight to the reference. The note at the bottom is important: our development diagnostics suggest the SNR may carry most of the benefit, so we treat the stabilization score as a hypothesis to test, not an assumption.
 </script>
 
 <style>
