@@ -441,6 +441,21 @@
       "evidence": [
         "docs/progress/log/2026-10-27-restart-level-reasoning.md"
       ]
+    },
+    {
+      "id": "EVAL-010",
+      "title": "Preliminary test of the switching time on a 32-interval teacher grid (EXP-017)",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "todo",
+      "updated": "2026-11-02",
+      "acceptance": "On the Colab Tesla T4 with the EXP-012 Quick set (60 development speakers x 6 conditions), the 32-interval switching times 0.07-0.25 (paper's stopping rule), the paper's 14 + 2 setting and the 16-interval Step 4 and Step 8 are synthesized and scored in one run; the preregistration predates synthesis; the fresh 16-interval scores are checked against the stored T4 labels; results are committed with a SHA-256 manifest and reported as descriptive development evidence.",
+      "evidence": [
+        "research/experiments/EXP-017-grid32-prelim/README.md",
+        "code/colab/run_grid32_prelim.py",
+        "code/colab/DMOSpeech2_Grid32_Prelim.ipynb",
+        "code/tests/test_grid32.py"
+      ],
+      "validation": ""
     }
   ]
 }
