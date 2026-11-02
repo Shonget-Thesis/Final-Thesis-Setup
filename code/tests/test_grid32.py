@@ -34,8 +34,15 @@ class GridTests(unittest.TestCase):
         self.assertAlmostEqual(g16[4], 1 - math.cos(math.pi / 8))
 
     def test_costs_count_two_passes_per_guided_evaluation(self):
-        self.assertEqual(g.COST, {"g16_4": 13, "g16_8": 21, "s007": 19, "s010": 23, "s015": 27, "s020": 31, "s025": 33, "paper": 32})
+        self.assertEqual(g.COST, {"g16_4": 13, "g16_8": 21, "s007": 19, "s010": 23, "s015": 27, "s020": 31, "s025": 33,
+                                  "paper": 32, "alg2": 30})
         self.assertEqual(g.CANDS32[-1], g.REF32)
+
+    def test_algorithm_2_student_starts_at_t14_then_the_last_student_level(self):
+        s1, s2 = g.ALG2_TIMES
+        self.assertAlmostEqual(s1, 1 - math.cos(14 * math.pi / 64))          # 0.2270, the teacher's stopping point
+        self.assertAlmostEqual(s2, 1 - math.cos(math.pi / 2 * 0.75))         # 0.6173, the released student's last level
+        self.assertEqual(g.COST["alg2"], 2 * 14 + 2)                          # the paper's 14 + 2 = 16 steps
 
 
 def _m(wer, sim):
