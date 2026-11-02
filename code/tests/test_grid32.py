@@ -103,6 +103,43 @@ class AnalysisTests(unittest.TestCase):
             report = (out / "GRID32_REPORT.md").read_text(encoding="utf-8")
             self.assertIn("32-interval grid", report)
             self.assertIn("PARTIAL", report)
+            self.assertNotIn("schedulers", res)                  # fewer speakers than folds: no replay
+
+    def test_scheduler_replay_on_premature_stabilization(self):
+        """Noisy prompts read 21-24 dB except noisy15 (17 dB), are stiller than clean ones, and fail at every early candidate."""
+        snr = {"clean": 40.0, "noisy15": 17.0, "gauss18": 21.0, "gauss20": 22.0, "gauss22": 23.0, "gauss25": 24.0}
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp)
+            (out / "preregistration.json").write_text(json.dumps({"sha256": "0" * 64}), encoding="utf-8")
+            rows = []
+            for spk in range(10):
+                for c in g.CONDS:
+                    noisy = c != "clean"
+                    row = {"utt_id": f"u{spk}", "speaker_id": f"s{spk}", "condition": c, "prompt_snr": snr[c], "gpu": "Tesla T4",
+                           "gt_sr": 16000, "case_seconds": 30.0, "d4_16": 0.5, "d4_stored": 0.5, "utc": "",
+                           **{f"d32_{i}": 0.1 if noisy else 0.5 for i in range(1, 15)}}
+                    for o in g.OUTS:
+                        bad = noisy and o in g.EARLY
+                        row.update({f"wer_{o}": 0.02, f"similarity_{o}": 0.60 if bad else 0.70, f"utmos_{o}": 3.5, f"hypothesis_{o}": "x"})
+                    for o in ("g16_4", "g16_8"):
+                        row.update({f"wer_{o}_stored": row[f"wer_{o}"], f"similarity_{o}_stored": row[f"similarity_{o}"]})
+                    rows.append(row)
+            with open(out / "grid32.csv", "w", newline="", encoding="utf-8") as f:
+                w = csv.DictWriter(f, fieldnames=g.FIELDS)
+                w.writeheader()
+                w.writerows(rows)
+            res = g.analyze(out, allow_partial=True)
+            s = res["schedulers"]
+            self.assertEqual(s["snr20"]["failures"], 40)          # 18-25 dB noise passes the 20 dB gate and fails
+            self.assertEqual(s["snr_cal"]["failures"], 0)         # the calibrated gate sits above the noisy prompts
+            self.assertEqual(s["snr_cal"]["picks"]["s007"], 10)
+            self.assertEqual(s["stab"]["failures"], 0)            # low drift marks the failing noisy prompts: nothing certified
+            self.assertAlmostEqual(s["stab"]["mean_cost"], 33.0)
+            self.assertEqual(s["snr_drift"]["failures"], 0)
+            self.assertEqual(s["snr_tas"]["failures"], 0)         # unusual stillness is vetoed; clean prompts go early
+            self.assertEqual(s["snr_tas"]["picks"]["s007"], 10)
+            self.assertEqual(s["snr_tas"]["vs_snr20"], {"fixed": 40, "new": 0, "p": s["snr_tas"]["vs_snr20"]["p"]})
+            self.assertIn("SNR + drift, Definition 3.4", (out / "GRID32_REPORT.md").read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":
