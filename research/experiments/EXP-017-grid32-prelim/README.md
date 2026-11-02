@@ -10,7 +10,9 @@
 
 ## Design
 
-Only the grid and the stopping rule change. Guidance (γ = 2, no stochastic term), seeds, the student and its restart level stay as in the thesis. Failures follow Definition 3.1 (`code/scheduling/failure_config.json`).
+The grid and the stopping rule change for every 32-interval output. Guidance (γ = 2, no stochastic term), seeds and the student stay as in the thesis. Failures follow Definition 3.1 (`code/scheduling/failure_config.json`).
+
+`alg2` follows the paper where it is specified. On 2026-11-02 the team decided to follow the published paper where the released code differs and the evaluation code is not public. Algorithm 2 hands the teacher's state, not its endpoint estimate, to the student at s₁ = t_k*, and re-noises only between student steps. The paper does not give the student's second time, so `alg2` uses 0.6173, the released student's last trained level; this is the one assumption.
 
 | Output | Grid and stop | Teacher steps | Student steps | Forward passes |
 |---|---|---:|---:|---:|
@@ -18,7 +20,8 @@ Only the grid and the stopping rule change. Guidance (γ = 2, no stochastic term
 | `g16_8`: thesis reference | 16 intervals, first point above 0.25 | 8 | 3 | 21 |
 | `s007`, `s010`, `s015`, `s020` | 32 intervals, last point ≤ 0.07 / 0.10 / 0.15 / 0.20 | 7 / 9 / 11 / 13 | 3 | 19 / 23 / 27 / 31 |
 | `s025`: reference on this grid | 32 intervals, last point ≤ 0.25 | 14 | 3 | 33 |
-| `paper`: the paper's 14 + 2 | 32 intervals, last point ≤ 0.25; student restart j = 2 | 14 | 2 | 32 |
+| `paper`: the paper's 14 + 2, released handover | 32 intervals, last point ≤ 0.25; student restart j = 2 | 14 | 2 | 32 |
+| `alg2`: the paper's Algorithm 2 as written | 32 intervals, last point ≤ 0.25; the student continues from the teacher's state at 0.2270, then steps at 0.6173 | 14 | 2 | 30 |
 
 - **Data:** the EXP-012 Quick set: 60 development speakers × clean, noisy15 and Gaussian noise at 18, 20, 22 and 25 dB = 360 cases. All 8 outputs are synthesized and scored in the same run.
 - **Hardware:** Colab Tesla T4 only. The runner stops on another GPU, because the student's random draws differ between GPU models (EXP-015).
@@ -31,17 +34,18 @@ Only the grid and the stopping rule change. Guidance (γ = 2, no stochastic term
 
 1. On the 32-interval grid, do fixed early switching times fail mainly on noisy prompts and rarely on clean ones, as on the 16-interval grid (Appendix D)? Failures per output and condition are counted against `s025`.
 2. Does the cheapest safe switching time vary between inputs? The report gives its distribution in hindsight and the mean cost against 33 passes.
-3. How do the paper's 14 + 2 setting (`paper`) and the code default (`g16_4`) compare in quality with the thesis reference (`g16_8`)? The report gives mean WER, SIM and UTMOS, paired Wilcoxon tests, and added failures.
+3. How do the paper's 14 + 2 setting, in both versions (`alg2`, `paper`), and the code default (`g16_4`) compare in quality with the thesis reference (`g16_8`)? The report gives mean WER, SIM and UTMOS, paired Wilcoxon tests, and added failures. `alg2` against `paper` isolates the handover mechanism.
 
 ## What this test does not reproduce
 
-- **The paper's handover itself.** Algorithm 2 starts the student from the teacher's state at the switch point and does not state the student's later times. This test keeps the released handover instead: the endpoint estimate is re-noised at the student's restart levels. `paper` uses the student's last two levels (j = 2), as the official demo does for the 16-step setting.
-- **A stated grid size.** The 32-interval grid is inferred from "14 steps at 0.25"; the paper does not state it.
+- **The student's second time in Algorithm 2.** The paper does not state it; `alg2` assumes 0.6173. The released student was distilled at four fixed levels, so its first step at 0.2270 is off its training levels; if that hurts quality, it is a finding about the paper's description.
+- **A stated grid size.** The 32-interval grid is inferred: only 31 or 32 intervals give 14 steps at 0.25 under Algorithm 2's rule, and the teacher's full schedule is 32 steps. The paper does not state it.
+- **The authors' evaluation.** No public branch, pull request, issue or model repository contains the paper's teacher-guided evaluation code (checked 2026-11-02).
 - **New speakers.** The 60 speakers are development speakers already used in EXP-012 to EXP-016, so the results are development evidence.
 
 ## Cost
 
-About 3–3.5 hours on a T4. This is an estimate from the 10–13 s per case measured in EXP-013 and EXP-014 for 2–3 scored outputs; this run scores 8 outputs per case and records its own time per case.
+About 3.5 hours for the full run on a T4, and about 4 hours with setup and the smoke test. This is an estimate from the 10–13 s per case measured in EXP-013 and EXP-014 for 2–3 scored outputs; this run scores 9 outputs per case. The smoke test prints the measured seconds per case and the projected total.
 
 ## Relation to other tasks
 

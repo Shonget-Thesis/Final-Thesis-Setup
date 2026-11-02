@@ -10,7 +10,11 @@ the grid and the stopping rule and keeps the rest (guidance, seeds, the student 
   stop    k*(s) = max{i : t_i <= s} for s in 0.07, 0.10, 0.15, 0.20, 0.25  ->  k* = 7, 9, 11, 13, 14
   output  teacher endpoint x1hat(t_k*) -> student at the released default restart (j = 1, three steps);
           2(k* + 1) + 3 forward passes; the reference on this grid is s = 0.25 (k* = 14, 33 passes)
-  paper   the paper's 14 + 2 setting on this grid: k* = 14, student restart j = 2 (two steps), 2 * 15 + 2 = 32 passes
+  paper   the paper's 14 + 2 setting with the released handover: k* = 14, the endpoint estimate re-noised at the student's
+          restart j = 2 (two steps), 2 * 15 + 2 = 32 passes
+  alg2    the paper's Algorithm 2 as written: 14 teacher Euler steps to t_14 = 0.2270 (28 passes); the student starts from
+          the teacher's state at s_1 = t_14 without re-noising and takes its second step at s_2 = 0.6173, the released
+          student's last level (the paper does not state s_2); 2 * 14 + 2 = 30 passes, the paper's 16 steps
   g16     the thesis's 16-interval Step 4 (s = 0.07, the code default, 13 passes) and Step 8 (s = 0.25, the thesis
           reference, 21 passes), synthesized and scored in the same run and checked against the stored T4 labels
 
@@ -61,12 +65,15 @@ SWITCH = (0.07, 0.10, 0.15, 0.20, 0.25)
 NAME = {s: f"s{round(s * 100):03d}" for s in SWITCH}                 # s007 ... s025
 K32 = {s: last_at_or_below(GRID32, s) for s in SWITCH}               # 7, 9, 11, 13, 14
 CANDS32 = tuple(NAME[s] for s in SWITCH)                             # cheapest first; s025 is the reference
-REF32, REF16, PAPER = "s025", "g16_8", "paper"
-OUTS = ("g16_4", "g16_8") + CANDS32 + (PAPER,)
-COST = {"g16_4": 13, "g16_8": 21, **{NAME[s]: 2 * (K32[s] + 1) + 3 for s in SWITCH}, PAPER: 2 * (K32[0.25] + 1) + 2}
+REF32, REF16, PAPER, ALG2 = "s025", "g16_8", "paper", "alg2"
+ALG2_TIMES = (GRID32[K32[0.25]], 1.0 - math.cos(math.pi / 2.0 * 0.75))   # s_1 = t_14 = 0.2270; s_2 = 0.6173 (assumed)
+OUTS = ("g16_4", "g16_8") + CANDS32 + (PAPER, ALG2)
+COST = {"g16_4": 13, "g16_8": 21, **{NAME[s]: 2 * (K32[s] + 1) + 3 for s in SWITCH}, PAPER: 2 * (K32[0.25] + 1) + 2,
+        ALG2: 2 * K32[0.25] + 2}
 LABEL = {"g16_4": "16-interval Step 4 (s = 0.07, code default)", "g16_8": "16-interval Step 8 (s = 0.25, thesis reference)",
          **{NAME[s]: f"32-interval s = {s:.2f} ({K32[s]} teacher steps)" for s in SWITCH},
-         PAPER: "32-interval s = 0.25, two student steps (paper's 14 + 2)"}
+         PAPER: "32-interval s = 0.25, two student steps, released handover (paper's 14 + 2)",
+         ALG2: "32-interval s = 0.25, two student steps from the teacher's state (Algorithm 2)"}
 METRICS = ("wer", "similarity", "utmos")
 FIELDS = ["utt_id", "speaker_id", "condition", "prompt_snr", "gpu", "gt_sr", "case_seconds", "d4_16", "d4_stored"] + \
          [f"d32_{i}" for i in range(1, K32[0.25] + 1)] + \
@@ -77,12 +84,14 @@ FIELDS = ["utt_id", "speaker_id", "condition", "prompt_snr", "gpu", "gt_sr", "ca
 # ----------------------------------------------------------------------------- synthesis
 def grid_teacher(pipe, ctx, grid, wanted):
     """Guided Euler teacher on `grid` with the released guidance (gamma = CFG_STRENGTH, no stochastic term).
-    Returns ({i: x1hat(t_i)} for i in wanted, {i: d_i} for i = 1..max(wanted))."""
+    Returns ({i: x1hat(t_i)}, {i: d_i} for i = 1..max(wanted), {i: state x_{t_i}}) for i in wanted."""
     torch, sampler = pipe.torch, pipe.sampler
     kmax, plen = max(wanted), ctx["prompt_len"]
-    x, prev, ends, drift = ctx["y0"].clone(), None, {}, {}
+    x, prev, ends, drift, states = ctx["y0"].clone(), None, {}, {}, {}
     with torch.inference_mode():
         for i in range(kmax + 1):
+            if i in wanted:
+                states[i] = x
             t = torch.tensor(grid[i], device=pipe.device, dtype=torch.float32)
             kw = dict(x=x, cond=ctx["step_cond"], text=ctx["text_ids"], time=t, mask=None)
             vc = pipe.tts.teacher(drop_audio_cond=False, drop_text=False, **kw)
@@ -96,7 +105,25 @@ def grid_teacher(pipe, ctx, grid, wanted):
             prev = ep
             if i < kmax:
                 x = x + (grid[i + 1] - grid[i]) * v
-    return ends, drift
+    return ends, drift, states
+
+
+def student_from_state(pipe, ctx, state, times):
+    """Algorithm 2's student (Li et al.): the first step reads the teacher's state at times[0] without re-noising;
+    each later step re-noises the previous estimate to the next time, with the released student's per-level seeds."""
+    torch, sampler = pipe.torch, pipe.sampler
+    x, est = state, None
+    with torch.inference_mode():
+        for m, s in enumerate(times):
+            tt = torch.tensor([s], device=pipe.device, dtype=torch.float32)
+            ts = tt.unsqueeze(-1).unsqueeze(-1)
+            if m > 0:
+                gen = sampler.make_local_generator((int(ctx["seed"]) + int(s * 100)) % (2 ** 31 - 1), device=pipe.device)
+                eps = torch.randn(est.shape, dtype=torch.float32, device=pipe.device, generator=gen)
+                x = (1.0 - ts) * eps + ts * est
+            pred = pipe.tts.generator(x=x, cond=ctx["cond"], text=ctx["text_ids"], time=tt, drop_audio_cond=False, drop_text=False)
+            est = x + (1.0 - ts) * pred
+    return est
 
 
 def student(pipe, ctx, endpoint, taus):
@@ -129,10 +156,11 @@ def run_cases(pipe, todo_items, conds, out_dir, csv_name="grid32.csv", reproduce
         s = stored[(item["utt_id"], cond)]
         ctx = pipe.prepare(item, cond, item["input_seed"], out_dir)
         E16, d16 = pipe.teacher(ctx, tuple(range(9)))
-        E32, d32 = grid_teacher(pipe, ctx, GRID32, set(K32.values()))
+        E32, d32, S32 = grid_teacher(pipe, ctx, GRID32, set(K32.values()))
         xs = {"g16_4": student(pipe, ctx, E16[4], taus), "g16_8": student(pipe, ctx, E16[8], taus),
               **{NAME[sw]: student(pipe, ctx, E32[k], taus) for sw, k in K32.items()},
-              PAPER: student(pipe, ctx, E32[K32[0.25]], taus[1:])}
+              PAPER: student(pipe, ctx, E32[K32[0.25]], taus[1:]),
+              ALG2: student_from_state(pipe, ctx, S32[K32[0.25]], ALG2_TIMES)}
         gt = pipe.ground_truth(item)
         row = {"utt_id": item["utt_id"], "speaker_id": item["speaker_id"], "condition": cond, "prompt_snr": ctx["prompt_snr"],
                "gpu": pipe.gpu, "gt_sr": gt[1], "d4_16": d16[4], "d4_stored": float(s[8]["d_4"]),
@@ -144,7 +172,7 @@ def run_cases(pipe, todo_items, conds, out_dir, csv_name="grid32.csv", reproduce
             m = pipe.score(ng.decode(pipe, ctx, xs[o]), item, gt)
             row.update({f"{k}_{o}": m[k] for k in METRICS + ("hypothesis",)})
         if reproduce:
-            ends, _ = grid_teacher(pipe, ctx, pipe.sampler.SWAY_TEACHER_GRID, {4, 8})
+            ends, _, _ = grid_teacher(pipe, ctx, pipe.sampler.SWAY_TEACHER_GRID, {4, 8})
             with pipe.torch.inference_mode():
                 for k in (4, 8):
                     repro.append({"utt_id": item["utt_id"], "condition": cond, "step": k,
@@ -260,12 +288,13 @@ def analyze(out, allow_partial=False):
            "gpus": sorted({r["gpu"] for r in table}), "gt_sample_rates": sorted({str(r["gt_sr"]) for r in table}),
            "mean_case_seconds": statistics.mean(r["secs"] for r in table) if table else None,
            "grid32": {"k": {NAME[s]: K32[s] for s in SWITCH}, "t": {NAME[s]: GRID32[K32[s]] for s in SWITCH}}, "cost": COST,
-           "fixed_vs_ref32": {o: failure_counts(table, o, REF32, th) for o in CANDS32[:-1] + (PAPER,)},
-           "fixed_vs_ref16": {o: failure_counts(table, o, REF16, th) for o in ("g16_4", REF32, PAPER)},
+           "fixed_vs_ref32": {o: failure_counts(table, o, REF32, th) for o in CANDS32[:-1] + (PAPER, ALG2)},
+           "fixed_vs_ref16": {o: failure_counts(table, o, REF16, th) for o in ("g16_4", REF32, PAPER, ALG2)},
            "cheapest_safe_32": cheapest_safe(table, CANDS32, REF32, th),
            "cheapest_safe_16": cheapest_safe(table, ("g16_4", "g16_8"), REF16, th),
            "quality": quality(table),
-           "paired": {f"{a} vs {b}": paired(table, a, b) for a, b in ((PAPER, REF16), (REF32, REF16), (PAPER, REF32), ("g16_4", REF16))},
+           "paired": {f"{a} vs {b}": paired(table, a, b) for a, b in ((ALG2, REF16), (PAPER, REF16), (ALG2, PAPER), (REF32, REF16),
+                                                                      (PAPER, REF32), ("g16_4", REF16))},
            "reproduction": reproduction(table, th)}
     (out / "grid32_results.json").write_text(json.dumps(res, indent=2) + "\n", encoding="utf-8")
     (out / "GRID32_REPORT.md").write_text(render(res), encoding="utf-8")
@@ -291,8 +320,11 @@ def render(res):
     for s in SWITCH:
         o = NAME[s]
         L.append(f"| {LABEL[o]} | 32 intervals, last point ≤ {s:.2f} (t = {res['grid32']['t'][o]:.4f}) | {K32[s]} | 3 | {COST[o]} |")
-    L += [f"| {LABEL[PAPER]} | 32 intervals, last point ≤ 0.25 | {K32[0.25]} | 2 | {COST[PAPER]} |", "",
-          "Teacher steps are Euler steps; the endpoint estimate adds one more guided evaluation, so the cost is 2(k + 1) + student steps.", "",
+    L += [f"| {LABEL[PAPER]} | 32 intervals, last point ≤ 0.25 | {K32[0.25]} | 2 | {COST[PAPER]} |",
+          f"| {LABEL[ALG2]} | 32 intervals, last point ≤ 0.25; student at s = {ALG2_TIMES[0]:.4f}, then {ALG2_TIMES[1]:.4f} | {K32[0.25]} | 2 | {COST[ALG2]} |", "",
+          "Teacher steps are Euler steps. The released handover reads the teacher's endpoint estimate, which adds one guided "
+          "evaluation (2(k + 1) + student steps); Algorithm 2 hands over the teacher's state (2k + student steps). The second "
+          "student time of `alg2` is the released student's last level, because the paper does not state it.", "",
           "## Reproduction checks", "",
           f"- Fresh 16-interval Step 4 and Step 8 against the stored T4 labels: max |ΔWER| {rep['max_abs_diff']['wer_g16_4']}, {rep['max_abs_diff']['wer_g16_8']}; "
           f"max |ΔSIM| {rep['max_abs_diff']['similarity_g16_4']}, {rep['max_abs_diff']['similarity_g16_8']}; same Step-4 failure label in "
@@ -328,8 +360,8 @@ def render(res):
             L.append(f"| {name} | {g} | {v['n']} | {f4(v['sim_mean_diff'])} | {'n/a' if share is None else f'{share:.0%}'} | "
                      f"{'n/a' if p1 is None else f'{p1:.2g}'} | {f4(v['wer_mean_diff'])} | {'n/a' if p2 is None else f'{p2:.2g}'} |")
     L += ["", "Development evidence only (60 development speakers, white Gaussian noise). The 32-interval grid and the stopping rule "
-          "follow the paper's Algorithm 2; the handover keeps the released mechanism (endpoint estimate re-noised at the student's "
-          "restart level), because the paper does not state the student's later times."]
+          "follow the paper's Algorithm 2. Every output except `alg2` keeps the released handover (endpoint estimate re-noised at "
+          "the student's restart level); `alg2` follows Algorithm 2's handover, with the student's second time assumed."]
     return "\n".join(L) + "\n"
 
 
@@ -342,15 +374,20 @@ def write_prereg(out, args):
            "grid32": "t_i = 1 - cos(pi/2 * i/32), i = 0..32; teacher to k* = max{i : t_i <= s} (Li et al., Algorithm 2)",
            "switching_times": list(SWITCH), "k32": {NAME[s]: K32[s] for s in SWITCH}, "outputs": LABEL, "forward_passes": COST,
            "handover": "teacher endpoint estimate at t_k* re-noised at the released student's restart levels: j = 1 (three steps) for every "
-                       "output except 'paper', which uses j = 2 (two steps); guidance gamma = 2, no stochastic term; same seeds",
+                       "output except 'paper' (j = 2, two steps) and 'alg2'; guidance gamma = 2, no stochastic term; same seeds",
+           "alg2": "Li et al., Algorithm 2 as written: 14 teacher Euler steps to t_14, the student's first step reads the teacher's state "
+                   "at s_1 = t_14 without re-noising, the second re-noises to s_2 = 0.6173 (the released student's last level; the "
+                   "paper does not state s_2); 30 forward passes",
+           "alg2_times": list(ALG2_TIMES),
            "references": {"within_grid32": REF32, "thesis": REF16},
            "failure_rule": "Definition 3.1 with code/scheduling/failure_config.json",
            "questions": ["Q1: on the 32-interval grid, do fixed early switching times fail mainly on noisy prompts and rarely on clean ones, "
                          "as on the 16-interval grid (Appendix D)? Failures per output and condition against s = 0.25 on the same grid.",
                          "Q2: does the cheapest safe switching time vary between inputs on this grid? Hindsight distribution and mean cost "
                          "against 33 passes.",
-                         "Q3: quality of the paper's 14 + 2 setting and of the code default (16-interval Step 4) against the thesis "
-                         "reference (16-interval Step 8): mean WER, SIM and UTMOS, paired Wilcoxon tests and added failures."],
+                         "Q3: quality of the paper's 14 + 2 setting (Algorithm 2 as written, and with the released handover) and of "
+                         "the code default (16-interval Step 4) against the thesis reference (16-interval Step 8): mean WER, SIM and "
+                         "UTMOS, paired Wilcoxon tests and added failures."],
            "criteria": "none; descriptive development evidence",
            "n_speakers": N_SPEAKERS, "conditions": list(CONDS),
            "input_hashes": {str(p.relative_to(THESIS_ROOT)).replace("\\", "/"): rf.sha256_file(p)
