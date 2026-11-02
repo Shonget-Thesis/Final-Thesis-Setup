@@ -35,6 +35,14 @@ The grid and the stopping rule change for every 32-interval output. Guidance (γ
 1. On the 32-interval grid, do fixed early switching times fail mainly on noisy prompts and rarely on clean ones, as on the 16-interval grid (Appendix D)? Failures per output and condition are counted against `s025`.
 2. Does the cheapest safe switching time vary between inputs? The report gives its distribution in hindsight and the mean cost against 33 passes.
 3. How do the paper's 14 + 2 setting, in both versions (`alg2`, `paper`), and the code default (`g16_4`) compare in quality with the thesis reference (`g16_8`)? The report gives mean WER, SIM and UTMOS, paired Wilcoxon tests, and added failures. `alg2` against `paper` isolates the handover mechanism.
+4. How do the adaptive schedulers compare on the 32-interval grid, out of fold? The candidates are:
+   - SNR-only with a 20 dB gate;
+   - SNR-only with a gate calibrated by Learn-Then-Test;
+   - stabilization only;
+   - **SNR + drift as in Definition 3.4 (the thesis method)**;
+   - SNR + TAS (one-sided Mahalanobis on log d₁..d₇, fitted on clean training prompts).
+
+   Each picks, per input, one of `s007` to `s020` or the `s025` reference. The thresholds are certified by fixed-sequence Learn-Then-Test (α = 0.05, δ = 0.10) on the training speakers of a 5-fold speaker-grouped cross-validation (seed 2026). The report gives out-of-fold failures against `s025`, mean forward passes, the worst-condition rate and exact McNemar against SNR-only at 20 dB, beside the reference and the per-input best in hindsight. This is a replay from the recorded SNR, drift and candidate scores, not a live run, so it adds no GPU time.
 
 ## What this test does not reproduce
 

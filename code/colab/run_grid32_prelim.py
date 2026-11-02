@@ -212,7 +212,8 @@ def build_table(rows):
                   for o in ("g16_4", "g16_8")})
         table.append({"utt": r["utt_id"], "spk": r["speaker_id"], "cond": r["condition"], "snr": float(r["prompt_snr"]),
                       "gpu": r.get("gpu", ""), "gt_sr": r.get("gt_sr", ""), "secs": float(r["case_seconds"] or 0),
-                      "d4": float(r["d4_16"]), "d4_stored": float(r["d4_stored"]), "m": m})
+                      "d4": float(r["d4_16"]), "d4_stored": float(r["d4_stored"]), "m": m,
+                      "d32": {i: float(r[f"d32_{i}"]) for i in range(1, K32[0.25] + 1) if r.get(f"d32_{i}") not in (None, "")}})
     return table
 
 
@@ -276,6 +277,121 @@ def reproduction(table, th):
             "same_step4_failure_label": same, "n": len(table)}
 
 
+# ----------------------------------------------------------------------------- adaptive schedulers (offline replay)
+# Each scheduler picks, per input, one of the 32-interval outputs (the early candidates or the s = 0.25 reference) from
+# the prompt SNR and the teacher's drift, which this run records. Thresholds are certified by fixed-sequence
+# Learn-Then-Test on the training speakers of a five-fold speaker-grouped cross-validation; all results are out of fold.
+ALPHA, DELTA, FOLDS, SEED, THETA = ex.ALPHA, ex.DELTA, ex.FOLDS, ex.SEED, ex.THETA     # 0.05, 0.10, 5, 2026, 20 dB
+THETA_GRID = ex.GRIDS["theta"]                                                        # 40 -> 20 dB, conservative first
+EARLY = CANDS32[:-1]                                                                  # s007, s010, s015, s020
+KOF = {NAME[s]: K32[s] for s in SWITCH}
+TAS_K = KOF[EARLY[0]]                                  # drift profile d_1..d_7, known when the earliest candidate is reached
+SCHEDULERS = {"snr20": "SNR-only, 20 dB gate (EXP-015 baseline)",
+              "snr_cal": "SNR-only, gate calibrated by Learn-Then-Test",
+              "stab": "Stabilization only (drift ≤ λ̂, no SNR gate)",
+              "snr_drift": "SNR + drift, Definition 3.4 (20 dB gate, drift ≤ λ̂): the thesis method",
+              "snr_tas": "SNR + TAS (20 dB gate, Trajectory Anomaly Score ≤ κ̂ on log d₁..d₇)"}
+
+
+def p_snr(theta):
+    """SNR-only: the earliest candidate if the prompt SNR passes the gate, else the reference."""
+    return lambda r: EARLY[0] if theta is not None and r["snr"] >= theta else REF32
+
+
+def p_stab(lam, theta=None):
+    """Definition 3.4: the first candidate whose drift is at most lam (and, with a gate, whose prompt passes it), else the reference."""
+    def pol(r):
+        if lam is None or (theta is not None and r["snr"] < theta):
+            return REF32
+        return next((o for o in EARLY if r["d32"][KOF[o]] <= lam), REF32)
+    return pol
+
+
+def p_tas(score, kappa):
+    return lambda r: EARLY[0] if kappa is not None and r["snr"] >= THETA and score(r) <= kappa else REF32
+
+
+def tas_fit(train, k=TAS_K):
+    """One-sided squared Mahalanobis distance of log(d_1..d_k) from the clean training prompts (no failure labels)."""
+    import numpy as np
+    logs = lambda r: [math.log(max(r["d32"][i], 1e-12)) for i in range(1, k + 1)]
+    X = np.array([logs(r) for r in train if r["cond"] == "clean"])
+    mu = X.mean(0)
+    Ci = np.linalg.inv(np.cov(X, rowvar=False) + 1e-3 * np.eye(X.shape[1]))
+
+    def score(r):
+        z = np.asarray(logs(r)) - mu
+        return float(z @ Ci @ z) if z.mean() < 0 else 0.0
+    return score
+
+
+def certified(train, pol):
+    """Learn-Then-Test for one threshold: binomial p-value of the training failures at risk ALPHA is at most DELTA."""
+    return rf.binom_cdf(sum(int(r["fail"][pol(r)]) for r in train), len(train), ALPHA) <= DELTA
+
+
+def fixed_sequence(train, grid, make):
+    """Tests thresholds from the most conservative; returns the last certified one (None if the first fails)."""
+    chosen = None
+    for p in grid:
+        if not certified(train, make(p)):
+            break
+        chosen = p
+    return chosen
+
+
+def fold_policy(name, train):
+    if name == "snr20":
+        return p_snr(THETA), THETA
+    if name == "snr_cal":
+        theta = fixed_sequence(train, THETA_GRID, p_snr)
+        return p_snr(theta), theta
+    if name in ("stab", "snr_drift"):
+        gate = THETA if name == "snr_drift" else None
+        grid = sorted({r["d32"][KOF[o]] for r in train for o in EARLY})
+        lam = fixed_sequence(train, grid, lambda x: p_stab(x, gate))
+        return p_stab(lam, gate), lam
+    if name == "snr_tas":
+        score = tas_fit(train)
+        kappa = fixed_sequence(train, sorted({score(r) for r in train if r["snr"] >= THETA}), lambda x: p_tas(score, x))
+        return p_tas(score, kappa), kappa
+    raise ValueError(name)
+
+
+def schedulers(table, th):
+    """Out-of-fold replay of the schedulers on the 32-interval grid, with McNemar against the 20 dB SNR-only rule."""
+    rows = [dict(r, fail={**{o: failed(r["m"][o], r["m"][REF32], th) for o in EARLY}, REF32: False}) for r in table]
+    names = list(SCHEDULERS)
+    try:
+        import numpy  # noqa: F401  (TAS needs it)
+    except ImportError:
+        names.remove("snr_tas")
+    import random
+    spks = sorted({r["spk"] for r in rows})
+    random.Random(SEED).shuffle(spks)
+    fold = {s: i % FOLDS for i, s in enumerate(spks)}
+    res, chosen, vecs = {}, {}, {}
+    for name in names:
+        pick, ch = {}, []
+        for f in range(FOLDS):
+            pol, p = fold_policy(name, [r for r in rows if fold[r["spk"]] != f])
+            ch.append(p)
+            pick.update({(r["utt"], r["cond"]): pol(r) for r in rows if fold[r["spk"]] == f})
+        per = {c: sum(int(r["fail"][pick[(r["utt"], r["cond"])]]) for r in rows if r["cond"] == c) for c in CONDS}
+        n_c = {c: sum(r["cond"] == c for r in rows) for c in CONDS}
+        cost = [COST[pick[(r["utt"], r["cond"])]] for r in rows]
+        res[name] = {"failures": sum(per.values()), "n": len(rows), "mean_cost": sum(cost) / len(cost),
+                     "saving": 1 - sum(cost) / len(cost) / COST[REF32], "per_condition": per,
+                     "worst_condition_risk": max(per[c] / n_c[c] for c in CONDS if n_c[c]),
+                     "picks": {o: sum(v == o for v in pick.values()) for o in CANDS32}}
+        chosen[name] = ch
+        vecs[name] = [bool(r["fail"][pick[(r["utt"], r["cond"])]]) for r in rows]
+    for name in names:
+        x, y, p = rf.mcnemar_exact(vecs["snr20"], vecs[name])
+        res[name]["vs_snr20"] = {"fixed": x, "new": y, "p": p}
+    return res, chosen
+
+
 def analyze(out, allow_partial=False):
     out = Path(out)
     prereg = json.loads((out / "preregistration.json").read_text(encoding="utf-8"))
@@ -296,6 +412,8 @@ def analyze(out, allow_partial=False):
            "paired": {f"{a} vs {b}": paired(table, a, b) for a, b in ((ALG2, REF16), (PAPER, REF16), (ALG2, PAPER), (REF32, REF16),
                                                                       (PAPER, REF32), ("g16_4", REF16))},
            "reproduction": reproduction(table, th)}
+    if len({r["spk"] for r in table}) >= FOLDS and all(len(r["d32"]) == K32[0.25] for r in table):
+        res["schedulers"], res["schedulers_chosen"] = schedulers(table, th)
     (out / "grid32_results.json").write_text(json.dumps(res, indent=2) + "\n", encoding="utf-8")
     (out / "GRID32_REPORT.md").write_text(render(res), encoding="utf-8")
     print(f"Wrote {out / 'GRID32_REPORT.md'}", flush=True)
@@ -346,6 +464,24 @@ def render(res):
         v = res[key]
         L.append(f"- {name}: " + ", ".join(f"{o} {k}" for o, k in v["counts"].items()) +
                  f"; mean {v['mean_cost']:.2f} passes against {v['reference_cost']} ({-v['saving']:+.1%} passes)." if v["mean_cost"] is not None else f"- {name}: no cases")
+    if "schedulers" in res:
+        L += ["", f"## Adaptive schedulers on the 32-interval grid (replay; {FOLDS}-fold speaker cross-validation; Learn-Then-Test α = {ALPHA}, δ = {DELTA})", "",
+              "Each scheduler picks, per input, one of s007 … s020 or the s = 0.25 reference, from the prompt SNR and the teacher's drift. "
+              "Failures are judged against s = 0.25 on the same grid; all results are out of fold. Within limit = failure rate ≤ 5%.", "",
+              f"| Scheduler | Failures | Rate | Within limit | Mean passes | Saving vs {COST[REF32]} | Worst condition | Fixed / new vs SNR-only 20 dB | p |",
+              "|---|---:|---:|---|---:|---:|---:|---|---:|"]
+        for name, v in res["schedulers"].items():
+            rate = v["failures"] / v["n"]
+            c = v["vs_snr20"]
+            L.append(f"| {SCHEDULERS[name]} | {v['failures']}/{v['n']} | {rate:.1%} | {'yes' if rate <= ALPHA else 'no'} | {v['mean_cost']:.2f} | "
+                     f"{v['saving']:.1%} | {v['worst_condition_risk']:.1%} | {c['fixed']} / {c['new']} | {c['p']:.2g} |")
+        o = res["cheapest_safe_32"]
+        L += [f"| Reference for every input (s = 0.25) | 0/{res['cases']} | 0.0% | yes | {COST[REF32]:.2f} | 0.0% | 0.0% | – | – |",
+              f"| Per-input best in hindsight (not deployable; upper bound) | 0/{res['cases']} | 0.0% | yes | {o['mean_cost']:.2f} | {o['saving']:.1%} | 0.0% | – | – |",
+              "", "Choices per input (out of fold): " + "; ".join(f"{n}: " + ", ".join(f"{k} {c}" for k, c in v["picks"].items() if c)
+                                                         for n, v in res["schedulers"].items()),
+              "", "Thresholds chosen per fold (None = nothing certified, every input to the reference): " +
+              "; ".join(f"{n}: {[None if p is None else round(p, 4) for p in ch]}" for n, ch in res["schedulers_chosen"].items())]
     L += ["", "## Average quality of each output", "", "| Output | Prompts | WER | SIM | UTMOS |", "|---|---|---:|---:|---:|"]
     for o, q in res["quality"].items():
         for g in ("clean", "noisy"):
@@ -387,7 +523,16 @@ def write_prereg(out, args):
                          "against 33 passes.",
                          "Q3: quality of the paper's 14 + 2 setting (Algorithm 2 as written, and with the released handover) and of "
                          "the code default (16-interval Step 4) against the thesis reference (16-interval Step 8): mean WER, SIM and "
-                         "UTMOS, paired Wilcoxon tests and added failures."],
+                         "UTMOS, paired Wilcoxon tests and added failures.",
+                         "Q4: on the 32-interval grid, how do the adaptive schedulers (SNR-only with a 20 dB or a calibrated gate, "
+                         "stabilization only, SNR + drift as in Definition 3.4, SNR + TAS) compare out of fold in failures and forward "
+                         "passes, against the reference and the per-input best in hindsight?"],
+           "schedulers": {"policies": SCHEDULERS, "candidates": list(EARLY), "reference": REF32,
+                          "calibration": f"fixed-sequence Learn-Then-Test, pooled, alpha {ALPHA}, delta {DELTA}; theta grid {THETA_GRID[0]} -> "
+                                         f"{THETA_GRID[-1]} dB; lambda and kappa grids: the sorted training values, conservative first",
+                          "validation": f"{FOLDS}-fold speaker-grouped cross-validation, seed {SEED}; out-of-fold failures against s025, "
+                                        "mean forward passes, worst-condition rate, exact McNemar against snr20",
+                          "tas": f"one-sided squared Mahalanobis distance of log(d_1..d_{TAS_K}) from the clean training prompts"},
            "criteria": "none; descriptive development evidence",
            "n_speakers": N_SPEAKERS, "conditions": list(CONDS),
            "input_hashes": {str(p.relative_to(THESIS_ROOT)).replace("\\", "/"): rf.sha256_file(p)
