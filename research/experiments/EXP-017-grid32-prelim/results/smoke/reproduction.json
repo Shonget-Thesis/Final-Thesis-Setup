@@ -1,0 +1,114 @@
+[
+  {
+    "utt_id": "common_voice_en_18770703-common_voice_en_18770702",
+    "condition": "clean",
+    "step": 4,
+    "check": "grid_teacher on the released 16-interval grid vs the sampler's endpoint",
+    "max_abs_diff": 0.0
+  },
+  {
+    "utt_id": "common_voice_en_18770703-common_voice_en_18770702",
+    "condition": "clean",
+    "step": 5,
+    "check": "grid_teacher on the released 16-interval grid vs the sampler's endpoint",
+    "max_abs_diff": 0.0
+  },
+  {
+    "utt_id": "common_voice_en_18770703-common_voice_en_18770702",
+    "condition": "clean",
+    "step": 6,
+    "check": "grid_teacher on the released 16-interval grid vs the sampler's endpoint",
+    "max_abs_diff": 0.0
+  },
+  {
+    "utt_id": "common_voice_en_18770703-common_voice_en_18770702",
+    "condition": "clean",
+    "step": 8,
+    "check": "grid_teacher on the released 16-interval grid vs the sampler's endpoint",
+    "max_abs_diff": 0.0
+  },
+  {
+    "utt_id": "common_voice_en_18770703-common_voice_en_18770702",
+    "condition": "gauss20",
+    "step": 4,
+    "check": "grid_teacher on the released 16-interval grid vs the sampler's endpoint",
+    "max_abs_diff": 0.0
+  },
+  {
+    "utt_id": "common_voice_en_18770703-common_voice_en_18770702",
+    "condition": "gauss20",
+    "step": 5,
+    "check": "grid_teacher on the released 16-interval grid vs the sampler's endpoint",
+    "max_abs_diff": 0.0
+  },
+  {
+    "utt_id": "common_voice_en_18770703-common_voice_en_18770702",
+    "condition": "gauss20",
+    "step": 6,
+    "check": "grid_teacher on the released 16-interval grid vs the sampler's endpoint",
+    "max_abs_diff": 0.0
+  },
+  {
+    "utt_id": "common_voice_en_18770703-common_voice_en_18770702",
+    "condition": "gauss20",
+    "step": 8,
+    "check": "grid_teacher on the released 16-interval grid vs the sampler's endpoint",
+    "max_abs_diff": 0.0
+  },
+  {
+    "utt_id": "common_voice_en_18829843-common_voice_en_18829842",
+    "condition": "clean",
+    "step": 4,
+    "check": "grid_teacher on the released 16-interval grid vs the sampler's endpoint",
+    "max_abs_diff": 0.0
+  },
+  {
+    "utt_id": "common_voice_en_18829843-common_voice_en_18829842",
+    "condition": "clean",
+    "step": 5,
+    "check": "grid_teacher on the released 16-interval grid vs the sampler's endpoint",
+    "max_abs_diff": 0.0
+  },
+  {
+    "utt_id": "common_voice_en_18829843-common_voice_en_18829842",
+    "condition": "clean",
+    "step": 6,
+    "check": "grid_teacher on the released 16-interval grid vs the sampler's endpoint",
+    "max_abs_diff": 0.0
+  },
+  {
+    "utt_id": "common_voice_en_18829843-common_voice_en_18829842",
+    "condition": "clean",
+    "step": 8,
+    "check": "grid_teacher on the released 16-interval grid vs the sampler's endpoint",
+    "max_abs_diff": 0.0
+  },
+  {
+    "utt_id": "common_voice_en_18829843-common_voice_en_18829842",
+    "condition": "gauss20",
+    "step": 4,
+    "check": "grid_teacher on the released 16-interval grid vs the sampler's endpoint",
+    "max_abs_diff": 0.0
+  },
+  {
+    "utt_id": "common_voice_en_18829843-common_voice_en_18829842",
+    "condition": "gauss20",
+    "step": 5,
+    "check": "grid_teacher on the released 16-interval grid vs the sampler's endpoint",
+    "max_abs_diff": 0.0
+  },
+  {
+    "utt_id": "common_voice_en_18829843-common_voice_en_18829842",
+    "condition": "gauss20",
+    "step": 6,
+    "check": "grid_teacher on the released 16-interval grid vs the sampler's endpoint",
+    "max_abs_diff": 0.0
+  },
+  {
+    "utt_id": "common_voice_en_18829843-common_voice_en_18829842",
+    "condition": "gauss20",
+    "step": 8,
+    "check": "grid_teacher on the released 16-interval grid vs the sampler's endpoint",
+    "max_abs_diff": 0.0
+  }
+]

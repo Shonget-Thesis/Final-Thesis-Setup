@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+</head>
+<body class="bg-transparent text-[var(--foreground)] antialiased p-2.5">
+  <div class="bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] rounded-xl p-3.5 shadow-sm flex flex-col gap-2.5">
+    
+    <!-- Header & Scenario Toggle -->
+    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border)] pb-2">
+      <div>
+        <h2 class="text-sm font-semibold text-[var(--foreground)]">Feature & Value Inspector: Audio+Text → 712 Features → Predicted Velocity → Handover → Wav</h2>
+        <p class="text-xs text-[var(--muted-foreground)]">Inspect exact feature numbers & predicted values inside Frame #350 ("Welcome") at every stage.</p>
+      </div>
+      <div class="flex items-center gap-1 bg-[var(--background)] p-1 rounded-lg border border-[var(--border)]">
+        <button id="btn-clean" onclick="setScenario('clean')" class="px-2 py-0.5 rounded text-xs font-medium transition-colors">
+          Clean (32.4 dB → Step 4)
+        </button>
+        <button id="btn-noisy" onclick="setScenario('noisy')" class="px-2 py-0.5 rounded text-xs font-medium transition-colors">
+          Noisy (17.2 dB → Step 8)
+        </button>
+      </div>
+    </div>
+
+    <!-- Stage Stepper -->
+    <div class="grid grid-cols-6 gap-1" id="stage-tabs"></div>
+
+    <!-- Main Interactive Stage View -->
+    <div class="grid grid-cols-12 gap-2.5 items-stretch">
+      
+      <!-- Left Visual Canvas + Live Feature Array Inspector (7 cols) -->
+      <div class="col-span-7 bg-[var(--background)] border border-[var(--border)] rounded-lg p-2.5 flex flex-col justify-between">
+        <div class="flex items-center justify-between mb-1">
+          <span id="canvas-title" class="text-xs font-semibold text-[var(--foreground)]"></span>
+          <span id="canvas-badge" class="text-xs px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)] font-mono"></span>
+        </div>
+        
+        <canvas id="viz-canvas" width="520" height="165" class="w-full h-[165px] rounded border border-[var(--border)]"></canvas>
+
+        <!-- Concrete Numerical Value Strip at Bottom of Left Panel -->
+        <div id="value-strip" class="mt-2 p-2 rounded bg-[var(--card)] border border-[var(--border)] text-xs font-mono leading-snug">
+        </div>
+
+        <div id="canvas-controls" class="flex items-center justify-between mt-1.5 text-xs text-[var(--muted-foreground)]"></div>
+      </div>
+
+      <!-- Right Explanation & Exact Input -> Predicted Value Table (5 cols) -->
+      <div class="col-span-5 bg-[var(--background)] border border-[var(--border)] rounded-lg p-2.5 flex flex-col justify-between">
+        <div class="flex flex-col gap-1.5">
+          <div class="flex items-center justify-between">
+            <span id="stage-heading" class="text-xs font-semibold text-[var(--foreground)]"></span>
+            <span id="stage-nfe" class="text-xs font-mono px-1.5 py-0.5 rounded border border-[var(--border)] bg-[var(--card)]"></span>
+          </div>
+          <p id="stage-desc" class="text-xs text-[var(--muted-foreground)] leading-snug"></p>
+          
+          <div id="stage-boxes" class="flex flex-col gap-1.5 mt-0.5"></div>
+        </div>
+
+        <!-- Prev / Next Navigation -->
+        <div class="flex items-center justify-between pt-2 border-t border-[var(--border)] mt-2">
+          <button id="btn-prev" onclick="changeStage(-1)" class="px-2.5 py-1 rounded border border-[var(--border)] bg-[var(--card)] text-xs font-medium hover:opacity-80 disabled:opacity-40">
+            ← Prev
+          </button>
+          <span id="stage-counter" class="text-xs text-[var(--muted-foreground)] font-mono">1 / 6</span>
+          <button id="btn-next" onclick="changeStage(1)" class="px-2.5 py-1 rounded bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-medium hover:opacity-90 disabled:opacity-40">
+            Next →
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let currentStage = 0;
+    let scenario = 'clean';
+    let teacherStepIdx = 3; // default Step 4
+
+    const teacherSteps = [
+      { step: 1, t: 0.005, xVal: -0.82, vCond: 1.95, vUncond: 0.45, vGuided: 3.45, x1Val: 2.61, driftClean: 1.42, driftNoisy: 0.55, nfe: 4 },
+      { step: 2, t: 0.019, xVal: -0.71, vCond: 1.72, vUncond: 0.52, vGuided: 2.92, x1Val: 2.15, driftClean: 0.98, driftNoisy: 0.34, nfe: 6 },
+      { step: 3, t: 0.043, xVal: -0.55, vCond: 1.54, vUncond: 0.58, vGuided: 2.50, x1Val: 1.84, driftClean: 0.71, driftNoisy: 0.25, nfe: 8 },
+      { step: 4, t: 0.076, xVal: -0.38, vCond: 1.48, vUncond: 0.60, vGuided: 2.36, x1Val: 1.80, driftClean: 0.42, driftNoisy: 0.18, nfe: 10 },
+      { step: 5, t: 0.118, xVal: -0.18, vCond: 1.44, vUncond: 0.62, vGuided: 2.26, x1Val: 1.81, driftClean: 0.36, driftNoisy: 0.16, nfe: 12 },
+      { step: 6, t: 0.169, xVal: +0.02, vCond: 1.41, vUncond: 0.64, vGuided: 2.18, x1Val: 1.83, driftClean: 0.31, driftNoisy: 0.15, nfe: 14 },
+      { step: 8, t: 0.293, xVal: +0.41, vCond: 1.38, vUncond: 0.66, vGuided: 2.10, x1Val: 1.89, driftClean: 0.24, driftNoisy: 0.14, nfe: 18 }
+    ];
+
+    const stages = [
+      { short: "1. Raw → Features", title: "Stage 1: Raw Audio/Text → Initial Feature Values" },
+      { short: "2. 712 Feature Vec", title: "Stage 2: Inside Frame #350's 712-Number Feature Vector" },
+      { short: "3. Predict v & x̂₁", title: "Stage 3: Teacher Predicts Velocity v → Endpoint x̂₁(tᵢ)" },
+      { short: "4. Handover Gate", title: "Stage 4: How x̂₁ Values Produce Drift dᵢ & Handover Step k*" },
+      { short: "5. Student Refine", title: "Stage 5: Student Uses x̂₁(t_k*) + Features to Refine Mel" },
+      { short: "6. Mel → Waveform", title: "Stage 6: Vocos Converts 100 Mel Values → Audio Samples" }
+    ];
+
+    function setScenario(s) {
+      scenario = s;
+      if (s === 'noisy' && currentStage >= 3) teacherStepIdx = 6;
+      else if (s === 'clean' && currentStage >= 3) teacherStepIdx = 3;
+      render();
+    }
+
+    function setStage(idx) {
+      currentStage = idx;
+      if (currentStage === 3) teacherStepIdx = (scenario === 'clean') ? 3 : 6;
+      render();
+    }
+
+    function changeStage(delta) {
+      setStage(Math.max(0, Math.min(stages.length - 1, currentStage + delta)));
+    }
+
+    function setTeacherStep(idx) {
+      teacherStepIdx = idx;
+      render();
+    }
+
+    function renderTabs() {
+      const container = document.getElementById('stage-tabs');
+      container.innerHTML = stages.map((st, i) => {
+        const active = i === currentStage;
+        return `<button onclick="setStage(${i})" class="px-1.5 py-1 rounded-lg border text-xs font-medium text-center transition-all truncate ${
+          active 
+            ? 'bg-[var(--primary)] text-[var(--primary-foreground)] border-[var(--primary)] shadow-sm' 
+            : 'bg-[var(--background)] text-[var(--muted-foreground)] border-[var(--border)] hover:text-[var(--foreground)]'
+        }">${st.short}</button>`;
+      }).join('');
+
+      document.getElementById('btn-clean').className = `px-2 py-0.5 rounded text-xs font-medium transition-colors ${
+        scenario === 'clean' ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'text-[var(--muted-foreground)]'
+      }`;
+      document.getElementById('btn-noisy').className = `px-2 py-0.5 rounded text-xs font-medium transition-colors ${
+        scenario === 'noisy' ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'text-[var(--muted-foreground)]'
+      }`;
+    }
+
+    function renderPanels() {
+      const heading = document.getElementById('stage-heading');
+      const nfeBadge = document.getElementById('stage-nfe');
+      const desc = document.getElementById('stage-desc');
+      const boxes = document.getElementById('stage-boxes');
+      const valueStrip = document.getElementById('value-strip');
+      const counter = document.getElementById('stage-counter');
+      const canvasTitle = document.getElementById('canvas-title');
+      const canvasBadge = document.getElementById('canvas-badge');
+      const controls = document.getElementById('canvas-controls');
+
+      heading.textContent = stages[currentStage].title;
+      counter.textContent = `${currentStage + 1} / ${stages.length}`;
+      document.getElementById('btn-prev').disabled = (currentStage === 0);
+      document.getElementById('btn-next').disabled = (currentStage === stages.length - 1);
+      controls.innerHTML = '';
+
+      const isClean = scenario === 'clean';
+      const snrVal = isClean ? 32.4 : 17.2;
+      const ts = teacherSteps[teacherStepIdx];
+
+      if (currentStage === 0) {
+        nfeBadge.textContent = "Pre-Net: 0 NFE";
+        canvasTitle.textContent = "Converting Raw Audio + Text into Numerical Arrays";
+        canvasBadge.textContent = "Wav [72,000] → Mel [300, 100]";
+        desc.textContent = "Here is what is extracted from your raw inputs before the Teacher starts:";
+        valueStrip.innerHTML = `
+          <div class="text-[var(--foreground)] font-semibold">Live Values Extracted from Raw Inputs:</div>
+          <div>• <strong>Prompt Wav</strong>: <code>[-0.042, +0.118, +0.205, ...]</code> → <strong>MelSpec</strong> → <code>cond[0:300] = [-1.42, +0.85, ..., +2.10]</code> (100 mel bins/frame)</div>
+          <div>• <strong>Prompt SNR</strong>: <code>10·log10(P95 / P10) = <strong>${snrVal} dB</strong></code> | <strong>Predicted Duration</strong>: <code>N = 300 + 400 = <strong>700 frames</strong></code></div>
+        `;
+        boxes.innerHTML = `
+          <div class="p-2 rounded border border-[var(--border)] bg-[var(--card)] text-xs">
+            <div class="font-semibold">Feature 1: Voice Prompt Mel (<code>cond</code>)</div>
+            <div class="text-[var(--muted-foreground)] mt-0.5">STFT + 100 Mel filters turn every 10.67ms of reference audio into <strong>100 log-energy numbers</strong> (speaker pitch, formants, timbre).</div>
+          </div>
+          <div class="p-2 rounded border border-[var(--border)] bg-[var(--card)] text-xs">
+            <div class="font-semibold">Feature 2: Pinyin/Character IDs (<code>text</code>)</div>
+            <div class="text-[var(--muted-foreground)] mt-0.5"><code>"Welcome..."</code> → integer token IDs <code>[412, 108, 89, 204, ...]</code>, plus predicted frame count <code>N_gen = 400</code> from <code>SLP</code>.</div>
+          </div>
+          <div class="p-2 rounded border border-[var(--border)] bg-[var(--card)] text-xs">
+            <div class="font-semibold">Decision Value #1 — Gate 1 (SNR = ${snrVal} dB):</div>
+            <div class="mt-0.5 ${isClean ? 'text-emerald-500' : 'text-amber-500'} font-semibold">
+              ${isClean ? '32.4 dB ≥ 20.0 dB → Allow Adaptive Handover' : '17.2 dB < 20.0 dB → Force Full Step 8'}
+            </div>
+          </div>
+        `;
+        controls.innerHTML = `<span>MelSpec: n_fft=1024, hop=256, n_mels=100</span><span>SLP Output: 400 gen frames</span>`;
+      } 
+      else if (currentStage === 1) {
+        nfeBadge.textContent = "712 Features / Frame";
+        canvasTitle.textContent = "Zooming Inside Frame #350: The Exact 712 Input Feature Numbers";
+        canvasBadge.textContent = "cat(x_t, cond, text_embed) → [712]";
+        desc.textContent = "Look inside a single frame (e.g., Frame #350 where 'Welcome' is spoken). Both Teacher and Student feed these exact 4 feature vectors into the DiT:";
+        valueStrip.innerHTML = `
+          <div class="text-[var(--foreground)] font-semibold">Frame #350 Concatenated Feature Vector (712 floats):</div>
+          <div><code>x_t[350]</code> (100): <code>[${ts.xVal.toFixed(2)}, +0.91, -1.14, ..., +0.33]</code> <span class="text-[var(--muted-foreground)]">(current noisy mel bin values)</span></div>
+          <div><code>cond[350]</code> (100): <code>[0.00, 0.00, ..., 0.00]</code> <span class="text-[var(--muted-foreground)]">(masked 0s in gen region; frames 0–299 hold speaker mel)</span></div>
+          <div><code>text_embed[350]</code> (512): <code>[+0.19, -0.44, +0.72, ..., -0.11]</code> <span class="text-[var(--muted-foreground)]">(phoneme features from ConvNeXtV2)</span></div>
+        `;
+        boxes.innerHTML = `
+          <div class="p-1.5 rounded border border-[var(--border)] bg-[var(--card)] text-xs">
+            <strong>How the Model Uses All 712 Features Together:</strong>
+            <div class="text-[var(--muted-foreground)] mt-0.5">1. <code>InputEmbedding</code> multiplies the <code>712</code> numbers by a weight matrix to get <code>1024</code> hidden features per frame.</div>
+          </div>
+          <div class="p-1.5 rounded border border-[var(--border)] bg-[var(--card)] text-xs">
+            <div class="text-[var(--muted-foreground)]">2. <strong>Self-Attention across all 700 frames</strong> lets Frame #350 copy the speaker's voice characteristics from <code>cond[0:300]</code> while reading the phoneme from <code>text_embed[350]</code>!</div>
+          </div>
+          <div class="p-1.5 rounded border border-[var(--border)] bg-[var(--card)] text-xs">
+            <div class="text-[var(--muted-foreground)]">3. <code>TimestepEmbedding(t)</code> injects the 1024-dim flow time vector so the layer knows how much noise remains.</div>
+          </div>
+        `;
+        controls.innerHTML = `<span>Frames 0–299: Speaker Voice</span><span>Frames 300–699: Target Speech</span>`;
+      }
+      else if (currentStage === 2) {
+        nfeBadge.textContent = `Step ${ts.step} (${ts.nfe} NFE)`;
+        canvasTitle.textContent = `Stage 3: Teacher Predicts Velocity v → Projects Endpoint x̂₁(t_${ts.step})`;
+        canvasBadge.textContent = `t = ${ts.t.toFixed(3)} | (1 − t) = ${(1 - ts.t).toFixed(3)}`;
+        desc.textContent = "What value does the Teacher actually predict from those 712 features? It outputs 100 velocity numbers (v) per frame, then projects them to t = 1.0 to get the mel endpoint x̂₁:";
+        valueStrip.innerHTML = `
+          <div class="text-[var(--foreground)] font-semibold">Live Math on Frame #350, Mel Bin #12 at Step ${ts.step} (t = ${ts.t.toFixed(3)}):</div>
+          <div>1. <strong>Pass 1 (all 712 features)</strong> → predicts <code>v_cond = +${ts.vCond.toFixed(2)}</code> | <strong>Pass 2 (cond=0, text=0)</strong> → <code>v_uncond = +${ts.vUncond.toFixed(2)}</code></div>
+          <div>2. <strong>Guided Velocity</strong>: <code>v_guided = ${ts.vCond.toFixed(2)} + 2.0×(${ts.vCond.toFixed(2)} − ${ts.vUncond.toFixed(2)}) = <strong>+${ts.vGuided.toFixed(2)}</strong></code></div>
+          <div class="text-emerald-500">3. <strong>Endpoint Value</strong>: <code>x̂₁ = x_t (${ts.xVal.toFixed(2)}) + (1 − ${ts.t.toFixed(3)}) × ${ts.vGuided.toFixed(2)} = <strong>+${ts.x1Val.toFixed(2)}</strong></code></div>
+        `;
+        boxes.innerHTML = `
+          <div class="p-2 rounded border border-[var(--border)] bg-[var(--card)] text-xs">
+            <div class="font-semibold">What is the Predicted Velocity (<code>v_guided</code>)?</div>
+            <div class="text-[var(--muted-foreground)] mt-0.5">For all 700×100 mel bins, <code>proj_out(1024 → 100)</code> predicts the exact slope needed to turn noisy <code>x_t</code> into clean speech.</div>
+          </div>
+          <div class="p-2 rounded border border-[var(--border)] bg-[var(--card)] text-xs">
+            <div class="font-semibold">What is the Endpoint Tensor <code>x̂₁(tᵢ)</code>?</div>
+            <div class="text-[var(--muted-foreground)] mt-0.5">Adding <code>(1 − tᵢ)·v_guided</code> to <code>x_t</code> gives the Teacher's predicted <strong>clean 100-bin mel-spectrogram</strong> at step <i>i</i>. Click steps below to watch <code>x̂₁</code> converge toward <code>+1.85</code>!</div>
+          </div>
+        `;
+        controls.innerHTML = `
+          <span class="font-medium text-[var(--foreground)]">Click Teacher Step:</span>
+          <div class="flex gap-1">
+            ${teacherSteps.map((item, idx) => `
+              <button onclick="setTeacherStep(${idx})" class="px-2 py-0.5 rounded border text-xs font-mono ${
+                idx === teacherStepIdx ? 'bg-[var(--primary)] text-[var(--primary-foreground)] border-[var(--primary)]' : 'bg-[var(--card)] border-[var(--border)]'
+              }">s=${item.step}</button>
+            `).join('')}
+          </div>
+        `;
+      }
+      else if (currentStage === 3) {
+        const chosenStep = isClean ? 4 : 8;
+        const d4Val = isClean ? 0.42 : 0.18;
+        nfeBadge.textContent = `Handover: k* = Step ${chosenStep}`;
+        canvasTitle.textContent = "Stage 4: How Two Consecutive Endpoint Drafts Produce Drift Value dᵢ";
+        canvasBadge.textContent = `d₄ = ${d4Val.toFixed(2)} vs λ̂ = 0.50`;
+        desc.textContent = "How does the handover policy decide when the Teacher's endpoint tensor x̂₁ is ready to pass to the Student? It computes the relative L2 change between x̂₁(tₖ) and x̂₁(tₖ₋₁):";
+        valueStrip.innerHTML = `
+          <div class="text-[var(--foreground)] font-semibold">Drift Calculation on Generated Frames [300:700] at Step 4:</div>
+          <div>• Previous Draft <code>x̂₁(t₃)[300:700]</code> = <code>[+1.84, -0.62, +1.15, ...]</code> | Current Draft <code>x̂₁(t₄)[300:700]</code> = <code>[+1.80, -0.59, +1.18, ...]</code></div>
+          <div>• <strong>Drift Value</strong>: <code>d₄ = ‖x̂₁(t₄) − x̂₁(t₃)‖₂ / ‖x̂₁(t₄)‖₂ = 18.48 / 44.00 = <strong>${d4Val.toFixed(2)}</strong></code></div>
+        `;
+        boxes.innerHTML = `
+          <div class="p-2 rounded border border-[var(--border)] bg-[var(--card)] text-xs">
+            <div class="font-semibold">Two Decision Values Control the Handover:</div>
+            <div class="text-[var(--muted-foreground)] mt-0.5">
+              1. <strong>Prompt SNR</strong> = <code>${snrVal} dB</code> (compared to <code>θ = 20.0 dB</code>)<br/>
+              2. <strong>Endpoint Drift dₖ</strong> = <code>${d4Val.toFixed(2)}</code> (compared to LTT-calibrated <code>λ̂ = 0.50</code>)
+            </div>
+          </div>
+          <div class="p-2 rounded border border-[var(--border)] bg-[var(--card)] text-xs">
+            ${isClean
+              ? `<div class="text-emerald-500 font-semibold">✓ Clean Result: Handover at k* = Step 4!</div>
+                 <div class="text-[var(--muted-foreground)] mt-0.5">Because <code>32.4 ≥ 20</code> and <code>0.42 ≤ 0.50</code>, the Teacher stops at Step 4 and passes the tensor <code>x̂₁(t₄)</code> (shape <code>[1, 700, 100]</code>) to the Student.</div>`
+              : `<div class="text-amber-500 font-semibold">⚠ Noisy Result: Gate 1 Forces k* = Step 8!</div>
+                 <div class="text-[var(--muted-foreground)] mt-0.5">Because <code>17.2 < 20 dB</code>, Gate 1 ignores the low drift and runs the Teacher all the way to Step 8 before passing <code>x̂₁(t₈)</code> to the Student.</div>`
+            }
+          </div>
+        `;
+        controls.innerHTML = `<span>What passes to Student? The [1, 700, 100] tensor x̂₁(t_${chosenStep})!</span>`;
+      }
+      else if (currentStage === 4) {
+        const chosenStep = isClean ? 4 : 8;
+        const totalNfe = isClean ? 13 : 21;
+        nfeBadge.textContent = `Student: +3 NFE (Total ${totalNfe})`;
+        canvasTitle.textContent = `Stage 5: Student Takes x̂₁(t_${chosenStep}) + Same Features → 3 Fast Jumps`;
+        canvasBadge.textContent = "1 Pass/Step (No CFG)";
+        desc.textContent = "Now the Student receives x̂₁(t_k*) as its starting canvas. At each of its 3 steps (τ₁=0.076, τ₂=0.293, τ₃=0.617), it uses the EXACT SAME cond + text_embed features to sharpen the mel values:";
+        valueStrip.innerHTML = `
+          <div class="text-[var(--foreground)] font-semibold">Student Refinement on Frame #350, Mel Bin #12:</div>
+          <div>• <strong>Handed Over from Teacher</strong>: <code>x̂₁(t_${chosenStep}) = +1.80</code> (rough formant energy, slightly blurry harmonics)</div>
+          <div>• <strong>Jump 1 (τ=0.076)</strong>: mixes noise <code>ε₁</code> → Student DiT (1 pass) predicts <code>v_stu = +1.91</code> → updates <code>x̂₁ = +1.83</code></div>
+          <div class="text-emerald-500">• <strong>Jump 2 (τ=0.293)</strong> → <code>x̂₁ = +1.85</code> | <strong>Jump 3 (τ=0.617)</strong> → <strong>Final Crisp Mel Value = <code>+1.86</code></strong></div>
+        `;
+        boxes.innerHTML = `
+          <div class="p-2 rounded border border-[var(--border)] bg-[var(--card)] text-xs">
+            <div class="font-semibold">Why is the Student 2× cheaper per step than the Teacher?</div>
+            <div class="text-[var(--muted-foreground)] mt-0.5">The Student feeds <code>cat(x_τ, cond, text_embed)</code> (all 712 features) through its 22 DiT blocks <strong>only ONCE per step</strong> (no unconditional pass needed because DMD distillation trained it to match the Teacher's guided output directly).</div>
+          </div>
+          <div class="p-1.5 rounded border border-[var(--border)] bg-[var(--card)] text-xs text-[var(--muted-foreground)]">
+            After Jump 3, we have the final <code>[1, 700, 100]</code> mel-spectrogram tensor.
+          </div>
+        `;
+        controls.innerHTML = `<span>Student Input: x̂₁(t_${chosenStep}) + cond + text_embed</span><span>Output: Final x̂₁ [1, 700, 100]</span>`;
+      }
+      else if (currentStage === 5) {
+        const totalNfe = isClean ? 13 : 21;
+        nfeBadge.textContent = `Final Audio: 24 kHz`;
+        canvasTitle.textContent = "Stage 6: Slice Generated Mel [400, 100] → Vocos → Audio Waveform";
+        canvasBadge.textContent = "400 frames × 256 hop = 102,400 samples";
+        desc.textContent = "How does the final [1, 700, 100] mel-spectrogram tensor become actual sound you can hear? Two lines of code in sampler.py:";
+        valueStrip.innerHTML = `
+          <div class="text-[var(--foreground)] font-semibold">From Mel Tensor to Playable .wav Amplitudes:</div>
+          <div>1. <strong>Slice Prompt Off</strong>: Keep only generated frames <code>300–699</code> → <code>mel_gen = x̂₁[:, 300:700, :] * scale</code> (shape <code>[1, 400, 100]</code>)</div>
+          <div class="text-emerald-500">2. <strong>Vocos Decode</strong>: <code>100</code> mel bins in Frame #350 <code>[+1.86, -0.54, ...]</code> → Inverse STFT → <strong>256 audio wave samples</strong> <code>[-0.142, -0.098, +0.034, +0.215, ...]</code>!</div>
+        `;
+        boxes.innerHTML = `
+          <div class="p-2 rounded border border-[var(--border)] bg-[var(--card)] text-xs">
+            <div class="font-semibold">What does Vocos do to the 100 Mel numbers?</div>
+            <div class="text-[var(--muted-foreground)] mt-0.5">The 100 mel numbers only describe <em>how loud each pitch frequency is</em> during that 10.67ms frame. Vocos predicts the missing <strong>phase angles</strong> and runs an <strong>Inverse Short-Time Fourier Transform (iSTFT)</strong> to turn each frame into <code>256</code> pressure wave samples.</div>
+          </div>
+          <div class="p-1.5 rounded border border-[var(--border)] bg-[var(--card)] text-xs text-[var(--muted-foreground)]">
+            <code>400 frames × 256 samples/frame = 102,400 samples</code> at 24,000 Hz = <strong>4.26 seconds of clear speech</strong> synthesized in <strong>${totalNfe} NFE</strong>!
+          </div>
+        `;
+        controls.innerHTML = `<span>Vocos: ConvNeXt + iSTFT Head</span><span>Sample Rate: 24,000 Hz</span>`;
+      }
+    }
+
+    function drawCanvas() {
+      const canvas = document.getElementById('viz-canvas');
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width;
+      const H = canvas.height;
+      const isLight = document.documentElement.classList.contains('light');
+      const fg = isLight ? '#1e293b' : '#f1f5f9';
+      const muted = isLight ? '#64748b' : '#94a3b8';
+      const borderCol = isLight ? '#cbd5e1' : '#334155';
+      const cardBg = isLight ? '#f8fafc' : '#1e293b';
+      const panelBg = isLight ? '#ffffff' : '#0f172a';
+
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = cardBg;
+      ctx.fillRect(0, 0, W, H);
+
+      const isClean = scenario === 'clean';
+      const ts = teacherSteps[teacherStepIdx];
+
+      function rRect(x, y, w, h, r, fill, stroke) {
+        ctx.beginPath();
+        ctx.roundRect(x, y, w, h, r);
+        if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+        if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.stroke(); }
+      }
+
+      function drawMelBox(x, y, w, h, clarity, isPromptPart, label) {
+        rRect(x, y, w, h, 4, '#0f172a', borderCol);
+        const cols = 32;
+        const rows = 12;
+        const cw = (w - 4) / cols;
+        const rh = (h - 4) / rows;
+        for (let c = 0; c < cols; c++) {
+          const isPromptCol = isPromptPart && (c < cols * 0.42);
+          for (let r = 0; r < rows; r++) {
+            const harmonic = Math.sin(c * 0.45 + r * 0.7) * Math.cos(r * 0.35);
+            const pseudoRand = Math.sin(c * 12.9898 + r * 78.233) * 43758.5453;
+            const noise = (pseudoRand - Math.floor(pseudoRand)) * 2 - 1;
+            let val;
+            if (isPromptCol) {
+              val = isClean ? Math.max(0, harmonic * 0.85 + 0.25) : Math.max(0, harmonic * 0.55 + Math.abs(noise) * 0.45);
+            } else {
+              val = Math.max(0, (harmonic * 0.8 + 0.25) * clarity + Math.abs(noise) * (1 - clarity) * 0.85);
+            }
+            const hue = isPromptCol ? 200 : (265 - val * 140);
+            const light = 15 + val * 62;
+            ctx.fillStyle = `hsl(${hue}, 80%, ${light}%)`;
+            ctx.fillRect(x + 2 + c * cw, y + 2 + r * rh, cw - 0.5, rh - 0.5);
+          }
+        }
+        if (label) {
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 10px sans-serif';
+          ctx.fillText(label, x + 5, y + 13);
+        }
+      }
+
+      if (currentStage === 0) {
+        // Audio -> Mel + SNR on left; Text -> Token IDs + Duration on right
+        rRect(10, 10, 244, 145, 6, panelBg, borderCol);
+        ctx.fillStyle = fg;
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText('Raw Audio → 100-Ch Mel + SNR Value', 18, 26);
+
+        const midY = 64;
+        for (let i = 0; i < 220; i++) {
+          const env = Math.sin(i * 0.08) > 0.1 ? Math.sin(i * 0.08) * 22 : 2;
+          const noiseAmp = isClean ? 1.2 : 9.5;
+          const h = Math.max(2, env + (Math.sin(i * 1.7) * noiseAmp));
+          ctx.fillStyle = (env > 7) ? '#3b82f6' : (isClean ? '#64748b' : '#f59e0b');
+          ctx.fillRect(18 + i, midY - h, 1.2, h * 2);
+        }
+
+        drawMelBox(18, 94, 130, 52, 0.95, true, 'cond[0:300, 100]');
+        rRect(154, 94, 92, 52, 4, cardBg, isClean ? '#10b981' : '#f59e0b');
+        ctx.fillStyle = isClean ? '#10b981' : '#f59e0b';
+        ctx.font = 'bold 11px monospace';
+        ctx.fillText(isClean ? 'SNR: 32.4dB' : 'SNR: 17.2dB', 160, 114);
+        ctx.fillStyle = muted;
+        ctx.font = '10px sans-serif';
+        ctx.fillText(isClean ? '≥ 20dB (Pass)' : '< 20dB (Gate)', 160, 134);
+
+        // Right box
+        rRect(264, 10, 246, 145, 6, panelBg, borderCol);
+        ctx.fillStyle = fg;
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText('Raw Text → Token IDs + Frame Count', 274, 26);
+
+        rRect(274, 34, 226, 26, 4, cardBg, borderCol);
+        ctx.fillStyle = fg;
+        ctx.font = '10px monospace';
+        ctx.fillText('"Hello there | Welcome to the defense"', 280, 51);
+
+        rRect(274, 66, 226, 26, 4, '#312e81', '#6366f1');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText('Token IDs: [192, 45, ..., 412, 108, 89]', 280, 83);
+
+        rRect(274, 100, 95, 44, 4, '#3b82f6', null);
+        rRect(373, 100, 127, 44, 4, '#8b5cf6', null);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText('Prompt: 300f', 282, 120);
+        ctx.fillText('cond = Mel', 282, 134);
+        ctx.fillText('Target: 400f (SLP)', 382, 120);
+        ctx.fillText('cond = 0.00', 382, 134);
+      }
+      else if (currentStage === 1) {
+        // Show Frame #350 vertical slice across the 3 tensors -> 712 vector -> 1024 DiT
+        ctx.fillStyle = fg;
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText('Frame #350 Slice Across the 3 Input Feature Tensors', 12, 18);
+
+        // 3 bars representing the 3 feature blocks at frame 350
+        rRect(12, 26, 240, 38, 4, '#0f172a', '#ef4444');
+        ctx.fillStyle = '#fca5a5';
+        ctx.font = 'bold 10px monospace';
+        ctx.fillText('1. x_t[350] (100 noisy mel bins)', 20, 41);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText('[-0.38, +0.91, -1.14, +0.05, ..., +0.33]', 20, 56);
+
+        rRect(12, 70, 240, 38, 4, '#0f172a', '#3b82f6');
+        ctx.fillStyle = '#93c5fd';
+        ctx.fillText('2. cond[350] (100 prompt mel bins)', 20, 85);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText('[0.00, 0.00, 0.00, ..., 0.00] (0:299=voice)', 20, 100);
+
+        rRect(12, 114, 240, 42, 4, '#312e81', '#818cf8');
+        ctx.fillStyle = '#c7d2fe';
+        ctx.fillText('3. text_embed[350] (512 text features)', 20, 129);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText('[+0.19, -0.44, +0.72, +0.08, ..., -0.11]', 20, 146);
+
+        // Arrow
+        ctx.fillStyle = fg;
+        ctx.font = 'bold 11px monospace';
+        ctx.fillText('cat()=712', 260, 82);
+        ctx.fillText('────────►', 260, 98);
+
+        // Right DiT fusion box
+        rRect(330, 24, 178, 132, 6, panelBg, '#8b5cf6');
+        ctx.fillStyle = '#8b5cf6';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText('Inside DiT (Frame #350)', 340, 42);
+
+        rRect(340, 50, 158, 28, 4, cardBg, borderCol);
+        ctx.fillStyle = fg;
+        ctx.font = '10px monospace';
+        ctx.fillText('Linear(712 → 1024)', 350, 68);
+
+        rRect(340, 84, 158, 28, 4, cardBg, borderCol);
+        ctx.fillText('+ time_embed(t) [1024]', 350, 102);
+
+        rRect(340, 118, 158, 30, 4, '#4c1d95', null);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText('22× Self-Attn → 100 v', 350, 137);
+      }
+      else if (currentStage === 2) {
+        const clarity = Math.min(0.92, 0.15 + (teacherStepIdx / 6) * 0.77);
+
+        // Left: x_t + 2-pass CFG velocity
+        rRect(10, 10, 232, 145, 6, panelBg, borderCol);
+        ctx.fillStyle = fg;
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText(`Step ${ts.step} (t=${ts.t.toFixed(3)}): Predict Velocity v`, 18, 26);
+
+        rRect(18, 34, 216, 34, 4, cardBg, borderCol);
+        ctx.fillStyle = fg;
+        ctx.font = '10px monospace';
+        ctx.fillText(`Pass 1 (712 feat) → v_cond   = +${ts.vCond.toFixed(2)}`, 24, 48);
+        ctx.fillText(`Pass 2 (dropped)  → v_uncond = +${ts.vUncond.toFixed(2)}`, 24, 62);
+
+        rRect(18, 74, 216, 32, 4, '#064e3b', '#10b981');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(`CFG: v_guided = +${ts.vGuided.toFixed(2)} [700, 100]`, 24, 94);
+
+        rRect(18, 112, 216, 34, 4, cardBg, borderCol);
+        ctx.fillStyle = fg;
+        ctx.fillText(`x̂₁ = x_t(${ts.xVal.toFixed(2)}) + ${(1-ts.t).toFixed(3)}×(${ts.vGuided.toFixed(2)})`, 24, 127);
+        ctx.fillStyle = '#10b981';
+        ctx.fillText(`   = +${ts.x1Val.toFixed(2)} (Projected Mel Bin)`, 24, 141);
+
+        // Right: Visual Projected Endpoint Mel
+        ctx.fillStyle = fg;
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText(`Projected Endpoint Tensor x̂₁(t_${ts.step})`, 258, 22);
+        drawMelBox(258, 28, 250, 126, clarity, true, `x̂₁(t_${ts.step}) [700, 100]`);
+      }
+      else if (currentStage === 3) {
+        // Drift comparison visual
+        rRect(10, 10, 500, 145, 6, panelBg, borderCol);
+        ctx.fillStyle = fg;
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText('Comparing Consecutive Endpoint Drafts on Generated Region [300:700]', 20, 26);
+
+        drawMelBox(20, 34, 130, 82, 0.45, false, 'x̂₁(t₃) [300:700]');
+        ctx.fillStyle = fg;
+        ctx.font = 'bold 14px monospace';
+        ctx.fillText('−', 158, 80);
+        drawMelBox(174, 34, 130, 82, 0.58, false, 'x̂₁(t₄) [300:700]');
+
+        ctx.fillStyle = muted;
+        ctx.font = '10px monospace';
+        ctx.fillText('Bin#12: +1.84', 24, 132);
+        ctx.fillText('Bin#12: +1.80 (Δ=-0.04)', 174, 132);
+
+        // Right side: Drift bar vs Threshold
+        rRect(320, 34, 178, 108, 6, cardBg, isClean ? '#10b981' : '#f59e0b');
+        const dVal = isClean ? 0.42 : 0.18;
+        ctx.fillStyle = fg;
+        ctx.font = 'bold 11px monospace';
+        ctx.fillText(`Drift d₄ = ${dVal.toFixed(2)}`, 332, 54);
+        ctx.fillText(`Calib λ̂  = 0.50`, 332, 72);
+        ctx.fillText(`SNR      = ${isClean ? '32.4' : '17.2'} dB`, 332, 90);
+
+        ctx.fillStyle = isClean ? '#10b981' : '#f59e0b';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText(isClean ? '→ PASS! Stop at Step 4' : '→ SNR < 20! Run to Step 8', 332, 116);
+        ctx.fillStyle = muted;
+        ctx.font = '10px monospace';
+        ctx.fillText(isClean ? 'Pass x̂₁(t₄) to Student' : 'Pass x̂₁(t₈) to Student', 332, 134);
+      }
+      else if (currentStage === 4) {
+        const chosenStep = isClean ? 4 : 8;
+        drawMelBox(12, 20, 135, 130, 0.58, true, `Input: x̂₁(t_${chosenStep})`);
+
+        const steps = [
+          { label: 'Jump 1 (τ=0.076)', val: '+1.80 → +1.83' },
+          { label: 'Jump 2 (τ=0.293)', val: '+1.83 → +1.85' },
+          { label: 'Jump 3 (τ=0.617)', val: '+1.85 → +1.86' }
+        ];
+        steps.forEach((s, i) => {
+          const by = 20 + i * 45;
+          rRect(162, by, 185, 39, 5, panelBg, '#8b5cf6');
+          ctx.fillStyle = '#8b5cf6';
+          ctx.font = 'bold 10px sans-serif';
+          ctx.fillText(`${s.label} (1 Pass, 712 feat)`, 170, by + 15);
+          ctx.fillStyle = fg;
+          ctx.font = '10px monospace';
+          ctx.fillText(`Bin #12: ${s.val}`, 170, by + 31);
+        });
+
+        drawMelBox(362, 20, 145, 130, 0.96, true, 'Final x̂₁ [700, 100]');
+      }
+      else if (currentStage === 5) {
+        // Slice [300:700] -> Vocos -> Waveform samples
+        drawMelBox(14, 22, 150, 126, 0.98, false, 'mel_gen [400, 100]');
+
+        rRect(180, 48, 110, 74, 6, '#4c1d95', '#8b5cf6');
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText('Vocos Decoder', 194, 74);
+        ctx.font = '10px monospace';
+        ctx.fillText('100 mel bins/f', 192, 92);
+        ctx.fillText('→ 256 wav/f', 192, 108);
+
+        rRect(306, 22, 200, 126, 6, panelBg, '#10b981');
+        ctx.fillStyle = '#10b981';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText('Output 24 kHz Audio Wave', 316, 40);
+
+        const midY = 88;
+        for (let i = 0; i < 180; i++) {
+          const syllable = Math.abs(Math.sin(i * 0.065)) * Math.cos(i * 0.02);
+          const h = Math.max(2, syllable * 32);
+          ctx.fillStyle = '#10b981';
+          ctx.fillRect(316 + i, midY - h, 1.2, h * 2);
+        }
+        ctx.fillStyle = fg;
+        ctx.font = '10px monospace';
+        ctx.fillText('[-0.142, -0.098, +0.034, ...]', 316, 138);
+      }
+    }
+
+    function render() {
+      renderTabs();
+      renderPanels();
+      drawCanvas();
+    }
+
+    window.addEventListener('DOMContentLoaded', render);
+  </script>
+</body>
+</html>
