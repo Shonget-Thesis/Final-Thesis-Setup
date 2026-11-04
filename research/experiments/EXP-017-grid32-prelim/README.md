@@ -1,6 +1,6 @@
 # EXP-017: Chapter 3 rehearsal on two teacher grids (preliminary)
 
-**Status:** designed 2026-11-02, not run. Task EVAL-010.
+**Status:** run on 2026-11-02 on a Colab Tesla T4 (thesis `c3f6cbe`, Shonget-DMOSpeech2 `8a7868f`); 360 of 360 cases; results in [results/](results/MANIFEST.json). Task EVAL-010 (review).
 - Notebook: [DMOSpeech2_Grid32_Prelim.ipynb](../../../code/colab/DMOSpeech2_Grid32_Prelim.ipynb)
 - Runner: [run_grid32_prelim.py](../../../code/colab/run_grid32_prelim.py)
 - Tests: [test_grid32.py](../../../code/tests/test_grid32.py)
@@ -78,6 +78,53 @@ About 5 hours for the full run on a T4, and about 5.5 hours with setup and the s
 
 EVAL-009 (j = 1 versus j = 2 on the 16-interval grid) is a separate check. The `paper` output here adds one j = 2 point on the 32-interval grid.
 
-## Results
+## Results (360 of 360 cases, 2026-11-02, Tesla T4)
 
-Not run yet. Import the results zip into `results/` with a SHA-256 manifest, as for EXP-015.
+From [GRID32_REPORT.md](results/GRID32_REPORT.md). The preregistration (`7ad1b65f…`) was written at 05:10 UTC, before the first case at 05:11. The run took 5 h 27 min, 54.7 s per case. Development evidence.
+
+**Checks.**
+- The fresh 16-interval Step 4, 5, 6 and 8 scores equal the stored T4 labels in all 360 cases (max |Δ| 0), and d₄ is identical.
+- The grid-agnostic teacher loop matches the sampler exactly (16 smoke checks, max |diff| 0).
+- Re-running the analysis from the CSV reproduces the report; it is identical apart from line endings.
+
+**The problem holds on both grids.** Fixed early switching fails mainly on noisy prompts:
+- 16-interval Step 4 fails 2 of 60 clean inputs against 126 of 300 noisy ones;
+- 32-interval s = 0.07 fails 2 of 60 against 129 of 300.
+
+The cheapest safe step varies per input. A perfect per-input choice would cost 14.76 passes instead of 21 (−29.7%) on the 16-interval grid, and 21.89 instead of 33 (−33.7%) on the 32-interval grid.
+
+**The failure rule's noise floor on noisy prompts.** The two references (16-interval Step 8 and 32-interval s = 0.25) have equal mean quality on noisy prompts (SIM +0.0000, WER +0.007; not significant). Yet they flag each other on 81 and 78 of 300 noisy inputs, against 0 and 2 of 60 clean ones. About a quarter of any noisy-prompt failure count therefore reflects output variability rather than damage.
+
+**Schedulers** (out of fold; Learn-Then-Test with α = 0.05, δ = 0.10):
+
+| Grid | Full policy (Definition 3.4, 20 dB) | SNR-only, calibrated gate | Full policy, Objective 1 gate | SNR + TAS | Oracle (hindsight) |
+|---|---|---|---|---|---|
+| 16-interval (vs 21 passes) | 0 failures, 0.0% saving (nothing certified in any fold) | 7 (1.9%), 10.9% | 4 (1.1%), 7.0% | 12 (3.3%), 14.0% | 0, 29.7% |
+| 32-interval (vs 33 passes) | 8 (2.2%), 1.8% | 11 (3.1%), 13.4% | 6 (1.7%), 9.1% | 13 (3.6%), 14.0% | 0, 33.7% |
+
+- **The drift signal (Definition 3.4) adds little.**
+  - On the 16-interval grid no threshold is certified, as in EXP-012.
+  - On the 32-interval grid it saves 1.8% and does not differ from a cost-matched random rule (exact McNemar p = 0.77).
+  - The calibrated SNR gate does most of the work. SNR + TAS saves the most of any method within the 5% limit, on both grids.
+- **Robustness:** calibrated on clean prompts only, the full policy fails on 28.0% (16-interval) and 5.0% (32-interval) of noisy prompts, and stabilization only on 42.0% and 7.3%.
+- **Objective 3 rehearsal** (100 re-splits): on the 16-interval grid the full policy is never certified. The calibrated SNR gate is always certified, and its test risk exceeds 5% in 13% of splits.
+
+**The paper's settings are worse than the thesis reference:**
+- `paper` (14 + 2, 32 passes) adds 140 failures and `alg2` (Algorithm 2 as written, 30 passes) adds 172; on clean prompts that is 7 and 11.
+- Noisy WER is 0.34 and 0.41, against 0.076 for the thesis reference.
+- `alg2` has lower speaker similarity than `paper` (−0.013, p = 3.5 × 10⁻⁸), consistent with its student starting at a level it was not trained on.
+- The paper's teacher schedule with the thesis handover (`s025`, 33 passes) matches the thesis reference in quality (no significant difference) but uses 57% more passes.
+
+**Teacher-only and student-only:**
+- Teacher-only (64 passes) has the worst quality: noisy WER 0.97, and clean UTMOS 3.27 against 3.92.
+- Student-only (4 passes, 0.70 s) matches the reference on clean prompts and is better on noisy ones: SIM +0.077, WER −0.027, UTMOS 2.69 against 1.46. Under Definition 3.1 it still adds 59 failures, 8 of them on clean prompts.
+- The study does not measure prosodic diversity, which is the reason DMOSpeech 2 uses the teacher.
+
+**Runtime** (composed from measured unit times on the T4):
+
+| Output | Time | RTF |
+|---|---:|---:|
+| 16-interval Step 8 | 3.23 s | 0.69 |
+| 16-interval Step 4 | 2.04 s | 0.44 |
+| Teacher-only | 9.65 s | 2.07 |
+| Student-only | 0.70 s | 0.15 |
