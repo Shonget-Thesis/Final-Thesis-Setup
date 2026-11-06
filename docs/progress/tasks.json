@@ -460,6 +460,22 @@
         "research/experiments/EXP-017-grid32-prelim/results/GRID32_REPORT.md"
       ],
       "validation": "Run on a Colab Tesla T4 on 2026-11-02 (thesis c3f6cbe): 360 of 360 cases, 13 outputs each; preregistration written at 05:10 UTC, before the first case at 05:11; the fresh 16-interval Step 4-8 scores equal the stored T4 labels in all 360 cases; the analysis reproduces from the CSV; results imported byte-identical with a SHA-256 manifest (in test_evidence_manifest.py). Development evidence only: calibration by cross-validation on the same 60 speakers, so no guarantee is certified."
+    },
+    {
+      "id": "EVAL-011",
+      "title": "Stage-Wise Trajectory Action Cascade (STAC) and 1D-CRC-STAC benchmark on 16-grid (Steps 1..8) and 32-grid (Steps 1..15) with speed, time, RTF, and computational cost telemetry (EXP-018)",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "in_progress",
+      "updated": "2026-11-07",
+      "acceptance": "Evaluates STAC, 1D-CRC-STAC, matched-DOF Stage-Wise SNR Cascade, Stage-Wise Single-Step Drift, Single-Threshold Action, OOD corruptions (EXP-011), and Hindsight Oracle sensitivity on existing T4 benchmarks (EXP-017 and 500-speaker full d_1..d_8) and provides a resumable Colab T4 notebook and runner for synthesizing missing 16-grid Steps {1,2,3,7} and 32-grid Steps {1,2,3,4,5,6,8,10,12,15} plus live T4 early-exit speed/latency/RTF verification.",
+      "evidence": [
+        "code/colab/run_swsr_handover_prelim.py",
+        "code/colab/DMOSpeech2_SWSR_Handover_Prelim.ipynb",
+        "code/tests/test_swsr_handover.py",
+        "research/experiments/EXP-018-swsr-handover-prelim/results/SWSR_HANDOVER_REPORT.md",
+        "docs/progress/log/2026-11-07-exp018-stac-handover-prelim.md"
+      ],
+      "validation": "Verified via unit tests (code/tests/test_swsr_handover.py, 4 tests passing; 69 total tests passing) and instant T4 benchmark analysis across EXP-017 (360 cases), 500-speaker all1000 (full d_1..d_8), and EXP-011 OOD (100 cases). Ready for Colab T4 execution of Steps 5-6B."
     }
   ]
 }
