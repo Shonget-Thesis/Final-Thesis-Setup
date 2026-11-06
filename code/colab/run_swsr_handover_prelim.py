@@ -1422,6 +1422,35 @@ def analyze(out_dir, exp017_csv=EXP017_CSV, all1000_csv=ALL1000_CSV, steps1to8_c
     return res
 
 
+def _ensure_colab_py313_compat():
+    """Ensures Python 3.13+ (`audioop-lts`), PyTorch 2.6+ (`TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1`),
+    and Torchaudio 2.9+ (`soundfile` fallback when `torchcodec` is absent) work seamlessly on Colab."""
+    os.environ.setdefault("TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD", "1")
+    try:
+        import audioop  # noqa: F401
+    except ImportError:
+        import subprocess
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "audioop-lts"])
+    try:
+        import soundfile as sf
+        import torch
+        import torchaudio
+        _orig_load = torchaudio.load
+
+        def _safe_torchaudio_load(uri, *a, **kw):
+            try:
+                return _orig_load(uri, *a, **kw)
+            except (ImportError, RuntimeError) as exc:
+                if "torchcodec" in str(exc).lower() or "backend" in str(exc).lower():
+                    wav, sr = sf.read(str(uri), dtype="float32", always_2d=True)
+                    return torch.from_numpy(wav.T.copy()), int(sr)
+                raise
+
+        torchaudio.load = _safe_torchaudio_load
+    except Exception:
+        pass
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("cmd", choices=["analyze", "smoke", "run_steps1to8", "live_t4"])
@@ -1441,6 +1470,7 @@ def main(argv=None):
         analyze(args.out, args.exp017_csv, args.all1000_csv, args.steps1to8_csv)
         return
 
+    _ensure_colab_py313_compat()
     import torch
     torch.backends.cuda.matmul.allow_tf32 = False
     torch.backends.cudnn.allow_tf32 = False
