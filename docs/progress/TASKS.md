@@ -2,7 +2,7 @@
 
 Generated from tasks.json; edit the JSON and run python scripts/render_progress.py.
 
-todo: 8 | in_progress: 3 | blocked: 0 | review: 12 | done: 8
+todo: 8 | in_progress: 4 | blocked: 0 | review: 12 | done: 8
 
 | ID | Task | Owner | Status | Updated | Evidence |
 | --- | --- | --- | --- | --- | --- |
@@ -37,5 +37,6 @@ todo: 8 | in_progress: 3 | blocked: 0 | review: 12 | done: 8
 | PRES-001 | Animated proposal-defense walkthrough (Chapters 1-3) | Claude (presentation), for Mark Vincent D. Limpahan | review | 2026-10-27 | [index.html](../../presentation/index.html), [SCRIPT.md](../../presentation/SCRIPT.md), [README.md](../../presentation/README.md), [build.py](../../presentation/build.py), [template.html](../../presentation/template.html), [01-title.html](../../presentation/slides/01-title.html), [proposal-defense-slides.pdf](../../presentation/proposal-defense-slides.pdf), [2026-10-25-defense-walkthrough.md](../../docs/progress/log/2026-10-25-defense-walkthrough.md), [2026-10-27-vector-slides-pdf.md](../../docs/progress/log/2026-10-27-vector-slides-pdf.md), [2026-10-27-model-gap-novelty-slides.md](../../docs/progress/log/2026-10-27-model-gap-novelty-slides.md), [2026-10-27-compact-deck.md](../../docs/progress/log/2026-10-27-compact-deck.md) |
 | EVAL-009 | Follow-up check of the student restart level (j=1 versus j=2) on the T4 | unassigned | todo | 2026-10-27 | [2026-10-27-restart-level-reasoning.md](../../docs/progress/log/2026-10-27-restart-level-reasoning.md) |
 | EVAL-010 | Chapter 3 rehearsal on two teacher grids (EXP-017): all candidates, compared methods and analyses in one run | Rhenel Jhon R. Sajol | review | 2026-11-02 | [README.md](../../research/experiments/EXP-017-grid32-prelim/README.md), [run_grid32_prelim.py](../../code/colab/run_grid32_prelim.py), [DMOSpeech2_Grid32_Prelim.ipynb](../../code/colab/DMOSpeech2_Grid32_Prelim.ipynb), [test_grid32.py](../../code/tests/test_grid32.py), [MANIFEST.json](../../research/experiments/EXP-017-grid32-prelim/results/MANIFEST.json), [GRID32_REPORT.md](../../research/experiments/EXP-017-grid32-prelim/results/GRID32_REPORT.md) |
+| EVAL-011 | Stage-Wise Trajectory Action Cascade (STAC) and 1D-CRC-STAC benchmark on 16-grid (Steps 1..8) and 32-grid (Steps 1..15) with speed, time, RTF, and computational cost telemetry (EXP-018) | Rhenel Jhon R. Sajol | in_progress | 2026-11-07 | [run_swsr_handover_prelim.py](../../code/colab/run_swsr_handover_prelim.py), [DMOSpeech2_SWSR_Handover_Prelim.ipynb](../../code/colab/DMOSpeech2_SWSR_Handover_Prelim.ipynb), [test_swsr_handover.py](../../code/tests/test_swsr_handover.py), [SWSR_HANDOVER_REPORT.md](../../research/experiments/EXP-018-swsr-handover-prelim/results/SWSR_HANDOVER_REPORT.md), [2026-11-07-exp018-stac-handover-prelim.md](../../docs/progress/log/2026-11-07-exp018-stac-handover-prelim.md) |
 
 Completion requires acceptance evidence and a recorded validation. Unassigned owners need team assignment.
