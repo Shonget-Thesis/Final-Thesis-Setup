@@ -1094,13 +1094,39 @@ def live_early_exit_teacher(
     return endpoint, chosen_k, drifts
 
 
+LIVE_CSV_FIELDS = [
+    "utt_id", "speaker_id", "condition", "prompt_snr", "variant", "lambda",
+    "chosen_step", "teacher_evals_swsr", "teacher_passes_swsr", "student_steps",
+    "nfe_swsr", "nfe_ref", "nfe_saving_pct", "gate_overhead_ms", "endpoint_max_abs_diff",
+    "t_prepare_s", "t_teacher_swsr_s", "t_teacher_ref_s", "t_student_s", "t_vocoder_s",
+    "time_swsr_s", "time_ref_s", "time_saved_s", "wall_clock_saving",
+    "speedup_x", "teacher_speedup_x", "audio_seconds",
+    "rtf_swsr", "rtf_ref", "x_realtime_swsr", "x_realtime_ref", "peak_mem_mb",
+    "wer_swsr", "wer_ref", "sim_swsr", "sim_ref", "utmos_swsr", "utmos_ref",
+]
+
+
 def run_live_t4(pipe, items, conds, out_dir, variant="stac", lam=3.20):
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     csv_path = out_dir / "live_swsr_t4.csv"
-    taus = list(pipe.sampler.STUDENT_TAUS)
+    rf.repair_csv(csv_path)
+    done_live = set()
     rows = []
-    for idx, (item, cond) in enumerate([(it, c) for it in items for c in conds], 1):
+    if csv_path.exists():
+        with open(csv_path, encoding="utf-8") as f:
+            rdr = csv.DictReader(f)
+            if rdr.fieldnames and set(LIVE_CSV_FIELDS).issubset(set(rdr.fieldnames)):
+                for existing in rdr:
+                    rows.append(existing)
+                    done_live.add((existing["utt_id"], existing["condition"], existing.get("variant", variant)))
+            else:
+                csv_path.unlink()
+
+    todo = [(it, c) for it in items for c in conds if (it["utt_id"], c, variant) not in done_live]
+    print(f"[live_t4] {len(todo)} cases to run ({len(done_live)} already in {csv_path.name}) on {pipe.gpu}", flush=True)
+    taus = list(pipe.sampler.STUDENT_TAUS)
+    for idx, (item, cond) in enumerate(todo, 1):
         if pipe.device.type == "cuda":
             pipe.torch.cuda.reset_peak_memory_stats()
         ctx, t_prep = g32.timed(pipe, pipe.prepare, item, cond, item["input_seed"], out_dir)
@@ -1163,19 +1189,23 @@ def run_live_t4(pipe, items, conds, out_dir, variant="stac", lam=3.20):
             "utmos_swsr": round(m_swsr["utmos"], 4),
             "utmos_ref": round(m_ref["utmos"], 4),
         }
+        new_file = not csv_path.exists()
+        with open(csv_path, "a", newline="", encoding="utf-8") as f:
+            w = csv.DictWriter(f, fieldnames=LIVE_CSV_FIELDS)
+            if new_file:
+                w.writeheader()
+            w.writerow(row)
+            f.flush()
+            os.fsync(f.fileno())
         rows.append(row)
         print(
-            f"[{idx}] {item['utt_id'][-8:]} {cond}: {variant.upper()} picked Step {k_swsr} "
+            f"[{idx}/{len(todo)}] {item['utt_id'][-8:]} {cond}: {variant.upper()} picked Step {k_swsr} "
             f"({row['nfe_swsr']} NFE vs 21 NFE [{row['nfe_saving_pct']:.1f}% saved], "
             f"wall-clock {total_swsr:.2f}s vs {total_ref:.2f}s [{row['speedup_x']:.2f}x speedup, RTF {row['rtf_swsr']:.3f} vs {row['rtf_ref']:.3f}], "
             f"max|diff|={max_ep_diff:.2e})",
             flush=True,
         )
-    if rows:
-        with open(csv_path, "w", newline="", encoding="utf-8") as f:
-            w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
-            w.writeheader()
-            w.writerows(rows)
+    print(f"[OK] live_t4 complete: {csv_path}", flush=True)
     return rows
 
 
@@ -1493,7 +1523,8 @@ def main(argv=None):
 
     if args.cmd == "live_t4":
         run_live_t4(pipe, g32.ex.items()[:10], ("clean", "noisy15", "gauss20"), Path(args.out), args.variant, args.lam)
-        analyze(args.out, args.exp017_csv, args.all1000_csv, args.steps1to8_csv)
+        if not (Path(args.out) / "SWSR_HANDOVER_REPORT.md").exists():
+            analyze(args.out, args.exp017_csv, args.all1000_csv, args.steps1to8_csv)
 
 
 if __name__ == "__main__":
