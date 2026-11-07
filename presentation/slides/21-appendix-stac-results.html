@@ -1,0 +1,201 @@
+<!-- 21 APPENDIX E.2: STAC BENCHMARK RESULTS -->
+        <section class="scene" data-ch="4" data-sec="App. E.2 · Results" data-dur="80" data-title="Appendix: STAC & Cross-Experiment Benchmark">
+          <p class="eyebrow o b fade" data-t="100">Appendix E.2 · Empirical Benchmark Comparison (Tesla T4)</p>
+          <h2 class="b up" data-t="250">STAC Results Across Grids, Cohort &amp; OOD Noise</h2>
+
+          <table class="tbl s21-tbl">
+            <thead class="b fade" data-t="500">
+              <tr>
+                <th>Handover Policy (n = 360, 5-Fold CV)</th>
+                <th>SNR?</th>
+                <th>16-Grid (1..8) NFE</th>
+                <th>E2E Time · Speedup</th>
+                <th>WER (TOST p)</th>
+                <th>SIM</th>
+                <th>32-Grid NFE (Saved)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="us b left" data-t="800">
+                <td>STAC (<i>A<sub>i</sub></i> ≥ <span class="math">λ̂</span><sub><i>i</i></sub>) · Winner</td>
+                <td class="s21-no">No · 0.12 ms</td>
+                <td><b>16.82 (−19.9%)</b></td>
+                <td><b>2.60s · 1.25× (1.79× RT)</b></td>
+                <td><b>0.0687 (1.2e−7 ✓)</b></td>
+                <td><b>0.8094</b></td>
+                <td><b>26.18 (−20.7%)</b></td>
+              </tr>
+              <tr class="s21-crc b left" data-t="1100">
+                <td>1D-CRC-STAC (α = 0.05 certified)</td>
+                <td class="s21-no">No · 0.12 ms</td>
+                <td><b>17.67 (−15.8%)</b></td>
+                <td><b>2.73s · 1.19× (1.71× RT)</b></td>
+                <td><b>0.0670 (2.6e−8 ✓)</b></td>
+                <td><b>0.8101</b></td>
+                <td><b>27.99 (−15.2%)</b></td>
+              </tr>
+              <tr class="b left" data-t="1400">
+                <td>Stage-Wise Only · no sum (<i>d<sub>i</sub></i> ≥ <span class="math">λ̂</span><sub><i>i</i></sub>)</td>
+                <td class="s21-no">No · 0.12 ms</td>
+                <td>16.91 (−19.5%)</td>
+                <td>2.61s · 1.24× (1.78× RT)</td>
+                <td>0.0684 (4.4e−6 ✓)</td>
+                <td>0.8097</td>
+                <td>28.35 (−14.1%)</td>
+              </tr>
+              <tr class="b left" data-t="1650">
+                <td>Action Sum Only · 1 gate (<i>A<sub>i</sub></i> ≥ <span class="math">λ̂</span>)</td>
+                <td class="s21-no">No · 0.12 ms</td>
+                <td>20.30 (−3.3%)</td>
+                <td>3.13s · 1.03× (1.49× RT)</td>
+                <td>0.0670 (fails all1000)</td>
+                <td>0.8103</td>
+                <td>30.27 (−8.3%)</td>
+              </tr>
+              <tr class="b left" data-t="1900">
+                <td>Stage-Wise SNR Only (<i>Ŝ</i> ≥ <span class="math">θ̂</span><sub><i>i</i></sub>)</td>
+                <td class="s21-yes">Yes · 1.85 ms</td>
+                <td>18.13 (−13.7%)</td>
+                <td>2.80s · 1.15× (1.66× RT)</td>
+                <td>0.0682 (1.5e−20 ✓)</td>
+                <td>0.8098</td>
+                <td>27.94 (−15.3%)</td>
+              </tr>
+              <tr class="b left" data-t="2150">
+                <td>1-Gate SNR / SNR×Action / Def. 3.4</td>
+                <td class="s21-yes">Yes · 1.97 ms</td>
+                <td>20.15–21.00 (0–4%)</td>
+                <td>3.11–3.23s · 1.00–1.04×</td>
+                <td>0.0679–0.0685</td>
+                <td>0.8103</td>
+                <td>29.23–32.79 (0–11%)</td>
+              </tr>
+              <tr class="b left" data-t="2600">
+                <td>Fixed Step 8 Ref · (Teacher-Only 32)</td>
+                <td>—</td>
+                <td>21.00 · (64 NFE)</td>
+                <td>3.23s · (9.65s, 3.7× slower)</td>
+                <td>0.0679 · (0.815 T-32)</td>
+                <td>0.8104</td>
+                <td>33.00 (5.03s)</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="s21-cards">
+            <div class="s21-c b up" data-t="3100">
+              <span class="s21-tag bl">500-Speaker Cohort · all1000</span>
+              <p>200 cal → 200 test speakers (n = 400): <b>STAC &amp; 1D-CRC-STAC reach 16.63 NFE (−20.8%, 2.57s, 1.25×)</b>, Capped WER 0.1223 (−0.0008 vs ref), TOST p = 0.0018.</p>
+            </div>
+            <div class="s21-c s21-co b up" data-t="3500">
+              <span class="s21-tag hl">Zero-Shot OOD Noise · EXP-011</span>
+              <p>Across babble, reverb &amp; telephone (n = 100): <b>STAC saves 32.7% (14.14 NFE) vs 17.1% (17.40 NFE)</b> for SNR Cascade (ΔWER −0.0021), catching 44.2 dB telephone audio.</p>
+            </div>
+            <div class="s21-c b up" data-t="3900">
+              <span class="s21-tag" style="color:var(--dim)">Diagnostic &amp; Next Step</span>
+              <p>On 14-stage g32_all15, ultra-early <i>t</i>₂ = 0.0048 caused 1–2 Whisper repetition outliers (Capped WER 0.078, Raw 0.152 → set <i>t<sub>k</sub></i> ≥ 0.019). <b>Frozen unseen-speaker test (EVAL-001/002) pending.</b></p>
+            </div>
+          </div>
+
+          <footer class="cite b fade" data-t="2200"><span class="k">From</span><span>EXP-011 to EXP-018 (Tesla T4, steps1to8.csv &amp; swsr_results.json) · development evidence, pending unseen held-out evaluation &amp; adviser review</span></footer>
+        </section>
+
+<script type="text/slide-script">
+Finally, this slide compares STAC and 1D-CRC-STAC head-to-head against every handover baseline on the Tesla T4. Across all eight steps of the 16-interval grid on 360 utterances, STAC ranks number one: without any Prompt SNR estimator and with 0.12 milliseconds of overhead, it reduces forward passes by 19.9 percent to 16.82 NFE, cutting synthesis time from 3.23 seconds to 2.60 seconds—a 1.25-times wall-clock speedup and 1.79-times real-time—while passing TOST equivalence on both WER and speaker similarity. Compared with full 32-step teacher synthesis at 9.65 seconds, STAC is 3.7 times faster with far better noisy intelligibility. The second row, 1D-CRC-STAC, provides formal alpha-equals-0.05 risk control at 15.8 percent savings while achieving an even lower WER than the full Step-8 reference. Notice how matched-degree-of-freedom SNR Cascade lags behind at 13.7 percent, single-threshold Calibrated SNR and TAS collapse to 1.5 percent when Step 1 is included, and original Definition 3.4 saves zero percent. On the 32-interval grid, STAC leads again at 20.7 percent savings, beating memoryless single-step drift by 6.6 percentage points. The three bottom cards confirm generalization and scope limits: 20.8 percent savings on the 500-speaker cohort, 32.7 percent versus 17.1 percent on unseen out-of-distribution corruptions, a minimum time floor of 0.019 to prevent ultra-early Whisper repetition outliers on 14-stage 32-grids, and our remaining step—running the frozen unseen-speaker test. Thank you, and we welcome your questions.
+</script>
+
+<style>
+/* S21 STAC benchmark table & cards */
+    .tbl.s21-tbl {
+      margin-top: 14px;
+      font-size: 16.5px
+    }
+
+    .tbl.s21-tbl th {
+      font-size: 13px;
+      padding: 0 12px 10px;
+      letter-spacing: .11em
+    }
+
+    .tbl.s21-tbl td {
+      padding: 10px 12px;
+      line-height: 1.28;
+      vertical-align: middle
+    }
+
+    .tbl.s21-tbl tr.us td {
+      padding: 12px 12px;
+      background: linear-gradient(90deg, rgba(251, 146, 60, .18) 0%, rgba(234, 88, 12, .08) 100%);
+      border-bottom: 2px solid var(--orange)
+    }
+
+    .tbl.s21-tbl tr.s21-crc td {
+      background: rgba(2, 132, 199, .07);
+      color: var(--fg);
+      border-bottom: 1.5px solid rgba(2, 132, 199, .35)
+    }
+
+    .tbl.s21-tbl tr.s21-crc td:first-child {
+      background: none;
+      -webkit-text-fill-color: var(--blue-dark);
+      color: var(--blue-dark);
+      font-weight: 800
+    }
+
+    .s21-no {
+      font-family: var(--mono);
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--blue-dark) !important
+    }
+
+    .tbl.s21-tbl tr.us .s21-no {
+      color: var(--orange-dark) !important
+    }
+
+    .s21-yes {
+      font-family: var(--mono);
+      font-size: 14.5px;
+      color: var(--dim) !important
+    }
+
+    .s21-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 16px
+    }
+
+    .s21-c {
+      border: 1px solid var(--line-2);
+      background: rgba(255, 255, 255, 0.94);
+      border-radius: 8px;
+      padding: 14px 18px;
+      box-shadow: 0 6px 20px -8px rgba(15, 23, 42, 0.06)
+    }
+
+    .s21-c.s21-co {
+      border-color: rgba(234, 88, 12, .45);
+      background: linear-gradient(135deg, rgba(251, 146, 60, .10), rgba(255, 255, 255, .95))
+    }
+
+    .s21-tag {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 6px
+    }
+
+    .s21-c p {
+      font-size: 15.8px;
+      line-height: 1.38;
+      color: var(--muted)
+    }
+
+    .s21-c p b {
+      color: var(--fg)
+    }
+</style>

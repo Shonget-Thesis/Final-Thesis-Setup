@@ -5,6 +5,7 @@
 %   B  Sample Simulation
 %   C  Prototype
 %   D  Preliminary Experiments
+%   E  Stage-Wise Trajectory Action Cascade and Multi-Grid Benchmarks
 % Appendix chapters are lettered; their equations are unnumbered so they
 % do not enter the List of Equations.
 % =====================================================================
@@ -177,7 +178,7 @@ $n$ & Method & $\P(R\le\alpha)$ & Mean $R$ & Mean passes & Reference only & Medi
 \end{adjustbox}
 \end{table}
 
-The simulation assumes independent inputs from one distribution, exactly the condition of Proposition~\ref{prop:ltt}. It therefore shows that the procedure is implemented and behaves as the theory says, not that the condition holds for real speech; that is what the held-out and repeated-split checks of Section~\ref{sec:obj3} will test.
+The simulation assumes independent inputs from one distribution, exactly the condition of Proposition~\ref{prop:ltt}. It therefore shows that the procedure is implemented and behaves as the theory says, not that the condition holds for real speech; that is what the held-out and repeated-split checks of Section~\ref{sec:obj3} will test. On the post-proposal Tesla T4 development runs reported in Appendix~\ref{app:stac} (\texttt{EXP-018}), both Learn-Then-Test \parencite{angelopoulos2025ltt} and one-dimensional Conformal Risk Control (CRC) \parencite{angelopoulos2024crc} at $\alpha=0.05$ empirically maintained continuous and binary quality losses within the target budget without an external prompt SNR gate.
 
 % =====================================================================
 \section[APPENDIX C.\ PROTOTYPE]{Prototype}
@@ -188,6 +189,30 @@ The study's prototype is an inference method rather than a user-facing applicati
 The prototype will be packaged as one module shared by all experiment scripts (Section~\ref{sec:setup}). It takes the prompt audio, the prompt text, the target text, the calibrated threshold $\hat\lambda$ and the SNR gate $\theta$, and returns the waveform together with the chosen stopping step, the number of forward passes used, the prompt SNR estimate and the trace of stabilization scores. Before any experiment the module will pass the three checks of Section~\ref{sec:setup}: identical outputs for repeated runs with the same seed, exact reproduction of the reference when the controller falls back, and forward-pass counts equal to \Cref{eq:cost}.
 
 The three boxes at the bottom of Figure~\ref{fig:glance} correspond to what the study must establish about the handover point: how it is decided (Objectives~1 and~2), how safe the decision is (Objective~3, Proposition~\ref{prop:ltt}), and that it never costs more than the baseline (Proposition~\ref{prop:fallback}).
+
+\subsection{Live Online Early-Stopping Verification on the Tesla T4}
+\label{app:proto-live}
+
+Following the proposal draft, the prototype sampler was executed with live online early stopping on an NVIDIA Tesla T4 GPU (\nolinkurl{research/experiments/EXP-018-swsr-handover-prelim/results/live_swsr_t4.csv}) under the Stage-Wise Trajectory Action Cascade (STAC) controller detailed in Appendix~\ref{app:stac}. Across 30 utterances (10 development speakers under clean prompts, 20~dB white Gaussian noise, and 15~dB noisy prompts), terminating the teacher ODE loop online at the chosen checkpoint produced bitwise-identical endpoint tensors relative to full trajectory replay ($\max|\Delta\hat x_1| = 0.0$), with $0.12$~ms of scalar gate overhead and $12{,}027.0$~MB peak GPU memory (Table~\ref{tab:live-t4}). Clean speech exited near Step~4 ($13.20$ NFE, $-37.1\%$, $1.49\times$ end-to-end wall-clock speedup and $1.68\times$ teacher ODE speedup), moderate 20~dB noisy prompts exited near Step~6.4 ($17.80$ NFE, $-15.2\%$, $1.21\times$ speedup), and 15~dB degraded prompts automatically fell back to the full Step-8 reference in 10 of 10 cases with zero added quality loss.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Live online GPU early-stopping execution of the STAC prototype on the Tesla T4 (\texttt{EXP-018}, $n=30$, $\max|\Delta\hat x_1|=0.0$, gate overhead $0.12$~ms) compared against the fixed Step-8 reference ($21.00$ NFE).}
+\label{tab:live-t4}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}l r r r r r r r@{}}
+\toprule
+\textbf{Condition ($n$)} & \textbf{Mean step} & \textbf{NFE (saved)} & \textbf{Teacher ODE} & \textbf{E2E time (ref.)} & \textbf{E2E speedup} & \textbf{WER (ref.)} & \textbf{SIM (ref.)} \\
+\midrule
+Clean ($10$) & 4.10 & 13.20 ($37.1\%$) & $1.88$~s ($1.68\times$) & $2.58$~s ($3.83$~s) & $1.49\times$ & 3.89\% (3.89\%) & 0.942 (0.941) \\
+20~dB Gauss ($10$) & 6.40 & 17.80 ($15.2\%$) & $2.57$~s ($1.27\times$) & $3.23$~s ($3.92$~s) & $1.21\times$ & 3.30\% (4.88\%) & 0.842 (0.834) \\
+15~dB noisy ($10$) & 8.00 & 21.00 ($0.0\%$) & $3.26$~s ($0.98\times$) & $3.92$~s ($3.86$~s) & $0.99\times$ & 28.51\% (28.51\%) & 0.780 (0.780) \\
+\midrule
+\textbf{Overall ($30$)} & \textbf{6.17} & \textbf{17.33 ($17.5\%$)} & \textbf{$2.57$~s ($1.25\times$)} & \textbf{$3.24$~s ($3.87$~s)} & \textbf{$1.19\times$} & \textbf{11.90\% (12.43\%)} & \textbf{0.854 (0.852)} \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
 
 \begin{landscape}
 \begin{figure}[p]
@@ -317,11 +342,11 @@ All (1{,}000) & 666 & 100 & 55 & 179 & 14.85 \\
 \end{tabular}
 \end{table}
 
- This per-input choice cannot be deployed, but it bounds what an adaptive rule can save, and the variation between inputs is the observation that motivates this study. Because the calibration and test splits enter this analysis and had already been inspected in earlier analyses, these figures are development evidence, and an independent evaluation needs data not used here. An earlier CPU version on 12 speakers (48 instances), with lighter evaluation models and a stricter failure rule, showed the same pattern.
+ This per-input choice cannot be deployed, but it bounds what an adaptive rule can save, and the variation between inputs is the observation that motivates this study. A subsequent two-grid Tesla T4 rehearsal (\texttt{EXP-017}, $n=360$ across six clean and noisy prompt conditions; \nolinkurl{research/experiments/EXP-017-grid32-prelim/}) confirmed the same headroom on both solver schedules: the hindsight oracle saved $29.7\%$ of forward passes on the 16-interval sway grid ($14.76$ vs.\ $21.00$ NFE) and $33.7\%$ on the 32-interval sway grid ($21.88$ vs.\ $33.00$ NFE). Because the calibration and test splits enter these analyses, these figures remain development evidence, and an independent evaluation needs data not used here.
 
-\subsection{Student Restart Level}
+\subsection{Student Restart Level and Paper Baselines}
 
-Restarting the student one grid point later ($j=2$, two student steps, the main configuration reported for DMOSpeech~2) saves one forward pass. Its outputs departed from the $j=1$ reference more often than those of the released default $j=1$ did, at every switching time tested: 26 versus 11 of 48 at $s=0.07$, 13 versus 8 at $s=0.10$, 9 versus 8 at $s=0.15$, and 14 versus 0 at $s=0.25$. Failures were counted against the $j=1$ reference output, so the zero at $s=0.25$ holds by construction; the counts show that $j=2$ differs from the reference, not that it is worse in absolute quality, and the comparison is small (48 instances, one seed, a CPU, lighter evaluation models). The restart level is therefore fixed at $j=1$, the released code's default (Section~\ref{sec:baseline}), as a controlled setting, and the switching time is the only handover setting the study varies. Whether $j=2$ is equally good in absolute terms is left to future work.
+Restarting the student one grid point later ($j=2$, two student steps, the main configuration reported for DMOSpeech~2; \cite{li2025dmospeech2}) saves one forward pass. On the initial 48-instance CPU check, its outputs departed from the $j=1$ reference more often than those of the released default $j=1$ did, at every switching time tested: 26 versus 11 of 48 at $s=0.07$, 13 versus 8 at $s=0.10$, 9 versus 8 at $s=0.15$, and 14 versus 0 at $s=0.25$. This finding was subsequently verified at scale on the Tesla T4 across $360$ benchmark utterances (\texttt{EXP-017}): the paper's $14+2$ configuration ($j=2$, $30$ NFE) incurred $140$ of $360$ ($38.9\%$) added failures against the 16-grid Step-8 reference ($34.17\%$ WER on 15~dB noisy prompts vs.\ $24.16\%$), and exact Algorithm~2 ($32$ NFE) incurred $172$ of $360$ ($47.8\%$) added failures ($41.01\%$ noisy WER), whereas the 32-interval $s=0.25$ reference ($j=1$, $33$ NFE) matched 16-grid Step~8 in continuous quality ($6.84\%$ vs.\ $6.79\%$ WER; $0.810$ vs.\ $0.810$ SIM) at $+57\%$ higher cost ($5.03$~s vs.\ $3.23$~s). Meanwhile, 32-step teacher-only F5-TTS \parencite{chen2024f5} required $64$ NFE ($9.65$~s) and suffered $97.36\%$ WER on 15~dB noisy prompts due to unregularized classifier-free guidance noise amplification. The restart level is therefore fixed at $j=1$ ($\tau=0.0761$, three student passes) as a controlled setting, and the teacher-to-student switching time is the sole handover variable varied in this study.
 
 \subsection{Stabilization Policy with a Cross-Validated Threshold}
 \label{app:prelim-cv}
@@ -401,38 +426,221 @@ Full policy ($\lambda=0.50$) & 15.30 & 2.40~s & 0.53 & 3.37~s & 0.71 \\
 \end{tabular}
 \end{table}
 
-\emph{Verdict and trade-off.} Taken together, these results support per-input switching and show where its trade-off lies. Choosing the switching time per input removed almost all of the failures that a fixed early switch causes (1 against 50 to 66 of 200) while still saving 10.1\% of the forward passes overall, 20.2\% on clean prompts and 27\% of the measured synthesis time on clean prompts, with no significant change in WER, SIM or UTMOS. The trade-off is between saving and caution: SNR-only saved more (19.0\%) with three failures, the full policy saved less (10.1\%) with one, and both stayed within the 5\% tolerance at the upper end of their intervals. On these data the stabilization score made the policy more cautious, but its step choices could not yet be distinguished from the SNR-gated controls, and noisy prompts kept the reference cost because the gate sends them there. The calibration of Objective~3 will replace the cross-validated threshold with a certified one, and the held-out comparison of Objective~4 will decide which variant to recommend.
+\emph{Verdict, post-proposal audit, and binary noise floor.} Taken together, the 200-instance cross-validation supported per-input switching on clean versus 15~dB prompts (1 failure against 50 to 66 of 200, saving 10.1\% of passes overall and 27\% of clean synthesis time). However, subsequent Tesla T4 audits (\texttt{AUDIT-001}, \nolinkurl{research/audits/2026-10-25/FINDINGS.md}) and multi-condition rehearsals (\texttt{EXP-012} and \texttt{EXP-017}, $n=360$) uncovered two structural limits of this initial formulation. First, on the 500-speaker T4 benchmark, fixed-sequence Learn-Then-Test on the 200 calibration speakers certified every grid value up to $\hat\lambda=1.20$ (reducing Definition~\ref{def:policy} to SNR-only at $17.04$ NFE), whereas across the six noise levels of \texttt{EXP-012}/\texttt{EXP-017}, Definition~\ref{def:policy}'s low-drift inequality ($d_i\le\lambda$) certified \emph{no} threshold on the 16-interval grid ($0.0\%$ saving, $21.00$ NFE) and saved only $1.8\%$ on the 32-interval grid. Second, comparing the two equal-quality references directly (32-grid $s=0.25$ versus 16-grid Step~8, $0.000$ mean SIM difference) still flagged $81$ of $360$ ($22.5\%$) binary ``added failures'' solely from stochastic student seed variance on noisy prompts. This $22.5\%$ binary noise floor motivates evaluating handover policies via paired continuous differences and Two One-Sided Tests (TOST) equivalence \parencite{schuirmann1987} in Appendix~\ref{app:stac}.
 
-\subsection{Development-Split Signal Diagnostic}
+\subsection{Development-Split Signal Diagnostic and Premature Stabilization}
 \label{app:prelim-dev}
 
-A first diagnostic of the two signals was run on the 100 development speakers with the evaluation models of this study (Section~\ref{sec:measures}), each under the clean and the 15~dB noisy condition. The estimated prompt SNR separated the two conditions completely: 23.3 to 50.0~dB for clean prompts and 16.8 to 18.2~dB for noisy prompts, so a 20~dB gate sent every noisy prompt to the reference. Blind estimation of SNR from statistics of the waveform is established practice \parencite{kim2008wada}; the estimator of Definition~\ref{def:snr} uses a ratio of frame energies instead. Fixed early handovers failed on 49\% to 63\% of noisy prompts but on only 2\% to 4\% of clean ones. On clean prompts, the stabilization score $d_4$ did not separate Step-4 failures from passes (area under the receiver operating characteristic (ROC) curve about 0.47, based on only two to three failures), and at $\lambda=0.50$ the policy waited past Step~4 on 78 of the 100 clean prompts, of which 75 to 77 would already have passed at Step~4. These figures come from the development split alone, which serves design decisions, and the small number of clean failures makes the estimates imprecise. They motivate the comparisons of Appendix~\ref{app:drift-plan} but are not evidence for or against the stabilization score.
+A first diagnostic of the two signals was run on the 100 development speakers with the evaluation models of this study (Section~\ref{sec:measures}), each under the clean and the 15~dB noisy condition. On those two extreme conditions alone, the estimated prompt SNR separated the groups completely: 23.3 to 50.0~dB for clean prompts and 16.8 to 18.2~dB for 15~dB noisy prompts, so a 20~dB gate sent every 15~dB noisy prompt to the reference. Blind estimation of SNR from statistics of the waveform is established practice \parencite{kim2008wada}; the estimator of Definition~\ref{def:snr} uses a ratio of frame energies instead. However, when tested across intermediate and Out-of-Distribution (OOD) acoustic corruptions on the Tesla T4 (\texttt{EXP-011} and \texttt{EXP-012}), both initial signal assumptions broke down:
+\begin{enumerate}[leftmargin=1.4em]
+\item \textbf{Prompt SNR failure on moderate and OOD noise.} Prompts degraded with 18 to 22~dB white Gaussian noise produced frame-energy estimates of 19.0 to 24.8~dB, crossing the $\theta=20$~dB gate and causing $86$ of $360$ ($23.9\%$) added failures---$4.8\times$ above the $5\%$ tolerance. On OOD corruptions (\texttt{EXP-011}, $n=100$), bandpass telephone filtering silenced pause frames so that the estimator reported a mean SNR of $44.2$~dB (``ultra-clean'') and prematurely exited on degraded speech, while 20~dB babble measured $23.6$~dB and waveform SNR estimation added $1.85$~ms of overhead per utterance.
+\item \textbf{Premature stabilization of single-step drift.} On clean prompts, single-step $d_4$ showed near-chance failure discrimination (ROC area $\approx 0.47$ from two to three failures). Across noise levels (\texttt{EXP-012}, $n=360$), acoustic noise weakened classifier-free guidance contrast (Spearman $\rho=0.89$ with the conditional--unconditional gap, whose median fell from $0.236$ on clean prompts to $0.116$ at 15~dB), causing median $d_4$ to drop from $0.61$ (clean) to $0.17$ (15~dB noisy). Degraded trajectories therefore \emph{stabilize prematurely}: stopping when $d_i\le\lambda$ hands noisy prompts over first rather than last.
+\end{enumerate}
 
-\subsection{Plan for Further Investigation of the Stabilization Signal}
+\subsection{Plan for Further Investigation and Exploratory Candidates}
 \label{app:drift-plan}
 
-Because the value of the stabilization score is uncertain, the implementation after the proposal will test it in four steps, each fixed before the data it uses are examined. The second step is the comparison summarized in Section~\ref{sec:drift-plan}.
+Because the value of the single-step stabilization score was uncertain at the proposal stage, a four-step post-proposal investigation plan was specified before examining held-out data (summarized in Section~\ref{sec:drift-plan}):
 \begin{enumerate}[leftmargin=1.4em]
-\item \textbf{Discrimination.} On the development split, the study will measure how well the score separates handovers that fail from handovers that pass, using the area under the ROC curve, rank correlation with the per-utterance quality change, and the variance it explains beyond the prompt SNR.
-\item \textbf{Controls.} On the test split, the policy that uses both signals will be compared with the SNR gate followed by a fixed later step and with a random choice of steps that matches its mean cost, using the exact McNemar test on paired failures. If the stabilization score does not beat these controls, its step choices carry no information beyond waiting longer.
-\item \textbf{Conditions the SNR cannot see.} On speakers not used in any split, the comparison will be repeated on prompts degraded in ways that the energy-based SNR estimate may miss, such as reverberation and telephone-band recordings, with the hypothesis and test written down before synthesis.
-\item \textbf{Richer zero-cost signals.} Variants of the score that need no extra forward pass, such as per-frame or per-band changes and the gap between the conditional and unconditional predictions, will be explored on the development split only; any variant that is kept will be calibrated and tested on data it has not seen.
+\item \textbf{Discrimination.} Measure how trajectory features separate safe from unsafe handovers and correlate with guidance strength across acoustic conditions.
+\item \textbf{Controls.} Compare multi-signal policies against calibrated SNR-only gates, stage-wise SNR cascades of matched degrees of freedom, and cost-matched random step assignments.
+\item \textbf{Conditions the SNR cannot see.} Evaluate zero-shot generalization on prompts degraded by reverberation, multi-talker babble, and telephone bandpass filtering.
+\item \textbf{Richer zero-cost signals.} Explore trajectory statistics computed strictly from intermediate velocity tensors already materialized in GPU memory, without extra forward passes.
 \end{enumerate}
-If the stabilization score adds no measurable value in these tests, the SNR-gated variant of the policy will be recommended, and the stabilization score will be reported as a tested negative result together with the reasons found for it. The contribution of the study, a per-utterance handover framework with a certified bound on added failures, does not depend on which signal performs best.
+Executing Steps~1--4 on the development cohort (\texttt{EXP-011} through \texttt{EXP-018}) showed that eight state-altering handover and guidance operators (\texttt{EXP-013}--\texttt{015}: endpoint extrapolation, coherence-gated extrapolation, trajectory consistency restart, spherical endpoint averaging, self-noise negative guidance, antithetic student sampling, SNR-controlled guidance, and post-handover error cancellation) failed preregistered routing criterion C3, while binary single-threshold gates (calibrated SNR and Mahalanobis Trajectory Anomaly Score) collapsed to $1.5\%$ NFE saving when Step~1 ($7$ NFE) entered the candidate set. Inverting the drift direction and summing cumulative trajectory path length resolved both issues while eliminating external SNR estimation entirely, yielding the Stage-Wise Trajectory Action Cascade (STAC) presented in Appendix~\ref{app:stac}.
 
 \begin{table}[!htbp]
 \centering\small
-\caption{Preliminary experiments and their consequences for the design.}
+\caption{Preliminary and post-proposal development experiments on the Tesla T4 and their consequences for the handover design.}
 \label{tab:prelim}
-\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.0cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X@{}}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.1cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X@{}}
 \toprule
 \textbf{Experiment} & \textbf{Finding} & \textbf{Consequence for this study} \\
 \midrule
-Fixed switching times & On 1{,}000 T4 instances, the failure rate rises as the switch moves earlier (25\% to 33\%); the cheapest acceptable switch varies by input; a per-input choice in hindsight needs 14.85 of 21 passes & Motivates per-utterance switching (Objective~1) \\
-Student restart level & Restarting at $j=2$ departs from the $j=1$ reference more often at every switching time (small CPU run; not a test of absolute quality) & Restart fixed at $j=1$ as a controlled setting; switching time is the only variable \\
-Cross-validated stabilization policy & On T4 development data, 10\% fewer passes with one added failure in 200 out of fold, and 27\% less synthesis time on clean prompts with real early stopping, but no risk certificate & Motivates the decision signals (Objective~2) and calibration with Learn-Then-Test (Objective~3) \\
+Fixed switching times (\texttt{EXP-001}, \texttt{EXP-017}) & On 1{,}000 T4 instances and 360 two-grid instances, fixed early switches fail on $25\%$--$33\%$ overall ($49\%$--$64\%$ noisy vs.\ $1\%$--$2.4\%$ clean); hindsight oracle saves $29.3\%$--$33.7\%$ & Motivates per-utterance switching (Objective~1) across both 16- and 32-interval grids \\
+Student restart \& paper baselines (\texttt{EXP-017}) & Paper $14+2$ ($j=2$) adds $140/360$ failures (noisy WER $34.2\%$); Algorithm~2 adds $172/360$; 32-grid $s=0.25$ matches 16-grid Step~8 at $+57\%$ cost & Fixes $j=1$ ($\tau=0.0761$, 3 student passes) on the 16-grid; switching time is the sole variable \\
+Audited stabilization \& binary floor (\texttt{AUDIT-001}, \texttt{EXP-017}) & Original $d_i\le\lambda$ certifies $0.0\%$ saving on the 16-grid under LTT; equal-quality references disagree on $22.5\%$ of binary labels due to student noise & Replaces $d_i\le\lambda$ and supplements binary counts with paired continuous TOST equivalence \\
+Signal diagnostic (\texttt{EXP-011}, \texttt{EXP-012}) & $\theta=20$~dB SNR fails on 18--22~dB noise ($23.9\%$) and telephone OOD ($44.2$~dB); noise lowers median $d_4$ ($0.61\to 0.17$, premature stabilization) & Motivates inverting the rule and accumulating zero-SNR trajectory action $A_k=\sum_{j=1}^k d_j\ge\hat\lambda_k$ (Appendix~\ref{app:stac}) \\
 \bottomrule
 \end{tabularx}
 \end{table}
+
+\FloatBarrier
+
+% =====================================================================
+\section[APPENDIX E.\ STAGE-WISE TRAJECTORY ACTION CASCADE]{Stage-Wise Trajectory Action Cascade and Multi-Grid Benchmarks}
+\label{app:stac}
+
+This appendix documents the novel handover policy and empirical benchmarks resulting from the post-proposal investigation plan of Appendix~\ref{app:drift-plan} (\texttt{EXP-018}, \nolinkurl{research/experiments/EXP-018-swsr-handover-prelim/results/SWSR_HANDOVER_REPORT.md}). The method preserves the exact scope of Chapters~1--3: teacher weights, distilled student weights, duration prediction, input prompt conditioning, and student restart level ($\tau=0.0761$, $j=1$) remain completely frozen; only the per-utterance teacher-to-student handover step is adapted. All experiments below were executed on an NVIDIA Tesla T4 GPU in Google Colab and are recorded as development evidence prior to frozen unseen-speaker validation.
+
+\subsection{Method: Cumulative Trajectory Action and Conformal Risk Control}
+\label{app:stac-method}
+
+\phead{Cumulative trajectory action} Let $\hat x_1(t_j)=x_{t_j}+(1-t_j)v_{\text{cfg}}(x_{t_j},t_j)$ denote the teacher's projected mel endpoint at sway-grid step $j$ (\Cref{eq:endpoint}), and let $d_j(x)$ denote the relative step-to-step endpoint change (\Cref{eq:stab}). Rather than testing whether $d_k(x)$ has fallen below a single threshold, the \emph{Stage-Wise Trajectory Action Cascade} (STAC) accumulates the discrete trajectory path length---or \emph{trajectory action}---traveled by the guided teacher from $t_1$ through $t_k$:
+\[
+A_k(x) = \sum_{j=1}^{k} d_j(x), \qquad k \in \{1,\dots,k_{\text{ref}}-1\}.
+\]
+Because $d_j(x)$ reuses velocity tensors already computed for the Euler update, maintaining the running scalar sum $A_k(x) = A_{k-1}(x) + d_k(x)$ requires zero extra neural function evaluations and adds $0.12$~ms of wall-clock overhead per utterance, while eliminating the $1.85$~ms external waveform SNR estimator (Figure~\ref{fig:stac}).
+
+\input{figures/fig_stac}
+
+\phead{Stage-wise stopping rule} Given candidate handover steps $\mathcal{K}=\{k_1<\dots<k_{M-1}\}$ preceding reference step $k_{\text{ref}}$ and an offline-calibrated threshold vector $\hat{\bm\lambda}=(\hat\lambda_{k_1},\dots,\hat\lambda_{k_{M-1}})$, STAC hands over to the student at the earliest candidate step whose cumulative action reaches its stage threshold:
+\[
+\pi_{\mathrm{STAC}}(x) = \min\bigl\{\, k \in \mathcal{K} : A_k(x) \ge \hat\lambda_k \,\bigr\} \cup \{k_{\text{ref}}\}.
+\]
+Inverting the inequality ($A_k \ge \hat\lambda_k$) exploits the premature-stabilization phenomenon identified in Appendix~\ref{app:prelim-dev}: clean prompts induce strong classifier-free guidance updates and rapidly accumulate trajectory action, whereas noisy or bandwidth-degraded prompts exhibit suppressed guidance contrast and remain below $\hat\lambda_k$ until later steps or $k_{\text{ref}}$. Summing across steps acts as a discrete path-length odometer that filters single-step Euler jitter, preventing the premature exits of memoryless rules ($d_k\ge\hat\lambda_k$). On Utterance~1 of \texttt{EXP-018} ($\hat\lambda_4=1.59$, $\hat\lambda_7=1.93$ on \texttt{g16\_all8}), the clean prompt reached $A_4=3.65\ge 1.59$ and exited at Step~4 ($13$ NFE, $-38.1\%$); the 20~dB Gaussian prompt measured $A_4=1.52<1.59$, stayed in the teacher loop until $A_7=2.06\ge 1.93$, and exited safely at Step~7 ($19$ NFE, $-9.5\%$); and the 15~dB noisy prompt remained at $A_7=1.76<1.93$, completing all eight teacher steps ($21$ NFE) automatically.
+
+\phead{Calibration: Stage-Wise empirical risk and 1D-CRC-STAC} Two offline calibration procedures are evaluated on speaker-disjoint folds:
+\begin{enumerate}[leftmargin=1.4em]
+\item \textbf{Stage-Wise empirical cascade (\texttt{STAC}).} Proceeding sequentially across $k\in\mathcal{K}$ on calibration speakers, $\hat\lambda_k$ is chosen as the smallest action threshold whose routed calibration subset satisfies paired WER degradation $\Delta\overline{\mathrm{WER}}\le 0.01$ and speaker-similarity drop $\Delta\overline{\mathrm{SIM}}\ge -0.02$ relative to $k_{\text{ref}}$, allocating the total tolerance across active stages.
+\item \textbf{One-Dimensional Conformal Risk-Controlled STAC (\texttt{1D-CRC-STAC}).} To attach a finite-sample distribution-free guarantee on continuous bounded loss without multi-dimensional grid inflation, stage thresholds $\lambda_k(\tau)$ are indexed by a single monotone aggressiveness parameter $\tau\in[0,1]$ over empirical calibration quantiles, so that bounded per-utterance quality loss $L_i(\tau)\in[0,1]$ is non-decreasing in $\tau$. Following \textcite{angelopoulos2024crc}, the calibrated parameter is
+\[
+\hat\tau = \sup\Bigl\{\, \tau\in[0,1] : \frac{n}{n+1}\hat R_n(\tau) + \frac{1}{n+1} \le \alpha \,\Bigr\}, \qquad \alpha = 0.05,
+\]
+guaranteeing $\E[L_{n+1}(\hat\tau)] \le \alpha$ for exchangeable unseen speakers while preserving per-stage threshold granularity.
+\end{enumerate}
+
+\subsection{Multi-Grid Quality and Computational Speed Benchmarks}
+\label{app:stac-results}
+
+In \texttt{EXP-018} (\nolinkurl{research/experiments/EXP-018-swsr-handover-prelim/results/steps1to8.csv}), all eight checkpoints of the 16-interval sway grid (\texttt{Steps 1..8}, $7$ to $21$ NFE) and all fifteen checkpoints of the 32-interval sway grid (\texttt{Steps 1..15}, $7$ to $35$ NFE) were synthesized and scored on the Tesla T4 across all $360$ benchmark utterances ($60$ speakers $\times$ $6$ conditions: clean, 15~dB noisy, and 18/20/22/25~dB white Gaussian noise) under five-fold speaker-grouped cross-validation. Measured unit latencies on the Tesla T4 were $81.95$~ms for conditioning preparation, $298.81$~ms per guided teacher step ($2$ passes), $152.46$~ms per student step ($1$ pass), and $5.51$~ms for Vocos waveform synthesis \parencite{siuzdak2024vocos} over $4.80$~s mean audio duration ($9{,}587.7$~MB mean peak GPU memory). Quality equivalence against the grid reference is tested via paired Wilcoxon signed-rank tests \parencite{wilcoxon1945} and TOST equivalence \parencite{schuirmann1987} within margins $+1.0$~percentage point on WER and $-0.020$ on SIM, alongside Capped WER ($\min(\mathrm{WER},1.0)$) to separate single-utterance Whisper repetition hallucinations \parencite{radford2023whisper} from systematic acoustic degradation.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Fixed teacher-to-student handover profile across all eight checkpoints of the 16-interval sway grid (\texttt{Steps 1..8}, \texttt{EXP-018}, $n=360$: $60$ clean and $300$ noisy utterances on the Tesla T4). TOST $p_{\mathrm{WER}}$ tests equivalence within $+1.0$~percentage point of the Step-8 reference.}
+\label{tab:fixed-steps1to8}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}l r r r r r r r r@{}}
+\toprule
+\textbf{Fixed checkpoint} & \textbf{$t_k$} & \textbf{NFE (time, speedup)} & \textbf{WER clean} & \textbf{WER noisy (cap.)} & \textbf{WER all (cap.)} & \textbf{SIM clean / noisy} & \textbf{UTMOS clean} & \textbf{TOST $p_{\mathrm{WER}}$} \\
+\midrule
+Step 1 (\texttt{g16\_1}) & $0.0048$ & $7$ ($1.14$~s, $2.83\times$) & $3.06\%$ & $280.2\%$ ($56.3\%$) & $234.0\%$ ($47.4\%$) & $0.926$ / $0.705$ & $3.06$ & $1.00$ (fail) \\
+Step 2 (\texttt{g16\_2}) & $0.0192$ & $9$ ($1.44$~s, $2.24\times$) & $2.64\%$ & $43.4\%$ ($22.2\%$) & $36.6\%$ ($18.9\%$) & $0.936$ / $0.764$ & $3.86$ & $1.00$ (fail) \\
+Step 3 (\texttt{g16\_3}) & $0.0431$ & $11$ ($1.74$~s, $1.86\times$) & $2.79\%$ & $35.7\%$ ($15.8\%$) & $30.2\%$ ($13.6\%$) & $0.938$ / $0.770$ & $3.87$ & $0.97$ (fail) \\
+Step 4 ($s=0.07$ def.) & $0.0761$ & $13$ ($2.04$~s, $1.59\times$) & $2.34\%$ & $24.7\%$ ($10.9\%$) & $21.0\%$ ($9.5\%$) & $0.936$ / $0.777$ & $3.92$ & $0.87$ (fail) \\
+Step 5 ($s=0.10$) & $0.1181$ & $15$ ($2.34$~s, $1.38\times$) & $2.61\%$ & $8.16\%$ ($8.16\%$) & $7.23\%$ ($7.23\%$) & $0.935$ / $0.781$ & $3.92$ & $0.19$ (fail) \\
+Step 6 ($s=0.15$) & $0.1685$ & $17$ ($2.64$~s, $1.23\times$) & $2.55\%$ & $7.42\%$ ($7.23\%$) & $6.61\%$ ($6.45\%$) & $0.936$ / $0.783$ & $3.92$ & $0.077$ (marg.) \\
+\textbf{Step 7 ($\le 0.25$ ceil.)} & \textbf{$0.2270$} & \textbf{$19$ ($2.94$~s, $1.10\times$)} & \textbf{$2.72\%$} & \textbf{$7.65\%$ ($7.54\%$)} & \textbf{$6.83\%$ ($6.73\%$)} & \textbf{$0.936$ / $0.785$} & \textbf{$3.93$} & \textbf{$0.0047$ (pass)} \\
+Step 8 (reference) & $0.2929$ & $21$ ($3.23$~s, $1.00\times$) & $2.72\%$ & $7.61\%$ ($7.50\%$) & $6.79\%$ ($6.70\%$) & $0.936$ / $0.785$ & $3.92$ & --- (ref.) \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+\phead{Fixed Step 1--8 profile} Table~\ref{tab:fixed-steps1to8} reveals three structural properties across the full 16-interval schedule that were invisible when earlier experiments inspected only Steps~4, 5, 6, and~8. First, on clean prompts ($n=60$), intelligibility and speaker identity already converge by \textbf{Step~2} ($9$ NFE, $1.44$~s, $2.24\times$ faster than Step~8: $2.64\%$ WER, $0.936$ SIM, $3.86$ UTMOS), whereas Step~1 ($t_1=0.0048$, $7$ NFE) retains intelligible words ($3.06\%$ WER) at reduced perceptual naturalness ($3.06$ UTMOS). Second, on noisy prompts ($n=300$), fixed early handovers fail severely across Steps~1--4 ($280.2\%$ down to $24.7\%$ Raw WER; $56.3\%$ down to $10.9\%$ Capped WER) and do not reach full convergence until Steps~6--7 ($7.42\%$--$7.65\%$ WER). Third, \textbf{Step~7} ($t_7=0.2270$, $19$ NFE, $2.94$~s---the last 16-grid checkpoint strictly $\le 0.25$) is the earliest fixed step that passes overall TOST equivalence against Step~8 ($p_{\mathrm{WER}}=0.0047$, $p_{\mathrm{SIM}}=4.9\times 10^{-21}$), saving $9.5\%$ of forward passes uniformly. Unlocking Steps~1--7 expands per-utterance hindsight oracle headroom from $29.2\%$ ($14.86$ NFE on $\{4,5,6,8\}$) to $39.3\%$--$43.5\%$ ($11.86$--$12.74$ NFE on \texttt{g16\_all8}), of which STAC captures $45.8\%$--$50.7\%$ out of fold without prompt SNR ($19$ exits at Step~1, $10$ at Step~2, $56$ at Step~3, $59$ at Step~4, $4$ at Step~5, $2$ at Step~6, $28$ at Step~7, and $182$ at Step~8).
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Out-of-fold handover policy comparison on the Tesla T4 (\texttt{EXP-018}, $n=360$, 5-fold speaker CV) across the full 16-interval grid (\texttt{g16\_all8}: candidates \texttt{Steps 1..7} vs.\ \texttt{Step 8} reference $=21$ NFE, $3.23$~s, RTF $0.693$) and the 32-interval grid (\texttt{g32}: candidates $\{7,9,11,13\}$ vs.\ \texttt{Step 14} reference $=33$ NFE, $5.03$~s). All listed adaptive rows pass TOST equivalence ($p<0.05$) on both WER and SIM.}
+\label{tab:stac-g16}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}l c r r r r r@{}}
+\toprule
+\textbf{Policy} & \textbf{SNR?} & \textbf{16-Grid NFE (saved)} & \textbf{E2E time (speedup)} & \textbf{Raw WER (TOST $p$)} & \textbf{SIM} & \textbf{32-Grid NFE (saved)} \\
+\midrule
+\textbf{STAC ($A_k\ge\hat\lambda_k$)} & \textbf{No ($0.12$~ms)} & \textbf{16.82 ($19.9\%$)} & \textbf{$2.60$~s ($1.25\times$)} & \textbf{6.87\% ($1.2{\times}10^{-7}$)} & \textbf{0.8094} & \textbf{26.18 ($20.7\%$)} \\
+\textbf{1D-CRC-STAC ($\alpha=0.05$)} & \textbf{No ($0.12$~ms)} & \textbf{17.67 ($15.8\%$)} & \textbf{$2.73$~s ($1.19\times$)} & \textbf{6.70\% ($2.6{\times}10^{-8}$)} & \textbf{0.8101} & \textbf{27.99 ($15.2\%$)} \\
+Stage-Wise Drift ($d_k\ge\hat\lambda_k$) & No ($0.12$~ms) & 16.91 ($19.5\%$) & $2.61$~s ($1.24\times$) & 6.84\% ($4.4{\times}10^{-6}$) & 0.8097 & 28.35 ($14.1\%$) \\
+Stage-Wise SNR Cascade ($\hat S\ge\hat\theta_k$) & Yes ($1.85$~ms) & 18.13 ($13.7\%$) & $2.80$~s ($1.15\times$) & 6.82\% ($1.5{\times}10^{-20}$) & 0.8098 & 27.94 ($15.3\%$) \\
+SNR--Time--Drift ($\hat S t_k d_k\ge\hat\lambda$) & Yes ($1.97$~ms) & 18.72 ($10.9\%$) & $2.89$~s ($1.12\times$) & 6.92\% ($4.2{\times}10^{-8}$) & 0.8101 & 29.22 ($11.5\%$) \\
+Single-Threshold Action ($A_k\ge\hat\lambda$) & No ($0.12$~ms) & 20.30 ($3.3\%$) & $3.13$~s ($1.03\times$) & 6.70\% ($2.7{\times}10^{-14}$) & 0.8103 & 30.27 ($8.3\%$) \\
+Calibrated SNR / SNR + TAS & Yes ($1.97$~ms) & 20.69 ($1.5\%$) & $3.19$~s ($1.01\times$) & 6.85\% ($<10^{-25}$) & 0.8102 & 29.23 / 27.75$^{\dagger}$ \\
+Original Def.~3.4 ($d_k\le\hat\lambda$) & Mixed & 21.00 ($0.0\%$) & $3.23$~s ($1.00\times$) & 6.79\% (inert) & 0.8104 & 32.79 ($0.6\%$) \\
+\midrule
+Fixed Step-8 / Step-14 ref. & --- & 21.00 ($0.0\%$) & $3.23$~s ($1.00\times$) & 6.79\% (ref.) & 0.8104 & 33.00 ($5.03$~s) \\
+Teacher-Only 32 (F5-TTS) & --- & 64.00 ($-205\%$) & $9.65$~s ($0.33\times$) & 81.54\% (fail) & 0.8014 & 64.00 ($9.65$~s) \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\par\smallskip{\footnotesize $^{\dagger}$On the full 32-grid \texttt{Steps 1..14} (\texttt{g32\_all14}), both Calibrated SNR and SNR + TAS collapse to $33.00$ NFE ($0.0\%$ saving), whereas STAC achieves $27.14$ NFE ($17.8\%$ saving, TOST $p=0.0029$).\par}
+\end{table}
+
+Table~\ref{tab:stac-g16} establishes four empirical results. First, on the full 16-interval grid (\texttt{g16\_all8}), STAC achieves the lowest compute cost of any valid handover rule: $16.82$ NFE ($95\%$ speaker-cluster bootstrap CI $[16.32,17.27]$, $19.9\%$ NFE saved), reducing end-to-end synthesis latency from $3.23$~s to $2.60$~s ($1.25\times$ E2E speedup, $1.31\times$ teacher ODE speedup, RTF $0.560 = 1.79\times$ real-time) with $+0.08$~percentage-point WER change (TOST $p=1.2\times 10^{-7}$) and $-0.0011$ SIM change (TOST $p=4.1\times 10^{-29}$). Compared against 32-step teacher-only F5-TTS ($9.65$~s), STAC is $3.7\times$ faster while avoiding guided teacher noise overfitting. Second, \texttt{1D-CRC-STAC} ($\alpha=0.05$) saves $15.8\%$ ($17.67$ NFE, $2.73$~s) while achieving a \emph{lower} mean WER ($6.70\%$) than the Step-8 reference ($6.79\%$); when scored under Chapter~3's binary LTT protocol on \texttt{g16}, it certifies $9$ of $360$ failures ($2.5\%\le 5\%$) at $18.52$ NFE, outperforming Calibrated SNR ($18.71$ NFE) without using SNR. Third, STAC outperforms a matched-degree-of-freedom Stage-Wise SNR Cascade by $+6.2$ percentage points on \texttt{g16\_all8} ($19.9\%$ vs.\ $13.7\%$) and $+5.4$ points on \texttt{g32} ($20.7\%$ vs.\ $15.3\%$), and outperforms memoryless single-step drift ($d_k\ge\hat\lambda_k$) by $+6.6$ points on \texttt{g32} ($20.7\%$ vs.\ $14.1\%$), confirming the value of cumulative path-length integration on finer grids. Fourth, comparing STAC ($19.9\%$) against Single-Threshold Action ($3.3\%$) demonstrates that stage-specific thresholds $\hat\lambda_k$ are essential when early steps (\texttt{Steps 1..3}) are included.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{STAC and 1D-CRC-STAC performance across additional sway-grid configurations ($n=360$) and the 500-speaker Tesla T4 benchmark (\texttt{all1000}: 200 calibration speakers $\rightarrow$ 200 test speakers, $n=400$ test utterances, full $d_1\dots d_8$).}
+\label{tab:stac-grids}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}l l r r r r r@{}}
+\toprule
+\textbf{Benchmark / Grid} & \textbf{Policy} & \textbf{Mean NFE (saved)} & \textbf{E2E time (RTF)} & \textbf{Raw WER} & \textbf{Capped WER} & \textbf{TOST $p_{\mathrm{WER}}$} \\
+\midrule
+\texttt{g16\_le025} (\texttt{1..6} vs.\ \texttt{7}, $19$ NFE) & STAC & 15.64 ($17.7\%$ / $25.5\%^{\ddagger}$) & $2.42$~s ($0.522$) & 6.92\% & 6.83\% & $1.7{\times}10^{-5}$ \\
+ & 1D-CRC-STAC & 16.40 ($13.7\%$ / $21.9\%^{\ddagger}$) & $2.54$~s ($0.546$) & 6.72\% & 6.62\% & $4.7{\times}10^{-11}$ \\
+ & SNR Cascade & 17.28 ($9.1\%$ / $17.7\%^{\ddagger}$) & $2.68$~s ($0.574$) & 6.85\% & 6.76\% & $1.5{\times}10^{-20}$ \\
+\midrule
+\texttt{g16} (\texttt{\{4,5,6\}} vs.\ \texttt{8}, $21$ NFE) & STAC & 17.44 ($16.9\%$) & $2.69$~s ($0.579$) & 6.44\% & 6.34\% & $3.5{\times}10^{-5}$ \\
+ & 1D-CRC-STAC & 18.24 ($13.1\%$) & $2.81$~s ($0.605$) & 6.65\% & 6.56\% & $6.3{\times}10^{-11}$ \\
+\midrule
+\texttt{g32\_all14} (\texttt{1..13} vs.\ \texttt{14}, $33$ NFE) & STAC & 27.14 ($17.8\%$) & $4.15$~s ($0.894$) & 7.38\% & 7.26\% & $0.0029$ \\
+ & SNR Cascade & 28.01 ($15.1\%$) & $4.29$~s ($0.918$) & 7.15\% & 7.06\% & $0.0081$ \\
+\midrule
+\texttt{g32\_all15} (\texttt{1..14} vs.\ \texttt{15}, $35$ NFE) & STAC (14-stage) & 27.51 ($21.4\%$) & $4.18$~s ($0.903$) & 15.19\% & 7.80\% & $0.81$ (diag.) \\
+ & SNR Cascade & 27.93 ($20.2\%$) & $4.27$~s ($0.913$) & 7.31\% & 7.11\% & $2.0{\times}10^{-4}$ \\
+\midrule
+500-Speaker \texttt{all1000} ($n=400$ test) & STAC \& 1D-CRC & 16.63 ($20.8\%$) & $2.57$~s ($0.581$) & 23.78\% & 12.23\% & $0.0018$ \\
+ & Fixed Step-8 ref. & 21.00 ($0.0\%$) & $3.22$~s ($0.736$) & 23.71\% & 12.31\% & --- \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\par\smallskip{\footnotesize $^{\ddagger}$Second percentage denotes saving relative to 16-grid Step~8 ($21$ NFE); \texttt{g16\_7} ($t_7=0.2270$) is the last 16-grid step strictly $\le 0.25$.\par}
+\end{table}
+
+Table~\ref{tab:stac-grids} summarizes cross-grid behavior and a diagnostic boundary condition. On \texttt{g16\_le025} (strictly $t_k\le 0.25$), STAC reaches $15.64$ NFE ($25.5\%$ below Step~8, $1.91\times$ real-time) versus $17.28$ NFE for SNR Cascade. On the 500-speaker T4 cohort ($200$ calibration speakers $\rightarrow$ $200$ test speakers, $n=400$), both STAC and \texttt{1D-CRC-STAC} save $20.8\%$ ($16.63$ NFE, $2.57$~s, $1.25\times$ speedup) while reducing Capped WER by $-0.08$ points relative to Step~8 (TOST $p=0.0018$). On the 14-stage \texttt{g32\_all15} configuration, fitting fourteen sequential thresholds on $48$ calibration speakers per fold routed $21$ cases to ultra-early \texttt{g32\_2} ($t_2=0.0048$); Capped WER remained controlled at $7.80\%$ ($+0.64$ points above reference) and outlier-trimmed WER was $7.28\%$, but one to two Whisper repetition hallucinations ($\approx 26.6$ excess WER) inflated Raw WER to $15.19\%$. Enforcing a minimum candidate time floor $t_k\ge 0.019$ (\texttt{g16\_2} or \texttt{g32\_4}) eliminates ultra-early repetition outliers while preserving savings.
+
+\subsection{Component-by-Component Ablation of STAC}
+\label{app:stac-ablation}
+
+Just as Chapter~\ref{sec:method} isolates the original two-signal policy against \texttt{SNR-only} and \texttt{Stabilization-only} controls, Table~\ref{tab:stac-ablation} isolates each active design ingredient of STAC---the cumulative path sum ($\sum_{j=1}^k d_j$), the stage-wise threshold vector ($\hat\lambda_k$), and the exclusion of external prompt SNR---against single-component knock-out variants across all benchmarks. Removing the stage-wise cascade (\texttt{Action Sum Only}, $A_k\ge\hat\lambda$) collapses savings from $19.9\%$ to $3.3\%$ on \texttt{g16\_all8} ($8.3\%$ on \texttt{g32}) and fails TOST equivalence ($p=0.83$, $48.0\%$ Raw WER) on the 500-speaker cohort. Removing the cumulative sum (\texttt{Stage-Wise Only}, $d_k\ge\hat\lambda_k$) loses $6.6$~percentage points of savings on the finer 32-interval grid ($14.1\%$ vs.\ $20.7\%$) due to step-to-step Euler jitter. Replacing trajectory action with external SNR (\texttt{Stage-Wise SNR Only} or \texttt{1-Gate SNR Only}) loses $6.2$ to $18.4$~percentage points on \texttt{g16\_all8} and $15.6$~points on OOD speech while remaining vulnerable to $44.2$~dB telephone pause artifacts, and multiplying SNR back into cumulative action (\texttt{SNR $\times$ Action Hybrid}, $\hat S\sum_{j=1}^k d_j\ge\hat\lambda$) drops savings to $4.0\%$. Only the full STAC combination succeeds across every grid, speaker cohort, and OOD corruption.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Component-by-component knock-out ablation of STAC across the 16-interval grid (\texttt{g16\_all8}, $n=360$), clean subset ($n=60$), 32-interval grid (\texttt{g32}, $n=360$), 500-speaker test split (\texttt{all1000}, $n=400$), and unseen OOD corruptions (\texttt{EXP-011}, $n=100$).}
+\label{tab:stac-ablation}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}l c c c r r r r r@{}}
+\toprule
+\textbf{Variant} & \textbf{Sum $\sum d_j$?} & \textbf{Stage $\hat\lambda_k$?} & \textbf{SNR?} & \textbf{\texttt{g16\_all8} NFE} & \textbf{Clean NFE} & \textbf{\texttt{g32} NFE} & \textbf{\texttt{all1000} NFE (TOST)} & \textbf{OOD NFE} \\
+\midrule
+1.\ Action Sum Only ($A_k\ge\hat\lambda$) & Yes & No & No & $20.30$ ($3.3\%$) & $18.53$ ($11.7\%$) & $30.27$ ($8.3\%$) & $16.61$ ($p=0.83$, fail) & --- \\
+2.\ Stage-Wise Only ($d_k\ge\hat\lambda_k$) & No & Yes & No & $16.91$ ($19.5\%$) & $10.07$ ($52.1\%$) & $28.35$ ($14.1\%$) & $16.69$ ($20.5\%$, pass) & --- \\
+3.\ Stage-Wise SNR Only ($\hat S\ge\hat\theta_k$) & No & Yes & Yes & $18.13$ ($13.7\%$) & $11.33$ ($46.0\%$) & $27.94$ ($15.3\%$) & $16.73$ ($20.3\%$, pass) & $17.40$ ($17.1\%$) \\
+4.\ 1-Gate SNR Only ($\hat S\ge\hat\theta$) & No & No & Yes & $20.69$ ($1.5\%$) & $19.13$ ($8.9\%$) & $29.23$ ($11.4\%$) & $17.04$ ($18.9\%$, pass) & fooled ($44$~dB) \\
+5.\ SNR $\times$ Action Hybrid ($\hat S\sum d_j\ge\hat\lambda$) & Yes & No & Yes & $20.15$ ($4.0\%$) & $16.80$ ($20.0\%$) & $31.18$ ($5.5\%$) & $17.59$ ($16.3\%$, pass) & --- \\
+\midrule
+\textbf{6.\ Full STAC ($A_k=\sum_{j=1}^k d_j\ge\hat\lambda_k$)} & \textbf{Yes} & \textbf{Yes} & \textbf{No} & \textbf{$16.82$ ($19.9\%$)} & \textbf{$9.97$ ($52.5\%$)} & \textbf{$26.18$ ($20.7\%$)} & \textbf{$16.63$ ($20.8\%$, $p=0.0018$)} & \textbf{$14.14$ ($32.7\%$)} \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+\subsection{Zero-Shot Out-of-Distribution Generalization and Scope Limits}
+\label{app:stac-ood}
+
+To test Step~3 of Appendix~\ref{app:drift-plan} directly, STAC and Stage-Wise SNR Cascade thresholds calibrated only on Gaussian/noisy15 prompts were evaluated zero-shot on the $100$ OOD degraded instances of \texttt{EXP-011} ($20$ speakers across five unseen corruptions: 20~dB and 15~dB babble, $T_{60}=0.3$~s and $0.9$~s reverberation, and 300--3400~Hz telephone bandpass filtering; Table~\ref{tab:stac-ood}). Across all $100$ OOD instances, STAC saved $32.7\%$ of forward passes ($14.14$ NFE) compared with $17.1\%$ ($17.40$ NFE) for SNR Cascade---a paired reduction of $-3.26$ NFE ($95\%$ CI $[-4.04,-2.48]$) with $\Delta\mathrm{WER}=-0.21$~percentage points ($[-0.61,+0.11]$). Crucially, on telephone-band speech where silent pauses fooled the SNR estimator into reporting $44.2$~dB and exiting immediately at Step~4 ($13.00$ NFE), STAC detected the depressed internal trajectory action, allocated $16.20$ NFE, and reduced WER by $-0.83$~percentage points.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Zero-shot OOD generalization on \texttt{EXP-011} ($n=100$ across $20$ speakers; thresholds calibrated without seeing babble, reverberation, or bandpass channels).}
+\label{tab:stac-ood}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}l r r r r r@{}}
+\toprule
+\textbf{Unseen OOD corruption ($n$)} & \textbf{Mean $\hat S$} & \textbf{STAC NFE (saved)} & \textbf{SNR Cascade NFE (saved)} & \textbf{Paired $\Delta$NFE $[95\%\text{ CI}]$} & \textbf{STAC $\Delta$WER} \\
+\midrule
+Babble 20~dB ($20$) & $23.6$~dB & 13.30 ($36.7\%$) & 20.00 ($4.8\%$) & $-6.70\ [-7.50,-5.60]$ & $+0.00\%$ \\
+Babble 15~dB ($20$) & $19.4$~dB & 13.20 ($37.1\%$) & 21.00 ($0.0\%$) & $-7.80\ [-8.00,-7.20]$ & $-0.50\%$ \\
+Reverberation $0.3$~s ($20$) & $32.0$~dB & 13.60 ($35.2\%$) & 14.20 ($32.4\%$) & $-0.60\ [-2.00,+0.80]$ & $+0.28\%$ \\
+Reverberation $0.9$~s ($20$) & $22.4$~dB & 14.40 ($31.4\%$) & 18.80 ($10.5\%$) & $-4.40\ [-6.20,-2.60]$ & $+0.00\%$ \\
+Telephone bandpass ($20$) & $44.2$~dB & 16.20 ($22.9\%$) & 13.00 ($38.1\%$) & $+3.20\ [+2.20,+4.40]$ & $-0.83\%$ \\
+\midrule
+\textbf{All OOD pooled ($100$)} & \textbf{$28.3$~dB} & \textbf{14.14 ($32.7\%$)} & \textbf{17.40 ($17.1\%$)} & \textbf{$-3.26\ [-4.04,-2.48]$} & \textbf{$-0.21\%$} \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+\phead{Evidence status and remaining protocol step} Because \texttt{EXP-012}--\texttt{EXP-018} use cross-validation on the $60$ development speakers and the 500-speaker \texttt{all1000} splits had been inspected during earlier audits (\texttt{AUDIT-001}), all figures in Appendices~\ref{app:prototype}--\ref{app:stac} constitute development evidence rather than independent held-out validation. Completing the final thesis evaluation requires freezing the STAC and \texttt{1D-CRC-STAC} formulation (with candidate floor $t_k\ge 0.019$) prior to synthesizing an uninspected, speaker-disjoint held-out corpus (\texttt{EVAL-001}/\texttt{EVAL-002}, such as LibriSpeech \texttt{test-clean}; \cite{panayotov2015librispeech}), subject to team and adviser review.
 
 \FloatBarrier
