@@ -10,7 +10,8 @@ FOLDERS = (BENCH, ROOT / "research/experiments/EXP-011-followup-t4/results",
            ROOT / "research/experiments/EXP-013-endpoint-extrapolation-prelim/results",
            ROOT / "research/experiments/EXP-014-handover-operators-prelim/results",
            ROOT / "research/experiments/EXP-015-noise-guidance-prelim/results",
-           ROOT / "research/experiments/EXP-017-grid32-prelim/results")
+           ROOT / "research/experiments/EXP-017-grid32-prelim/results",
+           ROOT / "research/experiments/EXP-018-swsr-handover-prelim/results")
 
 
 class EvidenceManifestTests(unittest.TestCase):

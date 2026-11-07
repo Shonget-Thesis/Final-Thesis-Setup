@@ -1,103 +1,100 @@
-<!-- 17 EXPECTED -->
-        <section class="scene" data-ch="4" data-sec="App. B–C" data-dur="65" data-title="Appendix: Simulation and Prototype">
-          <p class="eyebrow b fade" data-t="100">Appendices B–C · Simulation and Prototype</p>
-          <h2 class="b up" data-t="250">Projected Computational Savings &amp; Simulation Findings</h2>
-          <div class="two" style="margin-top:20px;gap:56px">
-            <div class="stack" style="gap:20px;justify-content:center">
-              <p class="mono b fade" data-t="600" style="font-size:15px;font-weight:600;letter-spacing:.14em;color:var(--dim)">PROTOTYPE
-                · HANDOVER PER INPUT</p>
+<!-- 19 APPENDIX B-C & LIVE T4 -->
+        <section class="scene" data-ch="4" data-sec="App. B–C · Live T4" data-dur="70" data-title="Appendix: Live T4 Speedup & Risk Calibration">
+          <p class="eyebrow b fade" data-t="100">Appendices B–C &amp; EXP-018 · Live GPU Execution &amp; Risk Control</p>
+          <h2 class="b up" data-t="250">Live T4 Handover Speedup &amp; Risk Calibration</h2>
+          <div class="two" style="margin-top:20px;gap:50px">
+            <div class="stack" style="gap:16px;justify-content:center">
+              <p class="mono b fade" data-t="600" style="font-size:14.5px;font-weight:700;letter-spacing:.12em;color:var(--orange-dark)">LIVE TESLA T4 EARLY EXIT · STAC (n = 30, max|diff| = 0.0)</p>
               <div class="proto">
                 <div class="r b left" data-t="900">
-                  <div class="nm"><b>Input A</b>clean, easy</div>
+                  <div class="nm"><b>Clean (n = 10)</b>13.2 NFE · 2.58s · 1.49×</div>
                   <div class="cells sm b" data-t="900" data-teacher="10" data-student="3" data-saved="8"></div>
                 </div>
                 <div class="r b left" data-t="1400">
-                  <div class="nm"><b>Input B</b>moderate</div>
-                  <div class="cells sm b" data-t="1400" data-teacher="14" data-student="3" data-saved="4"></div>
+                  <div class="nm"><b>20 dB Gauss</b>17.8 NFE · 3.23s · 1.21×</div>
+                  <div class="cells sm b" data-t="1400" data-teacher="15" data-student="3" data-saved="3"></div>
                 </div>
                 <div class="r b left" data-t="1900">
-                  <div class="nm"><b>Input C</b>noisy, hard</div>
+                  <div class="nm"><b>15 dB Noisy</b>21.0 NFE · 3.92s · 1.00×</div>
                   <div class="cells sm b" data-t="1900" data-teacher="18" data-student="3"></div>
                 </div>
               </div>
-              <div class="legend b fade" data-t="2600" style="flex-wrap:wrap;gap:20px;font-size:16.5px;font-weight:500"><span><i
-                    style="background:var(--blue);width:16px;height:16px;border-radius:2px"></i>teacher</span><span><i
-                    style="background:var(--student);width:16px;height:16px;border-radius:2px"></i>student</span><span><i
-                    style="background:repeating-linear-gradient(135deg,var(--orange) 0 3px,transparent 3px 7px);outline:1px solid var(--orange);width:16px;height:16px;border-radius:2px"></i>saved</span>
+              <div class="s19-leg b fade" data-t="2600"><span><i
+                    style="background:var(--blue)"></i>teacher</span><span><i
+                    style="background:var(--student)"></i>student (3)</span><span><i
+                    style="background:repeating-linear-gradient(135deg,var(--orange) 0 3px,transparent 3px 7px);outline:1px solid var(--orange)"></i>saved passes</span>
               </div>
-              <p class="txt b up" data-t="3000" style="font-size:21px">Easy inputs save up to <strong
-                  class="hl">38%</strong>. Hard inputs cost <strong>exactly the baseline</strong>, never more.</p>
+              <p class="txt b up" data-t="3000" style="font-size:19px;line-height:1.42">Online GPU stopping saves <strong
+                  class="hl">37.1% NFE (1.49× E2E, 1.68× teacher)</strong> on clean speech, <strong class="hl">15.2% (1.21×)</strong> at 20 dB, and falls back <strong>100% to Step 8</strong> at 15 dB (<strong>0.12 ms</strong> gate overhead).</p>
             </div>
-            <div class="stack" style="gap:12px;justify-content:center">
-              <p class="mono b fade" data-t="3600" style="font-size:15px;font-weight:600;letter-spacing:.14em;color:var(--dim)">
-                SIMULATION · P(R ≤ α) OVER 1,000 RUNS</p>
-              <svg viewBox="0 0 640 420" style="width:100%">
-                <line class="gridl" x1="70" x2="620" y1="40" y2="40" />
-                <line class="gridl" x1="70" x2="620" y1="200" y2="200" />
-                <line class="ax" x1="70" x2="620" y1="360" y2="360" stroke-width="2" />
-                <text class="tick" x="58" y="365" text-anchor="end">0</text><text class="tick" x="58" y="205"
-                  text-anchor="end">0.5</text><text class="tick" x="58" y="45" text-anchor="end">1</text>
+            <div class="stack" style="gap:10px;justify-content:center">
+              <p class="mono b fade" data-t="3600" style="font-size:14.5px;font-weight:700;letter-spacing:.12em;color:var(--dim)">
+                CALIBRATION · APPENDIX B SIMULATION &amp; 1D-CRC VERIFICATION</p>
+              <svg viewBox="0 0 640 400" style="width:100%">
+                <line class="gridl" x1="70" x2="620" y1="36" y2="36" />
+                <line class="gridl" x1="70" x2="620" y1="190" y2="190" />
+                <line class="ax" x1="70" x2="620" y1="344" y2="344" stroke-width="2" />
+                <text class="tick" x="58" y="349" text-anchor="end">0</text><text class="tick" x="58" y="195"
+                  text-anchor="end">0.5</text><text class="tick" x="58" y="41" text-anchor="end">1</text>
                 <g class="b fade" data-t="3800">
-                  <rect class="b growy" data-t="3900" x="92" y="50.6" width="44" height="309.4" fill="var(--orange)" rx="2" />
-                  <rect class="b growy" data-t="4000" x="144" y="223.4" width="44" height="136.6" fill="var(--student)"
+                  <rect class="b growy" data-t="3900" x="92" y="46.2" width="44" height="297.8" fill="var(--orange)" rx="2" />
+                  <rect class="b growy" data-t="4000" x="144" y="212.5" width="44" height="131.5" fill="var(--student)"
                     opacity=".55" rx="2" />
-                  <rect class="b growy" data-t="4100" x="222" y="43.8" width="44" height="316.2" fill="var(--orange)" rx="2" />
-                  <rect class="b growy" data-t="4200" x="274" y="232.3" width="44" height="127.7" fill="var(--student)"
+                  <rect class="b growy" data-t="4100" x="222" y="39.7" width="44" height="304.3" fill="var(--orange)" rx="2" />
+                  <rect class="b growy" data-t="4200" x="274" y="221.1" width="44" height="122.9" fill="var(--student)"
                     opacity=".55" rx="2" />
-                  <rect class="b growy" data-t="4300" x="352" y="50.6" width="44" height="309.4" fill="var(--orange)" rx="2" />
-                  <rect class="b growy" data-t="4400" x="404" y="225.6" width="44" height="134.4" fill="var(--student)"
+                  <rect class="b growy" data-t="4300" x="352" y="46.2" width="44" height="297.8" fill="var(--orange)" rx="2" />
+                  <rect class="b growy" data-t="4400" x="404" y="214.6" width="44" height="129.4" fill="var(--student)"
                     opacity=".55" rx="2" />
-                  <rect class="b growy" data-t="4500" x="482" y="65.6" width="44" height="294.4" fill="var(--orange)" rx="2" />
-                  <rect class="b growy" data-t="4600" x="534" y="209.9" width="44" height="150.1" fill="var(--student)"
+                  <rect class="b growy" data-t="4500" x="482" y="60.6" width="44" height="283.4" fill="var(--orange)" rx="2" />
+                  <rect class="b growy" data-t="4600" x="534" y="199.5" width="44" height="144.5" fill="var(--student)"
                     opacity=".55" rx="2" />
-                  <text class="tick" x="140" y="388" text-anchor="middle">n = 50</text><text class="tick" x="270"
-                    y="388" text-anchor="middle">100</text><text class="tick" x="400" y="388"
-                    text-anchor="middle">200</text><text class="tick" x="530" y="388" text-anchor="middle">400</text>
+                  <text class="tick" x="140" y="372" text-anchor="middle">n = 50</text><text class="tick" x="270"
+                    y="372" text-anchor="middle">100</text><text class="tick" x="400" y="372"
+                    text-anchor="middle">200</text><text class="tick" x="530" y="372" text-anchor="middle">400</text>
                 </g>
                 <g class="b fade" data-t="5100">
-                  <line x1="70" x2="620" y1="72" y2="72" stroke="var(--fg)" stroke-dasharray="6 5" stroke-width="2" />
-                  <text x="616" y="64" text-anchor="end" fill="var(--fg)" font-size="15" font-weight="600">required 1 − δ = 0.90</text>
+                  <line x1="70" x2="620" y1="66.8" y2="66.8" stroke="var(--fg)" stroke-dasharray="6 5" stroke-width="2" />
+                  <text x="616" y="59" text-anchor="end" fill="var(--fg)" font-size="15" font-weight="600">required 1 − δ = 0.90</text>
                 </g>
                 <g class="b fade" data-t="5300" font-size="15" font-weight="500">
-                  <rect x="80" y="400" width="14" height="12" fill="var(--orange)" rx="2" /><text x="100" y="411"
-                    fill="var(--muted)">Learn-Then-Test 0.92–0.99</text>
-                  <rect x="340" y="400" width="14" height="12" fill="var(--student)" opacity=".55" rx="2" /><text x="360"
-                    y="411" fill="var(--muted)">naive pick 0.40–0.47</text>
+                  <rect x="80" y="384" width="14" height="12" fill="var(--orange)" rx="2" /><text x="100" y="395"
+                    fill="var(--muted)">Calibrated LTT 0.92–0.99</text>
+                  <rect x="340" y="384" width="14" height="12" fill="var(--student)" opacity=".55" rx="2" /><text x="360"
+                    y="395" fill="var(--muted)">naive pick 0.40–0.47</text>
                 </g>
               </svg>
-              <p class="note b fade" data-t="5600">Simulated data, not experimental results. LTT used 15.9–18.2 passes
-                on average vs 21 for the reference.</p>
+              <p class="note b fade" data-t="5600">Chart: Appendix B simulated stress test. On T4 development runs (EXP-018), <b>1D-CRC-STAC (α = 0.05)</b> held WER to 0.0670 (vs 0.0679 ref) at 17.67 NFE, and LTT certified <b>9/360 (2.5% ≤ 5%)</b> without SNR.</p>
             </div>
           </div>
-          <footer class="cite b fade" data-t="3000"><span class="k">From</span><span>Proposal Appendix B (Table B.1) and
-              Appendix C (Figure C.1) · costs exact by Proposition 3.1</span></footer>
+          <footer class="cite b fade" data-t="3000"><span class="k">From</span><span>Proposal Appendices B–C &amp; EXP-018 Live Tesla T4 Telemetry (live_swsr_t4.csv, n = 30) · development evidence</span></footer>
         </section>
 
 <script type="text/slide-script">
-The last appendix slide shows what we expect, from the simulation and the prototype in Appendices B and C. On the left, the prototype view: a clean, easy input hands over early and saves up to 38 percent, shown by the hatched orange cells; a moderate input saves less; a noisy, hard input keeps the full teacher run and costs exactly the baseline, never more. On the right is a simulation, with made-up data, not experimental results. Each pair of bars is a calibration size. The orange bars show how often Learn-Then-Test kept the true risk within the tolerance: 92 to 99 percent of the time, above the required 90. The grey bars are a naive rule that just picks the best-looking threshold: it met the tolerance only 40 to 47 percent of the time. The guarantee costs some computation, between 15.9 and 18.2 passes on average instead of 21. Thank you; we welcome your questions.
+This slide pairs our live Tesla T4 early-stopping execution from EXP-018 with our risk-control calibration analysis. On the left, instead of an offline prototype diagram, these bars show 30 live GPU runs where the teacher loop terminated online at STAC's chosen step, producing bitwise-identical endpoints with zero point zero difference from full replay and 0.12 milliseconds of gate overhead. Clean utterances averaged 13.2 passes, saving 37.1 percent of compute for a 1.49-times end-to-end wall-clock speedup; moderate 20-decibel noisy utterances averaged 17.8 passes for a 1.21-times speedup; and 15-decibel noisy utterances fell back 100 percent of the time to Step 8 with zero added error. On the right is the Appendix B simulation showing calibrated Learn-Then-Test holding risk below alpha 92 to 99 percent of the time versus 40 to 47 percent for naive selection, alongside our T4 verification where 1D Conformal Risk Control STAC held continuous risk within alpha equals 0.05 while slightly improving WER over the Step-8 reference.
 </script>
 
 <style>
-/* S17 */
+/* S19 */
     .proto {
       display: flex;
       flex-direction: column;
-      gap: 18px
+      gap: 16px
     }
 
     .proto .r {
       display: grid;
-      grid-template-columns: 160px 1fr;
-      gap: 16px;
+      grid-template-columns: 175px 1fr;
+      gap: 12px;
       align-items: center
     }
 
     .proto .r .nm {
       font-family: var(--mono);
-      font-weight: 400;
-      font-size: 15.5px;
+      font-weight: 500;
+      font-size: 14.5px;
       color: var(--muted);
-      line-height: 1.3
+      line-height: 1.32
     }
 
     .proto .r .nm b {
@@ -106,22 +103,51 @@ The last appendix slide shows what we expect, from the simulation and the protot
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
-      font-size: 19px;
+      font-size: 18.5px;
       font-weight: 700;
     }
 
     .proto .cells.sm i {
-      width: 20px;
-      height: 34px;
+      width: 17px;
+      height: 32px;
       border-radius: 2px;
+    }
+
+    .s19-leg {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      font-family: var(--mono);
+      font-size: 15.5px;
+      font-weight: 500;
+      color: var(--muted);
+      align-items: center
+    }
+
+    .s19-leg span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .s19-leg i {
+      display: inline-block;
+      width: 15px;
+      height: 15px;
+      border-radius: 2px
     }
 
     .note {
       font-family: var(--mono);
       font-weight: 400;
-      font-size: 14.5px;
+      font-size: 14px;
       color: var(--dim);
-      letter-spacing: .04em;
-      line-height: 1.5
+      letter-spacing: .02em;
+      line-height: 1.45
+    }
+
+    .note b {
+      color: var(--fg);
+      font-weight: 600
     }
 </style>

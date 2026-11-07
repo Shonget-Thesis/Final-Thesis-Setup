@@ -1,0 +1,170 @@
+<!-- 20 APPENDIX E.1: STAC ARCHITECTURE -->
+        <section class="scene" data-ch="4" data-sec="App. E.1 · STAC" data-dur="75" data-title="Appendix: Proposed STAC Handover Architecture">
+          <p class="eyebrow o b fade" data-t="100">Appendix E.1 · Novel Handover Method (EXP-018)</p>
+          <h2 class="b up" data-t="250">STAC: Stage-Wise Trajectory Action Cascade</h2>
+          <svg class="s20-svg" viewBox="0 0 1380 408" style="width:100%;height:398px;margin-top:8px">
+            <defs>
+              <marker id="ar20" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                <path d="M0 0L10 5L0 10z" fill="var(--muted)" />
+              </marker>
+              <marker id="ao20" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                <path d="M0 0L10 5L0 10z" fill="var(--orange)" />
+              </marker>
+              <marker id="ab20" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                <path d="M0 0L10 5L0 10z" fill="var(--blue)" />
+              </marker>
+            </defs>
+
+            <!-- Eliminated Prompt SNR callout -->
+            <g class="b fade" data-t="700">
+              <rect x="460" y="8" width="412" height="58" rx="6" fill="rgba(241,245,249,.75)" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="5 5" />
+              <text x="666" y="32" text-anchor="middle" fill="var(--dim)" font-size="14.5" font-weight="700" text-decoration="line-through">PROMPT SNR (Ŝ, gate θ) — ELIMINATED</text>
+              <text x="666" y="53" text-anchor="middle" fill="var(--muted)" font-size="13.5">0 external heuristics · saves 1.85 ms · immune to OOD bandpass</text>
+            </g>
+
+            <!-- Wires -->
+            <path class="wire b draw" data-t="900" d="M192 172 H246" marker-end="url(#ar20)" />
+            <path class="wire b draw" data-t="1400" d="M464 172 H502" marker-end="url(#ar20)" />
+            <path class="wire a b draw" data-t="1900" d="M788 172 H810" marker-end="url(#ao20)" />
+            <path class="wire a b draw" data-t="2800" d="M900 300 V258" marker-end="url(#ao20)" />
+            <path class="wire lp b draw" data-t="3500" d="M858 214 L832 274 H356 V226" marker-end="url(#ab20)" />
+            <path class="wire b draw" data-t="4200" d="M988 172 H1036" marker-end="url(#ar20)" />
+            <path class="wire b draw" data-t="4500" d="M1210 172 H1238" marker-end="url(#ar20)" />
+
+            <text class="wl cb b fade" data-t="3700" x="594" y="264" text-anchor="middle">no (A<tspan dy="4" font-size="11.5">i</tspan><tspan dy="-4"> &lt; </tspan><tspan font-family="var(--math)" font-style="italic">λ</tspan><tspan dy="4" font-size="11.5">i</tspan><tspan dy="-4">) · Euler step to t</tspan><tspan dy="4" font-size="11.5">i+1</tspan></text>
+            <text class="wl o b fade" data-t="4300" x="995" y="160" font-weight="700">yes</text>
+
+            <!-- Nodes -->
+            <g class="node b fade" data-t="600">
+              <rect x="16" y="120" width="176" height="104" rx="4" />
+              <text class="hd" x="30" y="156">Input</text>
+              <text class="sm" x="30" y="182">prompt audio,</text>
+              <text class="sm" x="30" y="204">prompt + target text</text>
+            </g>
+
+            <g class="node t b fade" data-t="1100">
+              <rect x="248" y="120" width="216" height="104" rx="4" />
+              <text class="hd" x="264" y="156">Teacher</text>
+              <text class="sm" x="264" y="182">guided step at t<tspan dy="4" font-size="12">i</tspan></text>
+              <text class="sm" x="264" y="204" dy="-4">2 passes · frozen</text>
+            </g>
+
+            <g class="node a b fade" data-t="1600">
+              <rect x="504" y="110" width="284" height="124" rx="4" />
+              <text class="hd" x="520" y="143" style="fill:var(--orange);font-size:15.5px">STAC Action Monitor</text>
+              <text class="sm" x="520" y="170" style="fill:var(--fg);font-weight:600">x̂₁(t<tspan dy="4" font-size="11.5">i</tspan><tspan dy="-4">), d</tspan><tspan dy="4" font-size="11.5">i</tspan><tspan dy="-4">, action A</tspan><tspan dy="4" font-size="11.5">i</tspan><tspan dy="-4"> = ∑ d</tspan><tspan dy="4" font-size="11.5">j</tspan></text>
+              <text class="sm" x="520" y="195" dy="-4">running trajectory odometer</text>
+              <text class="sm" x="520" y="216" dy="-4" style="fill:var(--orange-dark);font-weight:700">0 extra passes · 0.12 ms</text>
+            </g>
+
+            <g class="node a b pop" data-t="2200">
+              <polygon points="900,88 988,172 900,256 812,172" />
+              <text class="hd" x="900" y="166" text-anchor="middle" style="fill:var(--orange);font-size:18px;text-transform:none">A<tspan dy="4" font-size="12.5">i</tspan><tspan dy="-4"> ≥ </tspan><tspan font-family="var(--math)" font-style="italic">λ̂</tspan><tspan dy="4" font-size="12.5">i</tspan><tspan dy="-4"> ?</tspan></text>
+              <text class="sm" x="900" y="191" text-anchor="middle" style="font-size:13.5px">(or i = i<tspan dy="3" font-size="10.5">ref</tspan><tspan dy="-3">)</tspan></text>
+            </g>
+
+            <g class="node a b fade" data-t="2800">
+              <rect x="734" y="302" width="332" height="96" rx="4" />
+              <text class="hd" x="750" y="334" style="fill:var(--orange);font-size:16px">Offline Calibrator</text>
+              <text class="sm" x="750" y="359" style="fill:var(--fg);font-weight:600">Stage-Wise / 1D-CRC → {<tspan font-family="var(--math)" font-style="italic">λ̂</tspan>₁ … <tspan font-family="var(--math)" font-style="italic">λ̂</tspan><tspan dy="3" font-size="11">K−1</tspan><tspan dy="-3">}</tspan></text>
+              <text class="sm" x="750" y="382">α = 0.05 · runs once before deployment</text>
+            </g>
+
+            <g class="node s b fade" data-t="4200">
+              <rect x="1038" y="120" width="172" height="104" rx="4" />
+              <text class="hd" x="1052" y="156">Student</text>
+              <text class="sm" x="1052" y="182">restart τ = 0.0761</text>
+              <text class="sm" x="1052" y="204">3 passes · frozen</text>
+            </g>
+
+            <g class="node b fade" data-t="4500">
+              <rect x="1240" y="120" width="128" height="104" rx="4" />
+              <text class="hd" x="1254" y="156">Vocos</text>
+              <text class="sm" x="1254" y="182">mel →</text>
+              <text class="sm" x="1254" y="204">waveform</text>
+            </g>
+
+            <!-- Legend -->
+            <g class="b fade" data-t="4800" font-family="var(--mono)" font-weight="500" font-size="14.5">
+              <rect x="1038" y="18" width="17" height="11" fill="rgba(2,132,199,.2)" stroke="var(--blue)" />
+              <text x="1064" y="29" fill="var(--muted)">released, frozen</text>
+              <rect x="1038" y="44" width="17" height="11" fill="rgba(234,88,12,.12)" stroke="var(--orange)" stroke-dasharray="4 3" />
+              <text x="1064" y="55" fill="var(--orange)">added by STAC (this study)</text>
+            </g>
+
+            <!-- Animated pulses -->
+            <g class="b fade" data-t="5000">
+              <circle r="6.5" fill="var(--blue)">
+                <animateMotion dur="3.4s" repeatCount="indefinite" path="M192 172 H900 L858 214 L832 274 H356 V172 H464" />
+              </circle>
+              <circle r="6.5" fill="var(--orange)">
+                <animateMotion dur="3.4s" begin="1.7s" repeatCount="indefinite" path="M788 172 H988 H1368" />
+              </circle>
+            </g>
+          </svg>
+
+          <!-- Real Utterance #1 Odometer Trace Strip -->
+          <div class="s20-strip">
+            <div class="s20-card b up" data-t="5200">
+              <div class="s20-k bl">Clean Prompt · Utterance #1</div>
+              <p>Strong guidance builds action fast: <b><i>A</i>₄ = 3.65 ≥ <span class="math">λ̂</span>₄ (1.59)</b> → exits at <b>Step 4 (13 NFE, −38%)</b>.</p>
+            </div>
+            <div class="s20-card s20-mid b up" data-t="5600">
+              <div class="s20-k hl">20 dB Gauss · Utterance #1</div>
+              <p><i>A</i>₄ = 1.52 &lt; 1.59 (waits!), accumulates to <b><i>A</i>₇ = 2.06 ≥ <span class="math">λ̂</span>₇ (1.93)</b> → exits at <b>Step 7 (19 NFE, −10%)</b>.</p>
+            </div>
+            <div class="s20-card b up" data-t="6000">
+              <div class="s20-k" style="color:var(--muted)">15 dB Noisy · Utterance #1</div>
+              <p>Prematurely flat (<i>A</i>₇ = 1.76 &lt; 1.93) → stays in loop to <b>Step 8 ref (21 NFE, 0 added loss)</b>.</p>
+            </div>
+          </div>
+
+          <footer class="cite b fade" data-t="2600"><span class="k">From</span><span>EXP-018 (run_swsr_handover_prelim.py, steps1to8.csv) · Pure switching-time policy: frozen teacher, student, duration &amp; τ = 0.0761 · development evidence</span></footer>
+        </section>
+
+<script type="text/slide-script">
+This slide introduces our updated architecture: the Stage-Wise Trajectory Action Cascade, or STAC, together with its conformal risk-controlled variant, 1D-CRC-STAC. Compare this directly with Slide 10. First, the external Prompt SNR branch at the top is completely eliminated—saving 1.85 milliseconds of waveform overhead and removing vulnerability to bandpass or babble noise. Second, the endpoint monitor becomes the STAC Action Monitor: at each guided teacher step, reusing tensors already in GPU memory at 0.12 milliseconds overhead and zero extra passes, it accumulates the running trajectory path length A-sub-i equals the sum of step drifts d-sub-1 through d-sub-i. Third, the decision diamond flips the inequality and checks a stage-specific threshold vector calibrated offline: has cumulative action reached lambda-hat-sub-i? The three cards at the bottom trace Utterance 1 from our Tesla T4 run. Clean speech builds strong guidance immediately—A-4 hits 3.65 against threshold 1.59 and exits at Step 4 in 13 passes. Moderate 20-decibel noise reaches only 1.52 at Step 4, stays in the teacher loop until A-7 reaches 2.06 at Step 7, and exits safely in 19 passes. Heavy 15-decibel noise stays prematurely flat below every threshold and automatically completes all 8 teacher steps.
+</script>
+
+<style>
+/* S20 STAC architecture */
+    .s20-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 12px
+    }
+
+    .s20-card {
+      border: 1px solid var(--line-2);
+      background: rgba(255, 255, 255, 0.94);
+      border-radius: 8px;
+      padding: 14px 20px;
+      box-shadow: 0 6px 20px -8px rgba(15, 23, 42, 0.06)
+    }
+
+    .s20-card.s20-mid {
+      border-color: rgba(234, 88, 12, .45);
+      background: linear-gradient(135deg, rgba(251, 146, 60, .10), rgba(255, 255, 255, .95))
+    }
+
+    .s20-k {
+      font-family: var(--mono);
+      font-size: 13.5px;
+      font-weight: 700;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: block
+    }
+
+    .s20-card p {
+      font-size: 16.5px;
+      line-height: 1.38;
+      color: var(--muted)
+    }
+
+    .s20-card p b {
+      color: var(--fg)
+    }
+</style>

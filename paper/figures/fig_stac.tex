@@ -1,0 +1,50 @@
+% Figure: Stage-Wise Trajectory Action Cascade (STAC / 1D-CRC-STAC) architecture
+\begin{figure}[!htbp]
+\centering
+\begin{adjustbox}{max width=\linewidth}
+\begin{tikzpicture}[
+  font=\figfont,
+  base/.style={draw=frozenLine, rounded corners=2pt, fill=frozenFill, text width=2.25cm, align=center, minimum height=1.35cm, inner sep=3pt},
+  teach/.style={draw=newLine, rounded corners=2pt, fill=newFill!55, text width=2.35cm, align=center, minimum height=1.35cm, inner sep=3pt},
+  prop/.style={draw=offLine, thick, dashed, rounded corners=2pt, fill=offFill, text width=2.85cm, align=center, minimum height=1.45cm, inner sep=3pt},
+  gone/.style={draw=frozenLine, dashed, rounded corners=2pt, fill=gray!5, text width=5.6cm, align=center, minimum height=0.85cm, inner sep=3pt, text=black!55},
+  dec/.style={diamond, draw=offLine, thick, dashed, fill=offFill, aspect=1.55, inner sep=1pt, align=center, text width=1.65cm},
+  arr/.style={-{Stealth[length=2mm]}, thick, draw=black!70},
+  arro/.style={-{Stealth[length=2mm]}, thick, dashed, draw=offLine},
+  arrl/.style={-{Stealth[length=2mm]}, thick, draw=newLine}
+]
+% eliminated SNR callout
+\node[gone] (nosnr) at (6.7,2.15) {\textbf{Prompt SNR ($\hat S$, gate $\theta$) --- Eliminated}\\{\figsmall 0 external waveform heuristics $\cdot$ saves $1.85\text{ ms}$ $\cdot$ OOD-safe}};
+
+% main pipeline row
+\node[base] (in) at (0,0) {Prompt audio,\\prompt text,\\target text};
+\node[teach] (tstep) at (3.25,0) {Teacher guided\\step at $t_i$\\(2 passes, frozen)};
+\node[prop] (stac) at (6.85,0) {\textbf{STAC monitor}\\$\hat x_1(t_i),\ d_i,\ A_i=\sum_{j=1}^i d_j$\\{\figsmall 0 passes $\cdot$ $0.12\text{ ms}$}};
+\node[dec] (stop) at (10.45,0) {$A_i \ge \hat\lambda_i$?\\{\figsmall (or $i=k_{\text{ref}}$)}};
+\node[base, text width=2.35cm] (stud) at (14.1,0) {Student from $\hat x_1$:\\$\tau=0.0761$\\(3 passes, frozen)};
+\node[base, text width=2.15cm] (voc) at (14.1,-2.25) {Vocos vocoder\\mel $\rightarrow$ waveform};
+
+% offline calibrator
+\node[prop, text width=3.9cm, minimum height=1.2cm] (cal) at (10.45,-2.25) {\textbf{Offline calibrator}\\Stage-Wise / 1D-CRC ($\alpha=0.05$)\\{\figsmall returns $\{\hat\lambda_1,\dots,\hat\lambda_{K-1}\}$ once}};
+
+% connections
+\draw[arr] (in) -- (tstep);
+\draw[arr] (tstep) -- (stac);
+\draw[arro] (stac) -- (stop);
+\draw[arr] (stop) -- node[above, font=\figsmall] {yes} (stud);
+\draw[arr] (stud) -- (voc);
+\draw[arro] (cal) -- (stop);
+\draw[arrl] (stop.south west) -- ++(-0.35,-0.65) coordinate (lp) -| (tstep.south);
+\node[above, font=\figsmall, text=newLine] at ($(lp)!0.52!(lp-|tstep.south)$) {no ($A_i<\hat\lambda_i$): Euler step to $t_{i+1}$};
+
+% legend
+\node[teach, minimum height=0.32cm, text width=0.45cm] (l1) at (-0.85,-2.05) {};
+\node[right, font=\figsmall] at (l1.east) {released, frozen DMOSpeech~2 / Vocos};
+\node[prop, minimum height=0.32cm, text width=0.45cm] (l2) at (-0.85,-2.60) {};
+\node[right, font=\figsmall] at (l2.east) {added by STAC / 1D-CRC-STAC (this study)};
+\end{tikzpicture}
+\end{adjustbox}
+\caption{Modular architecture of the Stage-Wise Trajectory Action Cascade (STAC) and its conformal risk-controlled variant (1D-CRC-STAC). Compared with Figure~\ref{fig:method}, the external prompt SNR estimator is removed, the endpoint monitor accumulates cumulative trajectory action $A_i=\sum_{j=1}^i d_j$ at $0.12\text{ ms}$ overhead with zero extra forward passes, and the decision diamond tests a stage-specific threshold vector $\{\hat\lambda_1,\dots,\hat\lambda_{K-1}\}$ calibrated offline.}
+\label{fig:stac}
+\end{figure}
+

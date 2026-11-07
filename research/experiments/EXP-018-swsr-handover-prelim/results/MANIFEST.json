@@ -1,0 +1,40 @@
+{
+  "description": "Outputs of the EXP-018 notebook run on 2026-11-07 (Colab Tesla T4): full synthesis and evaluation of STAC (Stage-Wise Trajectory Action Cascade) and 1D-CRC-STAC across BOTH the 16-interval sway grid (Steps 1..8) and the 32-interval sway grid (Steps 1..15) on all 360 cases (60 development speakers x 6 conditions), plus the 30-case live Tesla T4 early-stopping speed/latency/RTF/bitwise-identity benchmark (`live_swsr_t4.csv`) and smoke checks. Byte-identical copies from STAC_Steps1to8_BothGrids_Results.zip.",
+  "source_zip": "STAC_Steps1to8_BothGrids_Results.zip",
+  "source_zip_sha256": "68437a64a9b9dcca8ca22822a9005091ea3847e0d632d680df6151483b08fd69",
+  "thesis_commit_at_run": "8a6f396460316b25826a8fa22d1ddce169ace0cc",
+  "dmo_commit_at_run": "8a7868fc3345702a586173447f4869205b501f26",
+  "device": "Tesla T4",
+  "files": [
+    {
+      "file": "SWSR_HANDOVER_REPORT.md",
+      "bytes": 66193,
+      "sha256": "69706de21e0ec9c9ce11b18aeef4f901231eb0abc8730275f1d6691b3fd332e3"
+    },
+    {
+      "file": "live_swsr_t4.csv",
+      "bytes": 9777,
+      "sha256": "adffb7341890b8236a8603204c6eb56dd69fa1733274e71f29332bab18d26b51"
+    },
+    {
+      "file": "smoke/live_swsr_t4.csv",
+      "bytes": 1721,
+      "sha256": "a1fffd7657aefc4193bb8d0c6f22a3cf4851689b2f2c8acc3d3bf9661a597726"
+    },
+    {
+      "file": "smoke/steps1to8.csv",
+      "bytes": 8302,
+      "sha256": "28cb9d0c24c6848f6e92a8aa6438cf6390d8e0bfafa32568471a7db08af6d7eb"
+    },
+    {
+      "file": "steps1to8.csv",
+      "bytes": 627458,
+      "sha256": "7bf547d82f5881b88c99d66eb7118366454079ff58fa82f772f5af17929f1be8"
+    },
+    {
+      "file": "swsr_results.json",
+      "bytes": 490032,
+      "sha256": "db0f588185c40fff1a56ed9a49fa16584e949dfbe97e381d98324d036fabaf83"
+    }
+  ]
+}

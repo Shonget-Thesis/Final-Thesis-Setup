@@ -1,46 +1,48 @@
 <!-- 18 APPENDIX D: SIGNAL DIAGNOSTIC -->
-        <section class="scene" data-ch="4" data-sec="App. D.4–D.5" data-dur="70" data-title="Appendix: Signal Diagnostic">
-          <p class="eyebrow b fade" data-t="100">Appendix D.4–D.5 · Development-Split Signal Diagnostic</p>
-          <h2 class="b up" data-t="250">How the Two Signals Behaved</h2>
-          <div class="ap two" style="grid-template-columns:1fr 1fr;gap:48px">
-            <div class="stack" style="gap:18px">
-              <p class="aph b fade" data-t="600">Prompt SNR · 100 development speakers</p>
+        <section class="scene" data-ch="4" data-sec="App. D.4–D.5" data-dur="75" data-title="Appendix: Signal Diagnostic & Premature Stabilization">
+          <p class="eyebrow b fade" data-t="100">Appendix D.4–D.5 &amp; EXP-011–015 · Signal Diagnostic (Tesla T4)</p>
+          <h2 class="b up" data-t="250">Why SNR Gates &amp; Low-Drift Stopping Break</h2>
+          <div class="ap two" style="grid-template-columns:1.02fr .98fr;gap:44px">
+            <div class="stack" style="gap:14px">
+              <p class="aph b fade" data-t="600">Prompt SNR · Clean vs. Moderate &amp; OOD Corruptions (EXP-011 &amp; EXP-012)</p>
               <div class="snr b fade" data-t="900">
-                <div class="axis-db"><span style="left:0%">10 dB</span><span style="left:25%">20 dB</span><span
+                <div class="axis-db"><span style="left:0%">10 dB</span><span style="left:25%">θ = 20</span><span
                     style="left:50%">30 dB</span><span style="left:100%">50 dB</span></div>
                 <div class="rng"><span class="lab">Clean</span>
                   <div class="trk"><i class="cl" style="left:33.25%;width:66.75%"></i><i class="gate"
                       style="left:25%"></i></div><b>23.3–50.0 dB</b>
                 </div>
-                <div class="rng"><span class="lab">15 dB noisy</span>
-                  <div class="trk"><i class="ns" style="left:17%;width:3.5%"></i><i class="gate" style="left:25%"></i>
+                <div class="rng"><span class="lab">15 dB white</span>
+                  <div class="trk"><i class="s18-ok" style="left:17%;width:3.5%"></i><i class="gate" style="left:25%"></i>
                   </div><b>16.8–18.2 dB</b>
                 </div>
+                <div class="rng"><span class="lab">18–22 dB Gauss</span>
+                  <div class="trk"><i class="ns" style="left:22.5%;width:12%"></i><i class="gate" style="left:25%"></i>
+                  </div><b class="s18-bad">19.0–24.8 dB ✗</b>
+                </div>
+                <div class="rng"><span class="lab">Telephone OOD</span>
+                  <div class="trk"><i class="ns" style="left:80%;width:11%"></i><i class="gate" style="left:25%"></i>
+                  </div><b class="s18-bad">44.2 dB mean ✗</b>
+                </div>
               </div>
-              <p class="txt b up" data-t="1700" style="font-size:19px">The SNR <strong>separated the two conditions
-                  completely</strong>; a 20 dB gate sent every noisy prompt to the reference. Fixed early handovers failed
-                on 49–63% of noisy prompts but 2–4% of clean ones.</p>
+              <p class="txt b up" data-t="1700" style="font-size:18px;line-height:1.42">While θ = 20 dB separated clean from 15 dB white noise, it <strong>missed 18–22 dB noise (86/360 = 23.9% failures, 4.8× over 5% budget)</strong> and was fooled by bandpass <strong>telephone audio (44.2 dB)</strong> and babble (23.6 dB), while adding <strong>1.85 ms</strong> waveform overhead.</p>
             </div>
-            <div class="stack" style="gap:16px">
-              <div class="panel b up" data-t="2400">
-                <div class="ph">Stabilization score d₄ on clean prompts</div>
-                <p>AUC ≈ <b>0.47</b> for Step-4 failures vs passes, from only two to three failures. At λ = 0.50 the
-                  policy waited past Step 4 on 78 of 100 clean prompts, of which 75–77 would already have passed.</p>
+            <div class="stack" style="gap:14px">
+              <div class="panel b up" data-t="2400" style="padding:20px 26px">
+                <div class="ph">EXP-012 Discovery · Noise causes premature stabilization</div>
+                <p>On clean prompts, single-step <i>d</i><sub>4</sub> had AUC ≈ <b>0.47</b> (2–3 failures). Across noise levels (n = 360), degraded prompts <b>stabilize prematurely</b>: median <i>d</i><sub>4</sub> drops from <b>0.61 (clean)</b> to <b>0.17 (15 dB noisy)</b> as teacher guidance contrast collapses (ρ = 0.89). Thus <i>d<sub>i</sub></i> ≤ λ stops <b>noisy prompts first</b>.</p>
               </div>
-              <div class="panel b up" data-t="3100">
-                <div class="ph">D.5 · Plan, fixed before the data are seen</div>
-                <p>1 Discrimination on development · 2 Controls on test (SNR + fixed later step, cost-matched random) · 3
-                  Prompts the SNR cannot see (reverberation, telephone band) · 4 Richer zero-cost signals. If the score
-                  adds nothing, the <b>SNR-gated policy</b> is recommended.</p>
+              <div class="panel b up" data-t="3100" style="padding:20px 26px">
+                <div class="ph">EXP-013–018 Resolution · Cumulative trajectory action</div>
+                <p>Eight state-altering operators (<b>DEH, TCR, cDEH, SEA, SNNG, SCG, PIEC</b>) failed routing criterion C3, and 1-cut SNR gates collapsed to <b>1.5% saving</b> when Step 1 was included. Summing path length <b><i>A<sub>i</sub></i> = ∑<sub><i>j</i>=1</sub><sup><i>i</i></sup> <i>d<sub>j</sub></i> ≥ <span class="math">λ̂</span><sub><i>i</i></sub></b> flips the direction, smooths step jitter, and <b>removes Prompt SNR</b>.</p>
               </div>
             </div>
           </div>
-          <footer class="cite b fade" data-t="1200"><span class="k">From</span><span>Proposal Appendix D.4–D.5 ·
-              development split only; not evidence for or against the stabilization score</span></footer>
+          <footer class="cite b fade" data-t="1200"><span class="k">From</span><span>Proposal Appendix D.4–D.5 · EXP-011, EXP-012 &amp; EXP-013–015 (Tesla T4, n = 360 &amp; OOD n = 100) · development evidence</span></footer>
         </section>
 
 <script type="text/slide-script">
-This slide shows how the two signals behaved on the 100 development speakers. On the left, the SNR bars: clean prompts measured 23 to 50 decibels and noisy prompts 17 to 18, with the black line marking the 20-decibel gate. The two groups do not overlap, so the gate sent every noisy prompt to the reference. On the right, the stabilization score on clean prompts did not separate failures from passes, with an area under the curve of about 0.47, although that rests on only two or three failures. At lambda 0.50 the policy also waited longer than needed on most clean prompts. The bottom card is our plan to test the score properly, fixed before we look at the data: measure discrimination, compare against controls, test prompts that the SNR cannot detect, such as reverberation, and try richer zero-cost signals. If the score adds nothing, we will recommend the SNR-gated policy and report the score as a negative result.
+This slide explains why both parts of the initial heuristic policy broke when tested beyond clean versus 15-decibel white noise, and how that discovery led directly to STAC. On the left, the 20-decibel SNR gate cleanly separated 15-decibel white noise, but in EXP-011 and EXP-012 moderate 18 to 22 decibel noise crossed the 20-decibel line, causing 86 failures out of 360—nearly five times the five percent tolerance. Even worse, out-of-distribution telephone bandpass filtering silenced pause frames so the SNR estimator reported 44.2 decibels—ultra-clean—and exited early on degraded speech. On the right, EXP-012 uncovered why Definition 3.4's stabilization rule failed: prompt noise causes premature stabilization. Because noisy prompts weaken teacher guidance contrast, median Step-4 drift drops from 0.61 on clean speech down to 0.17 at 15 decibels, so stopping when drift is small stops noisy prompts first. After eight state-modifying operators in EXP-013 through EXP-015 failed our routing gate and single-threshold SNR rules collapsed to 1.5 percent savings across Steps 1 to 8, we inverted the rule and accumulated trajectory path length A-sub-i greater than or equal to lambda-hat-sub-i—eliminating external SNR completely.
 </script>
 
 <style>
@@ -48,8 +50,8 @@ This slide shows how the two signals behaved on the 100 development speakers. On
     .snr {
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      padding: 18px 20px 14px;
+      gap: 13px;
+      padding: 16px 18px 14px;
       border: 1px solid var(--line-2);
       border-radius: 8px;
       background: #FFFFFF
@@ -58,8 +60,8 @@ This slide shows how the two signals behaved on the 100 development speakers. On
     .axis-db {
       position: relative;
       height: 18px;
-      margin-left: 120px;
-      margin-right: 130px;
+      margin-left: 128px;
+      margin-right: 142px;
       font-family: var(--mono);
       font-size: 13px;
       color: var(--dim)
@@ -73,25 +75,30 @@ This slide shows how the two signals behaved on the 100 development speakers. On
 
     .rng {
       display: grid;
-      grid-template-columns: 110px 1fr 120px;
+      grid-template-columns: 118px 1fr 132px;
       gap: 10px;
       align-items: center;
-      font-size: 17px
+      font-size: 16px
     }
 
     .rng .lab {
-      color: var(--muted)
+      color: var(--muted);
+      font-weight: 500
     }
 
     .rng b {
       font-weight: 700;
       color: var(--fg);
-      font-size: 16px
+      font-size: 15px
+    }
+
+    .rng b.s18-bad {
+      color: var(--orange-dark)
     }
 
     .trk {
       position: relative;
-      height: 16px;
+      height: 15px;
       background: rgba(15, 23, 42, .06);
       border-radius: 8px
     }
@@ -107,14 +114,18 @@ This slide shows how the two signals behaved on the 100 development speakers. On
       background: var(--blue-grad)
     }
 
+    .trk i.s18-ok {
+      background: linear-gradient(135deg, #94A3B8 0%, #64748B 100%)
+    }
+
     .trk i.ns {
       background: var(--orange-grad)
     }
 
     .trk i.gate {
       width: 2px;
-      top: -6px;
-      bottom: -6px;
+      top: -5px;
+      bottom: -5px;
       background: var(--fg);
       border-radius: 0
     }
