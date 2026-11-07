@@ -504,6 +504,21 @@
         "docs/progress/log/2026-11-07-exp018-stac-handover-prelim.md"
       ],
       "validation": "latexmk -interaction=nonstopmode -halt-on-error -Werror exited 0 (paper/build/main.pdf, 82 pages) with zero undefined references, zero missing citations, and zero overfull boxes in Appendices B-E; check_workspace.py and all 69 unit tests pass. Adviser and team review pending."
+    },
+    {
+      "id": "EVAL-012",
+      "title": "Guidance-decomposed trajectory telemetry and risk-controlled handover (EXP-019)",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "todo",
+      "updated": "2026-11-07",
+      "acceptance": "Preregistration is frozen before GPU execution; validates Lemma 1 exact Euler trajectory curvature identity (residual <= 1e-3); evaluates guidance power decomposition d_j^2 = p^c_j + p^g_j + p^x_j on the 60 development speakers (360 cases); evaluates out-of-sample prediction and the GPC policy (Pareto marginal-efficiency path with split-path monotone conformal risk control) on 40 fresh development speakers (240 cases) and unseen OOD degradations; committed with preregistration and tests.",
+      "evidence": [
+        "research/experiments/EXP-019-guidance-decomposition-prelim/README.md",
+        "research/experiments/EXP-019-guidance-decomposition-prelim/preregistration.json",
+        "code/colab/run_guidance_work_prelim.py",
+        "code/colab/DMOSpeech2_EXP019_Guidance_Decomposition.ipynb",
+        "code/tests/test_guidance_work.py"
+      ]
     }
   ]
 }
