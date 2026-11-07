@@ -22,3 +22,4 @@ Following the analysis of CS novelty criteria, STAC was audited against the 8 re
 ## Verification Checks
 - `python scripts/check_workspace.py`: PASSED.
 - `python -m unittest discover -s code/tests`: PASSED (Ran 73 tests in ~31s, OK).
+

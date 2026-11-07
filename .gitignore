@@ -22,6 +22,7 @@ venv/
 code/vendor/dmospeech2/ckpts/
 research/data/
 research/runs/
+code/colab/Colab_Output/
 # Generated manuscript and local reports
 paper/**/build/
 *.aux

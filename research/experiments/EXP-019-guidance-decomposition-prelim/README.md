@@ -50,3 +50,4 @@ Because $v_{\text{cond}}$ and $v_{\text{uncond}}$ are already evaluated at every
 - **Ablation `gpc_greedy`:** Tests path necessity by replacing the Pareto marginal-efficiency path with STAC's greedy stage-by-stage ordering.
 - **Ablation `gpc_nocrc`:** Tests calibration necessity by optimizing empirical risk without the monotone-envelope conformal guarantee.
 - **Baselines:** Fixed Step-8 / Step-14 references, Fixed Step-7, STAC, 1D-CRC-STAC, Stage-Wise SNR Cascade, and Calibrated SNR-only.
+
