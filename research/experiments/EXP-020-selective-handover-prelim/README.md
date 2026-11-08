@@ -57,7 +57,7 @@ Failures use Definition 3.1 against plain Step 8, whose noise floor on noisy pro
 
 ## How to run
 
-Open the notebook on a Colab T4 and run all cells. About 5 to 6 hours by estimate, not measured. The runner refuses to start if the preregistration or the runner has changed since the freeze, if the GPU is not a T4, or if the smoke test did not reproduce the stored labels.
+Open the notebook on a Colab T4 and run all cells. About 5 to 6 hours by estimate, not measured. Step 2b keeps the checkpoints and the English dataset in `MyDrive/dmospeech2_cache/` after the first run, so later runs copy them from Drive instead of downloading them; the checkpoint hashes are still checked every time. The runner refuses to start if the preregistration or the runner has changed since the freeze, if the GPU is not a T4, or if the smoke test did not reproduce the stored labels.
 
 ## Prior work and novelty
 
