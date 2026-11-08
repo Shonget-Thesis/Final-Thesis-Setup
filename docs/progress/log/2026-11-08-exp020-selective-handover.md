@@ -32,6 +32,7 @@ Not changed: the manuscript, the presentation, and the thesis method. Adopting S
 - `python scripts/check_workspace.py`: PASSED.
 - `latexmk -Werror` in `paper/`: exit 0. The manuscript was not changed.
 - Every code cell of the notebook compiles with its notebook magics removed. The notebook has not been run.
+- Follow-up the same day: notebook Step 2b now keeps the checkpoints and the English dataset in `MyDrive/dmospeech2_cache/`, so later runs skip the downloads. Only the notebook changed, not the runner, so the preregistration stands. The cell was run locally against a simulated Colab machine and Drive: first run, reuse on a fresh machine, a damaged checkpoint, a damaged dataset archive, and a full Drive all behaved as intended. It has not run on real Colab or Drive.
 - `check_prereg()` confirms that the frozen preregistration matches the final runner.
 
 ## Remaining blockers
