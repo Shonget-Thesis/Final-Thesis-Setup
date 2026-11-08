@@ -1,0 +1,111 @@
+{
+  "experiment": "EXP-020",
+  "purpose": "Development test of Voice-Swap Handover against today's handover, student only, the calibrated SNR rule and a reversed control",
+  "algorithm": {
+    "draft": "S = eps + g(eps, 0), one student pass; eps independent of the teacher's noise (seed + 1009)",
+    "swap": "x = T - bandavg(T) + bandavg(S) on generated frames; bandavg is the per-band mean over generated frames; prompt frames unchanged",
+    "handover": "T is the guided teacher estimate at Step 4 on the released 16-interval sway grid; the released student loop at j = 1 then runs from x",
+    "routing": "SNR >= theta_hi: plain Step 4; theta_lo <= SNR < theta_hi: Voice-Swap at Step 4; SNR < theta_lo: reference Step 8"
+  },
+  "outputs": {
+    "vswap_4": "the swap above",
+    "rswap_4": "reversed control: x = S - bandavg(S) + bandavg(T)"
+  },
+  "reused": "plain Steps 4 and 8 from EXP-018 steps1to8.csv and student only from EXP-017 grid32.csv; same seeds and T4 hardware",
+  "passes": {
+    "student4": 4,
+    "plain_4": 13,
+    "plain_8": 21,
+    "vswap_4": 14,
+    "rswap_4": 14
+  },
+  "data": {
+    "quality": "first 60 development speakers by utterance ID x ['clean', 'noisy15', 'gauss18', 'gauss20', 'gauss22', 'gauss25']",
+    "diversity": "first 20 development speakers, clean prompt, 20 seeds (input_seed + 1000 + m)"
+  },
+  "hardware": "Colab Tesla T4 only, enforced by the runner: student noise depends on the GPU and the labels are T4 labels",
+  "failure_rule": {
+    "definition": "Definition 3.1 against plain Step 8",
+    "absolute_wer_ceiling": 0.125,
+    "relative_wer_margin": 0.01,
+    "similarity_margin": 0.02,
+    "reference_step": 8,
+    "description": "Definition 3.1 Unacceptable Added Degradation Failure Thresholds"
+  },
+  "diversity_measure": {
+    "name": "CVf0 (DMOSpeech 2, Section 4.2)",
+    "f0": "librosa.pyin fmin 65.0 fmax 500.0 frame 1024 hop 256 at 24 kHz",
+    "definition": "per frame std/mean (ddof 1) of f0 across seeds, over frames voiced in at least 0.5 of the seeds; averaged over frames; then over pairs",
+    "note": "the paper gives no formula, seed handling or voicing rule; these are this study's choices"
+  },
+  "calibration": {
+    "alpha": 0.05,
+    "delta": 0.1,
+    "folds": 5,
+    "seed": 2026,
+    "snr_grid_db": [
+      40,
+      39,
+      38,
+      37,
+      36,
+      35,
+      34,
+      33,
+      32,
+      31,
+      30,
+      29,
+      28,
+      27,
+      26,
+      25,
+      24,
+      23,
+      22,
+      21,
+      20,
+      19,
+      18,
+      17,
+      16,
+      15,
+      14,
+      13,
+      12
+    ],
+    "route3": {
+      "theta_hi_chains": [
+        25,
+        30,
+        35,
+        40
+      ],
+      "theta_lo": "from theta_hi down to 12 dB in 1 dB steps",
+      "procedure": "one fixed-sequence Learn-Then-Test chain per theta_hi, delta split equally across chains (Bonferroni); the cheapest certified pair is selected"
+    }
+  },
+  "criteria": {
+    "C1_noisy_failures": "noisy pooled, vswap_4 vs plain_4: failures at most 0.75 of plain_4, fewer, and exact McNemar p < 0.05",
+    "C2_clean_failures": "clean, vswap_4 failures at most plain_4 failures + 1",
+    "C3_voice_is_the_cause": "noisy pooled, speaker-bootstrap 95% CI of similarity(vswap_4) - similarity(rswap_4): lower bound > 0",
+    "C4_diversity": "CVf0 95% CI, vswap_4 - student only lower bound > 0, and vswap_4 - plain_4 lower bound > -0.02",
+    "C5_beats_calibrated_snr": "out-of-fold route3: lower mean passes than snr_theta with no more failures"
+  },
+  "decision_rule": "Voice-Swap advances to a frozen test on fresh speakers only if C1 to C5 all pass; otherwise it is reported as a negative result, with no retuning on these data",
+  "bootstrap": {
+    "B": 2000,
+    "seed": 2026,
+    "unit": "speaker"
+  },
+  "evidence_status": "development evidence; the speakers were inspected before this design; not the thesis's frozen held-out evaluation (EVAL-001/EVAL-002)",
+  "adoption": "not adopted; replacing the thesis method needs a dated decision record and adviser review",
+  "runner_sha256": "162a6fc22acd33f24df770198fd016964833cce57bccac7ced472d4c9cfae886",
+  "input_hashes": {
+    "research/experiments/EXP-018-swsr-handover-prelim/results/steps1to8.csv": "7bf547d82f5881b88c99d66eb7118366454079ff58fa82f772f5af17929f1be8",
+    "research/experiments/EXP-017-grid32-prelim/results/grid32.csv": "9cbe11d283e8684f8715befc63390e91ecd013e1a1b6f19ce3185db9036ff82f"
+  },
+  "thesis_commit": "618f58e463b70918d1326546a5fef66e38dc4c53",
+  "sha256": "8fb1600f2355604e4f0e6092b80ee57341efa0924bfecab4c51bfbcbd2e3bc04",
+  "created_utc": "2026-11-08T13:12:09.906548+00:00"
+}
