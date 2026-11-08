@@ -522,18 +522,18 @@
     },
     {
       "id": "EVAL-013",
-      "title": "Voice-Swap Handover: candidate handover algorithm with quality, pitch-diversity and cost comparison (EXP-020)",
+      "title": "Selective Handover: which parts of the teacher's estimate the student needs, with a per-input step choice (EXP-020)",
       "owner": "Rhenel Jhon R. Sajol",
       "status": "todo",
       "updated": "2026-11-08",
-      "acceptance": "Preregistration is frozen before GPU execution; a Colab Tesla T4 run reproduces the stored Step-4 and Step-8 labels in the smoke test, then scores Voice-Swap and a reversed control at Step 4 on the 60 development speakers (360 cases), and measures CVf0 on 20 speakers x 20 seeds; preregistered criteria C1 to C5 are reported as computed from committed CSV files, whether they pass or fail; results committed with a SHA-256 manifest.",
+      "acceptance": "Preregistration is frozen before GPU execution; a Colab Tesla T4 run reproduces the stored Step-4 and Step-8 labels in the smoke test, then scores the six mixed combinations at Step 4 and STT at Steps 5 to 7 on the 60 development speakers (360 cases), and measures CVf0 on 20 speakers x 20 seeds; the effect map and preregistered criteria C1 to C6 are reported as computed from committed CSV files, whether they pass or fail; results committed with a SHA-256 manifest.",
       "evidence": [
-        "research/experiments/EXP-020-voice-swap-handover-prelim/README.md",
-        "research/experiments/EXP-020-voice-swap-handover-prelim/preregistration.json",
-        "code/colab/run_voice_swap_prelim.py",
-        "code/colab/DMOSpeech2_EXP020_Voice_Swap_Handover.ipynb",
-        "code/tests/test_voice_swap.py",
-        "docs/progress/log/2026-11-08-exp020-voice-swap-handover.md"
+        "research/experiments/EXP-020-selective-handover-prelim/README.md",
+        "research/experiments/EXP-020-selective-handover-prelim/preregistration.json",
+        "code/colab/run_selective_handover_prelim.py",
+        "code/colab/DMOSpeech2_EXP020_Selective_Handover.ipynb",
+        "code/tests/test_selective_handover.py",
+        "docs/progress/log/2026-11-08-exp020-selective-handover.md"
       ]
     }
   ]
