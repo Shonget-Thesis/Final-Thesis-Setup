@@ -57,6 +57,10 @@ class DesignTests(unittest.TestCase):
         self.assertTrue(set(vc.DIV_CONDS) <= set(vc.CONDS))
         self.assertIn("babble15", vc.CONDS)
 
+    def test_pitch_variety_is_judged_on_clean_prompts_and_still_measured_on_noisy15(self):
+        self.assertEqual(vc.P3_CONDS, ("clean",))
+        self.assertEqual(vc.DIV_CONDS, ("clean", "noisy15"))
+
     def test_stored_labels_cover_the_exp020_cases(self):
         stored = vc.stored_labels()
         self.assertEqual(len(stored), 360)
@@ -175,7 +179,8 @@ class RunLoopTests(unittest.TestCase):
 
 
 class AnalyzeTests(unittest.TestCase):
-    def _write(self, out, wer_shift=0.0, sim_shift=0.0, ratio=0.68, cv_vs=0.093, with_div=True):
+    def _write(self, out, wer_shift=0.0, sim_shift=0.0, ratio=0.68, cv_vs=0.093, with_div=True, div_overrides=None):
+        """div_overrides: {condition: {column: value}} applied to that condition's pitch-variety rows."""
         rng = random.Random(4)
         with open(out / "confirm.csv", "w", newline="", encoding="utf-8") as f:
             w = csv.DictWriter(f, fieldnames=vc.FIELDS)
@@ -203,6 +208,7 @@ class AnalyzeTests(unittest.TestCase):
                         row = {"utt_id": it["utt_id"], "speaker_id": it["speaker_id"], "condition": c, "n_seeds": 20, "case_seconds": 1, "utc": ""}
                         row.update({"cvf0_ref": 0.095 + j, "cvf0_vs": cv_vs + j, "cvf0_student": 0.052 + j})
                         row.update({f"voiced_{o}": 0.8 for o in vc.DIV_OUTS})
+                        row.update((div_overrides or {}).get(c, {}))
                         w.writerow(row)
 
     def test_a_voice_swap_as_good_as_the_reference_is_confirmed(self):
@@ -244,12 +250,47 @@ class AnalyzeTests(unittest.TestCase):
         self.assertFalse(res["primary"]["criteria"]["P4_time"])
         self.assertFalse(res["primary"]["confirmed"])
 
-    def test_lost_pitch_variety_fails(self):
+    def test_lost_pitch_variety_on_clean_prompts_fails(self):
         with tempfile.TemporaryDirectory() as tmp:
             out = Path(tmp)
-            self._write(out, cv_vs=0.060)
+            self._write(out, cv_vs=0.060, div_overrides={"noisy15": {"cvf0_vs": 0.093}})
             res = vc.analyze(out)
         self.assertFalse(res["primary"]["criteria"]["P3_pitch_variety"])
+        self.assertFalse(res["primary"]["confirmed"])
+
+    def test_clean_pitch_variety_no_better_than_the_student_alone_fails(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp)
+            self._write(out, div_overrides={"clean": {"cvf0_student": 0.100}})
+            res = vc.analyze(out)
+        clean = res["primary"]["measured"]["cvf0"]["clean"]
+        self.assertGreaterEqual(clean["vs_minus_ref"]["lo"], -vc.MARGINS["cvf0"])
+        self.assertLessEqual(clean["vs_minus_student"]["lo"], 0)
+        self.assertFalse(res["primary"]["criteria"]["P3_pitch_variety"])
+
+    def test_an_untrackable_reference_on_noisy_prompts_does_not_decide_p3(self):
+        # What EXP-022 observed: on noisy15 prompts no frame of the reference is voiced in half of the seeds.
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp)
+            self._write(out, div_overrides={"noisy15": {"cvf0_ref": float("nan"), "voiced_ref": 0.0}})
+            res = vc.analyze(out)
+            report = (out / "CONFIRMATION_REPORT.md").read_text(encoding="utf-8")
+        self.assertTrue(res["primary"]["criteria"]["P3_pitch_variety"])
+        self.assertTrue(res["primary"]["confirmed"])
+        noisy = res["primary"]["measured"]["cvf0"]["noisy15"]
+        self.assertEqual(noisy["vs_minus_ref"]["n"], 0)
+        self.assertEqual(noisy["vs_minus_student"]["n"], vc.DIV_N)
+        self.assertEqual(res["cvf0_pairs"]["noisy15"], {"ref": 0, "vs": vc.DIV_N, "student": vc.DIV_N})
+        self.assertIn("descriptive, not part of P3", report)
+        self.assertIn("n/a (0)", report)
+
+    def test_lost_pitch_variety_on_noisy_prompts_alone_does_not_fail_p3(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp)
+            self._write(out, div_overrides={"noisy15": {"cvf0_vs": 0.060}})
+            res = vc.analyze(out)
+        self.assertTrue(res["primary"]["criteria"]["P3_pitch_variety"])
+        self.assertLess(res["primary"]["measured"]["cvf0"]["noisy15"]["vs_minus_ref"]["hi"], -vc.MARGINS["cvf0"])
 
     def test_a_partial_run_needs_the_flag_and_cannot_confirm(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -277,6 +318,12 @@ class PreregistrationTests(unittest.TestCase):
         self.assertEqual(pre["experiment"], "EXP-021")
         self.assertEqual(pre["code_hashes"], vc.code_hashes())
         self.assertEqual(pre["data"]["fresh_utt_ids"], [it["utt_id"] for it in vc.fresh_items()])
+
+    def test_committed_preregistration_records_the_p3_amendment(self):
+        pre = vc.check_prereg()
+        self.assertNotEqual(pre["sha256"], vc.PREVIOUS_PREREG)
+        self.assertIn(vc.PREVIOUS_PREREG, pre["amendment"]["replaces"])
+        self.assertTrue(pre["criteria"]["P3_pitch_variety"].startswith("on clean prompts:"))
 
     def test_an_edited_preregistration_is_rejected(self):
         pre = json.loads(vc.PREREG_PATH.read_text(encoding="utf-8"))

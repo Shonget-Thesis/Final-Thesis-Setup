@@ -15,6 +15,9 @@ Outputs per case: ref and ref2 (Step 8 with two student noise draws), vs and vs2
 noise draws), plain4 (today's Step-4 handover) and student (student only). The two draws per method halve the sampling
 noise in the paired comparison; ref2 against ref also measures the failure rule's own noise floor.
 
+Pitch variety (P3) is judged on clean prompts. It is still measured on noisy15 prompts but only reported: EXP-022 found
+that the reference's pitch cannot be tracked there (amended 2026-11-13, before any synthesis on speakers 61-100).
+
 Subcommands: freeze (write the preregistration once), smoke (development speakers only), run (resumable), analyze.
 """
 import argparse
@@ -58,7 +61,9 @@ REPLICATE_OFFSET = 7919               # second noise draw; differs from the stud
 METRICS = ("wer", "similarity", "utmos")
 DIV_N, DIV_SEEDS, DIV_SEED_BASE = 30, 20, 1000
 DIV_CONDS = ("clean", "noisy15")
+P3_CONDS = ("clean",)                 # noisy15 is descriptive: the reference's pitch cannot be tracked there (EXP-022)
 DIV_OUTS = ("ref", "vs", "student")
+PREVIOUS_PREREG = "1082c66869fd2f33a0dbba6f74f89c6fb5ca7312cd3cf89499da03de4e834259"
 BOOT_B, SEED = 2000, 2026
 MARGINS = {"wer_clean": 0.01, "wer_degraded": 0.025, "similarity": 0.01, "cvf0": 0.02, "time_ratio": 0.80}
 REPRODUCTION_TOLERANCE = sh.REPRODUCTION_TOLERANCE
@@ -266,8 +271,8 @@ def evaluate(rows, div, complete_div):
         return None if stat["mean"] is None else bool(test(stat))
     p1 = [ok(d["wer_clean"], lambda s: s["hi"] <= MARGINS["wer_clean"]), ok(d["wer_degraded"], lambda s: s["hi"] <= MARGINS["wer_degraded"])]
     p2 = [ok(d["similarity_clean"], lambda s: s["lo"] >= -MARGINS["similarity"]), ok(d["similarity_degraded"], lambda s: s["lo"] >= -MARGINS["similarity"])]
-    p3 = [ok(d["cvf0"][c]["vs_minus_ref"], lambda s: s["lo"] >= -MARGINS["cvf0"]) for c in DIV_CONDS] + \
-         [ok(d["cvf0"][c]["vs_minus_student"], lambda s: s["lo"] > 0) for c in DIV_CONDS]
+    p3 = [ok(d["cvf0"][c]["vs_minus_ref"], lambda s: s["lo"] >= -MARGINS["cvf0"]) for c in P3_CONDS] + \
+         [ok(d["cvf0"][c]["vs_minus_student"], lambda s: s["lo"] > 0) for c in P3_CONDS]
     both = lambda parts: None if any(p is None for p in parts) else all(parts)
     c = {"P1_word_errors": both(p1), "P2_voice_similarity": both(p2),
          "P3_pitch_variety": both(p3) if complete_div else None,
@@ -301,6 +306,8 @@ def analyze(out, allow_partial=False, prereg_path=PREREG_PATH):
            "mcnemar_vs_against_plain4_degraded": None,
            "cvf0_means": {c: {o: _avg(float(r[f"cvf0_{o}"]) for r in div if r["condition"] == c and not math.isnan(float(r[f"cvf0_{o}"])))
                               for o in DIV_OUTS} for c in DIV_CONDS},
+           "cvf0_pairs": {c: {o: sum(1 for r in div if r["condition"] == c and not math.isnan(float(r[f"cvf0_{o}"]))) for o in DIV_OUTS}
+                          for c in DIV_CONDS},
            "timing": {"t_ref_mean": _avg(float(r["t_ref"]) for r in rows), "t_vs_mean": _avg(float(r["t_vs"]) for r in rows),
                       "rtf_ref": _avg(float(r["t_ref"]) / float(r["audio_seconds"]) for r in rows),
                       "rtf_vs": _avg(float(r["t_vs"]) / float(r["audio_seconds"]) for r in rows)} if rows else {},
@@ -347,9 +354,17 @@ def render(res):
          f"| Similarity, clean | {_ci(d['similarity_clean'])} | lower bound >= -{MARGINS['similarity']} |",
          f"| Similarity, degraded prompts pooled | {_ci(d['similarity_degraded'])} | lower bound >= -{MARGINS['similarity']} |"]
     for c in DIV_CONDS:
-        L += [f"| CVf0 vs minus ref, {c} | {_ci(d['cvf0'][c]['vs_minus_ref'])} | lower bound >= -{MARGINS['cvf0']} |",
-              f"| CVf0 vs minus student, {c} | {_ci(d['cvf0'][c]['vs_minus_student'])} | lower bound > 0 |"]
-    L += [f"| Time ratio t_vs / t_ref | {_ci(d['time_ratio'], '{:.3f}')} | upper bound <= {MARGINS['time_ratio']} |", ""]
+        cv = d["cvf0"][c]
+        if c in P3_CONDS:
+            req_ref, req_student = f"lower bound >= -{MARGINS['cvf0']}", "lower bound > 0"
+        else:
+            req_ref = req_student = "descriptive, not part of P3"
+        L += [f"| CVf0 vs minus ref, {c} | {_ci(cv['vs_minus_ref'])}, n = {cv['vs_minus_ref']['n']} | {req_ref} |",
+              f"| CVf0 vs minus student, {c} | {_ci(cv['vs_minus_student'])}, n = {cv['vs_minus_student']['n']} | {req_student} |"]
+    L += [f"| Time ratio t_vs / t_ref | {_ci(d['time_ratio'], '{:.3f}')} | upper bound <= {MARGINS['time_ratio']} |", "",
+          f"P3 is judged on {', '.join(P3_CONDS)} prompts only, and n counts the speakers whose pitch could be tracked in both outputs. "
+          "The noisy15 rows are descriptive, because EXP-022 found the reference's pitch untrackable on those prompts "
+          "(amended before any synthesis on these speakers).", ""]
     if res["timing"]:
         t = res["timing"]
         L += [f"Mean sampling time (teacher, student and vocoder): ref {t['t_ref_mean']:.3f} s, vs {t['t_vs_mean']:.3f} s; "
@@ -371,8 +386,10 @@ def render(res):
     L += ["", "## Voice-Swap against the student alone (descriptive): vs minus student", "", "| Prompts | WER | Similarity | UTMOS |", "|---|---|---|---|"]
     L += [f"| {g} | {_ci(v['wer'])} | {_ci(v['similarity'])} | {_ci(v['utmos'], '{:+.3f}')} |" for g, v in res["vs_minus_student"].items()]
     if any(v is not None for c in DIV_CONDS for v in res["cvf0_means"][c].values()):
-        L += ["", "## Pitch variety (CVf0 means)", "", "| Condition | " + " | ".join(DIV_OUTS) + " |", "|---|" + "---:|" * len(DIV_OUTS)]
-        L += [f"| {c} | " + " | ".join(f"{res['cvf0_means'][c][o]:.4f}" if res["cvf0_means"][c][o] is not None else "n/a" for o in DIV_OUTS) + " |" for c in DIV_CONDS]
+        L += ["", "## Pitch variety (CVf0 means, with the number of speakers whose pitch could be tracked)", "",
+              "| Condition | " + " | ".join(DIV_OUTS) + " |", "|---|" + "---:|" * len(DIV_OUTS)]
+        L += [f"| {c} | " + " | ".join((f"{res['cvf0_means'][c][o]:.4f}" if res["cvf0_means"][c][o] is not None else "n/a")
+                                       + f" ({res['cvf0_pairs'][c][o]})" for o in DIV_OUTS) + " |" for c in DIV_CONDS]
     ck = res["checks"]
     L += ["", "## Checks", "",
           f"- Largest difference between the Step-4 teacher estimates of the two timed paths: {ck['max_e4_abs_diff']} (0 means the paths are identical).",
@@ -396,7 +413,7 @@ def build_prereg():
     items = fresh_items()
     return {"experiment": "EXP-021",
             "purpose": "Frozen confirmation, on speakers never used to design it, that Voice-Swap Handover at Step 4 matches the 0.25 reference (Step 8) at two-thirds of its forward passes",
-            "claim_under_test": "Voice-Swap at Step 4 (14 passes) is not worse than the reference at Step 8 (21 passes) beyond the margins below on word errors and speaker similarity, keeps the teacher's pitch variety, and takes at most 80% of the reference's sampling time on a T4",
+            "claim_under_test": "Voice-Swap at Step 4 (14 passes) is not worse than the reference at Step 8 (21 passes) beyond the margins below on word errors and speaker similarity, keeps the teacher's pitch variety on clean prompts, and takes at most 80% of the reference's sampling time on a T4",
             "origin": "EXP-020 (preregistration 7afeef06...) did not advance Selective Handover's adaptive ladder; the comparison of fixed Voice-Swap with the reference was computed after its results were seen, so it is tested here before any claim",
             "algorithm": {"draft": "S = eps + g(eps, 0), one student pass, eps from seed + 1009 (sh.student_sample)",
                           "voice_swap": "on generated frames, the teacher's Step-4 endpoint estimate keeps its slow and fine parts and takes the draft's voice part (per-band mean over time) (sh.selective_handover, code STT, slow window 9 frames); prompt frames unchanged",
@@ -419,12 +436,17 @@ def build_prereg():
             "diversity_measure": {"name": "CVf0", "definition": "as in EXP-020: librosa pYIN 65-500 Hz, frame 1024, hop 256 at 24 kHz; per frame std/mean (ddof 1) across seeds over frames voiced in at least half of the seeds; averaged over frames"},
             "criteria": {"P1_word_errors": f"per case, the mean capped WER of vs and vs2 minus that of ref and ref2; speaker-bootstrap 95% CI upper bound <= +{MARGINS['wer_clean']} on clean prompts and <= +{MARGINS['wer_degraded']} on the five degraded conditions pooled",
                          "P2_voice_similarity": f"the same paired difference in similarity: lower bound >= -{MARGINS['similarity']} on clean prompts and on the degraded conditions pooled",
-                         "P3_pitch_variety": f"for clean and noisy15 separately: CVf0 of vs minus ref lower bound >= -{MARGINS['cvf0']}, and vs minus student lower bound > 0",
+                         "P3_pitch_variety": f"on {' and '.join(P3_CONDS)} prompts: CVf0 of vs minus ref lower bound >= -{MARGINS['cvf0']}, and vs minus student lower bound > 0; noisy15 pitch variety is measured and reported but not judged",
                          "P4_time": f"per case t_vs / t_ref: speaker-bootstrap upper bound <= {MARGINS['time_ratio']}"},
             "decision_rule": "Voice-Swap Handover is confirmed on these speakers only if P1 to P4 all pass; otherwise it is reported as a negative result, with no retuning and no change of margins on these data",
             "descriptive": ["per-condition differences with CIs", "means of every output", "Definition 3.1 failures of every output against ref, with ref2 as the noise floor",
                             "exact McNemar of plain4 against vs on degraded prompts", "vs against student only", "real-time factors",
-                            "the largest difference between the two timed paths' Step-4 estimates (expected 0)"],
+                            "the largest difference between the two timed paths' Step-4 estimates (expected 0)",
+                            "CVf0 on noisy15 prompts (vs minus ref, vs minus student) with the number of speakers whose pitch could be tracked"],
+            "amendment": {"date": "2026-11-13", "when": "before any synthesis on speakers 61-100",
+                          "replaces": f"preregistration {PREVIOUS_PREREG}, deleted unused (in git history at 8b8bc54)",
+                          "change": "P3 is judged on clean prompts only; the noisy15 pitch-variety runs are kept and reported descriptively; margins, data, outputs and the other criteria are unchanged",
+                          "reason": "in EXP-022 (development speakers 1-20, white noise at 15 dB, 20 seeds) the reference had no frame voiced in at least half of the seeds for any of the 20 speakers, so its CVf0 does not exist on noisy15 and P3 as first frozen could not pass whatever Voice-Swap does"},
             "bootstrap": {"B": BOOT_B, "seed": SEED, "unit": "speaker", "interval": "percentile, sorted index int(0.025 B) and int(0.975 B)"},
             "design_notes": "Margins were sized before any fresh data from the EXP-020 development data by resampling 40-speaker studies: a method equal to EXP-020's estimate passes the degraded WER margin +0.025 with probability about 0.8 using single draws (the two draws used here should raise it), passes +0.01 or +0.015 with probability 0.2-0.4, passes the clean margins with probability about 1, and passes the pitch-variety margin with probability about 0.76 at 20 pairs (30 are used here). The expected time ratio from EXP-018's T4 timings is about 0.71",
             "evidence_status": "confirmation on development speakers not used to design the method; not the thesis's frozen held-out evaluation (EVAL-001/EVAL-002); white-noise, recorded babble, synthetic reverberation and telephone-band prompts",

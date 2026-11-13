@@ -1,7 +1,7 @@
 {
   "experiment": "EXP-021",
   "purpose": "Frozen confirmation, on speakers never used to design it, that Voice-Swap Handover at Step 4 matches the 0.25 reference (Step 8) at two-thirds of its forward passes",
-  "claim_under_test": "Voice-Swap at Step 4 (14 passes) is not worse than the reference at Step 8 (21 passes) beyond the margins below on word errors and speaker similarity, keeps the teacher's pitch variety, and takes at most 80% of the reference's sampling time on a T4",
+  "claim_under_test": "Voice-Swap at Step 4 (14 passes) is not worse than the reference at Step 8 (21 passes) beyond the margins below on word errors and speaker similarity, keeps the teacher's pitch variety on clean prompts, and takes at most 80% of the reference's sampling time on a T4",
   "origin": "EXP-020 (preregistration 7afeef06...) did not advance Selective Handover's adaptive ladder; the comparison of fixed Voice-Swap with the reference was computed after its results were seen, so it is tested here before any claim",
   "algorithm": {
     "draft": "S = eps + g(eps, 0), one student pass, eps from seed + 1009 (sh.student_sample)",
@@ -114,7 +114,7 @@
   "criteria": {
     "P1_word_errors": "per case, the mean capped WER of vs and vs2 minus that of ref and ref2; speaker-bootstrap 95% CI upper bound <= +0.01 on clean prompts and <= +0.025 on the five degraded conditions pooled",
     "P2_voice_similarity": "the same paired difference in similarity: lower bound >= -0.01 on clean prompts and on the degraded conditions pooled",
-    "P3_pitch_variety": "for clean and noisy15 separately: CVf0 of vs minus ref lower bound >= -0.02, and vs minus student lower bound > 0",
+    "P3_pitch_variety": "on clean prompts: CVf0 of vs minus ref lower bound >= -0.02, and vs minus student lower bound > 0; noisy15 pitch variety is measured and reported but not judged",
     "P4_time": "per case t_vs / t_ref: speaker-bootstrap upper bound <= 0.8"
   },
   "decision_rule": "Voice-Swap Handover is confirmed on these speakers only if P1 to P4 all pass; otherwise it is reported as a negative result, with no retuning and no change of margins on these data",
@@ -125,8 +125,16 @@
     "exact McNemar of plain4 against vs on degraded prompts",
     "vs against student only",
     "real-time factors",
-    "the largest difference between the two timed paths' Step-4 estimates (expected 0)"
+    "the largest difference between the two timed paths' Step-4 estimates (expected 0)",
+    "CVf0 on noisy15 prompts (vs minus ref, vs minus student) with the number of speakers whose pitch could be tracked"
   ],
+  "amendment": {
+    "date": "2026-11-13",
+    "when": "before any synthesis on speakers 61-100",
+    "replaces": "preregistration 1082c66869fd2f33a0dbba6f74f89c6fb5ca7312cd3cf89499da03de4e834259, deleted unused (in git history at 8b8bc54)",
+    "change": "P3 is judged on clean prompts only; the noisy15 pitch-variety runs are kept and reported descriptively; margins, data, outputs and the other criteria are unchanged",
+    "reason": "in EXP-022 (development speakers 1-20, white noise at 15 dB, 20 seeds) the reference had no frame voiced in at least half of the seeds for any of the 20 speakers, so its CVf0 does not exist on noisy15 and P3 as first frozen could not pass whatever Voice-Swap does"
+  },
   "bootstrap": {
     "B": 2000,
     "seed": 2026,
@@ -138,7 +146,7 @@
   "novelty": "not tested by this experiment; to our knowledge no published handover selects which parts of the teacher's estimate cross to the student (targeted searches, 2026-11-08 to 2026-11-13); a full literature review is outstanding",
   "adoption": "not adopted; changing the thesis method needs a dated decision record and adviser review",
   "code_hashes": {
-    "code/colab/run_voice_swap_confirm.py": "4feba7fd33adc99293f8510d9ffcf8218ac4a4e4bcb0266dc1fc4c02613d9f10",
+    "code/colab/run_voice_swap_confirm.py": "44150ade96bb5367fed5abab0eddc329e7c97232c2a25821e50e28751a295aa0",
     "code/colab/run_selective_handover_prelim.py": "b61ef06b9ed0a7411d532d277e2525c436c08aab6a4ca541454672a9ea9be603",
     "code/colab/run_grid32_prelim.py": "c7b4152da3449264ef2d7aefcea3492e04f9d45399e373ba2b6d448912bf0b84",
     "code/colab/run_noise_guidance_prelim.py": "48150a13101d1ecd5ed6da1085e6fd914381f8e22288f5bda7c48f2625dc064b",
@@ -153,7 +161,7 @@
     "research/protocols/splits/development_manifest.json": "1c4309b6f560a9d896b7a3a6cae53fc5806ef81222c3f8d62a08c7bf7b9fb65a",
     "code/scheduling/failure_config.json": "13a8fbfdbc11048c2b68f7c5b865369c622f4ec601a6ff7e6a3fa3409ce97b53"
   },
-  "thesis_commit": "07fe593daf88170183bb8e97185fce51d1d17b7a",
-  "sha256": "1082c66869fd2f33a0dbba6f74f89c6fb5ca7312cd3cf89499da03de4e834259",
-  "created_utc": "2026-11-13T00:17:10.264255+00:00"
+  "thesis_commit": "a068a0d54bc14f5060dc18172543f1ba1cb9448c",
+  "sha256": "33f37d54ea30cdca5610faae69fc01442741b60958477488072c849d5f35d94d",
+  "created_utc": "2026-11-13T05:50:48.441173+00:00"
 }
