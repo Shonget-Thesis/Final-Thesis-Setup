@@ -55,6 +55,41 @@ EXP-022 (EVAL-015, run 2026-11-13 UTC on a Colab Tesla T4, 360 of 360 cases and 
 
 The thesis method is unchanged. See the [EXP-022 README](../../research/experiments/EXP-022-slow-part-handover-prelim/README.md), [setup log](log/2026-11-13-exp022-slow-part-handover.md) and [results log](log/2026-11-13-exp022-slow-part-handover-results.md).
 
+EXP-023 (EVAL-016, preregistered 2026-11-13 and amended three times the same day, all before any synthesis, `469c90edf7c6094d...`, not yet run, no results) is a development pilot of Decision Handover. It screens the method before any frozen test. The amendments add two candidates, each with its own advance decision:
+- **The Two-Axis Handover:** its pitch variety at Step 3 (G3) is measured in the same pitch-variety block, with parameters frozen from the stored data.
+- **The Agreement-Routed Handover:** it decides what crosses by the Step-0 teacher-student voice gap instead of SNR. G4 replays its routing out of fold against the SNR rule, with no extra synthesis. An earlier G4 that judged absolute quality was replaced before the run, because it could not pass on these 20 speakers even with perfect routing.
+- **Pre-specified follow-ups (exploratory, outside the go/no-go):** `code/analysis/exp023_followups.py`, written before the run, applies three further theory-derived rules to the pilot's recorded signals, with no synthesis:
+  - Guidance-Amplification Routing;
+  - Collapse-Gated Handover;
+  - a replay of Decision Commitment Handover;
+  - the Prosody-Agreement Safeguard (alignment theory);
+  - the Guidance-Choice Handover (early-guidance theory).
+- **Idea:** the teacher's Step-0 estimate is, in theory, the same for every seed. The handover therefore passes only the teacher's seed-specific change, x_k = S + slow(T_k − T₀), on top of the student's one-pass draft, so anything the teacher shares across seeds, including the prompt's recording conditions, cancels.
+- **Variants:** a variance-preserving version (DHc), and the teacher deciding without guidance (DHu, 7–8 passes).
+- **Measured:** whether T₀ really is shared across 4 seeds (10 speakers, clean and noisy15); the six outputs at Steps 2–3 on 20 development speakers × clean, 20 dB and 15 dB white noise; and pitch variety on 10 speakers × 20 seeds, against the stored reference, slow-part handover, Voice-Swap and the student alone.
+- **Go/no-go:** a frozen test on new speakers follows only if the shared first estimate holds (G1) and some output keeps quality and pitch variety at 12 passes or fewer (G2).
+- **Novelty:** to our knowledge no published handover passes only the teacher's seed-specific change; the closest work found is DiFA, Gandikota and Bau, and Distillation++. The principle that a difference cancels what two predictions share is known (Delta Denoising Score), so the new part is what is handed over, not the operations. This comes from targeted searches only.
+- **Candidates (recorded, untested):**
+  - the decision at a fixed step;
+  - SNR + Decision Handover;
+  - STAC + Decision Handover;
+  - Decision Commitment Handover: the teacher stops when its decision is empty (student alone) or has stopped turning (hand over), designed from the stored results.
+
+  The decision is the novel part of each. Drift (Definition 3.4) is left out after it failed in EXP-012 and EXP-018.
+
+The thesis method is unchanged. See the [EXP-023 README](../../research/experiments/EXP-023-decision-handover-pilot/README.md) and [setup log](log/2026-11-13-exp023-decision-handover-pilot.md).
+
+An offline screen (2026-11-13, exploratory, development data; [solution_screen.py](../../code/analysis/solution_screen.py), [log](log/2026-11-13-offline-solution-screen.md)) compared 16 solutions on the 360 stored cases, under pass rules fixed before it was run.
+- **Only Voice-Swap at Step 4 passed every rule:** 14 mean passes, 33% saved, with pitch variety kept. Its frozen Colab test is the parked EXP-021.
+- **SNR routing narrowly failed.** Sending noisy prompts to the student alone and clean-like prompts to a teacher handover cost 5.6–6.0 mean passes and missed by at most 0.001 on pitch variety or clean WER.
+- **Round 2 passed eight more** (designed after round 1 on the same data, so weaker evidence). The best is three-way SNR routing at 7.05 mean passes: clean-like prompts to the whole estimate at Step 4, prompts within 2 dB below the threshold to Voice-Swap, and the rest to the student. Strict SNR routing passed at 8.20–8.67. None is novel. EXP-021's outputs on 40 new speakers would cover the Voice-Swap and student variants.
+- **Round 4 tested the Two-Axis Handover.** It was tested after targeted searches found no published policy choosing both when and what crosses; each of its parts is known.
+  - **The policy:** SNR decides what crosses (whole estimate, Voice-Swap or nothing). STAC's action decides when on the whole-estimate branch (Step 3, else Step 4).
+  - **Result:** it passed every measured rule at 6.73 mean passes.
+  - **Open:** pitch variety at Step 3 was never stored. It needs a new-speaker test that also measures it.
+- **SNR + drift cost the same as SNR alone:** 19.43 against 19.42 mean passes.
+- **Decision Handover could not be screened** because no teacher estimates were stored.
+
 The October 25 audit recomputed the T4 grid: with the manuscript's λ grid (0.20–1.20), Learn-Then-Test on the calibration split certifies every threshold (λ̂ = 1.20, not the reports' CPU-label 0.50), and the policy then equals SNR-only on the test split (4/200 speaker failures, 17.04 NFE). The stabilization score shows no discrimination on clean development prompts (AUC 0.474, three failures). Each report now carries a dated audit note; its original text is unchanged.
 
 paper/ holds one LaTeX project: paper/main.tex in the USTP CITC style (citc.sty, APA 7 via biblatex/biber), with the team's thesis proposal (Chapters 1-3 and Appendices A-E, "A Risk-Calibrated Adaptive Handover Method for Teacher-Guided Flow-Matching Text-to-Speech Inference") in paper/chapters/. On 2026-11-07 (PAPER-013), Chapters 1-3 were kept intact while Appendices B-D were updated with the verified Tesla T4 diagnostics and live early-stopping benchmarks (AUDIT-001 and EXP-011 through EXP-018), and Appendix E was added to present the Stage-Wise Trajectory Action Cascade (STAC) and 1D-CRC-STAC modular architecture, formulation, multi-grid (16- and 32-interval) speed/quality benchmarks, 500-speaker cohort replay, and zero-shot OOD results (all explicitly marked as development evidence). A proposal switch hides the final-thesis pages and the placeholder Chapters 4-5. It is a working draft, not adviser-approved. See the [CITC format log](log/2026-10-24-citc-format.md), [proposal draft log](log/2026-10-24-proposal-draft.md), and [EXP-018 log](log/2026-11-07-exp018-stac-handover-prelim.md).

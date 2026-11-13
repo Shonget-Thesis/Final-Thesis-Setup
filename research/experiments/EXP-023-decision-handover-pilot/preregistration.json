@@ -1,0 +1,158 @@
+{
+  "experiment": "EXP-023",
+  "amendments": [
+    {
+      "date": "2026-11-13",
+      "when": "before any synthesis",
+      "replaces": "79752afbf4d5268847ec113ae4366d42c329711f2a4d01fa2dd7410d7309c688",
+      "change": "adds the Two-Axis Handover as a second candidate: the diversity block also synthesizes the whole-estimate handovers at Steps 3 and 4 (teacher run to Step 4) and records each seed's Step 1-3 drift; G3 and its decision rule are added; nothing about Decision Handover (outputs, data, G1, G2) changes",
+      "reason": "requested by the team member: the offline screen (code/analysis/solution_screen.py, round 4) found it passed every measured rule on the stored outputs, but its pitch variety at Step 3 was never stored"
+    },
+    {
+      "date": "2026-11-13",
+      "when": "before any synthesis",
+      "replaces": "03006f5c53a8ecf16b7cafc932e72bc88ef0cca02fd3edcccd40bfaf4ea2fbf0",
+      "change": "adds the Agreement-Routed Handover as a third candidate, analysis only: G4 replays it out of fold on the Step-0 voice gaps the quality block already records (vg_g); no output, data or earlier rule changes",
+      "reason": "requested by the team member as the last candidate: the offline screen (round 5) found it passed every rule, pitch variety included, with EXP-020's Step-4 gap standing in for the Step-0 gap the method uses"
+    },
+    {
+      "date": "2026-11-13",
+      "when": "before any synthesis",
+      "replaces": "590404389927c4888c8059acf8a0548fb84d5cb562442eafb39d64ac1eb39b7c",
+      "change": "G4 now judges the routing: misroutes by the Step-0 voice gap at most one more than by the prompt-SNR rule on the same cases and folds, plus cost and pitch variety; absolute quality is reported, not judged",
+      "reason": "a check before any synthesis found that the previous G4 could not pass on these 20 speakers even with perfect routing: the stored whole-estimate outputs at Step 4 give a clean UTMOS lower bound of -0.132 against -0.10, so it would have tested the stored outputs on 20 speakers, not the new signal"
+    }
+  ],
+  "agreement_routed": {
+    "what_crosses": "the Step-0 voice gap between T_0 and the draft S (sh.voice_rms, recorded as vg_g): up to the cut that keeps 95% of clean prompts -> the whole estimate at Step 4; up to the largest clean gap -> Voice-Swap at Step 4; beyond it -> the student alone",
+    "cuts": "out of fold over 5 folds of the pilot's speakers (random.Random(2026) shuffle), from the other folds' clean-prompt gaps",
+    "passes": {
+      "W4": 14,
+      "STT_4": 14,
+      "student4": 6
+    },
+    "scoring": "the stored outputs of the same cases and seeds (W4 EXP-018, STT_4 EXP-020, student4 EXP-017) against the stored reference; pitch variety: each clean diversity prompt follows its clean case's route, W4 from this pilot's CVf0, STT_4 and student4 from EXP-020's stored CVf0",
+    "offline_screen": "round 5, with EXP-020's Step-4 gap as a stand-in: 7.60 mean passes out of fold, every rule passed, clean CVf0 -0.0052 (docs/progress/log/2026-11-13-offline-solution-screen.md)",
+    "literature": "targeted searches 2026-11-13 found no method that routes inputs by teacher-student disagreement on the voice or compares a teacher's first-step estimate with a student's output to decide what crosses"
+  },
+  "two_axis": {
+    "what_crosses": "prompt SNR >= snr_threshold: the whole estimate; within band_db below it: Voice-Swap at Step 4 (EXP-020's STT); below that: nothing, the student alone",
+    "when": "on the whole-estimate branch: Step 3 if A_3 = d_1 + d_2 + d_3 >= lambda3 (d_k = the sampler's compute_stabilization_drift, as stored in EXP-018), else Step 4",
+    "params": {
+      "snr_threshold": 26.54625129699707,
+      "band_db": 2.0,
+      "lambda3": 1.21543
+    },
+    "fit": "on the stored EXP-018 data of the 60 Quick-set speakers (all 360 cases): snr_threshold keeps 95% of clean prompts on the whole branch; lambda3 is the most permissive action threshold whose routing keeps mean capped-WER difference <= +0.01 (clean) and <= +0.025 (degraded), similarity >= -0.01 and UTMOS >= -0.05 against the whole estimate at Step 8",
+    "passes": {
+      "W3": 11,
+      "W4": 13,
+      "STT_4": 14,
+      "student4": 4
+    },
+    "stored_routes": {
+      "W3": 89,
+      "W4": 7,
+      "STT_4": 45,
+      "student4": 219
+    },
+    "offline_screen": "out of fold over 5 speaker folds: 6.73 mean passes, every measured rule passed, pitch variety at Step 3 unmeasured (docs/progress/log/2026-11-13-offline-solution-screen.md)",
+    "literature": "targeted searches 2026-11-13 found no published policy choosing both when and what crosses; each part is known"
+  },
+  "purpose": "Development pilot of Decision Handover before any frozen test: is the guided teacher's first estimate shared across seeds, and does handing the student only the teacher's seed-specific change keep quality and pitch variety at Steps 2-3; for the Two-Axis Handover, does its choice of a Step-3 handover keep pitch variety; and for the Agreement-Routed Handover, does routing by the Step-0 teacher-student voice gap keep quality, cost and pitch variety",
+  "algorithm": {
+    "decision": "D_k = slow(T_k) - slow(T_0) on generated frames, with T_k the teacher's endpoint estimate at Step k and slow() EXP-020's 9-frame split (sh.decompose)",
+    "handover": "x_k(g) = voice(S) + fine(S) + slow(T_k) + g (slow(S) - slow(T_0)); g = 1 is S + D_k; g = 0 is EXP-022's STS; prompt frames from T_k",
+    "draft": "S = eps + g(eps, 0), one student pass from independent noise (seed + 1009), as in EXP-020",
+    "student": "the released student loop at j = 1 from x_k",
+    "unguided": "the teacher's conditional branch only, 1 pass per step, same grid and Euler update as sampler.run_teacher_single_pass"
+  },
+  "outputs": {
+    "DH_k": "g = 1, guided teacher",
+    "DHc_k": "g = sqrt(1 - rho_k), guided teacher",
+    "DHu_k": "g = 1, unguided teacher"
+  },
+  "steps": [
+    2,
+    3
+  ],
+  "passes": {
+    "DH_2": 10,
+    "DH_3": 12,
+    "DHc_2": 10,
+    "DHc_3": 12,
+    "DHu_2": 7,
+    "DHu_3": 8,
+    "W3": 11,
+    "W4": 13,
+    "plain_8": 21,
+    "STT_4": 14,
+    "student4": 4,
+    "STS_2": 10,
+    "STS_3": 12
+  },
+  "completion": {
+    "rho": {
+      "2": 0.6390551133435706,
+      "3": 0.9414867952607213
+    },
+    "gain": {
+      "2": 0.6007868895510532,
+      "3": 0.24189502834758445
+    },
+    "source": "rho_k = (CVf0 STS_k - CVf0 student4) / (CVf0 plain_8 - CVf0 student4), clean prompts, EXP-022 and EXP-020 diversity files, matched speakers"
+  },
+  "data": {
+    "quality": "the first 20 EXP-012 Quick-set development speakers x ['clean', 'gauss20', 'noisy15'] (60 cases), synthesis seed = input seed",
+    "seeds": "the first 10 speakers x ['clean', 'noisy15'] x 4 seeds (input_seed + 2000 + m), teacher only, Steps 0-4, prompt degradation fixed",
+    "diversity": "the first 10 speakers x ['clean'] x 20 seeds (input_seed + 1000 + m), all six outputs plus the whole-estimate handovers W3 and W4 and the Two-Axis Handover's per-seed choice between them",
+    "reused": "plain Step 8 (EXP-018), student only (EXP-017), Voice-Swap STT_4 (EXP-020), STS_2 and STS_3 (EXP-022) on the same cases and seeds; stored CVf0 of plain_8, STS_2, STS_3 (EXP-022) and student4 (EXP-020)"
+  },
+  "hardware": "Colab Tesla T4 only; Shonget-DMOSpeech2 at the pinned commit",
+  "dmo_commit": "8a7868fc3345702a586173447f4869205b501f26",
+  "smoke": "must reproduce the stored STS_3 scores (EXP-022, tolerance 0.01) and match the released guided teacher with teacher_loop(guided=True) (max abs difference <= 0.0001) before the full run",
+  "criteria": {
+    "G1_first_estimate_shared": "guided teacher, slow part: median over pairs of (spread across seeds at Step 0) / (spread at Step 3) <= 0.25 on clean and on noisy15",
+    "G2_variant": "for each output: passes <= 12; pooled capped-WER minus the reference, upper bound <= +0.025; similarity minus the reference, lower bound >= -0.01; mean WER minus STS at the same step on degraded prompts <= 0; clean CVf0 minus the stored reference, mean >= -0.01",
+    "G3_two_axis_pitch_variety": "on the 10 clean diversity prompts: CVf0 of the Two-Axis Handover (its per-seed choice between W3 and W4 on the whole branch; the stored Voice-Swap or student-alone CVf0 on the other branches) minus the stored reference, mean >= -0.01",
+    "G4_agreement_routed": "out of fold on the 60 quality cases with 5 speaker folds: misroutes by the Step-0 voice gap (a clean case sent to the student alone, or a degraded case sent to the whole estimate) at most 1 more than by the prompt-SNR rule (95% clean coverage, 2.0 dB Voice-Swap band) on the same cases and folds; mean passes <= 14.7; clean CVf0 minus the stored reference, mean >= -0.01; absolute quality against the stored reference is reported, not judged"
+  },
+  "decision_rule": "advance Decision Handover to a frozen test on new speakers only if G1 holds and at least one output meets G2; the output carried forward is the cheapest that meets G2 (ties: lower pooled WER); separately, advance the Two-Axis Handover only if G3 holds, and the Agreement-Routed Handover only if G4 holds; otherwise report a negative pilot for that candidate, with no retuning on these data",
+  "descriptive": [
+    "spreads and shared shares for every part and step, both trajectories",
+    "decision signals per condition (size, turning, size relative to the draft, Step-0 voice gap)",
+    "every output against the reference, STS at the same step, Voice-Swap and the student alone",
+    "Definition 3.1 failures against the reference",
+    "the Two-Axis Handover's W3 and W4 pitch variety alone, its share of Step-3 handovers, W4 against EXP-020's stored plain_4, and its in-sample replay on the 360 stored cases",
+    "the Agreement-Routed Handover's routes per condition and its cuts per fold"
+  ],
+  "bootstrap": {
+    "B": 2000,
+    "seed": 2026,
+    "unit": "speaker"
+  },
+  "evidence_status": "development pilot on speakers that designed EXP-020 and EXP-022; not evidence for a claim",
+  "novelty": "to our knowledge no published handover passes only the teacher's seed-specific change onto the student's own sample (targeted searches 2026-11-13; closest: DiFA, single-model deviation guidance; Gandikota and Bau, whole-state switch after the base model's first step; Distillation++, teacher refines student estimates); not a full literature review",
+  "adoption": "not adopted; changing the thesis method needs a dated decision record and adviser review",
+  "code_hashes": {
+    "code/colab/run_decision_handover_pilot.py": "9199a20a9b23c93dafdc7ca302616c8bdfd4fb8a5c5d7bb53fa9e96a01738a9a",
+    "code/colab/run_selective_handover_prelim.py": "b61ef06b9ed0a7411d532d277e2525c436c08aab6a4ca541454672a9ea9be603",
+    "code/colab/run_grid32_prelim.py": "c7b4152da3449264ef2d7aefcea3492e04f9d45399e373ba2b6d448912bf0b84",
+    "code/colab/run_noise_guidance_prelim.py": "48150a13101d1ecd5ed6da1085e6fd914381f8e22288f5bda7c48f2625dc064b",
+    "code/colab/run_followup_tests.py": "6bce906980ff4c6c4b1209b086cab4fcbe11f7a2955a27badd698c2906af1801",
+    "code/colab/run_consistency_gate_prelim.py": "5d83b1acdf668e7b13981a5df0f6e24e24602fe31e051d00190fd5273a2ce6e3",
+    "code/colab/run_endpoint_extrapolation_prelim.py": "90aec6467ed881602b1e62e4938b1d3c845f5337e98b82b340b5d3d54631cafe"
+  },
+  "input_hashes": {
+    "research/experiments/EXP-018-swsr-handover-prelim/results/steps1to8.csv": "f904376d4ea784c5bf80e4f5284b5fe7a2bc4a8d8a0e9c9065b4dbfd13bd2600",
+    "research/experiments/EXP-017-grid32-prelim/results/grid32.csv": "9b9d02833a9b0bc7898a3d760f4fe33e18b43da12fa65aeb912ebbe6f664ddb1",
+    "research/experiments/EXP-020-selective-handover-prelim/results/selective.csv": "23519fee77de033dcd2d3d480481bb3a5c7801d820898680870a9f0536942b5d",
+    "research/experiments/EXP-020-selective-handover-prelim/results/diversity.csv": "5bf795afb6b6370e7b7b2ad5ea0e7cb6ff58160281c279eb5bc625eca8e63714",
+    "research/experiments/EXP-022-slow-part-handover-prelim/results/slowpart.csv": "c7a7dcd93d00929a98bc37d0fec4a8b536b15e6f0d28910dc5505459c684a588",
+    "research/experiments/EXP-022-slow-part-handover-prelim/results/diversity.csv": "2e4cb54830a565ed95b593032f1c8a0d3f492e01ad12287c3e7883608697679b",
+    "code/scheduling/failure_config.json": "13a8fbfdbc11048c2b68f7c5b865369c622f4ec601a6ff7e6a3fa3409ce97b53"
+  },
+  "thesis_commit": "a068a0d54bc14f5060dc18172543f1ba1cb9448c",
+  "sha256": "469c90edf7c6094d0cc2eb31ed0d6fbf8c847847af42f06b717ba9d6f9182600",
+  "created_utc": "2026-11-13T12:18:59.511655+00:00"
+}
