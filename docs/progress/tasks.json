@@ -583,6 +583,26 @@
         "code/analysis/exp022_diagnostics.py",
         "docs/progress/log/2026-11-13-exp022-slow-part-handover-results.md"
       ]
+    },
+    {
+      "id": "EVAL-016",
+      "title": "Decision Handover pilot: hand the student only the teacher's seed-specific change (EXP-023), with the Two-Axis and Agreement-Routed Handovers as further candidates",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "todo",
+      "updated": "2026-11-13",
+      "acceptance": "Preregistration is frozen before GPU execution; a Colab Tesla T4 smoke test reproduces the stored STS_3 scores (EXP-022) and shows that the pilot's teacher loop matches the released guided teacher; the full run scores the six outputs (DH, DHc, DHu at Steps 2 and 3) on 20 development speakers x clean, gauss20 and noisy15 (60 cases), checks the teacher's first estimate across 4 seeds on 10 speakers x clean and noisy15, and measures CVf0 on 10 speakers x 20 seeds, including the Two-Axis Handover's Step-3 and Step-4 handovers and its per-seed choice between them (amendment of 2026-11-13, made before any synthesis); G4 replays the Agreement-Routed Handover's routing by the Step-0 voice gap out of fold against the prompt-SNR rule (amendments of the same day, before any synthesis; preregistration 469c90ed...); the go/no-go criteria G1, G2, G3 and G4 are reported as computed from committed CSV files, whether they pass or fail; results committed with a SHA-256 manifest.",
+      "evidence": [
+        "research/experiments/EXP-023-decision-handover-pilot/README.md",
+        "research/experiments/EXP-023-decision-handover-pilot/preregistration.json",
+        "code/colab/run_decision_handover_pilot.py",
+        "code/colab/DMOSpeech2_EXP023_Decision_Handover_Pilot.ipynb",
+        "code/tests/test_decision_handover.py",
+        "docs/progress/log/2026-11-13-exp023-decision-handover-pilot.md",
+        "code/analysis/solution_screen.py",
+        "docs/progress/log/2026-11-13-offline-solution-screen.md",
+        "code/analysis/exp023_followups.py",
+        "code/tests/test_exp023_followups.py"
+      ]
     }
   ]
 }
