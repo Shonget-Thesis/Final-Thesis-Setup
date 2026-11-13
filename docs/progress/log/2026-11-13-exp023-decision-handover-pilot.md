@@ -147,6 +147,18 @@ A third idea, a "restart-visibility" stop with a supposedly parameter-free thres
 
 Literature checks found neither PAS nor GCH. The tests now cover both (6 tests).
 
+## First smoke attempt on Colab: killed for lack of RAM
+
+The first smoke run (branch `rhnl-3` at `6528959`) was killed with exit code −9 while the transformers library loaded Whisper large-v3 (1,259 weight tensors) for the first score. The first case's synthesis had already run, so the GPU was fine. No row was written, and nothing was compared.
+- **Cause:** −9 is the operating system's kill when the machine runs out of system RAM. A standard Colab VM has about 12.7 GB. The runner loads the teacher, the student, Whisper large-v3, WavLM and UTMOS, and the notebook kernel also held a PyTorch and CUDA context from the Step-1 GPU check. EXP-022 ran with the same layout earlier the same day, so the margin is small.
+- **Fix, in the notebook only:**
+  - the GPU check uses `nvidia-smi` instead of importing PyTorch into the kernel;
+  - the runner starts with `MALLOC_ARENA_MAX=2`, which limits allocator arenas while the large models load;
+  - the available RAM is printed before the smoke test and the full run;
+  - exit code −9 now prints what to do: Runtime > Disconnect and delete runtime, then Run all.
+- **Preregistration still valid.** The notebook is not a hashed dependency, and none of these changes can alter a result. `check_prereg()` still accepts `469c90ed...`.
+- **If it recurs:** use a High-RAM runtime. The alternative is a memory change inside a frozen file, which would need a re-freeze before the run.
+
 ## Checks run
 
 - **`python -m unittest discover -s code/tests -p test_decision_handover.py`:** OK, 24 tests.
