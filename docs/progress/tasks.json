@@ -524,16 +524,23 @@
       "id": "EVAL-013",
       "title": "Selective Handover: which parts of the teacher's estimate the student needs, with a per-input step choice (EXP-020)",
       "owner": "Rhenel Jhon R. Sajol",
-      "status": "todo",
-      "updated": "2026-11-08",
+      "status": "review",
+      "updated": "2026-11-09",
       "acceptance": "Preregistration is frozen before GPU execution; a Colab Tesla T4 run reproduces the stored Step-4 and Step-8 labels in the smoke test, then scores the six mixed combinations at Step 4 and STT at Steps 5 to 7 on the 60 development speakers (360 cases), and measures CVf0 on 20 speakers x 20 seeds; the effect map and preregistered criteria C1 to C6 are reported as computed from committed CSV files, whether they pass or fail; results committed with a SHA-256 manifest.",
       "evidence": [
         "research/experiments/EXP-020-selective-handover-prelim/README.md",
         "research/experiments/EXP-020-selective-handover-prelim/preregistration.json",
+        "research/experiments/EXP-020-selective-handover-prelim/results/MANIFEST.json",
+        "research/experiments/EXP-020-selective-handover-prelim/results/SELECTIVE_HANDOVER_REPORT.md",
+        "research/experiments/EXP-020-selective-handover-prelim/results/selective.csv",
+        "research/experiments/EXP-020-selective-handover-prelim/results/diversity.csv",
+        "research/experiments/EXP-020-selective-handover-prelim/results/selective_results.json",
         "code/colab/run_selective_handover_prelim.py",
         "code/colab/DMOSpeech2_EXP020_Selective_Handover.ipynb",
         "code/tests/test_selective_handover.py",
-        "docs/progress/log/2026-11-08-exp020-selective-handover.md"
+        "code/analysis/exp020_diagnostics.py",
+        "docs/progress/log/2026-11-08-exp020-selective-handover.md",
+        "docs/progress/log/2026-11-09-exp020-selective-handover-results.md"
       ]
     }
   ]

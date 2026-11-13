@@ -1,0 +1,57 @@
+{
+  "description": "Outputs of the EXP-020 notebook run on 2026-11-08 UTC (Colab Tesla T4): the six mixed Selective Handover combinations at Step 4 and STT at Steps 5 to 7 on 360 cases (60 development speakers x 6 conditions), CVf0 on 20 speakers x 20 seeds, the report and the smoke checks. Byte-identical copies from the results zip. The zip's code/ snapshot was not copied: its six runner modules are identical, line endings normalised, to code/colab/ at the commit below.",
+  "source_zip": "DMOSpeech2_EXP020_Selective_Handover_Results.zip",
+  "source_zip_sha256": "4d9f9378e8fb90dc257da222994595fd8e3ce921470c36d58c4e2930e73f44ef",
+  "thesis_commit_at_run": "07fe593daf88170183bb8e97185fce51d1d17b7a",
+  "dmo_commit_at_run": "8a7868fc3345702a586173447f4869205b501f26",
+  "device": "Tesla T4",
+  "preregistration_sha256": "7afeef06fabefaa85eadfb3cf8a19cfa7078a46607dc69f4271c77a605107bed",
+  "runner_sha256": "b61ef06b9ed0a7411d532d277e2525c436c08aab6a4ca541454672a9ea9be603",
+  "files": [
+    {
+      "file": "SELECTIVE_HANDOVER_REPORT.md",
+      "bytes": 6512,
+      "sha256": "013c06d235b800020e56697303915909db42403b58a2eed4122cbe2a14ef2c76"
+    },
+    {
+      "file": "selective.csv",
+      "bytes": 425715,
+      "sha256": "58404257bd237637bccb72707eff727603441fc851310dfe1414fe03f250816c"
+    },
+    {
+      "file": "diversity.csv",
+      "bytes": 9798,
+      "sha256": "5ac9a85dacea3f3d7acaefa8444d451a32a1a65b84fefe33502a0eec003dc02e"
+    },
+    {
+      "file": "selective_results.json",
+      "bytes": 21408,
+      "sha256": "1405657b7a0454945cfb4c096aabcdefd954f0ee37d9ceb46fbd02573b215ab6"
+    },
+    {
+      "file": "RUN_INFO.txt",
+      "bytes": 181,
+      "sha256": "c46e786b641be83e2d7ba762becc00f3ee573d5575b58089c90603c81b199131"
+    },
+    {
+      "file": "preregistration.json",
+      "bytes": 5929,
+      "sha256": "bf096c070e8dc62a24c4197963aae1a2bb172d2779bdc9622a49e7e2e45b678d"
+    },
+    {
+      "file": "smoke/selective.csv",
+      "bytes": 6076,
+      "sha256": "d75554eff616e8f239dd565dc8158a1d298192d98b07933e31865283c21442df"
+    },
+    {
+      "file": "smoke/diversity.csv",
+      "bytes": 760,
+      "sha256": "bb0a71ee340906bdbf18846ea6f907e42bdbbf114ff2c94f601e7b1e01e1a094"
+    },
+    {
+      "file": "smoke/reproduction.json",
+      "bytes": 2042,
+      "sha256": "f6ee8d6fafa769158fda4ff385ceff15407ef9195c06ed834ce1fa183a55a089"
+    }
+  ]
+}
