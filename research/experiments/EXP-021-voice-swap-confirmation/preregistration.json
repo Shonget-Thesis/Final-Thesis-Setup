@@ -1,0 +1,159 @@
+{
+  "experiment": "EXP-021",
+  "purpose": "Frozen confirmation, on speakers never used to design it, that Voice-Swap Handover at Step 4 matches the 0.25 reference (Step 8) at two-thirds of its forward passes",
+  "claim_under_test": "Voice-Swap at Step 4 (14 passes) is not worse than the reference at Step 8 (21 passes) beyond the margins below on word errors and speaker similarity, keeps the teacher's pitch variety, and takes at most 80% of the reference's sampling time on a T4",
+  "origin": "EXP-020 (preregistration 7afeef06...) did not advance Selective Handover's adaptive ladder; the comparison of fixed Voice-Swap with the reference was computed after its results were seen, so it is tested here before any claim",
+  "algorithm": {
+    "draft": "S = eps + g(eps, 0), one student pass, eps from seed + 1009 (sh.student_sample)",
+    "voice_swap": "on generated frames, the teacher's Step-4 endpoint estimate keeps its slow and fine parts and takes the draft's voice part (per-band mean over time) (sh.selective_handover, code STT, slow window 9 frames); prompt frames unchanged",
+    "handover": "the released student loop at j = 1 (taus 0.0761, 0.2929, 0.6173) runs from that input",
+    "source": "imported unchanged from code/colab/run_selective_handover_prelim.py"
+  },
+  "outputs": {
+    "ref": "Step 8 (the 0.25 switch), student seeds as released",
+    "ref2": "Step 8, student seeds + 7919",
+    "vs": "Voice-Swap at Step 4",
+    "vs2": "Voice-Swap at Step 4, draft and student seeds + 7919",
+    "plain4": "today's Step-4 handover (descriptive)",
+    "student": "student only (descriptive)"
+  },
+  "passes": {
+    "ref": 21,
+    "ref2": 21,
+    "vs": 14,
+    "vs2": 14,
+    "plain4": 13,
+    "student": 4
+  },
+  "data": {
+    "quality": "development speakers 61-100 by utterance ID (40 speakers) x ['clean', 'noisy15', 'gauss20', 'babble15', 'reverb09', 'telephone']",
+    "fresh_utt_ids": [
+      "common_voice_en_22461617-common_voice_en_22461638",
+      "common_voice_en_22839883-common_voice_en_22839889",
+      "common_voice_en_22941073-common_voice_en_22941074",
+      "common_voice_en_23252329-common_voice_en_23252333",
+      "common_voice_en_23750957-common_voice_en_23774578",
+      "common_voice_en_23998981-common_voice_en_23998980",
+      "common_voice_en_24518104-common_voice_en_24518109",
+      "common_voice_en_24819370-common_voice_en_24819368",
+      "common_voice_en_25127181-common_voice_en_25127184",
+      "common_voice_en_25200065-common_voice_en_25200064",
+      "common_voice_en_25216968-common_voice_en_25216966",
+      "common_voice_en_25568854-common_voice_en_25568855",
+      "common_voice_en_25662916-common_voice_en_25663069",
+      "common_voice_en_25693607-common_voice_en_25693608",
+      "common_voice_en_25880669-common_voice_en_25880691",
+      "common_voice_en_26453369-common_voice_en_26453364",
+      "common_voice_en_26933529-common_voice_en_26933532",
+      "common_voice_en_27434681-common_voice_en_27434683",
+      "common_voice_en_28003405-common_voice_en_28003408",
+      "common_voice_en_28065832-common_voice_en_28065833",
+      "common_voice_en_28917649-common_voice_en_28917648",
+      "common_voice_en_30232728-common_voice_en_30232726",
+      "common_voice_en_30757408-common_voice_en_30757409",
+      "common_voice_en_31005683-common_voice_en_31005688",
+      "common_voice_en_31499885-common_voice_en_31499889",
+      "common_voice_en_31959919-common_voice_en_31959922",
+      "common_voice_en_32125519-common_voice_en_32125526",
+      "common_voice_en_34054471-common_voice_en_34054473",
+      "common_voice_en_34184701-common_voice_en_34184697",
+      "common_voice_en_35734335-common_voice_en_35734342",
+      "common_voice_en_36705534-common_voice_en_36705545",
+      "common_voice_en_37237245-common_voice_en_37237243",
+      "common_voice_en_490614-common_voice_en_490613",
+      "common_voice_en_56141-common_voice_en_56142",
+      "common_voice_en_564578-common_voice_en_564576",
+      "common_voice_en_591530-common_voice_en_591529",
+      "common_voice_en_597578-common_voice_en_597577",
+      "common_voice_en_650392-common_voice_en_650390",
+      "common_voice_en_673471-common_voice_en_673472",
+      "common_voice_en_86172-common_voice_en_86173"
+    ],
+    "diversity": "the first 30 fresh speakers x ['clean', 'noisy15'], 20 seeds (input_seed + 1000 + m), prompt degradation fixed per pair",
+    "conditions": {
+      "clean": [
+        "clean",
+        null
+      ],
+      "noisy15": [
+        "gauss",
+        15.0
+      ],
+      "gauss20": [
+        "gauss",
+        20.0
+      ],
+      "babble15": [
+        "babble",
+        15.0
+      ],
+      "reverb09": [
+        "reverb",
+        0.9
+      ],
+      "telephone": [
+        "telephone",
+        null
+      ]
+    },
+    "babble": {
+      "file": "PCAFETER/ch01.wav",
+      "source": "https://zenodo.org/records/1227121/files/PCAFETER_16k.zip",
+      "hash": "recorded at run time in run_info.json; the full run refuses a file that differs from the smoke test's"
+    },
+    "history": "speakers 61-100 were synthesized for the EXP-001/EXP-002 problem grid (clean and noisy15, Steps 4/5/6/8) but never used to design Voice-Swap or any EXP-012 to EXP-020 method; EXP-019 also names them as its fresh set"
+  },
+  "timing": "the reference path (teacher to Step 8, student, vocoder) and the Voice-Swap path (teacher to Step 4, draft, swap, student, vocoder) are each run and timed separately with CUDA synchronized; the order alternates between cases; one untimed warm-up case runs first; prompt preparation and scoring are excluded",
+  "hardware": "Colab Tesla T4 only, enforced by the runner; Shonget-DMOSpeech2 at the pinned commit",
+  "dmo_commit": "8a7868fc3345702a586173447f4869205b501f26",
+  "metrics": "WER (Whisper via the released metric suite, capped at 1 per utterance in all comparisons), speaker similarity to the ground-truth recording, UTMOS",
+  "diversity_measure": {
+    "name": "CVf0",
+    "definition": "as in EXP-020: librosa pYIN 65-500 Hz, frame 1024, hop 256 at 24 kHz; per frame std/mean (ddof 1) across seeds over frames voiced in at least half of the seeds; averaged over frames"
+  },
+  "criteria": {
+    "P1_word_errors": "per case, the mean capped WER of vs and vs2 minus that of ref and ref2; speaker-bootstrap 95% CI upper bound <= +0.01 on clean prompts and <= +0.025 on the five degraded conditions pooled",
+    "P2_voice_similarity": "the same paired difference in similarity: lower bound >= -0.01 on clean prompts and on the degraded conditions pooled",
+    "P3_pitch_variety": "for clean and noisy15 separately: CVf0 of vs minus ref lower bound >= -0.02, and vs minus student lower bound > 0",
+    "P4_time": "per case t_vs / t_ref: speaker-bootstrap upper bound <= 0.8"
+  },
+  "decision_rule": "Voice-Swap Handover is confirmed on these speakers only if P1 to P4 all pass; otherwise it is reported as a negative result, with no retuning and no change of margins on these data",
+  "descriptive": [
+    "per-condition differences with CIs",
+    "means of every output",
+    "Definition 3.1 failures of every output against ref, with ref2 as the noise floor",
+    "exact McNemar of plain4 against vs on degraded prompts",
+    "vs against student only",
+    "real-time factors",
+    "the largest difference between the two timed paths' Step-4 estimates (expected 0)"
+  ],
+  "bootstrap": {
+    "B": 2000,
+    "seed": 2026,
+    "unit": "speaker",
+    "interval": "percentile, sorted index int(0.025 B) and int(0.975 B)"
+  },
+  "design_notes": "Margins were sized before any fresh data from the EXP-020 development data by resampling 40-speaker studies: a method equal to EXP-020's estimate passes the degraded WER margin +0.025 with probability about 0.8 using single draws (the two draws used here should raise it), passes +0.01 or +0.015 with probability 0.2-0.4, passes the clean margins with probability about 1, and passes the pitch-variety margin with probability about 0.76 at 20 pairs (30 are used here). The expected time ratio from EXP-018's T4 timings is about 0.71",
+  "evidence_status": "confirmation on development speakers not used to design the method; not the thesis's frozen held-out evaluation (EVAL-001/EVAL-002); white-noise, recorded babble, synthetic reverberation and telephone-band prompts",
+  "novelty": "not tested by this experiment; to our knowledge no published handover selects which parts of the teacher's estimate cross to the student (targeted searches, 2026-11-08 to 2026-11-13); a full literature review is outstanding",
+  "adoption": "not adopted; changing the thesis method needs a dated decision record and adviser review",
+  "code_hashes": {
+    "code/colab/run_voice_swap_confirm.py": "4feba7fd33adc99293f8510d9ffcf8218ac4a4e4bcb0266dc1fc4c02613d9f10",
+    "code/colab/run_selective_handover_prelim.py": "b61ef06b9ed0a7411d532d277e2525c436c08aab6a4ca541454672a9ea9be603",
+    "code/colab/run_grid32_prelim.py": "c7b4152da3449264ef2d7aefcea3492e04f9d45399e373ba2b6d448912bf0b84",
+    "code/colab/run_noise_guidance_prelim.py": "48150a13101d1ecd5ed6da1085e6fd914381f8e22288f5bda7c48f2625dc064b",
+    "code/colab/run_followup_tests.py": "6bce906980ff4c6c4b1209b086cab4fcbe11f7a2955a27badd698c2906af1801",
+    "code/colab/run_consistency_gate_prelim.py": "5d83b1acdf668e7b13981a5df0f6e24e24602fe31e051d00190fd5273a2ce6e3",
+    "code/colab/run_endpoint_extrapolation_prelim.py": "90aec6467ed881602b1e62e4938b1d3c845f5337e98b82b340b5d3d54631cafe"
+  },
+  "input_hashes": {
+    "research/experiments/EXP-018-swsr-handover-prelim/results/steps1to8.csv": "f904376d4ea784c5bf80e4f5284b5fe7a2bc4a8d8a0e9c9065b4dbfd13bd2600",
+    "research/experiments/EXP-017-grid32-prelim/results/grid32.csv": "9b9d02833a9b0bc7898a3d760f4fe33e18b43da12fa65aeb912ebbe6f664ddb1",
+    "research/experiments/EXP-020-selective-handover-prelim/results/selective.csv": "23519fee77de033dcd2d3d480481bb3a5c7801d820898680870a9f0536942b5d",
+    "research/protocols/splits/development_manifest.json": "1c4309b6f560a9d896b7a3a6cae53fc5806ef81222c3f8d62a08c7bf7b9fb65a",
+    "code/scheduling/failure_config.json": "13a8fbfdbc11048c2b68f7c5b865369c622f4ec601a6ff7e6a3fa3409ce97b53"
+  },
+  "thesis_commit": "07fe593daf88170183bb8e97185fce51d1d17b7a",
+  "sha256": "1082c66869fd2f33a0dbba6f74f89c6fb5ca7312cd3cf89499da03de4e834259",
+  "created_utc": "2026-11-13T00:17:10.264255+00:00"
+}

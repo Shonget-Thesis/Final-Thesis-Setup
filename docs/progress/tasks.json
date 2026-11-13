@@ -542,6 +542,22 @@
         "docs/progress/log/2026-11-08-exp020-selective-handover.md",
         "docs/progress/log/2026-11-09-exp020-selective-handover-results.md"
       ]
+    },
+    {
+      "id": "EVAL-014",
+      "title": "Voice-Swap Handover frozen confirmation on development speakers 61-100 (EXP-021)",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "todo",
+      "updated": "2026-11-13",
+      "acceptance": "Preregistration is frozen before any synthesis on speakers 61-100; a Colab Tesla T4 smoke test on development speakers reproduces the stored scores of the reference, Step 4, Voice-Swap and student only; the full run scores 240 cases (40 speakers x 6 prompt conditions, two noise draws for the reference and Voice-Swap) with both paths timed, and CVf0 on 30 speakers x clean and noisy15 x 20 seeds; criteria P1 to P4 are reported as computed from committed CSV files, whether they pass or fail; results committed with a SHA-256 manifest.",
+      "evidence": [
+        "research/experiments/EXP-021-voice-swap-confirmation/README.md",
+        "research/experiments/EXP-021-voice-swap-confirmation/preregistration.json",
+        "code/colab/run_voice_swap_confirm.py",
+        "code/colab/DMOSpeech2_EXP021_Voice_Swap_Confirmation.ipynb",
+        "code/tests/test_voice_swap_confirm.py",
+        "docs/progress/log/2026-11-13-exp021-voice-swap-confirmation.md"
+      ]
     }
   ]
 }
