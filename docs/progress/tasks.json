@@ -558,6 +558,22 @@
         "code/tests/test_voice_swap_confirm.py",
         "docs/progress/log/2026-11-13-exp021-voice-swap-confirmation.md"
       ]
+    },
+    {
+      "id": "EVAL-015",
+      "title": "Slow-Part Handover development test: stop the teacher when the part the student uses has settled (EXP-022)",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "todo",
+      "updated": "2026-11-13",
+      "acceptance": "Preregistration is frozen before GPU execution; a Colab Tesla T4 smoke test reproduces the stored Step-4 handover scores (EXP-020) and teacher drift (EXP-018); the full run synthesizes the handover at Steps 2 to 7 with part signals at every teacher step for the 60 development speakers x 6 conditions (360 cases) and CVf0 at Steps 2, 3, 4 and 8 on 20 speakers x clean and noisy15 x 20 seeds; criteria C1 to C4 are reported as computed from committed CSV files, whether they pass or fail; results committed with a SHA-256 manifest.",
+      "evidence": [
+        "research/experiments/EXP-022-slow-part-handover-prelim/README.md",
+        "research/experiments/EXP-022-slow-part-handover-prelim/preregistration.json",
+        "code/colab/run_slow_part_handover_prelim.py",
+        "code/colab/DMOSpeech2_EXP022_Slow_Part_Handover.ipynb",
+        "code/tests/test_slow_part_handover.py",
+        "docs/progress/log/2026-11-13-exp022-slow-part-handover.md"
+      ]
     }
   ]
 }
