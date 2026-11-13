@@ -1,0 +1,41 @@
+{
+  "rows": [
+    {
+      "utt_id": "common_voice_en_18770703-common_voice_en_18770702",
+      "condition": "clean",
+      "output": "STS_4",
+      "wer": 0.0,
+      "wer_stored": 0.0,
+      "similarity": 0.9430067539215088,
+      "similarity_stored": 0.9430067539215088
+    },
+    {
+      "utt_id": "common_voice_en_18770703-common_voice_en_18770702",
+      "condition": "gauss20",
+      "output": "STS_4",
+      "wer": 0.14285714285714285,
+      "wer_stored": 0.14285714285714285,
+      "similarity": 0.9408218264579773,
+      "similarity_stored": 0.9408218264579773
+    },
+    {
+      "utt_id": "common_voice_en_18829843-common_voice_en_18829842",
+      "condition": "clean",
+      "output": "STS_4",
+      "wer": 0.0,
+      "wer_stored": 0.0,
+      "similarity": 0.9657952785491943,
+      "similarity_stored": 0.9657952785491943
+    },
+    {
+      "utt_id": "common_voice_en_18829843-common_voice_en_18829842",
+      "condition": "gauss20",
+      "output": "STS_4",
+      "wer": 0.0,
+      "wer_stored": 0.0,
+      "similarity": 0.7976380586624146,
+      "similarity_stored": 0.7976381182670593
+    }
+  ],
+  "max_drift_diff": 7.24488885550656e-08
+}

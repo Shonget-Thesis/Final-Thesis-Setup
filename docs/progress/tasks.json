@@ -547,7 +547,7 @@
       "id": "EVAL-014",
       "title": "Voice-Swap Handover frozen confirmation on development speakers 61-100 (EXP-021)",
       "owner": "Rhenel Jhon R. Sajol",
-      "status": "todo",
+      "status": "blocked",
       "updated": "2026-11-13",
       "acceptance": "Preregistration is frozen before any synthesis on speakers 61-100; a Colab Tesla T4 smoke test on development speakers reproduces the stored scores of the reference, Step 4, Voice-Swap and student only; the full run scores 240 cases (40 speakers x 6 prompt conditions, two noise draws for the reference and Voice-Swap) with both paths timed, and CVf0 on 30 speakers x clean and noisy15 x 20 seeds; criteria P1 to P4 are reported as computed from committed CSV files, whether they pass or fail; results committed with a SHA-256 manifest.",
       "evidence": [
@@ -556,14 +556,16 @@
         "code/colab/run_voice_swap_confirm.py",
         "code/colab/DMOSpeech2_EXP021_Voice_Swap_Confirmation.ipynb",
         "code/tests/test_voice_swap_confirm.py",
-        "docs/progress/log/2026-11-13-exp021-voice-swap-confirmation.md"
-      ]
+        "docs/progress/log/2026-11-13-exp021-voice-swap-confirmation.md",
+        "docs/progress/log/2026-11-13-exp021-p3-amendment.md"
+      ],
+      "blocker": "Parked at the requester's request on 2026-11-13 (the requester prefers a different method, EXP-023); not run, and nothing synthesized on speakers 61-100 for it. Its amended preregistration (33f37d54...) stays valid if the team resumes it."
     },
     {
       "id": "EVAL-015",
       "title": "Slow-Part Handover development test: stop the teacher when the part the student uses has settled (EXP-022)",
       "owner": "Rhenel Jhon R. Sajol",
-      "status": "todo",
+      "status": "review",
       "updated": "2026-11-13",
       "acceptance": "Preregistration is frozen before GPU execution; a Colab Tesla T4 smoke test reproduces the stored Step-4 handover scores (EXP-020) and teacher drift (EXP-018); the full run synthesizes the handover at Steps 2 to 7 with part signals at every teacher step for the 60 development speakers x 6 conditions (360 cases) and CVf0 at Steps 2, 3, 4 and 8 on 20 speakers x clean and noisy15 x 20 seeds; criteria C1 to C4 are reported as computed from committed CSV files, whether they pass or fail; results committed with a SHA-256 manifest.",
       "evidence": [
@@ -572,7 +574,14 @@
         "code/colab/run_slow_part_handover_prelim.py",
         "code/colab/DMOSpeech2_EXP022_Slow_Part_Handover.ipynb",
         "code/tests/test_slow_part_handover.py",
-        "docs/progress/log/2026-11-13-exp022-slow-part-handover.md"
+        "docs/progress/log/2026-11-13-exp022-slow-part-handover.md",
+        "research/experiments/EXP-022-slow-part-handover-prelim/results/MANIFEST.json",
+        "research/experiments/EXP-022-slow-part-handover-prelim/results/SLOW_PART_REPORT.md",
+        "research/experiments/EXP-022-slow-part-handover-prelim/results/slowpart.csv",
+        "research/experiments/EXP-022-slow-part-handover-prelim/results/diversity.csv",
+        "research/experiments/EXP-022-slow-part-handover-prelim/results/slowpart_results.json",
+        "code/analysis/exp022_diagnostics.py",
+        "docs/progress/log/2026-11-13-exp022-slow-part-handover-results.md"
       ]
     }
   ]
