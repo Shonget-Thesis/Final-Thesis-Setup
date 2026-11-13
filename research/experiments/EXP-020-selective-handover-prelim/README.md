@@ -109,6 +109,8 @@ Failure rate by measured prompt SNR:
 - **Student only is still better on noisy prompts.** It has 51 failures against 74 (p = 0.004), higher similarity, lower WER and higher UTMOS at 4 passes against 14. `STT_4`'s advantages are clean prompts (2 failures against 8) and pitch diversity on clean prompts (0.0898 against 0.0515). CVf0 was not measured on noisy prompts, which is where the swap matters, so a case for `STT_4` over the student alone on noisy prompts is not established.
 - **Later teacher steps add little once the voice is swapped.** Against `STT_4`, Steps 5 to 7 show no detectable change in noisy similarity or WER, and UTMOS at Step 7 is lower (-0.053 [-0.108, -0.006]). Failures are 74, 73, 61 and 61 (p = 1.0, 0.07 and 0.07 against Step 4). A per-input choice among Steps 4 to 7 has little to gain here.
 
+The comparison of fixed Voice-Swap with the reference above is tested, with its pass rules frozen first, on development speakers 61-100 in [EXP-021](../EXP-021-voice-swap-confirmation/README.md).
+
 ## How to run
 
 Open the notebook on a Colab T4 and run all cells. The run took about 4.6 hours of per-case time (3.2 quality, 1.5 diversity), against an estimate of 5 to 6. Step 2b keeps the checkpoints and the English dataset in `MyDrive/dmospeech2_cache/` after the first run, so later runs copy them from Drive instead of downloading them; the checkpoint hashes are still checked every time. The runner refuses to start if the preregistration or the runner has changed since the freeze, if the GPU is not a T4, or if the smoke test did not reproduce the stored labels.
