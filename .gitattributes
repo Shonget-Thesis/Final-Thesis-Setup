@@ -19,3 +19,6 @@ research/experiments/EXP-020-selective-handover-prelim/results/** -text
 research/experiments/EXP-021-voice-swap-confirmation/results/** -text
 research/experiments/EXP-022-slow-part-handover-prelim/results/** -text
 research/experiments/EXP-023-decision-handover-pilot/results/** -text
+research/experiments/EXP-024-analytic-unconditional-guidance-pilot/results/** -text
+research/experiments/EXP-025-prompt-probe-handover-diagnostic/results/** -text
+research/experiments/EXP-026-transmissibility-test/results/** -text

@@ -1,0 +1,297 @@
+<!-- 22 APPENDIX: TWO-AXIS HANDOVER ARCHITECTURE -->
+        <section class="scene" data-ch="4" data-sec="App. · Two-Axis" data-dur="85" data-title="Appendix: Two-Axis Handover Architecture">
+          <p class="eyebrow o b fade" data-t="100">Appendix · Development Candidate (Offline Screen &amp; EXP-023)</p>
+          <h2 class="b up" data-t="250">Two-Axis Handover: What Crosses, and When</h2>
+          <svg class="s22-svg" viewBox="0 0 1380 424" style="width:100%;height:404px;margin-top:6px">
+            <defs>
+              <marker id="ar22" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                <path d="M0 0L10 5L0 10z" fill="var(--muted)" />
+              </marker>
+              <marker id="ao22" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                <path d="M0 0L10 5L0 10z" fill="var(--orange)" />
+              </marker>
+              <marker id="ab22" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                <path d="M0 0L10 5L0 10z" fill="var(--blue)" />
+              </marker>
+            </defs>
+
+            <!-- Lane tags: the three answers of axis 1 (what crosses) -->
+            <g class="b fade" data-t="1300" font-family="var(--mono)" font-weight="700" font-size="13.5" letter-spacing=".08em">
+              <text x="520" y="30" fill="var(--orange)">CLEAN · Ŝ ≥ 26.55 dB → THE TEACHER'S WHOLE ESTIMATE</text>
+              <text x="520" y="186" fill="var(--orange)">BORDERLINE · Ŝ 24.55–26.55 dB → VOICE-SWAP</text>
+              <text x="520" y="342" fill="var(--orange)">NOISY · Ŝ &lt; 24.55 dB → NOTHING CROSSES</text>
+            </g>
+
+            <!-- Wires -->
+            <path class="wire b draw" data-t="800" d="M160 228 H188" marker-end="url(#ar22)" />
+            <path class="wire a b draw" data-t="1400" d="M380 200 H420 V82 H518" marker-end="url(#ao22)" />
+            <path class="wire a b draw" data-t="1400" d="M380 230 H518" marker-end="url(#ao22)" />
+            <path class="wire a b draw" data-t="1400" d="M380 260 H420 V381 H518" marker-end="url(#ao22)" />
+            <path class="wire a b draw" data-t="5300" d="M200 330 V294" marker-end="url(#ao22)" />
+            <path class="wire b draw" data-t="1900" d="M690 82 H714" marker-end="url(#ar22)" />
+            <path class="wire b draw" data-t="2300" d="M890 82 H900" marker-end="url(#ar22)" />
+            <path class="wire a b draw" data-t="2800" d="M1018 82 H1050 V140 H1078" marker-end="url(#ao22)" />
+            <path class="wire lp b draw" data-t="3000" d="M960 128 V148" marker-end="url(#ab22)" />
+            <path class="wire b draw" data-t="3100" d="M1036 173 H1078" marker-end="url(#ar22)" />
+            <path class="wire b draw" data-t="3500" d="M690 230 H714" marker-end="url(#ar22)" />
+            <path class="wire b draw" data-t="3500" d="M690 297 H714" marker-end="url(#ar22)" />
+            <path class="wire b draw" data-t="3900" d="M936 260 H1078" marker-end="url(#ar22)" />
+            <path class="wire b draw" data-t="4300" d="M936 381 H1314 V242" marker-end="url(#ar22)" />
+            <path class="wire b draw" data-t="4700" d="M1230 200 H1254" marker-end="url(#ar22)" />
+
+            <!-- Wire labels: the passes each route costs -->
+            <text class="wl o b fade" data-t="2900" x="1024" y="70" font-weight="700">yes · T₃ · 11</text>
+            <text class="wl cb b fade" data-t="3000" x="968" y="143">no</text>
+            <text class="wl b fade" data-t="3100" x="1040" y="192">T₄ · 13</text>
+            <text class="wl b fade" data-t="3900" x="944" y="252">14 passes</text>
+            <text class="wl b fade" data-t="4300" x="944" y="373">4 passes · straight to the vocoder</text>
+
+            <!-- Nodes -->
+            <g class="node b fade" data-t="600">
+              <rect x="10" y="190" width="150" height="78" rx="4" />
+              <text class="hd" x="24" y="218">Input</text>
+              <text class="sm" x="24" y="240">prompt audio,</text>
+              <text class="sm" x="24" y="259">prompt + target text</text>
+            </g>
+
+            <g class="node a b fade" data-t="1000">
+              <rect x="190" y="166" width="190" height="126" rx="4" />
+              <text class="hd" x="204" y="194" style="fill:var(--orange);font-size:16px">SNR router</text>
+              <text class="sm" x="204" y="218" style="fill:var(--fg);font-weight:600">axis 1 · what crosses</text>
+              <text class="sm" x="204" y="240">measures how noisy</text>
+              <text class="sm" x="204" y="259">the voice prompt is (Ŝ)</text>
+              <text class="sm" x="204" y="280" style="fill:var(--orange-dark);font-weight:700">0 passes</text>
+            </g>
+
+            <g class="node t b fade" data-t="1800">
+              <rect x="520" y="40" width="170" height="84" rx="4" />
+              <text class="hd" x="534" y="68">Teacher</text>
+              <text class="sm" x="534" y="92">guided Steps 0–3</text>
+              <text class="sm" x="534" y="112">2 passes per step</text>
+            </g>
+
+            <g class="node a b fade" data-t="2200">
+              <rect x="716" y="40" width="174" height="84" rx="4" />
+              <text class="hd" x="730" y="64" style="fill:var(--orange);font-size:14.5px">Movement monitor</text>
+              <text class="sm" x="730" y="86" style="fill:var(--fg);font-weight:600">axis 2 · when</text>
+              <text class="sm" x="730" y="104">A₃ = d₁ + d₂ + d₃</text>
+              <text class="sm" x="730" y="120" style="fill:var(--orange-dark);font-weight:700;font-size:13.5px">0 extra passes</text>
+            </g>
+
+            <g class="node a b pop" data-t="2600">
+              <polygon points="960,36 1018,82 960,128 902,82" />
+              <text class="hd" x="960" y="80" text-anchor="middle" style="fill:var(--orange);font-size:16px;text-transform:none">A₃ ≥ <tspan font-family="var(--math)" font-style="italic">λ</tspan>₃ ?</text>
+              <text class="sm" x="960" y="100" text-anchor="middle" style="font-size:12.5px">moved enough?</text>
+            </g>
+
+            <g class="node t b fade" data-t="3000">
+              <rect x="886" y="150" width="150" height="48" rx="4" />
+              <text class="sm" x="898" y="170" style="fill:var(--fg);font-weight:700">Teacher Step 4</text>
+              <text class="sm" x="898" y="189" style="font-size:13.5px">one more step · +2</text>
+            </g>
+
+            <g class="node t b fade" data-t="3400">
+              <rect x="520" y="198" width="170" height="64" rx="4" />
+              <text class="hd" x="534" y="224">Teacher</text>
+              <text class="sm" x="534" y="248">guided Steps 0–4</text>
+            </g>
+
+            <g class="node s b fade" data-t="3400">
+              <rect x="520" y="272" width="170" height="52" rx="4" />
+              <text class="sm" x="534" y="293" style="fill:var(--fg);font-weight:700">Student draft S</text>
+              <text class="sm" x="534" y="313" style="font-size:13.5px">1 pass from noise</text>
+            </g>
+
+            <g class="node a b fade" data-t="3800">
+              <rect x="716" y="198" width="220" height="126" rx="4" />
+              <text class="hd" x="730" y="224" style="fill:var(--orange);font-size:16px">Voice-Swap</text>
+              <text class="sm" x="730" y="248" style="fill:var(--fg);font-weight:600">voice(S) + slow(T₄) + fine(T₄)</text>
+              <text class="sm" x="730" y="270">student's clean voice,</text>
+              <text class="sm" x="730" y="289">teacher's prosody</text>
+              <text class="sm" x="730" y="312" style="fill:var(--orange-dark);font-weight:700">0 passes</text>
+            </g>
+
+            <g class="node s b fade" data-t="4200">
+              <rect x="520" y="352" width="416" height="58" rx="4" />
+              <text class="hd" x="534" y="378">Student alone</text>
+              <text class="sm" x="534" y="400">no teacher: the student makes the speech from noise</text>
+            </g>
+
+            <g class="node s b fade" data-t="4600">
+              <rect x="1080" y="110" width="150" height="180" rx="4" />
+              <text class="hd" x="1094" y="140">Student</text>
+              <text class="sm" x="1094" y="164">restart τ = 0.0761</text>
+              <text class="sm" x="1094" y="186">finishes from the</text>
+              <text class="sm" x="1094" y="205">handed estimate</text>
+              <text class="sm" x="1094" y="228">3 passes · frozen</text>
+            </g>
+
+            <g class="node b fade" data-t="4800">
+              <rect x="1256" y="160" width="116" height="80" rx="4" />
+              <text class="hd" x="1270" y="188">Vocos</text>
+              <text class="sm" x="1270" y="210">mel →</text>
+              <text class="sm" x="1270" y="229">waveform</text>
+            </g>
+
+            <g class="node a b fade" data-t="5200">
+              <rect x="10" y="332" width="370" height="80" rx="4" />
+              <text class="hd" x="24" y="358" style="fill:var(--orange);font-size:15px">Offline fit</text>
+              <text class="sm" x="24" y="380">once, before deployment, on stored data</text>
+              <text class="sm" x="24" y="400" style="fill:var(--fg);font-weight:600">θ = 26.55 dB · band 2 dB · <tspan font-family="var(--math)" font-style="italic">λ</tspan>₃ = 1.2154</text>
+            </g>
+
+            <!-- Animated pulses: one per route, along the wires only (never over a box's text) -->
+            <g class="b fade" data-t="5600">
+              <!-- no begin delays: a delayed circle would wait at the SVG origin; different durations keep them out of step -->
+              <circle r="6.5" fill="var(--blue)">
+                <animateMotion dur="3.6s" repeatCount="indefinite" path="M380 200 H420 V82 H518 M1018 82 H1050 V140 H1078" />
+              </circle>
+              <circle r="6.5" fill="var(--orange)">
+                <animateMotion dur="2.9s" repeatCount="indefinite" path="M380 230 H518 M936 260 H1078" />
+              </circle>
+              <circle r="6.5" fill="var(--student)">
+                <animateMotion dur="4.3s" repeatCount="indefinite" path="M380 260 H420 V381 H518 M936 381 H1314 V242" />
+              </circle>
+            </g>
+          </svg>
+
+          <div class="s22-strip">
+            <div class="s22-card b up" data-t="5800">
+              <div class="s22-k">Legend</div>
+              <ul class="s22-list">
+                <li><span class="s22-sw t"></span><b>Teacher</b>: released F5-TTS, guided, frozen · 2 passes/step</li>
+                <li><span class="s22-sw s"></span><b>Student</b>: released DMOSpeech 2, frozen · 1 pass/step</li>
+                <li><span class="s22-sw n"></span><b>Input, Vocos</b>: released, unchanged</li>
+                <li><span class="s22-sw a"></span><b>Added by this design</b>: routes, monitors, combines · 0 passes</li>
+                <li><span class="s22-dia"></span><b>Decision</b> · <span class="s22-ln g"></span>data flow</li>
+                <li><span class="s22-ln o"></span>routing choice · <span class="s22-ln b"></span>one more teacher step</li>
+              </ul>
+            </div>
+            <div class="s22-card b up" data-t="6200">
+              <div class="s22-k">Symbols</div>
+              <ul class="s22-list">
+                <li><b>Ŝ</b>: prompt SNR from frame energies, in dB · <b>θ</b>: its cut</li>
+                <li><b>d<sub>k</sub></b>: how much the teacher's estimate changed at Step k</li>
+                <li><b>A₃ = d₁ + d₂ + d₃</b>: how far the teacher moved by Step 3 · <b><span class="math">λ</span>₃</b>: its cut</li>
+                <li><b>T₃, T₄</b>: the teacher's estimate of the final mel at Step 3 or 4</li>
+                <li><b>S</b>: the student's one-pass draft · <b>τ</b>: student restart level</li>
+                <li><b>voice · slow · fine</b>: each band's average · its 9-frame slow part (prosody) · the rest</li>
+              </ul>
+            </div>
+            <div class="s22-card s22-res b up" data-t="6600">
+              <div class="s22-k">Cost and evidence</div>
+              <ul class="s22-list">
+                <li><b>Passes per route</b>: 11 · 13 · 14 · 4 (reference 21); never past Step 4</li>
+                <li><b>6.73 mean passes, −68%</b>, every quality rule kept (offline screen, out of fold, 60 development speakers)</li>
+                <li><b>Pitch variety kept</b>: −0.0013 vs reference, 10 clean speakers, 95% handed over at Step 3 (EXP-023, G3 pass)</li>
+                <li>Development evidence, white noise only; a combination of known parts; a frozen test on new speakers is pending</li>
+              </ul>
+            </div>
+          </div>
+
+          <footer class="cite b fade" data-t="2600"><span class="k">From</span><span>Offline screen (solution_screen.py, round 4) · EXP-023 G3 (pilot_results.json) · frozen teacher, student, duration &amp; vocoder · development evidence, not adopted</span></footer>
+        </section>
+
+<script type="text/slide-script">
+This appendix slide shows the Two-Axis Handover, the one candidate that passed every rule on our development data. It makes two separate decisions for every input. Axis one, what crosses, is decided first and for free: the SNR router measures how noisy the voice prompt is. A clean prompt, at or above 26.55 decibels, gets the teacher's whole estimate. A borderline prompt, within two decibels below that cut, gets Voice-Swap: the teacher runs to Step 4, but the student's clean voice replaces the teacher's voice part, so the teacher contributes only its prosody. A noisy prompt gets nothing from the teacher: the student makes the speech alone in four passes, because on our data the student beats the reference there. Axis two, when, applies to clean prompts only. The movement monitor adds up how far the teacher's estimate has moved by Step 3, at no extra cost. If it has moved enough, the teacher hands over at Step 3, for 11 passes in total; if not, it takes one more step and hands over at Step 4, for 13. The thresholds come from an offline fit on the stored development data, done once before deployment. On sixty development speakers this averaged 6.73 forward passes instead of 21, kept every quality rule, and EXP-023 confirmed on ten clean-prompt speakers that the routed handover, which stopped at Step 3 for 95 percent of seeds, keeps the teacher's pitch variety. It is development evidence on white noise only, and a combination of known parts, so a frozen test on new speakers comes next.
+</script>
+
+<style>
+/* S22 Two-Axis Handover architecture */
+    .s22-strip {
+      display: grid;
+      grid-template-columns: 1.05fr 1.05fr 1fr;
+      gap: 16px;
+      margin-top: 8px
+    }
+
+    .s22-card {
+      border: 1px solid var(--line-2);
+      background: rgba(255, 255, 255, 0.94);
+      border-radius: 8px;
+      padding: 10px 16px;
+      box-shadow: 0 6px 20px -8px rgba(15, 23, 42, 0.06)
+    }
+
+    .s22-card.s22-res {
+      border-color: rgba(234, 88, 12, .45);
+      background: linear-gradient(135deg, rgba(251, 146, 60, .10), rgba(255, 255, 255, .95))
+    }
+
+    .s22-k {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+      color: var(--orange-dark);
+      margin-bottom: 4px
+    }
+
+    .s22-list {
+      list-style: none;
+      margin: 0;
+      padding: 0
+    }
+
+    .s22-list li {
+      font-size: 14px;
+      line-height: 1.32;
+      color: var(--muted);
+      margin: 2px 0
+    }
+
+    .s22-list li b {
+      color: var(--fg)
+    }
+
+    .s22-sw {
+      display: inline-block;
+      width: 16px;
+      height: 11px;
+      margin-right: 6px;
+      vertical-align: -1px;
+      border: 1.5px solid var(--line-2);
+      background: #FFFFFF
+    }
+
+    .s22-sw.t {
+      border-color: var(--blue);
+      background: rgba(2, 132, 199, .12)
+    }
+
+    .s22-sw.s {
+      border-color: var(--student)
+    }
+
+    .s22-sw.a {
+      border: 1.5px dashed var(--orange);
+      background: rgba(234, 88, 12, .10)
+    }
+
+    .s22-dia {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      margin: 0 6px 0 3px;
+      transform: rotate(45deg);
+      border: 1.5px dashed var(--orange);
+      background: rgba(234, 88, 12, .10)
+    }
+
+    .s22-ln {
+      display: inline-block;
+      width: 22px;
+      height: 0;
+      margin: 0 5px 3px 3px;
+      border-top: 2px solid var(--muted)
+    }
+
+    .s22-ln.o {
+      border-top: 2px dashed var(--orange)
+    }
+
+    .s22-ln.b {
+      border-top-color: var(--blue)
+    }
+</style>
