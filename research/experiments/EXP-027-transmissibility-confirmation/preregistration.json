@@ -1,0 +1,210 @@
+{
+  "experiment": "EXP-027",
+  "task_id": "EVAL-020",
+  "title": "Transmissibility confirmation and Step-by-Restart interaction on fresh speakers",
+  "n_dev_excluded": 60,
+  "n_fresh": 40,
+  "fresh_utts": [
+    {
+      "utt_id": "common_voice_en_22461617-common_voice_en_22461638",
+      "speaker_id": "common_voice_en_22461617"
+    },
+    {
+      "utt_id": "common_voice_en_22839883-common_voice_en_22839889",
+      "speaker_id": "common_voice_en_22839883"
+    },
+    {
+      "utt_id": "common_voice_en_22941073-common_voice_en_22941074",
+      "speaker_id": "common_voice_en_22941073"
+    },
+    {
+      "utt_id": "common_voice_en_23252329-common_voice_en_23252333",
+      "speaker_id": "common_voice_en_23252329"
+    },
+    {
+      "utt_id": "common_voice_en_23750957-common_voice_en_23774578",
+      "speaker_id": "common_voice_en_23750957"
+    },
+    {
+      "utt_id": "common_voice_en_23998981-common_voice_en_23998980",
+      "speaker_id": "common_voice_en_23998981"
+    },
+    {
+      "utt_id": "common_voice_en_24518104-common_voice_en_24518109",
+      "speaker_id": "common_voice_en_24518104"
+    },
+    {
+      "utt_id": "common_voice_en_24819370-common_voice_en_24819368",
+      "speaker_id": "common_voice_en_24819370"
+    },
+    {
+      "utt_id": "common_voice_en_25127181-common_voice_en_25127184",
+      "speaker_id": "common_voice_en_25127181"
+    },
+    {
+      "utt_id": "common_voice_en_25200065-common_voice_en_25200064",
+      "speaker_id": "common_voice_en_25200065"
+    },
+    {
+      "utt_id": "common_voice_en_25216968-common_voice_en_25216966",
+      "speaker_id": "common_voice_en_25216968"
+    },
+    {
+      "utt_id": "common_voice_en_25568854-common_voice_en_25568855",
+      "speaker_id": "common_voice_en_25568854"
+    },
+    {
+      "utt_id": "common_voice_en_25662916-common_voice_en_25663069",
+      "speaker_id": "common_voice_en_25662916"
+    },
+    {
+      "utt_id": "common_voice_en_25693607-common_voice_en_25693608",
+      "speaker_id": "common_voice_en_25693607"
+    },
+    {
+      "utt_id": "common_voice_en_25880669-common_voice_en_25880691",
+      "speaker_id": "common_voice_en_25880669"
+    },
+    {
+      "utt_id": "common_voice_en_26453369-common_voice_en_26453364",
+      "speaker_id": "common_voice_en_26453369"
+    },
+    {
+      "utt_id": "common_voice_en_26933529-common_voice_en_26933532",
+      "speaker_id": "common_voice_en_26933529"
+    },
+    {
+      "utt_id": "common_voice_en_27434681-common_voice_en_27434683",
+      "speaker_id": "common_voice_en_27434681"
+    },
+    {
+      "utt_id": "common_voice_en_28003405-common_voice_en_28003408",
+      "speaker_id": "common_voice_en_28003405"
+    },
+    {
+      "utt_id": "common_voice_en_28065832-common_voice_en_28065833",
+      "speaker_id": "common_voice_en_28065832"
+    },
+    {
+      "utt_id": "common_voice_en_28917649-common_voice_en_28917648",
+      "speaker_id": "common_voice_en_28917649"
+    },
+    {
+      "utt_id": "common_voice_en_30232728-common_voice_en_30232726",
+      "speaker_id": "common_voice_en_30232728"
+    },
+    {
+      "utt_id": "common_voice_en_30757408-common_voice_en_30757409",
+      "speaker_id": "common_voice_en_30757408"
+    },
+    {
+      "utt_id": "common_voice_en_31005683-common_voice_en_31005688",
+      "speaker_id": "common_voice_en_31005683"
+    },
+    {
+      "utt_id": "common_voice_en_31499885-common_voice_en_31499889",
+      "speaker_id": "common_voice_en_31499885"
+    },
+    {
+      "utt_id": "common_voice_en_31959919-common_voice_en_31959922",
+      "speaker_id": "common_voice_en_31959919"
+    },
+    {
+      "utt_id": "common_voice_en_32125519-common_voice_en_32125526",
+      "speaker_id": "common_voice_en_32125519"
+    },
+    {
+      "utt_id": "common_voice_en_34054471-common_voice_en_34054473",
+      "speaker_id": "common_voice_en_34054471"
+    },
+    {
+      "utt_id": "common_voice_en_34184701-common_voice_en_34184697",
+      "speaker_id": "common_voice_en_34184701"
+    },
+    {
+      "utt_id": "common_voice_en_35734335-common_voice_en_35734342",
+      "speaker_id": "common_voice_en_35734335"
+    },
+    {
+      "utt_id": "common_voice_en_36705534-common_voice_en_36705545",
+      "speaker_id": "common_voice_en_36705534"
+    },
+    {
+      "utt_id": "common_voice_en_37237245-common_voice_en_37237243",
+      "speaker_id": "common_voice_en_37237245"
+    },
+    {
+      "utt_id": "common_voice_en_490614-common_voice_en_490613",
+      "speaker_id": "common_voice_en_490614"
+    },
+    {
+      "utt_id": "common_voice_en_56141-common_voice_en_56142",
+      "speaker_id": "common_voice_en_56141"
+    },
+    {
+      "utt_id": "common_voice_en_564578-common_voice_en_564576",
+      "speaker_id": "common_voice_en_564578"
+    },
+    {
+      "utt_id": "common_voice_en_591530-common_voice_en_591529",
+      "speaker_id": "common_voice_en_591530"
+    },
+    {
+      "utt_id": "common_voice_en_597578-common_voice_en_597577",
+      "speaker_id": "common_voice_en_597578"
+    },
+    {
+      "utt_id": "common_voice_en_650392-common_voice_en_650390",
+      "speaker_id": "common_voice_en_650392"
+    },
+    {
+      "utt_id": "common_voice_en_673471-common_voice_en_673472",
+      "speaker_id": "common_voice_en_673471"
+    },
+    {
+      "utt_id": "common_voice_en_86172-common_voice_en_86173",
+      "speaker_id": "common_voice_en_86172"
+    }
+  ],
+  "fresh_utts_sha256": "6e39bf15f6ffd305deb9dc901286c2976a659976acac1c1b21e2a90437f56220",
+  "div_seeds": 20,
+  "div_seed_base": 1000,
+  "arms": [
+    "student4",
+    "W4",
+    "W8",
+    "W4R2",
+    "W8R2",
+    "T16"
+  ],
+  "costs": {
+    "student4": 4,
+    "W4R2": 12,
+    "W4": 13,
+    "W8R2": 20,
+    "W8": 21,
+    "T16": 32
+  },
+  "plateau_tol": 0.01,
+  "boot_b": 2000,
+  "seed": 2026,
+  "code_hashes": {
+    "run_transmissibility_confirm.py": "f1e160797fc5e6970f1667481ea78f5f6cff9743571b6bf4584c028a6fd134bc",
+    "run_transmissibility_test.py": "be6b7dfe74b38399ce3b2f0c5ce3942abf7a4fe90e680f5e473591aab22701e1",
+    "run_selective_handover_prelim.py": "b61ef06b9ed0a7411d532d277e2525c436c08aab6a4ca541454672a9ea9be603",
+    "run_consistency_gate_prelim.py": "5d83b1acdf668e7b13981a5df0f6e24e24602fe31e051d00190fd5273a2ce6e3",
+    "run_grid32_prelim.py": "c7b4152da3449264ef2d7aefcea3492e04f9d45399e373ba2b6d448912bf0b84",
+    "run_noise_guidance_prelim.py": "48150a13101d1ecd5ed6da1085e6fd914381f8e22288f5bda7c48f2625dc064b",
+    "run_followup_tests.py": "6bce906980ff4c6c4b1209b086cab4fcbe11f7a2955a27badd698c2906af1801"
+  },
+  "hypotheses": {
+    "H1": "T16 - W8 > 0 (pure teacher has higher pitch CVf0 than default Step-8 handover at tau_1 = 0.0761)",
+    "H2": "W8R2 - W8 > 0 (late restart at tau_2 = 0.2929 from Step 8 recovers pitch CVf0 over default tau_1)",
+    "H3": "|W8 - W4| < 0.01 (flat plateau at default restart tau_1 = 0.0761 on fresh data, no stored-data reuse)",
+    "H4": "(W8R2 - W4R2) - (W8 - W4) > 0 (Step-by-Restart interaction predicted by Phi ceiling vs linear erasure)",
+    "H5_exploratory": "Spearman rho(T16 - W8, W8R2 - W8) > 0 across fresh speakers"
+  },
+  "verdict_rule": "refuted if 95% upper CI < 0 on any of H1, H2, H4 (in cvf0 or cvf0_common); confirmed if H1, H2, H4 have 95% lower CI > 0 in both cvf0 and cvf0_common, |W8 - W4| < 0.01 in cvf0, slow_mel_spread means of H1, H2, H4 are > 0, and mean_without_top2_abs of H1, H2, H4 are > 0; supported_direction_only if H1, H2 have 95% lower CI > 0 and |W8 - W4| < 0.01 in cvf0 without full confirmation; mixed otherwise.",
+  "sha256": "dd7c90581af6c70a7ec3df586da2c41afc98db1527058524d8151fb9c096f4d9",
+  "created_utc": "2026-11-14T07:32:50.983594+00:00"
+}

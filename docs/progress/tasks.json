@@ -651,7 +651,7 @@
       "id": "EVAL-019",
       "title": "Transmissibility test: does the 0.25 reference lose the pure teacher's pitch variety, and does a later student restart recover it (EXP-026)",
       "owner": "Rhenel Jhon R. Sajol",
-      "status": "todo",
+      "status": "review",
       "updated": "2026-11-14",
       "acceptance": "Preregistration is frozen before GPU execution (78f3432d...); a Colab Tesla T4 smoke test shows the runner's teacher loop matches the released guided teacher and reproduces the stored W4 and W8 scores (EXP-018); the full run measures CVf0 of W4, W8, W4R2, W8R2 and T16 from one teacher trajectory per seed on 20 development speakers x 20 seeds and scores W4R2, W8R2 and T16 on 40 speakers; H1-H3, the exploratory H4 and the verdict are reported as computed from the CSV files, whether they support or refute the theory; results committed with a SHA-256 manifest.",
       "evidence": [
@@ -660,7 +660,31 @@
         "code/colab/run_transmissibility_test.py",
         "code/colab/DMOSpeech2_EXP026_Transmissibility_Test.ipynb",
         "code/tests/test_transmissibility.py",
-        "docs/progress/log/2026-11-14-exp026-transmissibility-test.md"
+        "docs/progress/log/2026-11-14-exp026-transmissibility-test.md",
+        "research/experiments/EXP-026-transmissibility-test/results/MANIFEST.json",
+        "research/experiments/EXP-026-transmissibility-test/results/TRANSMISSIBILITY_REPORT.md",
+        "research/experiments/EXP-026-transmissibility-test/results/transmissibility_results.json",
+        "research/experiments/EXP-026-transmissibility-test/results/diversity.csv",
+        "research/experiments/EXP-026-transmissibility-test/results/quality.csv",
+        "code/analysis/exp026_diagnostics.py",
+        "research/experiments/EXP-026-transmissibility-test/results/diagnostics.json",
+        "docs/progress/log/2026-11-14-exp026-transmissibility-results.md"
+      ]
+    },
+    {
+      "id": "EVAL-020",
+      "title": "Transmissibility confirmation and Step-by-Restart interaction on 40 fresh speakers 61-100 with tracker-confound controls (EXP-027)",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "todo",
+      "updated": "2026-11-14",
+      "acceptance": "Preregistration is frozen before GPU synthesis (dd7c90581af6...); Colab Tesla T4 smoke check reproduces EXP-018 W4 and W8 within 0.01 on 2 dev speakers; full run evaluates student4, W4, W8, W4R2, W8R2 and T16 from one teacher trajectory per seed on 40 fresh disjoint speakers (61-100) x 20 seeds (diversity: cvf0, cvf0_common, slow mel_spread) and all 40 speakers (quality vs W8); Step-by-Restart interaction H4 = (W8R2 - W4R2) - (W8 - W4), confound controls, outlier robustness and frozen verdict are reported as computed from CSVs with a SHA-256 manifest.",
+      "evidence": [
+        "research/experiments/EXP-027-transmissibility-confirmation/README.md",
+        "research/experiments/EXP-027-transmissibility-confirmation/preregistration.json",
+        "code/colab/run_transmissibility_confirm.py",
+        "code/colab/DMOSpeech2_EXP027_Transmissibility_Confirmation.ipynb",
+        "code/tests/test_transmissibility_confirm.py",
+        "docs/progress/log/2026-11-14-exp027-transmissibility-confirmation.md"
       ]
     }
   ]

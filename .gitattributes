@@ -22,3 +22,4 @@ research/experiments/EXP-023-decision-handover-pilot/results/** -text
 research/experiments/EXP-024-analytic-unconditional-guidance-pilot/results/** -text
 research/experiments/EXP-025-prompt-probe-handover-diagnostic/results/** -text
 research/experiments/EXP-026-transmissibility-test/results/** -text
+research/experiments/EXP-027-transmissibility-confirmation/results/** -text
