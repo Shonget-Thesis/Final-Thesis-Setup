@@ -4,8 +4,8 @@ An animated, full-screen presentation of the thesis proposal (Chapters 1–3) fo
 
 | File / Directory | What it is |
 | --- | --- |
-| [index.html](index.html) | The compiled standalone walkthrough: 21 scenes, single HTML file, full-screen layout (double-click ready) |
-| [slides/](slides/) | 21 modular slide files containing slide markup, presenter script notes, and slide-specific styles |
+| [index.html](index.html) | The compiled standalone walkthrough: 22 scenes, single HTML file, full-screen layout (double-click ready) |
+| [slides/](slides/) | 22 modular slide files containing slide markup, presenter script notes, and slide-specific styles |
 | [template.html](template.html) | Base HTML shell, layout, cosmic field background, typography, and presentation controller |
 | [build.py](build.py) | Fast builder (<30ms) to compile modular slides into `index.html` (supports `--watch`, `--serve`, `--sync-md`, `--pdf`) |
 | [SCRIPT.md](SCRIPT.md) | The presenter script, one section per scene, about 24 minutes at the auto-play pace (about 17 without the appendix) |
@@ -47,7 +47,7 @@ Inside each slide file, you'll find:
 - **Chapter I (slides 3–7):** background (flow matching, cost, distillation), the model at a glance (zooms into inference and the handover), the problem with the T4 evidence of Appendix D.1, objectives, scope.
 - **Chapter II (slides 8–9):** the comparative table of adaptive methods (all seven rows of Table 2.1) and the gap map.
 - **Chapter III (slides 10–16):** architecture, candidate switching times, the two signals, the stopping rule, calibration with the guarantee, research design and workflow, and contribution and summary.
-- **Appendix (slides 17–21):** preliminary and two-grid rehearsal experiments (D.1–D.3 & EXP-017), signal diagnostic & premature stabilization (D.4–D.5 & EXP-011–015), live T4 online early-stopping & risk calibration (B–C & EXP-018), proposed STAC / 1D-CRC-STAC modular architecture (App. E.1), and multi-grid / cohort / OOD benchmark comparison (App. E.2).
+- **Appendix (slides 17–22):** preliminary and two-grid rehearsal experiments (D.1–D.3 & EXP-017), signal diagnostic & premature stabilization (D.4–D.5 & EXP-011–015), live T4 online early-stopping & risk calibration (B–C & EXP-018), proposed STAC / 1D-CRC-STAC modular architecture (App. E.1), multi-grid / cohort / OOD benchmark comparison (App. E.2), and the Two-Axis Handover architecture (slide 22: a development candidate from the offline screen and EXP-023, with a legend, a symbol glossary and its cost and evidence).
 - There is no separate thank-you slide: stepping past the last appendix slide returns to the title.
 
 ## Opening it
@@ -67,7 +67,9 @@ Open `index.html` in a current Chrome, Edge or Firefox (double-click works; no s
 
 ## Provenance and limits
 
-The main proposal slides (`01`–`16`) follow the proposal PDF of October 2026 (`paper/main.tex` as compiled then): Chapters 1–3 and Appendix A's sample calculations. The Appendix slides (`17`–`21`) present both the proposal appendices and the post-proposal Tesla T4 development findings (`AUDIT-001`, `EXP-011` through `EXP-018`, including `STAC` and `1D-CRC-STAC`), explicitly labeled as development evidence rather than unseen held-out validation.
+The main proposal slides (`01`–`16`) follow the proposal PDF of October 2026 (`paper/main.tex` as compiled then): Chapters 1–3 and Appendix A's sample calculations. The Appendix slides (`17`–`22`) present both the proposal appendices and the post-proposal Tesla T4 development findings (`AUDIT-001`, `EXP-011` through `EXP-018`, including `STAC` and `1D-CRC-STAC`, and on slide `22` the Two-Axis Handover from the 2026-11-13 offline screen and EXP-023), explicitly labeled as development evidence rather than unseen held-out validation.
+
+- `proposal-defense-slides.pdf` was last exported with 21 slides; run `python presentation/build.py --pdf` to add slide `22`. On Windows the export can leave its headless Edge running on port 9229, which makes the next export hang: end those `msedge.exe` processes (their command line contains `slide_pdf_`) before exporting again.
 
 - Numbers marked illustrative on main slides `12` and `14` come from Appendix A, and the right-hand stress-test bars on slide `19` come from Appendix B (Table B.1).
 - Update main Chapter III slides `10`–`16` before presenting if the team and adviser adopt `STAC` / `1D-CRC-STAC` into the main body of `paper/chapters/03-methodology.tex`.

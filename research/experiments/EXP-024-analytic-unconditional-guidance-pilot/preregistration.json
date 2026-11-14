@@ -1,0 +1,120 @@
+{
+  "experiment": "EXP-024",
+  "purpose": "Development pilot of Analytic Unconditional Guidance before any frozen test: inside the teacher-guided handover window, can the unconditional half of classifier-free guidance be computed in closed form instead of by the network, with the teacher's handovers keeping quality and pitch variety",
+  "theory": "flow matching x_t = (1 - t) eps + t x1: the best unconditional velocity is (E[x1 | x_t] - x_t) / (1 - t); at t = 0 the state is independent of x1, so E[x1 | x_0] = E[x1] = mu and v_u = mu - x exactly; for small t, E[x1 | x_t] = mu + O(t). The teacher hands over at Step 4 (t = 0.0761) or Step 8 (t = 0.2929), so it only runs while the signal is weak.",
+  "algorithm": {
+    "teacher": "the released guided Euler teacher on the 16-interval sway grid (sampler.run_teacher_single_pass, CFG_STRENGTH), except that at Steps 0..K the unconditional evaluation is replaced by v_u = (mu - x_i) / (1 - t_i)",
+    "mu": "per mel band, the network's own unconditional endpoint estimate at t = 0 (x + v_u(x, 0)) for each case's initial noise, pooled over every frame of the clean-prompt cases at Quick-set positions 41-60 (speakers the pilot does not use), computed once at the start of the run (calibration.json)",
+    "student": "the released student loop at j = 1 from the teacher's endpoint estimate, unchanged",
+    "arms": {
+      "diagnostic": [
+        0,
+        2,
+        4
+      ],
+      "quality_and_pitch": [
+        2,
+        4
+      ]
+    }
+  },
+  "passes": {
+    "W4": 13,
+    "W8": 21,
+    "W4_K0": 12,
+    "W4_K2": 10,
+    "W4_K4": 8,
+    "W8_K0": 20,
+    "W8_K2": 18,
+    "W8_K4": 16
+  },
+  "data": {
+    "pilot": "the first 40 EXP-012 Quick-set development speakers x ['clean', 'noisy15'] (80 cases), synthesis seed = input seed; quality is scored for W4_K and W8_K on clean prompts and W8_K on noisy15",
+    "calibration": "Quick-set positions 41-60, clean prompts, input seed, teacher's unconditional branch at t = 0 only",
+    "diversity": "the first 10 speakers x clean x 20 seeds (input_seed + 1000 + m), the four AUG handovers; the released Step-4 handover is re-synthesized for the first speaker to check reproduction of EXP-020's stored CVf0",
+    "timing": "the first 10 speakers, clean, 3 repeats in alternating order after one warm-up",
+    "reused": "the released teacher's Step-4 and Step-8 handovers (EXP-018, same cases and seeds) and their clean-prompt CVf0 (EXP-020 plain_4 and plain_8, same speakers and seeds)"
+  },
+  "diagnostic": {
+    "closed_form_gap": "per step 0-8 on the released trajectory: ||mu - T_u|| / ||T_c - T_u|| on generated frames",
+    "step0_split": "3 further noise draws (seed + 3000 + j) of the same shape: seed-specific part ||T_u - mean_j T_u^(j)|| and position part ||mean_j T_u^(j) - mu||, same units",
+    "estimate_change": "relative change of the Step-4 and Step-8 estimates (whole and 9-frame slow part) under AUG K = 0, 2, 4, next to the change from refining the grid to 32 intervals at the same sway time"
+  },
+  "hardware": "Colab Tesla T4 only; Shonget-DMOSpeech2 at the pinned commit",
+  "dmo_commit": "8a7868fc3345702a586173447f4869205b501f26",
+  "smoke": "must reproduce the stored W4 and W8 scores (EXP-018, tolerance 0.01), match the released guided teacher with this runner's loop and with AUG switched off (K = -1), max abs difference <= 0.0001 for both",
+  "bounds": {
+    "W4|clean": {
+      "wer": 0.01,
+      "similarity": 0.01,
+      "utmos": 0.1
+    },
+    "W8|clean": {
+      "wer": 0.015,
+      "similarity": 0.01,
+      "utmos": 0.1
+    },
+    "W8|noisy15": {
+      "wer": 0.025,
+      "similarity": 0.01,
+      "utmos": 0.1
+    }
+  },
+  "criteria": {
+    "quality_clean": "for each K in (2, 4): W4_K and W8_K against the released W4 and W8 of the same case and seed, clean prompts: capped-WER difference upper 95% bound <= the bound, similarity lower bound >= -0.01, UTMOS lower bound >= -0.10 (bounds above; speaker bootstrap)",
+    "pitch_variety": "for each K in (2, 4): mean CVf0 of W4_K and of W8_K minus EXP-020's stored CVf0 of the released handover at the same step, over the 10 diversity speakers, both >= -0.01",
+    "quality_noisy_reference": "for each K in (2, 4): W8_K against the released W8 on noisy15 with the bounds above (secondary)"
+  },
+  "decision_rule": "advance AUG to a frozen test on new speakers only if, for some K, quality_clean and pitch_variety both hold; the K carried forward is the largest that does (the cheapest); quality_noisy_reference at that K decides whether the frozen test also covers noisy-prompt teacher runs; otherwise report a negative pilot, with no retuning on these data",
+  "power_check": {
+    "script": "code/analysis/exp024_power_check.py",
+    "proxy": "16-interval grid (g16_k) against the 32-interval grid at the same sway time (g32_2k), EXP-018 stored outputs of the 60 Quick-set development speakers; k = 7 stands in for Step 8",
+    "clean_step4_40": 1.0,
+    "clean_step4_20_utmos": 0.687,
+    "clean_step8_40_wer_0.01": 0.33,
+    "clean_step8_40_wer_0.015": 1.0,
+    "noisy_step4_40": 0.0,
+    "noisy_step8_40": 0.023,
+    "noisy_step4_similarity_60": {
+      "mean": -0.010249486068884532,
+      "lo": -0.01963354737808307,
+      "hi": -0.0015824649607141838
+    },
+    "summary": "with 40 speakers the 16- vs 32-interval grid change passes the clean Step-4 bounds in 100% of 300 subsets (UTMOS 69% with 20 speakers); at Step 7 the clean WER bound +0.01 passes 33%, +0.015 passes 100%; on noisy15 the same grid change passes all noisy bounds in 0% (Step 4) and 2% (Step 7) of subsets, because it moves similarity itself, so noisy-prompt Step-4 handovers are not judged and the noisy-prompt reference criterion is secondary: a failure there does not show that AUG is worse than a grid change"
+  },
+  "descriptive": [
+    "the closed-form gap per step and condition, and its Step-0 split",
+    "estimate changes under K = 0, 2, 4 next to the grid change",
+    "Definition 3.1 failures against the released output of the same step and against the reference",
+    "the released W4's CVf0 reproduction for the first diversity speaker",
+    "T4 time per arm and its ratio to the pass ratio",
+    "mu's spread across calibration cases"
+  ],
+  "bootstrap": {
+    "B": 2000,
+    "seed": 2026,
+    "unit": "speaker"
+  },
+  "evidence_status": "development pilot on speakers that designed earlier experiments; not evidence for a claim",
+  "novelty": "family-level searches on 2026-11-14 found no method that keeps the conditional pass and computes classifier-free guidance's unconditional term in closed form. Closest, all different: Lite-CFG (DC-DiT, fewer tokens in the unconditional pass, trained multi-budget model), Path-Drop Guidance (SPRINT, unconditional pass skips middle blocks, trained architecture), the guidance interval (guidance switched off at high noise), CFG-Zero* (zeroes the first steps), independent-condition and time-step guidance (still a network pass), Gaussian analytical teleportation (Wang and Vastola, skips early steps with the whole model), and analyses of CFG in Gaussian or linear settings (no sampling shortcut; the 2026 one's sampler still runs the unconditional pass). The theory (Gaussian structure at high noise) is known; not a full literature review.",
+  "adoption": "not adopted; changing the thesis method needs a dated decision record and adviser review",
+  "code_hashes": {
+    "code/colab/run_analytic_guidance_pilot.py": "d27bb58a228e11bd84e54e47840ab1f1b69a7b2a4df891f690cd8a0e946955b0",
+    "code/colab/run_selective_handover_prelim.py": "b61ef06b9ed0a7411d532d277e2525c436c08aab6a4ca541454672a9ea9be603",
+    "code/colab/run_grid32_prelim.py": "c7b4152da3449264ef2d7aefcea3492e04f9d45399e373ba2b6d448912bf0b84",
+    "code/colab/run_noise_guidance_prelim.py": "48150a13101d1ecd5ed6da1085e6fd914381f8e22288f5bda7c48f2625dc064b",
+    "code/colab/run_followup_tests.py": "6bce906980ff4c6c4b1209b086cab4fcbe11f7a2955a27badd698c2906af1801",
+    "code/colab/run_consistency_gate_prelim.py": "5d83b1acdf668e7b13981a5df0f6e24e24602fe31e051d00190fd5273a2ce6e3",
+    "code/colab/run_endpoint_extrapolation_prelim.py": "90aec6467ed881602b1e62e4938b1d3c845f5337e98b82b340b5d3d54631cafe"
+  },
+  "input_hashes": {
+    "research/experiments/EXP-018-swsr-handover-prelim/results/steps1to8.csv": "f904376d4ea784c5bf80e4f5284b5fe7a2bc4a8d8a0e9c9065b4dbfd13bd2600",
+    "research/experiments/EXP-020-selective-handover-prelim/results/diversity.csv": "5bf795afb6b6370e7b7b2ad5ea0e7cb6ff58160281c279eb5bc625eca8e63714",
+    "code/scheduling/failure_config.json": "13a8fbfdbc11048c2b68f7c5b865369c622f4ec601a6ff7e6a3fa3409ce97b53",
+    "research/protocols/splits/development_manifest.json": "1c4309b6f560a9d896b7a3a6cae53fc5806ef81222c3f8d62a08c7bf7b9fb65a",
+    "research/experiments/EXP-024-analytic-unconditional-guidance-pilot/power_check.json": "e5adfad410455348f0d32e1b9c90e59fd644cff6b7e935c788406080301e1ea3"
+  },
+  "thesis_commit": "7d35e814aac1eadf7770488948be03f5ec54c66a",
+  "sha256": "993c306d13cfb32d9487cbeb77f0410f551b5036e53fef4a69bfed5e1e7f224d",
+  "created_utc": "2026-11-14T00:03:20.783497+00:00"
+}

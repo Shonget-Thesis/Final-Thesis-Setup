@@ -1,0 +1,66 @@
+{
+  "experiment": "EXP-025",
+  "purpose": "Diagnostic of the Prompt-Probe Handover before any pilot: does a correction fitted on a hidden second of the voice prompt (teacher estimate -> real audio) transfer to unseen audio, and does it let the teacher hand over at Step 2 or 3 with the quality of the released Step-4 handover",
+  "theory": "for an ideal teacher the endpoint estimate is the posterior mean, which is calibrated, so the fitted correction is the identity; a non-identity fit measures the network's own bias at that step where the answer is known",
+  "algorithm": {
+    "probe": "94 frames ending at the prompt's last frame whose band-averaged log-mel exceeds the prompt's median frame; masked in the teacher's conditioning only (zeros, like the target region); text and canvas length unchanged; at least 0.33 of the prompt stays visible",
+    "A": "per mel band y = a x + c over the probe frames, slope shrunk to (Sxy + 1.0 Sxx) / ((1 + 1.0) Sxx)",
+    "B": "per band the voice-part offset (band average over the probe frames) and one gain on the 9-frame slow part (sh.decompose)",
+    "handover": "the corrected estimate on the target frames, the teacher's estimate elsewhere; the student keeps the full prompt and runs unchanged (released student loop at j = 1)",
+    "teacher": "the released guided Euler teacher on the 16-interval grid with the probe masked"
+  },
+  "passes": {
+    "P2": 9,
+    "P3": 11,
+    "P4": 13,
+    "A2": 9,
+    "A3": 11,
+    "B2": 9,
+    "B3": 11,
+    "W2": 9,
+    "W3": 11,
+    "W4": 13,
+    "W8": 21
+  },
+  "data": "the first 40 EXP-012 Quick-set development speakers, clean prompts, synthesis seed = input seed; stored released handovers at Steps 2, 3, 4 and 8 (EXP-018) for the same cases and seeds",
+  "smoke": "2 cases (Quick-set positions 59-60): this runner's teacher loop matches the released teacher (max abs <= 0.0001), the hidden conditioning differs only inside the probe, and the stored W3 and W4 scores are reproduced (tolerance 0.01)",
+  "criteria": {
+    "G1_transfer": "per variant: median over cases of (corrected / plain error) on the second half of the probe when the correction is fitted on the first half, at Step 3, <= 0.9",
+    "G2_quality": "per variant and Step k in [2, 3]: the corrected handover against the released Step-4 handover of the same case and seed: capped-WER difference upper 95% bound <= +0.01, similarity lower bound >= -0.01, UTMOS lower bound >= -0.1; and its UTMOS minus the plain hidden-probe handover at the same step, mean > 0 (the correction is what helps)"
+  },
+  "decision_rule": "build a pilot (pitch variety, noisy prompts, an adaptive handover from the probe error) only if some variant meets G1 and G2 at some step; carry the earliest step, ties broken by the larger UTMOS gain over plain; otherwise report a negative diagnostic with no retuning on these data",
+  "power": "with 40 speakers the clean Step-4 bounds pass a change as small as refining the teacher's grid in 100% of 300 subsets (EXP-024's power check, code/analysis/exp024_power_check.py)",
+  "descriptive": [
+    "the probe error at Steps 0-8",
+    "the correction's size per step",
+    "the corrected estimate's distance to the teacher's Step-8 estimate",
+    "every output against the released handover at the same step and against the reference; Definition 3.1 failures"
+  ],
+  "bootstrap": {
+    "B": 2000,
+    "seed": 2026,
+    "unit": "speaker"
+  },
+  "novelty": "searches on 2026-11-14 (papers and practitioner tools) found no method that hides part of the conditioning to create a known-answer probe of the generator at inference and uses it to correct the handed-over estimate. Closest: CoPaint (known region as a sampling constraint), TD-Paint (known-region error as a diagnostic), Vox-Evaluator (masks generated speech), VoiceStar (masks prompts in training), NoiseShift and cache calibration (corrections fitted offline). Not a full review.",
+  "evidence_status": "development diagnostic on speakers that designed earlier experiments; not evidence for a claim",
+  "adoption": "not adopted; changing the thesis method needs a dated decision record and adviser review",
+  "hardware": "Colab Tesla T4 only; Shonget-DMOSpeech2 at the pinned commit",
+  "dmo_commit": "8a7868fc3345702a586173447f4869205b501f26",
+  "code_hashes": {
+    "code/colab/run_prompt_probe_diagnostic.py": "398d422da0013090b06f4e99d44b357dfd13651dedca8cd956f7acccddb7008f",
+    "code/colab/run_selective_handover_prelim.py": "b61ef06b9ed0a7411d532d277e2525c436c08aab6a4ca541454672a9ea9be603",
+    "code/colab/run_grid32_prelim.py": "c7b4152da3449264ef2d7aefcea3492e04f9d45399e373ba2b6d448912bf0b84",
+    "code/colab/run_noise_guidance_prelim.py": "48150a13101d1ecd5ed6da1085e6fd914381f8e22288f5bda7c48f2625dc064b",
+    "code/colab/run_followup_tests.py": "6bce906980ff4c6c4b1209b086cab4fcbe11f7a2955a27badd698c2906af1801",
+    "code/colab/run_consistency_gate_prelim.py": "5d83b1acdf668e7b13981a5df0f6e24e24602fe31e051d00190fd5273a2ce6e3",
+    "code/colab/run_endpoint_extrapolation_prelim.py": "90aec6467ed881602b1e62e4938b1d3c845f5337e98b82b340b5d3d54631cafe"
+  },
+  "input_hashes": {
+    "research/experiments/EXP-018-swsr-handover-prelim/results/steps1to8.csv": "f904376d4ea784c5bf80e4f5284b5fe7a2bc4a8d8a0e9c9065b4dbfd13bd2600",
+    "code/scheduling/failure_config.json": "13a8fbfdbc11048c2b68f7c5b865369c622f4ec601a6ff7e6a3fa3409ce97b53",
+    "research/protocols/splits/development_manifest.json": "1c4309b6f560a9d896b7a3a6cae53fc5806ef81222c3f8d62a08c7bf7b9fb65a"
+  },
+  "thesis_commit": "7d35e814aac1eadf7770488948be03f5ec54c66a",
+  "sha256": "50d4e86399612b85d6c29fbdedec775db6555f4034ee4c981eff1fa6fb61d556",
+  "created_utc": "2026-11-14T00:30:33.637393+00:00"
+}

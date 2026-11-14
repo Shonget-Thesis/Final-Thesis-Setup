@@ -1,0 +1,291 @@
+{
+  "proxy": "16-interval grid (g16_k) against the 32-interval grid at the same sway time (g32_2k), EXP-018 stored outputs of the 60 Quick-set development speakers; k = 7 stands in for Step 8",
+  "subsets": 300,
+  "bootstrap": {
+    "B": 2000,
+    "seed": 2026,
+    "unit": "speaker"
+  },
+  "effects_60": {
+    "k4_clean": {
+      "wer": {
+        "mean": 0.0,
+        "lo": 0.0,
+        "hi": 0.0
+      },
+      "similarity": {
+        "mean": 0.0008487711350123087,
+        "lo": -0.0006985248376925787,
+        "hi": 0.0023682820051908484
+      },
+      "utmos": {
+        "mean": -0.008744871616363526,
+        "lo": -0.054133348365624744,
+        "hi": 0.03438190817832945
+      }
+    },
+    "k4_noisy15": {
+      "wer": {
+        "mean": 0.026511405261405264,
+        "lo": -0.021310685841935836,
+        "hi": 0.07312240190365187
+      },
+      "similarity": {
+        "mean": -0.010249486068884532,
+        "lo": -0.01963354737808307,
+        "hi": -0.0015824649607141838
+      },
+      "utmos": {
+        "mean": 0.0019880334536234536,
+        "lo": 0.00038240075111389165,
+        "hi": 0.0035027640561262766
+      }
+    },
+    "k7_clean": {
+      "wer": {
+        "mean": 0.0002976190476190475,
+        "lo": -0.00625,
+        "hi": 0.007142857142857143
+      },
+      "similarity": {
+        "mean": -0.000277334451675415,
+        "lo": -0.0023216915130615237,
+        "hi": 0.0014841167132059723
+      },
+      "utmos": {
+        "mean": 0.023476139704386393,
+        "lo": -0.017124901513258618,
+        "hi": 0.06739971389373133
+      }
+    },
+    "k7_noisy15": {
+      "wer": {
+        "mean": -0.009598902559428876,
+        "lo": -0.03699658473836105,
+        "hi": 0.017265292821213862
+      },
+      "similarity": {
+        "mean": -0.0066906328002611795,
+        "lo": -0.016140262968838213,
+        "hi": 0.002120858281850813
+      },
+      "utmos": {
+        "mean": 0.0013759454091389974,
+        "lo": -0.00035875529050827026,
+        "hi": 0.0030727774401505784
+      }
+    }
+  },
+  "pass_rates": [
+    {
+      "k": 4,
+      "condition": "clean",
+      "speakers": 20,
+      "bounds": {
+        "wer": 0.01,
+        "similarity": 0.01,
+        "utmos": 0.1
+      },
+      "wer": 1.0,
+      "similarity": 1.0,
+      "utmos": 0.687,
+      "all": 0.687
+    },
+    {
+      "k": 4,
+      "condition": "clean",
+      "speakers": 30,
+      "bounds": {
+        "wer": 0.01,
+        "similarity": 0.01,
+        "utmos": 0.1
+      },
+      "wer": 1.0,
+      "similarity": 1.0,
+      "utmos": 0.897,
+      "all": 0.897
+    },
+    {
+      "k": 4,
+      "condition": "clean",
+      "speakers": 40,
+      "bounds": {
+        "wer": 0.01,
+        "similarity": 0.01,
+        "utmos": 0.1
+      },
+      "wer": 1.0,
+      "similarity": 1.0,
+      "utmos": 1.0,
+      "all": 1.0
+    },
+    {
+      "k": 7,
+      "condition": "clean",
+      "speakers": 20,
+      "bounds": {
+        "wer": 0.01,
+        "similarity": 0.01,
+        "utmos": 0.1
+      },
+      "wer": 0.663,
+      "similarity": 1.0,
+      "utmos": 0.96,
+      "all": 0.637
+    },
+    {
+      "k": 7,
+      "condition": "clean",
+      "speakers": 30,
+      "bounds": {
+        "wer": 0.01,
+        "similarity": 0.01,
+        "utmos": 0.1
+      },
+      "wer": 0.49,
+      "similarity": 1.0,
+      "utmos": 1.0,
+      "all": 0.49
+    },
+    {
+      "k": 7,
+      "condition": "clean",
+      "speakers": 40,
+      "bounds": {
+        "wer": 0.01,
+        "similarity": 0.01,
+        "utmos": 0.1
+      },
+      "wer": 0.33,
+      "similarity": 1.0,
+      "utmos": 1.0,
+      "all": 0.33
+    },
+    {
+      "k": 7,
+      "condition": "clean",
+      "speakers": 20,
+      "bounds": {
+        "wer": 0.015,
+        "similarity": 0.01,
+        "utmos": 0.1
+      },
+      "wer": 0.65,
+      "similarity": 1.0,
+      "utmos": 0.96,
+      "all": 0.63
+    },
+    {
+      "k": 7,
+      "condition": "clean",
+      "speakers": 30,
+      "bounds": {
+        "wer": 0.015,
+        "similarity": 0.01,
+        "utmos": 0.1
+      },
+      "wer": 1.0,
+      "similarity": 1.0,
+      "utmos": 1.0,
+      "all": 1.0
+    },
+    {
+      "k": 7,
+      "condition": "clean",
+      "speakers": 40,
+      "bounds": {
+        "wer": 0.015,
+        "similarity": 0.01,
+        "utmos": 0.1
+      },
+      "wer": 1.0,
+      "similarity": 1.0,
+      "utmos": 1.0,
+      "all": 1.0
+    },
+    {
+      "k": 4,
+      "condition": "noisy15",
+      "speakers": 20,
+      "bounds": {
+        "wer": 0.025,
+        "similarity": 0.01,
+        "utmos": 0.1
+      },
+      "wer": 0.043,
+      "similarity": 0.023,
+      "utmos": 1.0,
+      "all": 0.0
+    },
+    {
+      "k": 4,
+      "condition": "noisy15",
+      "speakers": 30,
+      "bounds": {
+        "wer": 0.025,
+        "similarity": 0.01,
+        "utmos": 0.1
+      },
+      "wer": 0.013,
+      "similarity": 0.003,
+      "utmos": 1.0,
+      "all": 0.0
+    },
+    {
+      "k": 4,
+      "condition": "noisy15",
+      "speakers": 40,
+      "bounds": {
+        "wer": 0.025,
+        "similarity": 0.01,
+        "utmos": 0.1
+      },
+      "wer": 0.013,
+      "similarity": 0.0,
+      "utmos": 1.0,
+      "all": 0.0
+    },
+    {
+      "k": 7,
+      "condition": "noisy15",
+      "speakers": 20,
+      "bounds": {
+        "wer": 0.025,
+        "similarity": 0.01,
+        "utmos": 0.1
+      },
+      "wer": 0.293,
+      "similarity": 0.067,
+      "utmos": 1.0,
+      "all": 0.02
+    },
+    {
+      "k": 7,
+      "condition": "noisy15",
+      "speakers": 30,
+      "bounds": {
+        "wer": 0.025,
+        "similarity": 0.01,
+        "utmos": 0.1
+      },
+      "wer": 0.487,
+      "similarity": 0.027,
+      "utmos": 1.0,
+      "all": 0.013
+    },
+    {
+      "k": 7,
+      "condition": "noisy15",
+      "speakers": 40,
+      "bounds": {
+        "wer": 0.025,
+        "similarity": 0.01,
+        "utmos": 0.1
+      },
+      "wer": 0.48,
+      "similarity": 0.04,
+      "utmos": 1.0,
+      "all": 0.023
+    }
+  ]
+}

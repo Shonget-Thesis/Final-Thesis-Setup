@@ -1,6 +1,14 @@
 # EXP-023: Decision Handover (development pilot)
 
-**Status:** preregistered 2026-11-13 and amended three times the same day, all before any synthesis (`469c90edf7c6094d...`); not yet run. Task EVAL-016 (todo). The preregistration records the chain `79752afb...` → `03006f5c...` → `59040438...` → `469c90ed...`.
+**Status:** run on 2026-11-13 on a Colab Tesla T4, with 60 of 60 cases, 20 of 20 seed pairs and 10 of 10 diversity prompts. The results are in [results/](results/MANIFEST.json) with SHA-256 hashes; see the [results log](../../../docs/progress/log/2026-11-13-exp023-decision-handover-results.md). Task EVAL-016 (review). Preregistered 2026-11-13 and amended three times the same day, all before any synthesis (`469c90edf7c6094d...`; chain `79752afb...` → `03006f5c...` → `59040438...` → `469c90ed...`).
+
+**Results (development data, white noise):**
+- **Decision Handover does not advance.**
+  - **G1 fails:** the teacher's change after Step 0 is mostly shared across seeds. The shared share was 0.71–0.83 on clean prompts with the guided teacher, against 0.50 for independent decisions. So it is not this seed's decision.
+  - **G2 fails for all six outputs:** the guided versions raise WER by up to +0.116, and the unguided ones lose pitch variety (−0.027 to −0.038).
+- **The Two-Axis Handover advances (G3 passes).** Its clean pitch variety is −0.0013 [−0.0042, +0.0010] against the reference. The Step-3 handover alone is −0.0009.
+- **The Agreement-Routed Handover does not advance (G4 fails).** The real Step-0 voice gap misroutes 23 of 60 cases, against 0 for SNR.
+- **None of the five pre-specified follow-ups is promising.**
 - **A pilot:** it decides whether a frozen test on new speakers is worth running, and cannot support a claim.
 - **Not adopted:** nothing here is adopted by the thesis, and no adviser has reviewed it.
 - **Three candidates:**

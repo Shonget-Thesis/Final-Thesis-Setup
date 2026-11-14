@@ -588,7 +588,7 @@
       "id": "EVAL-016",
       "title": "Decision Handover pilot: hand the student only the teacher's seed-specific change (EXP-023), with the Two-Axis and Agreement-Routed Handovers as further candidates",
       "owner": "Rhenel Jhon R. Sajol",
-      "status": "todo",
+      "status": "review",
       "updated": "2026-11-13",
       "acceptance": "Preregistration is frozen before GPU execution; a Colab Tesla T4 smoke test reproduces the stored STS_3 scores (EXP-022) and shows that the pilot's teacher loop matches the released guided teacher; the full run scores the six outputs (DH, DHc, DHu at Steps 2 and 3) on 20 development speakers x clean, gauss20 and noisy15 (60 cases), checks the teacher's first estimate across 4 seeds on 10 speakers x clean and noisy15, and measures CVf0 on 10 speakers x 20 seeds, including the Two-Axis Handover's Step-3 and Step-4 handovers and its per-seed choice between them (amendment of 2026-11-13, made before any synthesis); G4 replays the Agreement-Routed Handover's routing by the Step-0 voice gap out of fold against the prompt-SNR rule (amendments of the same day, before any synthesis; preregistration 469c90ed...); the go/no-go criteria G1, G2, G3 and G4 are reported as computed from committed CSV files, whether they pass or fail; results committed with a SHA-256 manifest.",
       "evidence": [
@@ -601,7 +601,66 @@
         "code/analysis/solution_screen.py",
         "docs/progress/log/2026-11-13-offline-solution-screen.md",
         "code/analysis/exp023_followups.py",
-        "code/tests/test_exp023_followups.py"
+        "code/tests/test_exp023_followups.py",
+        "research/experiments/EXP-023-decision-handover-pilot/results/MANIFEST.json",
+        "research/experiments/EXP-023-decision-handover-pilot/results/PILOT_REPORT.md",
+        "research/experiments/EXP-023-decision-handover-pilot/results/pilot.csv",
+        "research/experiments/EXP-023-decision-handover-pilot/results/seeds.csv",
+        "research/experiments/EXP-023-decision-handover-pilot/results/diversity.csv",
+        "research/experiments/EXP-023-decision-handover-pilot/results/pilot_results.json",
+        "research/experiments/EXP-023-decision-handover-pilot/results/FOLLOWUPS_REPORT.md",
+        "research/experiments/EXP-023-decision-handover-pilot/results/followups_results.json",
+        "docs/progress/log/2026-11-13-exp023-decision-handover-results.md"
+      ]
+    },
+    {
+      "id": "EVAL-017",
+      "title": "Analytic Unconditional Guidance pilot: the teacher's unconditional CFG pass replaced by its closed form inside the handover window (EXP-024)",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "todo",
+      "updated": "2026-11-14",
+      "acceptance": "Preregistration is frozen before GPU execution (993c306d...), after a pre-run power check on stored outputs (code/analysis/exp024_power_check.py); a Colab Tesla T4 smoke test reproduces the stored W4 and W8 scores (EXP-018) and shows that the runner's teacher loop, and the AUG loop switched off, match the released guided teacher; the full run calibrates mu on 20 speakers the pilot does not use, measures the closed-form gap and AUG's change of the Step-4 and Step-8 estimates on 40 development speakers x clean and noisy15 (80 cases), scores W4_K and W8_K for K = 2 and 4, measures CVf0 on 10 speakers x 20 seeds and T4 teacher time on 10 cases; quality_clean, pitch_variety and the secondary quality_noisy_reference are reported as computed from committed CSV files, whether they pass or fail; results committed with a SHA-256 manifest.",
+      "evidence": [
+        "research/experiments/EXP-024-analytic-unconditional-guidance-pilot/README.md",
+        "research/experiments/EXP-024-analytic-unconditional-guidance-pilot/preregistration.json",
+        "research/experiments/EXP-024-analytic-unconditional-guidance-pilot/power_check.json",
+        "code/analysis/exp024_power_check.py",
+        "code/colab/run_analytic_guidance_pilot.py",
+        "code/colab/DMOSpeech2_EXP024_Analytic_Guidance_Pilot.ipynb",
+        "code/tests/test_analytic_guidance.py",
+        "docs/progress/log/2026-11-14-exp024-analytic-guidance-pilot.md"
+      ]
+    },
+    {
+      "id": "EVAL-018",
+      "title": "Prompt-Probe Handover diagnostic: a hidden second of the voice prompt grades and corrects the teacher's estimate before the handover (EXP-025)",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "todo",
+      "updated": "2026-11-14",
+      "acceptance": "Preregistration is frozen before GPU execution (50d4e863...); a Colab Tesla T4 smoke test shows that the runner's teacher loop matches the released guided teacher, that hiding the probe changes the conditioning only inside it, and that the stored W3 and W4 scores (EXP-018) are reproduced; the full run on 40 development speakers (clean) records the probe error at Steps 0-8, the transfer of corrections A and B from one half of the hidden second to the other, and scores P2-P4, A2, A3, B2, B3; G1 and G2 are reported as computed from probe.csv, whether they pass or fail; results committed with a SHA-256 manifest.",
+      "evidence": [
+        "research/experiments/EXP-025-prompt-probe-handover-diagnostic/README.md",
+        "research/experiments/EXP-025-prompt-probe-handover-diagnostic/preregistration.json",
+        "code/colab/run_prompt_probe_diagnostic.py",
+        "code/colab/DMOSpeech2_EXP025_Prompt_Probe_Diagnostic.ipynb",
+        "code/tests/test_prompt_probe.py",
+        "docs/progress/log/2026-11-14-exp025-prompt-probe-diagnostic.md"
+      ]
+    },
+    {
+      "id": "EVAL-019",
+      "title": "Transmissibility test: does the 0.25 reference lose the pure teacher's pitch variety, and does a later student restart recover it (EXP-026)",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "todo",
+      "updated": "2026-11-14",
+      "acceptance": "Preregistration is frozen before GPU execution (78f3432d...); a Colab Tesla T4 smoke test shows the runner's teacher loop matches the released guided teacher and reproduces the stored W4 and W8 scores (EXP-018); the full run measures CVf0 of W4, W8, W4R2, W8R2 and T16 from one teacher trajectory per seed on 20 development speakers x 20 seeds and scores W4R2, W8R2 and T16 on 40 speakers; H1-H3, the exploratory H4 and the verdict are reported as computed from the CSV files, whether they support or refute the theory; results committed with a SHA-256 manifest.",
+      "evidence": [
+        "research/experiments/EXP-026-transmissibility-test/README.md",
+        "research/experiments/EXP-026-transmissibility-test/preregistration.json",
+        "code/colab/run_transmissibility_test.py",
+        "code/colab/DMOSpeech2_EXP026_Transmissibility_Test.ipynb",
+        "code/tests/test_transmissibility.py",
+        "docs/progress/log/2026-11-14-exp026-transmissibility-test.md"
       ]
     }
   ]
