@@ -1,7 +1,8 @@
 """Colab T4 experiment for Transmissible Slow-Band Bridge (`TBRG`) & Diagnostics (EXP-028 / EVAL-021).
 
-Implements a theory-guided, inference-time handover algorithm with placement novelty at tau_2 = 0.2929
-and no fitted parameters, addressing the quality-diversity trade-off uncovered by EXP-027 on speakers 61-100:
+Implements a theory-motivated, inference-time handover algorithm (motivated post-EXP-027 by the
+tau_1 vs tau_2 transmissibility split, not predicted a priori) with placement novelty at tau_2 = 0.2929
+and no fitted parameters, addressing the quality-diversity trade-off uncovered by EXP-027:
   - 13-NFE `W4` preserves perceptual quality (UTMOS 3.759, dWER +0.0000 vs W8) because the student's
     tau_1 = 0.0761 step produces a denoised acoustic anchor S1, but compresses pitch variety
     (CVf0 0.0770 vs W8R2 0.0893 / T16 0.0911).
@@ -82,9 +83,19 @@ FRESH_N = 40
 DIV_PAIRS = 20
 DIV_SEEDS = 20
 DIV_SEED_BASE = 1000
-UNSEEN_QUAL_N = 12
-UNSEEN_DIV_N = 8
-UNSEEN_SEEDS = 10
+UNSEEN_QUAL_N = 30
+UNSEEN_DIV_N = 20
+UNSEEN_SEEDS = 15
+PRIOR_PREREG_CHAIN = (
+    {
+        "sha256": "8d6d68afa1d27710d5677f43ac42927fb20c2a9205d5ab7f22fd5dfa7173f6cf",
+        "stage": "initial_freeze_before_any_gpu_synthesis",
+    },
+    {
+        "sha256": "4caf6c951669cdc54ad77897a9aaa77fbeb721b366b81dbdc4df494d8a39d713",
+        "stage": "first_pre_run_reviewer_upgrade_before_any_gpu_synthesis",
+    },
+)
 FOLDS = 5
 SEED = 2026
 BOOT_B = 2000
@@ -670,9 +681,51 @@ def build_prereg(fresh=None, unseen=None, exp027_div_csv=EXP027_DIV_CSV, exp027_
     payload = {
         "experiment": "EXP-028",
         "task_id": "EVAL-021",
-        "title": "Transmissible Slow-Band Bridge (TBRG) with Causal & Cheap Controls on 61-100 + Unseen Calibration Cohort",
-        "framing": "theory-guided inference-time handover algorithm; placement novelty at tau_2 = 0.2929; no fitted parameters",
+        "title": (
+            "Transmissible Slow-Band Bridge (TBRG) with Causal & Cheap Controls on Unseen Calibration "
+            "Primary Cohort + 61-100 Development Cohort"
+        ),
+        "framing": (
+            "theory-motivated inference-time handover algorithm (motivated post-EXP-027 by the "
+            "tau_1 vs tau_2 transmissibility split, not predicted a priori); placement novelty at "
+            "tau_2 = 0.2929; no fitted parameters"
+        ),
         "tau2_renoising": "phi_2 = (1 - tau_2) * eps_2 + tau_2 * X_tau2^TBRG at tau_2 = 0.2929",
+        "cohort_hierarchy": {
+            "primary_prospective_cohort": (
+                f"unseen_cal ({UNSEEN_DIV_N}x{UNSEEN_SEEDS} diversity, {len(unseen_utts)} quality "
+                "from calibration_manifest.json, 0 speaker overlap with dev 1-100)"
+            ),
+            "development_cohort": (
+                f"speakers_61_100 ({DIV_PAIRS}x{DIV_SEEDS} diversity, {len(fresh_utts)} quality "
+                "paired with locked EXP-027; non-prospective development evidence because EXP-027 "
+                "on these speakers motivated TBRG)"
+            ),
+        },
+        "multiplicity_rule": (
+            "Fixed-sequence gatekeeper hierarchy: H1 (CVf0 recovery vs W4 & W8R2 non-inferiority) "
+            "and H2 (UTMOS recovery vs W4R2 & W8R2 non-inferiority) are co-primary gatekeeper "
+            "hypotheses tested jointly via an intersection-union test at alpha = 0.05 (both must "
+            "pass simultaneously, preventing alpha inflation). H5 (causal slow-band SHUF control & "
+            "BLND decomposition check), H3 (W8 quality non-inferiority), and H4 (mel_spread reduction) "
+            "are hierarchical secondary/mechanistic hypotheses evaluated conditionally in fixed order "
+            "once H1 and H2 pass."
+        ),
+        "outcome_interpretation_matrix": {
+            "H1_H2_H5_pass_on_unseen_cal": (
+                "Credible, causally controlled inference-time handover algorithm confirming the "
+                "theory-motivated placement design."
+            ),
+            "H1_H2_pass_but_H5_fails_vs_BLND_or_SHUF": (
+                "Three-band Frobenius bridge structure does not outperform simpler blending/perturbation; "
+                "report simple BLND or perturbation finding honestly."
+            ),
+            "H1_passes_but_H2_or_H3_fails": (
+                "Quality-diversity trade-off persists rather than breaking the Pareto frontier "
+                "(no better than W6R2 at similar cost)."
+            ),
+        },
+        "pre_synthesis_amendment_chain": list(PRIOR_PREREG_CHAIN),
         "n_fresh_qual": len(fresh_utts),
         "n_fresh_div": DIV_PAIRS,
         "fresh_utts": fresh_utts,
@@ -1031,6 +1084,86 @@ def _arm_quality_summary(qual_map, stored_qual):
     return out
 
 
+def _compute_cohort_contrasts(div_map, ref_div_map, qual_map, ref_qual_map, include_sts2=True):
+    """Compute preregistered H1-H5 and baseline contrasts for a cohort."""
+    out = {
+        "H1_TBRG_minus_W4": {
+            "cvf0": _summarize(_paired_contrast(div_map, ref_div_map, "cvf0_TBRG", "cvf0_W4")),
+            "mel_spread": _summarize(_paired_contrast(div_map, ref_div_map, "mel_spread_TBRG", "mel_spread_W4")),
+        },
+        "H2_TBRG_minus_W4R2_utmos": _summarize(
+            _paired_contrast(qual_map, ref_qual_map, "utmos_TBRG", "utmos_W4R2")
+        ),
+        "H3_TBRG_vs_W8_quality": {
+            m: _summarize(_paired_contrast(qual_map, ref_qual_map, f"{m}_TBRG", f"{m}_W8")) for m in METRICS
+        },
+        "H4_TBRG_minus_W4R2_mel_spread": _summarize(
+            _paired_contrast(div_map, ref_div_map, "mel_spread_TBRG", "mel_spread_W4R2")
+        ),
+        "H5_TBRG_vs_SHUF": {
+            "cvf0": _summarize(_paired_contrast(div_map, div_map, "cvf0_TBRG", "cvf0_SHUF")),
+            "slow_corr": _summarize(_paired_contrast(div_map, div_map, "slow_corr_TBRG", "slow_corr_SHUF")),
+            **{m: _summarize(_paired_contrast(qual_map, qual_map, f"{m}_TBRG", f"{m}_SHUF")) for m in METRICS},
+        },
+        "TBRG_vs_BLND": {
+            "cvf0": _summarize(_paired_contrast(div_map, div_map, "cvf0_TBRG", "cvf0_BLND")),
+            "mel_spread": _summarize(_paired_contrast(div_map, div_map, "mel_spread_TBRG", "mel_spread_BLND")),
+            "slow_corr": _summarize(_paired_contrast(div_map, div_map, "slow_corr_TBRG", "slow_corr_BLND")),
+            **{m: _summarize(_paired_contrast(qual_map, qual_map, f"{m}_TBRG", f"{m}_BLND")) for m in METRICS},
+        },
+        "TBRG_vs_W6R2": {
+            "cvf0": _summarize(_paired_contrast(div_map, div_map, "cvf0_TBRG", "cvf0_W6R2")),
+            "mel_spread": _summarize(_paired_contrast(div_map, div_map, "mel_spread_TBRG", "mel_spread_W6R2")),
+            **{m: _summarize(_paired_contrast(qual_map, qual_map, f"{m}_TBRG", f"{m}_W6R2")) for m in METRICS},
+        },
+        "TBRG_vs_W8R2": {
+            "cvf0": _summarize(_paired_contrast(div_map, ref_div_map, "cvf0_TBRG", "cvf0_W8R2")),
+            "mel_spread": _summarize(_paired_contrast(div_map, ref_div_map, "mel_spread_TBRG", "mel_spread_W8R2")),
+            **{m: _summarize(_paired_contrast(qual_map, ref_qual_map, f"{m}_TBRG", f"{m}_W8R2")) for m in METRICS},
+        },
+    }
+    if include_sts2:
+        out["TBRG_vs_STS2"] = {
+            "cvf0": _summarize(_paired_contrast(div_map, div_map, "cvf0_TBRG", "cvf0_STS2")),
+            "mel_spread": _summarize(_paired_contrast(div_map, div_map, "mel_spread_TBRG", "mel_spread_STS2")),
+            **{m: _summarize(_paired_contrast(qual_map, qual_map, f"{m}_TBRG", f"{m}_STS2")) for m in METRICS},
+        }
+        out["STS2_minus_W4"] = {
+            "cvf0": _summarize(_paired_contrast(div_map, ref_div_map, "cvf0_STS2", "cvf0_W4")),
+            "mel_spread": _summarize(_paired_contrast(div_map, ref_div_map, "mel_spread_STS2", "mel_spread_W4")),
+        }
+    return out
+
+
+def _hypothesis_rows_md(contrasts):
+    """Format H1-H5 contrasts with co-primary gatekeeper vs hierarchical secondary tags."""
+    rows_md = [
+        ("`[CO-PRIMARY] H1: CVf0(TBRG - W4)`", contrasts["H1_TBRG_minus_W4"]["cvf0"], 4),
+        ("`[CO-PRIMARY] H1b: CVf0(TBRG - W8R2)` (NI >= -0.008)", contrasts["TBRG_vs_W8R2"]["cvf0"], 4),
+        ("`[CO-PRIMARY] H2: UTMOS(TBRG - W4R2)`", contrasts["H2_TBRG_minus_W4R2_utmos"], 3),
+        ("`[CO-PRIMARY] H2b: UTMOS(TBRG - W8R2)` (NI >= -0.05)", contrasts["TBRG_vs_W8R2"]["utmos"], 3),
+        ("`[SECONDARY] H5: CVf0(TBRG - SHUF)` (causal slow-band)", contrasts["H5_TBRG_vs_SHUF"]["cvf0"], 4),
+        ("`[SECONDARY] H5b: slow_corr(TBRG - SHUF)`", contrasts["H5_TBRG_vs_SHUF"]["slow_corr"], 4),
+        ("`[SECONDARY] H5c: UTMOS(TBRG - BLND)` (decomposition)", contrasts["TBRG_vs_BLND"]["utmos"], 3),
+        ("`[SECONDARY] H5d: CVf0(TBRG - BLND)`", contrasts["TBRG_vs_BLND"]["cvf0"], 4),
+        ("`[SECONDARY] H3: WER(TBRG - W8)`", contrasts["H3_TBRG_vs_W8_quality"]["wer"], 4),
+        ("`[SECONDARY] H3: SIM(TBRG - W8)`", contrasts["H3_TBRG_vs_W8_quality"]["similarity"], 4),
+        ("`[SECONDARY] H3: UTMOS(TBRG - W8)`", contrasts["H3_TBRG_vs_W8_quality"]["utmos"], 3),
+        ("`[SECONDARY] H4: MelSpread(TBRG - W4R2)`", contrasts["H4_TBRG_minus_W4R2_mel_spread"], 4),
+    ]
+    out = [
+        "| Hierarchy & Contrast | Estimate (95% CI) | No-top2 mean | Sign (+/-, p) |",
+        "| --- | ---: | ---: | ---: |",
+    ]
+    for label, c, digits in rows_md:
+        b = c["boot"]
+        out.append(
+            f"| {label} | {tc._fmt_ci(b, digits)} | {c['robust']['mean_without_top2_abs']:+.{digits}f} | "
+            f"{c['sign']['pos']}/{c['sign']['neg']} (p={c['sign']['p']:.3g}) |"
+        )
+    return out
+
+
 def _summarize_unseen(div_rows, qual_rows):
     dmap = {r["utt_id"]: r for r in div_rows}
     qmap = {r["utt_id"]: r for r in qual_rows}
@@ -1068,25 +1201,29 @@ def _summarize_unseen(div_rows, qual_rows):
             })
         qual_summary[arm] = entry
 
+    hypothesis_contrasts = _compute_cohort_contrasts(dmap, dmap, qmap, qmap, include_sts2=False)
+    unseen_verdict = determine_verdict(hypothesis_contrasts)
     contrasts = {
-        "TBRG_minus_W4_cvf0": _summarize(_paired_contrast(dmap, dmap, "cvf0_TBRG", "cvf0_W4")),
-        "TBRG_minus_W8R2_cvf0": _summarize(_paired_contrast(dmap, dmap, "cvf0_TBRG", "cvf0_W8R2")),
-        "TBRG_minus_SHUF_cvf0": _summarize(_paired_contrast(dmap, dmap, "cvf0_TBRG", "cvf0_SHUF")),
+        "TBRG_minus_W4_cvf0": hypothesis_contrasts["H1_TBRG_minus_W4"]["cvf0"],
+        "TBRG_minus_W8R2_cvf0": hypothesis_contrasts["TBRG_vs_W8R2"]["cvf0"],
+        "TBRG_minus_SHUF_cvf0": hypothesis_contrasts["H5_TBRG_vs_SHUF"]["cvf0"],
         "TBRG_f0_corr_matched_minus_shifted": _summarize(
             _paired_contrast(dmap, dmap, "f0_corr_w8r2_TBRG", "f0_shift_corr_w8r2_TBRG")
         ),
-        "TBRG_minus_W4R2_utmos": _summarize(_paired_contrast(qmap, qmap, "utmos_TBRG", "utmos_W4R2")),
-        "TBRG_minus_W8R2_utmos": _summarize(_paired_contrast(qmap, qmap, "utmos_TBRG", "utmos_W8R2")),
-        "TBRG_minus_BLND_utmos": _summarize(_paired_contrast(qmap, qmap, "utmos_TBRG", "utmos_BLND")),
-        "TBRG_minus_W8_wer": _summarize(_paired_contrast(qmap, qmap, "wer_TBRG", "wer_W8")),
-        "TBRG_minus_W8_similarity": _summarize(_paired_contrast(qmap, qmap, "similarity_TBRG", "similarity_W8")),
-        "TBRG_minus_W8_utmos": _summarize(_paired_contrast(qmap, qmap, "utmos_TBRG", "utmos_W8")),
+        "TBRG_minus_W4R2_utmos": hypothesis_contrasts["H2_TBRG_minus_W4R2_utmos"],
+        "TBRG_minus_W8R2_utmos": hypothesis_contrasts["TBRG_vs_W8R2"]["utmos"],
+        "TBRG_minus_BLND_utmos": hypothesis_contrasts["TBRG_vs_BLND"]["utmos"],
+        "TBRG_minus_W8_wer": hypothesis_contrasts["H3_TBRG_vs_W8_quality"]["wer"],
+        "TBRG_minus_W8_similarity": hypothesis_contrasts["H3_TBRG_vs_W8_quality"]["similarity"],
+        "TBRG_minus_W8_utmos": hypothesis_contrasts["H3_TBRG_vs_W8_quality"]["utmos"],
     }
     return {
+        "verdict": unseen_verdict,
         "n_diversity": len(div_rows),
         "n_quality": len(qual_rows),
         "arm_diversity": div_summary,
         "arm_quality": qual_summary,
+        "hypothesis_contrasts": hypothesis_contrasts,
         "contrasts": contrasts,
     }
 
@@ -1098,7 +1235,7 @@ def analyze(
     exp027_div_csv=EXP027_DIV_CSV,
     exp027_qual_csv=EXP027_QUAL_CSV,
 ):
-    """Validate preregistration & completeness, merge EXP-027 references, analyze unseen cohort, and write report."""
+    """Validate preregistration & completeness, analyze prospective unseen_cal + 61-100 dev cohorts, and write report."""
     check_prereg(prereg_path)
     out_dir = Path(out_dir)
     div_path = out_dir / "diversity.csv"
@@ -1125,52 +1262,7 @@ def analyze(
     stored_div = {r["utt_id"]: r for r in rf.read_csv(exp027_div_csv)}
     stored_qual = {r["utt_id"]: r for r in rf.read_csv(exp027_qual_csv)}
 
-    contrasts = {
-        "H1_TBRG_minus_W4": {
-            "cvf0": _summarize(_paired_contrast(div_map, stored_div, "cvf0_TBRG", "cvf0_W4")),
-            "mel_spread": _summarize(_paired_contrast(div_map, stored_div, "mel_spread_TBRG", "mel_spread_W4")),
-        },
-        "H2_TBRG_minus_W4R2_utmos": _summarize(
-            _paired_contrast(qual_map, stored_qual, "utmos_TBRG", "utmos_W4R2")
-        ),
-        "H3_TBRG_vs_W8_quality": {
-            m: _summarize(_paired_contrast(qual_map, stored_qual, f"{m}_TBRG", f"{m}_W8")) for m in METRICS
-        },
-        "H4_TBRG_minus_W4R2_mel_spread": _summarize(
-            _paired_contrast(div_map, stored_div, "mel_spread_TBRG", "mel_spread_W4R2")
-        ),
-        "H5_TBRG_vs_SHUF": {
-            "cvf0": _summarize(_paired_contrast(div_map, div_map, "cvf0_TBRG", "cvf0_SHUF")),
-            "slow_corr": _summarize(_paired_contrast(div_map, div_map, "slow_corr_TBRG", "slow_corr_SHUF")),
-            **{m: _summarize(_paired_contrast(qual_map, qual_map, f"{m}_TBRG", f"{m}_SHUF")) for m in METRICS},
-        },
-        "TBRG_vs_STS2": {
-            "cvf0": _summarize(_paired_contrast(div_map, div_map, "cvf0_TBRG", "cvf0_STS2")),
-            "mel_spread": _summarize(_paired_contrast(div_map, div_map, "mel_spread_TBRG", "mel_spread_STS2")),
-            **{m: _summarize(_paired_contrast(qual_map, qual_map, f"{m}_TBRG", f"{m}_STS2")) for m in METRICS},
-        },
-        "TBRG_vs_BLND": {
-            "cvf0": _summarize(_paired_contrast(div_map, div_map, "cvf0_TBRG", "cvf0_BLND")),
-            "mel_spread": _summarize(_paired_contrast(div_map, div_map, "mel_spread_TBRG", "mel_spread_BLND")),
-            "slow_corr": _summarize(_paired_contrast(div_map, div_map, "slow_corr_TBRG", "slow_corr_BLND")),
-            **{m: _summarize(_paired_contrast(qual_map, qual_map, f"{m}_TBRG", f"{m}_BLND")) for m in METRICS},
-        },
-        "TBRG_vs_W6R2": {
-            "cvf0": _summarize(_paired_contrast(div_map, div_map, "cvf0_TBRG", "cvf0_W6R2")),
-            "mel_spread": _summarize(_paired_contrast(div_map, div_map, "mel_spread_TBRG", "mel_spread_W6R2")),
-            **{m: _summarize(_paired_contrast(qual_map, qual_map, f"{m}_TBRG", f"{m}_W6R2")) for m in METRICS},
-        },
-        "TBRG_vs_W8R2": {
-            "cvf0": _summarize(_paired_contrast(div_map, stored_div, "cvf0_TBRG", "cvf0_W8R2")),
-            "mel_spread": _summarize(_paired_contrast(div_map, stored_div, "mel_spread_TBRG", "mel_spread_W8R2")),
-            **{m: _summarize(_paired_contrast(qual_map, stored_qual, f"{m}_TBRG", f"{m}_W8R2")) for m in METRICS},
-        },
-        "STS2_minus_W4": {
-            "cvf0": _summarize(_paired_contrast(div_map, stored_div, "cvf0_STS2", "cvf0_W4")),
-            "mel_spread": _summarize(_paired_contrast(div_map, stored_div, "mel_spread_STS2", "mel_spread_W4")),
-        },
-    }
-
+    contrasts = _compute_cohort_contrasts(div_map, stored_div, qual_map, stored_qual, include_sts2=True)
     stac_routing = evaluate_stac_routing(qual_rows, div_map, stored_qual, stored_div)
     arm_diversity = _arm_diversity_summary(div_map, stored_div)
     arm_quality = _arm_quality_summary(qual_map, stored_qual)
@@ -1204,9 +1296,10 @@ def analyze(
     results = {
         "experiment": "EXP-028",
         "partial": is_partial,
+        "primary_prospective_verdict": unseen_rep["verdict"] if unseen_rep is not None else None,
+        "verdict": verdict,
         "n_diversity": len(div_rows),
         "n_quality": len(qual_rows),
-        "verdict": verdict,
         "arm_diversity": arm_diversity,
         "arm_quality": arm_quality,
         "contrasts": contrasts,
@@ -1219,77 +1312,29 @@ def analyze(
     rmd = out_dir / "TRANSMISSIBILITY_BRIDGE_REPORT.md"
     rjson.write_text(json.dumps(results, indent=2) + "\n", encoding="utf-8")
 
+    unseen_v = unseen_rep["verdict"] if unseen_rep is not None else "pending"
     lines = [
         "# EXP-028: Transmissible Slow-Band Bridge (`TBRG`) Report",
         "",
-        f"- **Verdict:** `{verdict}` ({'PARTIAL' if is_partial else 'FULL'})",
-        f"- **Speakers 61-100 (paired vs EXP-027):** diversity = {len(div_rows)}/{DIV_PAIRS} (x {DIV_SEEDS} seeds), "
-        f"quality = {len(qual_rows)}/{FRESH_N}",
-        "",
-        "## Confirmatory Hypotheses (`TBRG`, 13 NFE, re-noised at tau_2 = 0.2929)",
-        "",
-        "| Contrast | Estimate (95% CI) | No-top2 mean | Sign (+/-, p) |",
-        "| --- | ---: | ---: | ---: |",
+        "- **Algorithm Framing:** Theory-motivated, inference-time handover algorithm (placement novelty at `tau_2 = 0.2929`, no fitted parameters).",
+        f"- **Primary Prospective Cohort Verdict (`unseen_cal`):** `{unseen_v}` ({'PARTIAL' if is_partial else 'FULL'})",
+        f"- **Development Cohort Verdict (`speakers 61-100`, paired vs EXP-027):** `{verdict}` "
+        f"(diversity = {len(div_rows)}/{DIV_PAIRS} x {DIV_SEEDS} seeds, quality = {len(qual_rows)}/{FRESH_N})",
+        "- **Multiplicity Hierarchy:** `H1` & `H2` are co-primary gatekeeper hypotheses (intersection-union at `alpha = 0.05`); "
+        "`H5`, `H3`, and `H4` are hierarchical secondary/mechanistic hypotheses.",
     ]
-    rows_md = [
-        ("`H1: CVf0(TBRG - W4)`", contrasts["H1_TBRG_minus_W4"]["cvf0"], 4),
-        ("`H1b: CVf0(TBRG - W8R2)` (NI >= -0.008)", contrasts["TBRG_vs_W8R2"]["cvf0"], 4),
-        ("`H2: UTMOS(TBRG - W4R2)`", contrasts["H2_TBRG_minus_W4R2_utmos"], 3),
-        ("`H2b: UTMOS(TBRG - W8R2)` (NI >= -0.05)", contrasts["TBRG_vs_W8R2"]["utmos"], 3),
-        ("`H3: WER(TBRG - W8)`", contrasts["H3_TBRG_vs_W8_quality"]["wer"], 4),
-        ("`H3: SIM(TBRG - W8)`", contrasts["H3_TBRG_vs_W8_quality"]["similarity"], 4),
-        ("`H3: UTMOS(TBRG - W8)`", contrasts["H3_TBRG_vs_W8_quality"]["utmos"], 3),
-        ("`H4: MelSpread(TBRG - W4R2)`", contrasts["H4_TBRG_minus_W4R2_mel_spread"], 4),
-        ("`H5: CVf0(TBRG - SHUF)` (causal slow-band)", contrasts["H5_TBRG_vs_SHUF"]["cvf0"], 4),
-        ("`H5b: slow_corr(TBRG - SHUF)`", contrasts["H5_TBRG_vs_SHUF"]["slow_corr"], 4),
-        ("`H5c: UTMOS(TBRG - BLND)` (decomposition)", contrasts["TBRG_vs_BLND"]["utmos"], 3),
-        ("`H5d: CVf0(TBRG - BLND)`", contrasts["TBRG_vs_BLND"]["cvf0"], 4),
-    ]
-    for label, c, digits in rows_md:
-        b = c["boot"]
-        lines.append(
-            f"| {label} | {tc._fmt_ci(b, digits)} | {c['robust']['mean_without_top2_abs']:+.{digits}f} | "
-            f"{c['sign']['pos']}/{c['sign']['neg']} (p={c['sign']['p']:.3g}) |"
-        )
-
-    lines.extend([
-        "",
-        "## Ablations & Intermediate-Budget Baselines",
-        "",
-        "| Contrast | Estimate (95% CI) | Sign (+/-, p) |",
-        "| --- | ---: | ---: |",
-        f"| `TBRG - STS2 (CVf0)` | {tc._fmt_ci(contrasts['TBRG_vs_STS2']['cvf0']['boot'], 4)} | "
-        f"{contrasts['TBRG_vs_STS2']['cvf0']['sign']['pos']}/{contrasts['TBRG_vs_STS2']['cvf0']['sign']['neg']} |",
-        f"| `TBRG - STS2 (UTMOS)` | {tc._fmt_ci(contrasts['TBRG_vs_STS2']['utmos']['boot'], 3)} | "
-        f"{contrasts['TBRG_vs_STS2']['utmos']['sign']['pos']}/{contrasts['TBRG_vs_STS2']['utmos']['sign']['neg']} |",
-        f"| `TBRG - W6R2 (CVf0)` | {tc._fmt_ci(contrasts['TBRG_vs_W6R2']['cvf0']['boot'], 4)} | "
-        f"{contrasts['TBRG_vs_W6R2']['cvf0']['sign']['pos']}/{contrasts['TBRG_vs_W6R2']['cvf0']['sign']['neg']} |",
-        f"| `TBRG - W6R2 (UTMOS)` | {tc._fmt_ci(contrasts['TBRG_vs_W6R2']['utmos']['boot'], 3)} | "
-        f"{contrasts['TBRG_vs_W6R2']['utmos']['sign']['pos']}/{contrasts['TBRG_vs_W6R2']['utmos']['sign']['neg']} |",
-        "",
-        "## Side-by-Side Fresh-Speaker Summary (New EXP-028 + Stored EXP-027)",
-        "",
-        "| Arm | NFE | CVf0 (20 spk) | MelSpread | SlowCorr | WER vs W8 (40 spk) | SIM vs W8 | UTMOS vs W8 |",
-        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
-    ])
-    for arm in ALL_ARMS:
-        d = arm_diversity[arm]
-        q = arm_quality[arm]
-        sc_s = f"{d['slow_corr']['mean']:.3f}" if d["slow_corr"] is not None else "n/a"
-        w_s = f"{q['wer']['mean']:.4f}" if arm == "W8" else tc._fmt_ci(q["d_wer_vs_W8"], 4)
-        s_s = f"{q['similarity']['mean']:.4f}" if arm == "W8" else tc._fmt_ci(q["d_similarity_vs_W8"], 4)
-        u_s = f"{q['utmos']['mean']:.3f}" if arm == "W8" else tc._fmt_ci(q["d_utmos_vs_W8"], 3)
-        lines.append(
-            f"| `{arm}` | {COST[arm]} | {d['cvf0']['mean']:.4f} | {d['mel_spread']['mean']:.4f} | {sc_s} | "
-            f"{w_s} | {s_s} | {u_s} |"
-        )
 
     if unseen_rep is not None:
         uc = unseen_rep["contrasts"]
+        uh = unseen_rep["hypothesis_contrasts"]
         lines.extend([
             "",
-            f"## Prospective Unseen-Speaker Replication Cohort (Calibration Split: "
+            f"## 1. Primary Prospective Cohort (`unseen_cal`: "
             f"{unseen_rep['n_diversity']} x {UNSEEN_SEEDS} div, {unseen_rep['n_quality']} qual)",
+            "",
+            f"- **Cohort Verdict:** `{unseen_rep['verdict']}`",
+            "",
+            *_hypothesis_rows_md(uh),
             "",
             "| Unseen Arm | NFE | CVf0 | SlowCorr | f0 Corr vs W8R2 (matched / shifted) | WER vs W8 | SIM vs W8 | UTMOS vs W8 |",
             "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
@@ -1307,13 +1352,47 @@ def analyze(
             )
         lines.extend([
             "",
-            f"- **Unseen `TBRG - W4 (CVf0)`:** `{tc._fmt_ci(uc['TBRG_minus_W4_cvf0']['boot'], 4)}`",
-            f"- **Unseen `TBRG - SHUF (CVf0)`:** `{tc._fmt_ci(uc['TBRG_minus_SHUF_cvf0']['boot'], 4)}`",
             f"- **Unseen `f0_corr(TBRG, W8R2)` matched minus shifted seed:** "
             f"`{tc._fmt_ci(uc['TBRG_f0_corr_matched_minus_shifted']['boot'], 4)}`",
-            f"- **Unseen `TBRG - W4R2 (UTMOS)`:** `{tc._fmt_ci(uc['TBRG_minus_W4R2_utmos']['boot'], 3)}`",
-            f"- **Unseen `TBRG - BLND (UTMOS)`:** `{tc._fmt_ci(uc['TBRG_minus_BLND_utmos']['boot'], 3)}`",
+            f"- **Unseen `TBRG - W6R2 (CVf0 / UTMOS)`:** "
+            f"`{tc._fmt_ci(uh['TBRG_vs_W6R2']['cvf0']['boot'], 4)}` / `{tc._fmt_ci(uh['TBRG_vs_W6R2']['utmos']['boot'], 3)}`",
         ])
+
+    lines.extend([
+        "",
+        "## 2. Development Cohort (`speakers 61-100`, paired vs EXP-027; non-prospective)",
+        "",
+        *_hypothesis_rows_md(contrasts),
+        "",
+        "### Ablations & Intermediate-Budget Baselines (`speakers 61-100`)",
+        "",
+        "| Contrast | Estimate (95% CI) | Sign (+/-, p) |",
+        "| --- | ---: | ---: |",
+        f"| `TBRG - STS2 (CVf0)` | {tc._fmt_ci(contrasts['TBRG_vs_STS2']['cvf0']['boot'], 4)} | "
+        f"{contrasts['TBRG_vs_STS2']['cvf0']['sign']['pos']}/{contrasts['TBRG_vs_STS2']['cvf0']['sign']['neg']} |",
+        f"| `TBRG - STS2 (UTMOS)` | {tc._fmt_ci(contrasts['TBRG_vs_STS2']['utmos']['boot'], 3)} | "
+        f"{contrasts['TBRG_vs_STS2']['utmos']['sign']['pos']}/{contrasts['TBRG_vs_STS2']['utmos']['sign']['neg']} |",
+        f"| `TBRG - W6R2 (CVf0)` | {tc._fmt_ci(contrasts['TBRG_vs_W6R2']['cvf0']['boot'], 4)} | "
+        f"{contrasts['TBRG_vs_W6R2']['cvf0']['sign']['pos']}/{contrasts['TBRG_vs_W6R2']['cvf0']['sign']['neg']} |",
+        f"| `TBRG - W6R2 (UTMOS)` | {tc._fmt_ci(contrasts['TBRG_vs_W6R2']['utmos']['boot'], 3)} | "
+        f"{contrasts['TBRG_vs_W6R2']['utmos']['sign']['pos']}/{contrasts['TBRG_vs_W6R2']['utmos']['sign']['neg']} |",
+        "",
+        "### Side-by-Side `61-100` Summary (New EXP-028 + Stored EXP-027)",
+        "",
+        "| Arm | NFE | CVf0 (20 spk) | MelSpread | SlowCorr | WER vs W8 (40 spk) | SIM vs W8 | UTMOS vs W8 |",
+        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+    ])
+    for arm in ALL_ARMS:
+        d = arm_diversity[arm]
+        q = arm_quality[arm]
+        sc_s = f"{d['slow_corr']['mean']:.3f}" if d["slow_corr"] is not None else "n/a"
+        w_s = f"{q['wer']['mean']:.4f}" if arm == "W8" else tc._fmt_ci(q["d_wer_vs_W8"], 4)
+        s_s = f"{q['similarity']['mean']:.4f}" if arm == "W8" else tc._fmt_ci(q["d_similarity_vs_W8"], 4)
+        u_s = f"{q['utmos']['mean']:.3f}" if arm == "W8" else tc._fmt_ci(q["d_utmos_vs_W8"], 3)
+        lines.append(
+            f"| `{arm}` | {COST[arm]} | {d['cvf0']['mean']:.4f} | {d['mel_spread']['mean']:.4f} | {sc_s} | "
+            f"{w_s} | {s_s} | {u_s} |"
+        )
 
     rel = stac_routing.get("relative_r4")
     if rel is not None:
