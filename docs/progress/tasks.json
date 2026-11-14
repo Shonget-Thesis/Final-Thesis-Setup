@@ -675,7 +675,7 @@
       "id": "EVAL-020",
       "title": "Transmissibility confirmation and Step-by-Restart interaction on 40 fresh speakers 61-100 with tracker-confound controls (EXP-027)",
       "owner": "Rhenel Jhon R. Sajol",
-      "status": "todo",
+      "status": "review",
       "updated": "2026-11-14",
       "acceptance": "Preregistration is frozen before GPU synthesis (dd7c90581af6...); Colab Tesla T4 smoke check reproduces EXP-018 W4 and W8 within 0.01 on 2 dev speakers; full run evaluates student4, W4, W8, W4R2, W8R2 and T16 from one teacher trajectory per seed on 40 fresh disjoint speakers (61-100) x 20 seeds (diversity: cvf0, cvf0_common, slow mel_spread) and all 40 speakers (quality vs W8); Step-by-Restart interaction H4 = (W8R2 - W4R2) - (W8 - W4), confound controls, outlier robustness and frozen verdict are reported as computed from CSVs with a SHA-256 manifest.",
       "evidence": [
@@ -684,7 +684,14 @@
         "code/colab/run_transmissibility_confirm.py",
         "code/colab/DMOSpeech2_EXP027_Transmissibility_Confirmation.ipynb",
         "code/tests/test_transmissibility_confirm.py",
-        "docs/progress/log/2026-11-14-exp027-transmissibility-confirmation.md"
+        "docs/progress/log/2026-11-14-exp027-transmissibility-confirmation.md",
+        "research/experiments/EXP-027-transmissibility-confirmation/results/MANIFEST.json",
+        "research/experiments/EXP-027-transmissibility-confirmation/results/TRANSMISSIBILITY_CONFIRM_REPORT.md",
+        "research/experiments/EXP-027-transmissibility-confirmation/results/transmissibility_confirm_results.json",
+        "research/experiments/EXP-027-transmissibility-confirmation/results/diversity.csv",
+        "research/experiments/EXP-027-transmissibility-confirmation/results/quality.csv",
+        "research/experiments/EXP-027-transmissibility-confirmation/results/smoke/smoke_check.json",
+        "docs/progress/log/2026-11-14-exp027-transmissibility-confirmation-results.md"
       ]
     }
   ]
