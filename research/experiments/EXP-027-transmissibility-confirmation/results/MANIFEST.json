@@ -1,0 +1,26 @@
+{
+  "experiment": "EXP-027",
+  "utc": "2026-11-14T10:52:31.208214+00:00",
+  "files": {
+    "preregistration": {
+      "path": "/content/Final-Thesis-Setup/research/experiments/EXP-027-transmissibility-confirmation/preregistration.json",
+      "sha256": "323ca954059456a17b8197813c62111b32fec6e1b5d81f820975f98b77aaf0e3"
+    },
+    "diversity.csv": {
+      "sha256": "b38c8d8c293d201598d201e24d6a777555c8122b3c179c8698316170ba39cef4",
+      "bytes": 24667
+    },
+    "quality.csv": {
+      "sha256": "fadc58e2d5463f33749306771543ec475a63d2266b7268fbb451db42e5fc60e6",
+      "bytes": 31837
+    },
+    "transmissibility_confirm_results.json": {
+      "sha256": "9d8578ffa940b3669e61087abad3f999dfbca5260314839876d6e13fdb1ca2ff",
+      "bytes": 23407
+    },
+    "TRANSMISSIBILITY_CONFIRM_REPORT.md": {
+      "sha256": "82af9dfe9ab03ca4dff7fa8650e311e3db94663af48212e62f1ab5e3c3456648",
+      "bytes": 2228
+    }
+  }
+}

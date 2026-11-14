@@ -1,6 +1,8 @@
 # EXP-027 — Transmissibility Confirmation & Step-by-Restart Interaction
 
-- **Task:** `EVAL-020` (prepared on `2026-11-14`; awaiting Colab Tesla T4 execution)
+- **Task:** `EVAL-020` (`review`, executed on Google Colab Tesla T4 on `2026-11-14`; 40/40 diversity, 40/40 quality)
+- **Results & Manifest:** [TRANSMISSIBILITY_CONFIRM_REPORT.md](results/TRANSMISSIBILITY_CONFIRM_REPORT.md) | [transmissibility_confirm_results.json](results/transmissibility_confirm_results.json) | [MANIFEST.json](results/MANIFEST.json)
+- **Results Log:** [2026-11-14-exp027-transmissibility-confirmation-results.md](../../../docs/progress/log/2026-11-14-exp027-transmissibility-confirmation-results.md)
 - **Predecessor:** [EXP-026](../EXP-026-transmissibility-test/README.md) (`supported` under the frozen rule, but four blockers left the $\Phi((A - \beta)/B)$ ceiling formula unseparated from a simpler additive-erasure view)
 - **Runner:** [run_transmissibility_confirm.py](../../../code/colab/run_transmissibility_confirm.py)
 - **Notebook:** [DMOSpeech2_EXP027_Transmissibility_Confirmation.ipynb](../../../code/colab/DMOSpeech2_EXP027_Transmissibility_Confirmation.ipynb)
@@ -46,3 +48,17 @@ Frozen verdict (95% bootstrap CIs with $B = 2000$):
 - **`confirmed`** if `H1`, `H2`, `H4` have 95% lower CI `> 0` in both `cvf0` and `cvf0_common`, `|mean(W8 - W4)| < 0.01` in `cvf0`, slow-mel spread means of `H1`, `H2`, `H4` are `> 0`, and `mean_without_top2_abs` of `H1`, `H2`, `H4` in `cvf0` are `> 0`.
 - **`supported_direction_only`** if `H1`, `H2` have 95% lower CI `> 0` and `|mean(W8 - W4)| < 0.01` in `cvf0`, without meeting all `confirmed` criteria.
 - **`mixed`** otherwise.
+
+## Executed Results (2026-11-14, Colab Tesla T4)
+
+- **Verdict under frozen rule:** **`supported_direction_only`** (`FULL`: `40/40` fresh diversity speakers $\times$ `20` seeds; `40/40` fresh quality speakers; smoke max reproduction drift `d_wer = 0.0`, `d_sim = 0.0`).
+- **Arm means (`CVf0` | `cvf0_common`):** `student4` `0.0506` (`0.0491`), `W4` `0.0770` (`0.0749`), `W8` `0.0772` (`0.0754`), `W4R2` `0.0859` (`0.0853`), `W8R2` `0.0893` (`0.0862`), `T16` `0.0911` (`0.0874`).
+- **Blockers #1, #3, #4 resolved cleanly:**
+  - **`H1` (`T16 - W8 > 0`):** `+0.0139 [+0.0057, +0.0232]` (`33/7`, sign test $p = 4.23 \times 10^{-5}$; `no-top2 = +0.0124`). Holds identically on shared voiced frames (`cvf0_common = +0.0120 [+0.0044, +0.0188]`, `32/6`, $p = 2.43 \times 10^{-5}$).
+  - **`H2` (`W8R2 - W8 > 0`):** `+0.0121 [+0.0081, +0.0159]` (`34/6`, sign test $p = 8.36 \times 10^{-6}$; `no-top2 = +0.0106`; `cvf0_common = +0.0107 [+0.0049, +0.0158]`, `34/4`, $p = 6.04 \times 10^{-7}$).
+  - **`H3` (`W8 - W4` fresh plateau):** `+0.0008 [-0.0008, +0.0023]` (`cvf0_common = +0.0005 [-0.0008, +0.0019]`), confirming plateau on 39 fresh speakers with zero stored-data reuse.
+  - **Exploratory `H5`:** Spearman $\rho = +0.539$.
+- **Why `confirmed` was not reached (blocker #2 & `mel_spread`):**
+  - **`H4` interaction `(W8R2 - W4R2) - (W8 - W4)`:** `+0.0030 [-0.0019, +0.0078]` (`24/15`, $p = 0.200$, `no-top2 = +0.0032`; `cvf0_common` mean `+0.0003 [-0.0095, +0.0076]` with `median = +0.0031` and sign test `27/11`, $p = 0.0139$). On clean prompts, Step 4 has already largely committed (`W4R2 - W4 = +0.0089 [+0.0051, +0.0129]`), leaving only `+0.0038` (`27/12`, $p = 0.0237$) between `W8R2` and `W4R2`.
+  - **`mel_spread` diverged from `CVf0`:** Slow-mel spectral dispersion was highest for `W4R2` (`1.0299`, consistent with noisier early-step re-noising also reflected in its `-0.373` UTMOS drop) and lowest for `T16` (`0.9244`) vs `W8` (`0.9343`), yielding negative `mel_spread` contrasts for `H1` (`-0.0099`) and `H4` (`-0.0854`).
+- **Fresh Clean-Prompt Quality (40 speakers vs `W8` `WER = 0.0159`, `SIM = 0.9322`, `UTMOS = 3.777`):** `W4` matches `W8` (`dWER = +0.0000`, `dSIM = -0.0010`, `dUTMOS = -0.018`); `W8R2` recovers ~87% of the lost `T16` pitch variety at `dWER = +0.0000`, `dSIM = +0.0012`, `dUTMOS = -0.105 [-0.165, -0.041]` (vs `W4R2 -0.373`, `T16 -0.548`).
