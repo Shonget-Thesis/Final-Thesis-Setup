@@ -1,7 +1,9 @@
 {
   "experiment": "EXP-028",
   "task_id": "EVAL-021",
-  "title": "Transmissible Slow-Band Bridge (TBRG) and STAC Handover on 40 fresh speakers",
+  "title": "Transmissible Slow-Band Bridge (TBRG) with Causal & Cheap Controls on 61-100 + Unseen Calibration Cohort",
+  "framing": "theory-guided inference-time handover algorithm; placement novelty at tau_2 = 0.2929; no fitted parameters",
+  "tau2_renoising": "phi_2 = (1 - tau_2) * eps_2 + tau_2 * X_tau2^TBRG at tau_2 = 0.2929",
   "n_fresh_qual": 40,
   "n_fresh_div": 20,
   "fresh_utts": [
@@ -169,9 +171,66 @@
   "fresh_utts_sha256": "6e39bf15f6ffd305deb9dc901286c2976a659976acac1c1b21e2a90437f56220",
   "div_seeds": 20,
   "div_seed_base": 1000,
+  "n_unseen_qual": 12,
+  "n_unseen_div": 8,
+  "unseen_seeds": 10,
+  "unseen_utts": [
+    {
+      "utt_id": "common_voice_en_123125-common_voice_en_123126",
+      "speaker_id": "common_voice_en_123125"
+    },
+    {
+      "utt_id": "common_voice_en_1416089-common_voice_en_1416093",
+      "speaker_id": "common_voice_en_1416089"
+    },
+    {
+      "utt_id": "common_voice_en_167249-common_voice_en_167247",
+      "speaker_id": "common_voice_en_167249"
+    },
+    {
+      "utt_id": "common_voice_en_17147545-common_voice_en_17147546",
+      "speaker_id": "common_voice_en_17147545"
+    },
+    {
+      "utt_id": "common_voice_en_17255102-common_voice_en_17255101",
+      "speaker_id": "common_voice_en_17255102"
+    },
+    {
+      "utt_id": "common_voice_en_17256676-common_voice_en_17256678",
+      "speaker_id": "common_voice_en_17256676"
+    },
+    {
+      "utt_id": "common_voice_en_17267923-common_voice_en_17267922",
+      "speaker_id": "common_voice_en_17267923"
+    },
+    {
+      "utt_id": "common_voice_en_17271507-common_voice_en_17271509",
+      "speaker_id": "common_voice_en_17271507"
+    },
+    {
+      "utt_id": "common_voice_en_173534-common_voice_en_173537",
+      "speaker_id": "common_voice_en_173534"
+    },
+    {
+      "utt_id": "common_voice_en_17369337-common_voice_en_17369336",
+      "speaker_id": "common_voice_en_17369337"
+    },
+    {
+      "utt_id": "common_voice_en_17375252-common_voice_en_17375256",
+      "speaker_id": "common_voice_en_17375252"
+    },
+    {
+      "utt_id": "common_voice_en_17380945-common_voice_en_17380947",
+      "speaker_id": "common_voice_en_17380945"
+    }
+  ],
+  "unseen_utts_sha256": "f21c0330e058eacaf56b237fe83d57dd529f22df61eba5eb39977de6e9b957c8",
   "new_arms": [
     "TBRG",
-    "STS2"
+    "STS2",
+    "BLND",
+    "SHUF",
+    "W6R2"
   ],
   "stored_arms": [
     "student4",
@@ -181,26 +240,45 @@
     "W8R2",
     "T16"
   ],
+  "unseen_arms": [
+    "W4",
+    "W4R2",
+    "TBRG",
+    "BLND",
+    "SHUF",
+    "W6R2",
+    "W8R2",
+    "W8"
+  ],
   "costs": {
     "student4": 4,
     "W4R2": 12,
     "W4": 13,
     "TBRG": 13,
     "STS2": 13,
+    "BLND": 13,
+    "SHUF": 13,
+    "W6R2": 16,
     "W8R2": 20,
     "W8": 21,
     "T16": 32
   },
+  "cvf0_w8r2_noninf_margin": -0.008,
+  "utmos_w8r2_noninf_margin": -0.05,
+  "utmos_confirm_min_mean": -0.08,
+  "wer_noninf_margin": 0.01,
+  "sim_noninf_margin": -0.01,
   "stac_folds": 5,
   "stac_utmos_tol": -0.1,
   "stac_wer_tol": 0.002,
   "boot_b": 2000,
   "seed": 2026,
   "code_hashes": {
-    "run_transmissibility_bridge.py": "684a561bf8cb48435cd46a2bd7643b6752612dd4523cf3684189e8c052923b5b",
+    "run_transmissibility_bridge.py": "a22abed82e2f85a7343f35ac53e37384654475eb8ff7950db0845305f8489e43",
     "run_transmissibility_confirm.py": "f1e160797fc5e6970f1667481ea78f5f6cff9743571b6bf4584c028a6fd134bc",
     "run_transmissibility_test.py": "be6b7dfe74b38399ce3b2f0c5ce3942abf7a4fe90e680f5e473591aab22701e1",
     "run_selective_handover_prelim.py": "b61ef06b9ed0a7411d532d277e2525c436c08aab6a4ca541454672a9ea9be603",
+    "run_consistency_gate_prelim.py": "5d83b1acdf668e7b13981a5df0f6e24e24602fe31e051d00190fd5273a2ce6e3",
     "run_grid32_prelim.py": "c7b4152da3449264ef2d7aefcea3492e04f9d45399e373ba2b6d448912bf0b84",
     "run_noise_guidance_prelim.py": "48150a13101d1ecd5ed6da1085e6fd914381f8e22288f5bda7c48f2625dc064b",
     "run_followup_tests.py": "6bce906980ff4c6c4b1209b086cab4fcbe11f7a2955a27badd698c2906af1801"
@@ -210,12 +288,13 @@
     "research/experiments/EXP-027-transmissibility-confirmation/results/quality.csv": "fadc58e2d5463f33749306771543ec475a63d2266b7268fbb451db42e5fc60e6"
   },
   "hypotheses": {
-    "H1": "CVf0(TBRG) - CVf0(W4) > 0 (slow-band bridge unlocks transmissible pitch variety at 13 NFE)",
-    "H2": "UTMOS(TBRG) - UTMOS(W4R2) > 0 (S1 voice/fine anchor + energy match recovers raw W4R2 UTMOS loss)",
-    "H3": "TBRG preserves clean W8 WER/SIM (upper CI dWER <= +0.01, lower CI dSIM >= -0.01, mean dUTMOS >= -0.12)",
-    "H4": "mel_spread(TBRG) - mel_spread(W4R2) < 0 (bridge prevents early re-noising artifact dispersion)"
+    "H1": "CVf0(TBRG) - CVf0(W4) > 0 (lower 95% CI > 0 & no-top2 > 0) AND CVf0(TBRG) - CVf0(W8R2) >= -0.008 (lower 95% CI)",
+    "H2": "UTMOS(TBRG) - UTMOS(W4R2) > 0 (lower 95% CI > 0 & no-top2 > 0) AND UTMOS(TBRG) - UTMOS(W8R2) >= -0.05 (lower 95% CI)",
+    "H3": "TBRG preserves clean W8 quality (upper CI dWER <= +0.01, lower CI dSIM >= -0.01, mean dUTMOS >= -0.08)",
+    "H4": "mel_spread(TBRG) - mel_spread(W4R2) < 0 (upper 95% CI < 0; prevents artifact dispersion)",
+    "H5": "CVf0(TBRG) - CVf0(SHUF) > 0 (lower 95% CI > 0; causal tracking of matching slow band) AND TBRG beats naive linear blend BLND on UTMOS or CVf0 (lower 95% CI > 0)"
   },
-  "verdict_rule": "refuted if H1 CVf0 95% upper CI < 0, H2 UTMOS(TBRG-W4R2) upper CI < 0, or TBRG fails W8 non-inferiority (dWER lower CI > +0.01 or dSIM upper CI < -0.01); confirmed if H1 CVf0 lower CI > 0 & no-top2 > 0, H2 UTMOS lower CI > 0 & no-top2 > 0, TBRG meets W8 WER/SIM non-inferiority & mean dUTMOS >= -0.12, and H4 mel_spread(TBRG-W4R2) upper CI < 0; supported_direction_only if H1 CVf0 lower CI > 0 and H2 UTMOS lower CI > 0 without full confirmation; mixed otherwise.",
-  "sha256": "8d6d68afa1d27710d5677f43ac42927fb20c2a9205d5ab7f22fd5dfa7173f6cf",
-  "created_utc": "2026-11-14T11:29:37.716883+00:00"
+  "verdict_rule": "refuted if CVf0(TBRG-W4) upper CI < 0, CVf0(TBRG-W8R2) upper CI < -0.008, UTMOS(TBRG-W4R2) upper CI < 0, or TBRG fails W8 WER/SIM non-inferiority; confirmed if H1..H5 all clear frozen bounds (including W8R2 non-inferiority, mean dUTMOS >= -0.08, TBRG > SHUF on CVf0, and TBRG > BLND on UTMOS or CVf0); supported_direction_only if CVf0(TBRG-W4) lower CI > 0 and UTMOS(TBRG-W4R2) lower CI > 0 without clearing all stricter bars; mixed otherwise.",
+  "sha256": "4caf6c951669cdc54ad77897a9aaa77fbeb721b366b81dbdc4df494d8a39d713",
+  "created_utc": "2026-11-14T12:03:39.697964+00:00"
 }

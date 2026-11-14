@@ -696,11 +696,11 @@
     },
     {
       "id": "EVAL-021",
-      "title": "Transmissible Slow-Band Bridge (TBRG) and 5-fold STAC-TBRG handover on fresh speakers 61-100 (EXP-028)",
+      "title": "Transmissible Slow-Band Bridge (TBRG) with causal/cheap controls and unseen calibration replication (EXP-028)",
       "owner": "Rhenel Jhon R. Sajol",
       "status": "todo",
       "updated": "2026-11-14",
-      "acceptance": "Preregistration is frozen before GPU synthesis (8d6d68afa1d2...) with locked code and EXP-027 CSV SHA-256 hashes; Colab T4 smoke check passes split-student identity (max_abs_split_diff <= 1e-5) and reproduces EXP-027 W4 within 0.01; full run evaluates TBRG (13 NFE) and STS2 ablation (13 NFE) on 20 fresh speakers x 20 seeds (diversity) and 40 fresh speakers (quality + d_1..d_4, A_4, rho_4), evaluates 5-fold speaker-CV STAC-TBRG routing (13-20 NFE), and writes frozen verdict and MANIFEST.json.",
+      "acceptance": "Preregistration is frozen before GPU synthesis (4caf6c951669...) with locked dependency and EXP-027 CSV SHA-256 hashes; Colab T4 smoke check passes split-student identity (max_abs_split_diff <= 1e-5) and reproduces EXP-027 W4 within 0.01; full run evaluates TBRG (13 NFE, explicitly re-noised at tau_2 = 0.2929), STS2, BLND (13 NFE linear blend), SHUF (disjoint donor slow-band causal control + slow_corr), and W6R2 (16 NFE) on speakers 61-100 (20x20 div, 40 qual) plus all 8 arms jointly on unseen calibration speakers (8x10 div + matched/shifted f0 correlation vs W8R2, 12 qual), tests H1-H5 including W8R2 non-inferiority, reports secondary STAC-TBRG CV routing, and writes MANIFEST.json.",
       "evidence": [
         "research/experiments/EXP-028-transmissibility-bridge/README.md",
         "research/experiments/EXP-028-transmissibility-bridge/preregistration.json",
