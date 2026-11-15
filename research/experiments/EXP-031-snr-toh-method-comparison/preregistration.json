@@ -10,6 +10,13 @@
       "before_synthesis": true,
       "first_freeze_sha256": "ec06ed0568b4",
       "change": "Added QH3 (Quantile Handover) and BTH3 (Blind-Teacher Handover) as arms in both stages; the primary methods are now the three single-formula handovers TOH3, QH3 and BTH3 applied to every input, each judged by T1, T2, C and M; SNR_TOH and the first design's S1 are exploratory."
+    },
+    {
+      "id": 2,
+      "date": "2026-11-15",
+      "before_synthesis": true,
+      "previous_freeze_sha256": "df26da1412bf",
+      "change": "The blind teacher's placeholder condition is a one-frame zero mel (1, 1, 100) instead of a 512-sample silent waveform, which the first Colab smoke test showed is too short for the input routine's STFT padding. The placeholder is dropped in both guidance branches, so the method is unchanged."
     }
   ],
   "candidates": [
@@ -47,7 +54,7 @@
     "min_band": 8
   },
   "qh": "per band, the student's draft values sorted and placed at the teacher's time ranks (stable sort)",
-  "bth": "teacher input = target text only over the target's frames, two-hop silent placeholder audio, audio condition dropped in both guidance branches, same seed as the case; TOH map onto the student's draft",
+  "bth": "teacher input = target text only over the target's frames, one-frame zero mel placeholder, audio condition dropped in both guidance branches, same seed as the case; TOH map onto the student's draft",
   "conditions": [
     "clean",
     "gauss25",
@@ -345,7 +352,7 @@
   },
   "verdict_rule": "Per candidate X in TOH3, QH3 and BTH3, three labels: teacher = teacher_needed if T1 or T2 holds, else teacher_not_shown_needed; method = beats_all_previous if M holds against all five previous methods, beats_some_previous if against at least one, else beats_no_previous; condition = condition_safety_shown if C holds, else condition_safety_not_shown. partial if a stage is missing. Candidates are not ranked by the frozen rule; no correction for the three candidates (development pilot). Exploratory: contrasts between candidates (including aligned CVf0 QH3 - TOH3 and reverb/babble UTMOS BTH3 - TOH3), the SNR-routed methods SNR_TOH, SNR_W4 and SNR_RND, the first design's S1 (SNR_TOH - SNR_W4 on gated-in reverb and babble cases), STU against the previous methods, per-condition tables, aligned CVf0 and timing spread, BTH3's teacher sequence length, the EXP-030 replication, Definition 3.1 failures against W8, the policies' step choices, runaway outputs (WER > 1) and the EXP-011 reproduction.",
   "code_hashes": {
-    "run_method_comparison.py": "a0f434381f088d6d895626ed5f4ff28ac2ac333e49df6651c0992bcd7315504d",
+    "run_method_comparison.py": "6998df7169938debf50eac3c96a79ea6932f45210bbc1d8bb9ac91659d52aa11",
     "run_timing_only_handover.py": "d04f27fc0bef25bbc96a9e282faebde6ac0680c4106880dd73a9ae996bed5436",
     "run_damped_transmissibility_stac.py": "d569118c21c2990b0521b0713d2c538d38d2065672a406a878d4a21f9217738a",
     "run_transmissibility_bridge.py": "e0939d83ff93544d02cfb5b75662d90c285cb4f3f700bff91c10381612b103fd",
@@ -365,6 +372,6 @@
   },
   "seed": 2026,
   "boot_b": 2000,
-  "sha256": "df26da1412bf48ce52a2edbdfefefac0db2ecd47b988b8e9972900b7911f44a8",
-  "created_utc": "2026-11-15T13:14:12.432169+00:00"
+  "sha256": "a28c78a6d87a1076330de555ea3a4a83056055a07961525386b2156f269adef3",
+  "created_utc": "2026-11-15T13:59:12.432079+00:00"
 }

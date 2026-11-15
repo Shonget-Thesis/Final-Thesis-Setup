@@ -139,3 +139,20 @@ The requester asked for both to be added.
 - `python scripts/check_workspace.py`: PASSED.
 - `python -m unittest discover -s code/tests`: 316 tests, OK.
 - **Not testable here:** the PyTorch paths of QH and BTH, because this PC has no PyTorch. The smoke test checks them on the T4 before any synthesis.
+
+## Amendment 2 (2026-11-15, after the first Colab smoke test and before any main-run synthesis)
+
+**What happened:** the first Colab smoke test stopped in the blind teacher's input routine, `_prepare_inputs` → `mel_spec` → `torch.stft`, with: "Padding size should be less than the corresponding input dimension, but got: padding (512, 512) at dimension 2 of input [1, 1, 512]".
+- **The cause:** the placeholder condition was a silent waveform of two hops (512 samples), and the STFT's reflect padding (n_fft 1024) needs more than 512 samples.
+- **What had already worked:** the smoke test's earlier steps, including the Quantile Handover's GPU path, had run before the error.
+
+**The fix:**
+- **The placeholder** is now a one-frame zero mel, of shape (1, 1, 100). `_prepare_inputs` takes 3-D input as a ready-made mel and skips the STFT; the same routine in `code/vendor/dmospeech2/src/infer.py` matches the Colab traceback's line numbers.
+- **No effect on the method:** the placeholder is dropped in both guidance branches.
+- **Unchanged:** everything else in the method, the arms, the bars and the verdict rule.
+- **New unit test:** it runs the blind-teacher context and trajectory through a fake pipeline. It checks that the placeholder is a 3-D mel, that every teacher call drops the audio condition, and the shapes and determinism.
+
+**Re-freeze:**
+- **Runner hash:** `a0f434381f08...` → `6998df716993...`.
+- **New payload:** `a28c78a6d87a...`; file `69950853f816...`; 13:59 UTC.
+- **The earlier freeze** (`df26da1412bf...`) never governed any result, because the stopped smoke test wrote no main-run rows.

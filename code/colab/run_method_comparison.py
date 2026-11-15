@@ -190,12 +190,15 @@ def resample_map(w, n):
 
 
 def blind_context(pipe, item, n, seed):
-    """Inputs for a teacher that never receives the prompt: the target text only, over the target's n frames. A
-    two-hop silent placeholder satisfies the input routine; its condition is dropped in both guidance branches."""
+    """Inputs for a teacher that never receives the prompt: the target text only, over the target's n frames.
+
+    The input routine needs a condition; a one-frame zero mel (1, 1, 100) is passed, which takes the routine's
+    ready-made-mel path (no STFT; Amendment 2: a 512-sample silent waveform was too short for the STFT's padding). The
+    condition is dropped in both guidance branches, so its content never reaches the teacher."""
     torch = pipe.torch
-    audio = torch.zeros(1, 2 * pipe.tts.hop_length, device=pipe.device)
+    placeholder = torch.zeros(1, 1, 100, dtype=torch.float32, device=pipe.device)
     text = pipe.convert_char_to_pinyin([item["gt_text"]])
-    _, text_ids, step_cond, _, _, _ = pipe.tts._prepare_inputs(audio, text, int(n))
+    _, text_ids, step_cond, _, _, _ = pipe.tts._prepare_inputs(placeholder, text, int(n))
     m = int(step_cond.shape[1])
     gen = pipe.sampler.make_local_generator(int(seed))
     y0 = torch.randn(m, 100, dtype=torch.float32, generator=gen).unsqueeze(0).to(pipe.device)
@@ -506,6 +509,10 @@ AMENDMENTS = [
      "change": "Added QH3 (Quantile Handover) and BTH3 (Blind-Teacher Handover) as arms in both stages; the primary "
                "methods are now the three single-formula handovers TOH3, QH3 and BTH3 applied to every input, each "
                "judged by T1, T2, C and M; SNR_TOH and the first design's S1 are exploratory."},
+    {"id": 2, "date": "2026-11-15", "before_synthesis": True, "previous_freeze_sha256": "df26da1412bf",
+     "change": "The blind teacher's placeholder condition is a one-frame zero mel (1, 1, 100) instead of a 512-sample silent "
+               "waveform, which the first Colab smoke test showed is too short for the input routine's STFT padding. The "
+               "placeholder is dropped in both guidance branches, so the method is unchanged."},
 ]
 
 
@@ -534,7 +541,7 @@ def build_prereg():
         "toh": {"n_groups": toh.N_GROUPS, "feature_smooth": toh.FEAT_SMOOTH, "band_frac": toh.BAND_FRAC,
                 "min_band": toh.MIN_BAND},
         "qh": "per band, the student's draft values sorted and placed at the teacher's time ranks (stable sort)",
-        "bth": ("teacher input = target text only over the target's frames, two-hop silent placeholder audio, audio "
+        "bth": ("teacher input = target text only over the target's frames, one-frame zero mel placeholder, audio "
                 "condition dropped in both guidance branches, same seed as the case; TOH map onto the student's draft"),
         "conditions": list(CONDS),
         "degraded_conditions": list(DEGRADED),
