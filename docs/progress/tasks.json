@@ -750,7 +750,7 @@
       "id": "EVAL-023",
       "title": "Timing-Only Handover (TOH) pilot: hand over only the teacher's timing as a time map of the student's draft (EXP-030)",
       "owner": "Rhenel Jhon R. Sajol",
-      "status": "todo",
+      "status": "review",
       "updated": "2026-11-15",
       "acceptance": "Preregistration is frozen before GPU synthesis (ebe2b773c02f...) with locked code and EXP-027/EXP-029 input hashes; the Colab T4 smoke test passes the split-student, identity-map and TOH-identity-equals-student checks (<= 1e-5), the time-map checks on real teacher estimates, and EXP-027 W4 reproduction (<= 0.01); the run evaluates STU, W2, W3, W4, W8, TOH2, TOH3 and MIR3 on EXP-029's 30 development speakers x clean, gauss25, noisy15 and telephone (120 cases) and 20 x 12 clean pitch diversity, applies the frozen H1a/H1b/H2a/H2b/H3 verdict rule to TOH3 (TOH2 secondary), reports the EXP-029 reproduction of W4 and W8, and writes MANIFEST.json.",
       "evidence": [
@@ -760,7 +760,35 @@
         "code/colab/DMOSpeech2_EXP030_Timing_Only_Handover.ipynb",
         "code/tests/test_timing_only_handover.py",
         "docs/progress/log/2026-11-15-timing-only-handover-design.md",
-        "docs/progress/log/2026-11-15-exp030-timing-only-handover-setup.md"
+        "docs/progress/log/2026-11-15-exp030-timing-only-handover-setup.md",
+        "research/experiments/EXP-030-timing-only-handover/results/MANIFEST.json",
+        "research/experiments/EXP-030-timing-only-handover/results/TIMING_ONLY_HANDOVER_REPORT.md",
+        "research/experiments/EXP-030-timing-only-handover/results/timing_only_handover_results.json",
+        "research/experiments/EXP-030-timing-only-handover/results/quality.csv",
+        "research/experiments/EXP-030-timing-only-handover/results/diversity.csv",
+        "research/experiments/EXP-030-timing-only-handover/results/smoke/smoke_check.json",
+        "research/experiments/EXP-030-timing-only-handover/results/diagnostics.json",
+        "code/analysis/exp030_diagnostics.py",
+        "docs/progress/log/2026-11-15-exp030-results.md"
+      ],
+      "validation": "2026-11-15: Colab T4 run under preregistration ebe2b773c02f... (120/120 quality, 20/20 x 12 diversity); smoke identities exactly 0 and EXP-027 W4 reproduced; manifest and preregistration hashes checked; analyze() recomputed locally from the CSVs gives the same report and results JSON; W4 and W8 reproduce EXP-029 (largest UTMOS difference 2.5e-4). Frozen verdict: TOH3 supported, TOH2 not_supported. Post hoc: the mirrored-map control did about as well as TOH3. Development evidence only; awaiting requester review."
+    },
+    {
+      "id": "EVAL-024",
+      "title": "Three single-formula handovers (TOH, QH, BTH) against the previous handover methods, with a teacher-free random-map control (EXP-031)",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "todo",
+      "updated": "2026-11-15",
+      "acceptance": "Preregistration is frozen before GPU synthesis (Amendment 1: df26da1412bf..., first freeze ec06ed0568b4...) with locked code and EXP-027/EXP-011/EXP-030/failure-config input hashes; the Colab T4 smoke test passes the split-student, identity-map, TOH-identity-equals-student, QH-self-identity, QH-value and blind-teacher repeat checks (<= 1e-5), the TOH3, BTH3 and random-map checks on real teacher runs, the policy checks, and EXP-027 W4 reproduction (<= 0.01); the run evaluates STU, W4, W5, W6, W8, TOH3, QH3, BTH3 and RND on development speakers 1-30 x clean, gauss25, noisy15, reverb03, reverb09 and babble15 (180 cases) and STU, W4, W8, TOH3, QH3, BTH3 and RND on 20 x 12 clean pitch diversity with aligned CVf0; applies the frozen T1/T2 (teacher), C (condition safety) and M (against W4, W8, STAC, CH3, CH3_LTT) rules to each of TOH3, QH3 and BTH3; reports the EXP-011 reproduction and the DEMAND hash; and writes MANIFEST.json.",
+      "evidence": [
+        "research/experiments/EXP-031-snr-toh-method-comparison/README.md",
+        "research/experiments/EXP-031-snr-toh-method-comparison/preregistration.json",
+        "code/colab/run_method_comparison.py",
+        "code/colab/DMOSpeech2_EXP031_SNR_TOH_Method_Comparison.ipynb",
+        "code/tests/test_method_comparison.py",
+        "docs/progress/log/2026-11-15-exp031-method-comparison-setup.md",
+        "docs/progress/log/2026-11-15-handover-invariance-theory.md",
+        "docs/progress/log/2026-11-15-blind-teacher-handover-design.md"
       ]
     }
   ]

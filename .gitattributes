@@ -26,3 +26,4 @@ research/experiments/EXP-027-transmissibility-confirmation/results/** -text
 research/experiments/EXP-028-transmissibility-bridge/results/** -text
 research/experiments/EXP-029-damped-transmissibility-stac/results/** -text
 research/experiments/EXP-030-timing-only-handover/results/** -text
+research/experiments/EXP-031-snr-toh-method-comparison/results/** -text

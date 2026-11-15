@@ -1,6 +1,6 @@
 # EXP-030: Timing-Only Handover (TOH) pilot
 
-**Status:** prepared and preregistered on 2026-11-15, before any synthesis (`ebe2b773c02f...`). Amendment 1 (same day, before any main-run synthesis): the first Colab smoke test stopped on the time-map check; the map's last frame is no longer pinned (see the [setup log](../../../docs/progress/log/2026-11-15-exp030-timing-only-handover-setup.md)), and the preregistration was re-frozen (first freeze `575df8686329...`). Task EVAL-023 (todo). The run needs a Colab Tesla T4: [notebook](../../../code/colab/DMOSpeech2_EXP030_Timing_Only_Handover.ipynb), [runner](../../../code/colab/run_timing_only_handover.py), [tests](../../../code/tests/test_timing_only_handover.py).
+**Status:** prepared and preregistered on 2026-11-15, before any synthesis (`ebe2b773c02f...`). Amendment 1 (same day, before any main-run synthesis): the first Colab smoke test stopped on the time-map check; the map's last frame is no longer pinned (see the [setup log](../../../docs/progress/log/2026-11-15-exp030-timing-only-handover-setup.md)), and the preregistration was re-frozen (first freeze `575df8686329...`). **Ran on 2026-11-15 (Colab Tesla T4, 120/120 quality cases, 20/20 × 12 diversity). Frozen verdict for TOH3: `supported`; TOH2: `not_supported`** (see [Results](#results-2026-11-15)). Task EVAL-023 (review). Files: [notebook](../../../code/colab/DMOSpeech2_EXP030_Timing_Only_Handover.ipynb), [runner](../../../code/colab/run_timing_only_handover.py), [tests](../../../code/tests/test_timing_only_handover.py).
 
 - **A development pilot:** it tests whether one new part works. It is not evidence for a final method.
 - **Not adopted:** nothing here changes the thesis method, and no adviser has reviewed it.
@@ -87,8 +87,41 @@ Bounds are 95% speaker-level bootstrap intervals (B = 2000, seed 2026).
 - **Timing does not carry the variety:** TOH still blocks the condition but does not replace the teacher's sound. The teacher's variety would then be pitch movement, which the time map cannot carry.
 - **Not supported:** TOH is dropped. No novelty claim is forced.
 
+## Results (2026-11-15)
+
+**Verified before import:**
+- the smoke identities were exactly 0;
+- the preregistration hash matches;
+- a local recomputation from the CSVs gives the same report;
+- W4 and W8 repeat EXP-029's stored scores (largest UTMOS difference 2.5e-4).
+
+See the [results log](../../../docs/progress/log/2026-11-15-exp030-results.md).
+
+**Frozen hypotheses, TOH3:**
+
+| | Result | Holds |
+|---|---|---|
+| H1a | CVf0 vs STU +0.0269 [+0.0204, +0.0337] | yes |
+| H1b | CVf0 vs W3 +0.0012 [−0.0026, +0.0055] | yes |
+| H2a | Noise UTMOS vs W4 +0.885 [+0.762, +1.021] | yes |
+| H2b | Noise UTMOS vs STU −0.036 [−0.094, +0.022] | yes |
+| H3 | Clean vs W8: ΔUTMOS −0.045; ΔWER upper bound 0.000; ΔSIM lower bound −0.004 | yes |
+
+**TOH2:** only H2b fails (−0.109 [−0.173, −0.054] against the −0.10 bar).
+
+**In plain terms:**
+- **Clean prompts:** at 12 passes, TOH3 matches W4 (13 passes) on clean quality (UTMOS 3.719 against 3.737) and pitch variety (CVf0 0.0734 against 0.0735).
+- **White-noise prompts:** TOH3 keeps the student alone's quality instead of the teacher's copied noise. At gauss25 its UTMOS is 3.599, against 3.647 for the student alone and 2.438 for W4. At noisy15 TOH3 has no runaway outputs, against one for W4.
+- **Telephone prompts:** no arm differs, including the student alone.
+
+**Caveats (exploratory, outside the verdict):**
+- **The mirror control matches TOH3.** MIR3 does about as well on pitch variety (MIR3 − TOH3 −0.0030 [−0.0088, +0.0023]) and on quality.
+- **What is and is not shown:** per-seed re-timing of the student's draft restores the teacher's level of CVf0. That the teacher's *particular* timing is needed is not shown.
+- **CVf0 counts timing:** it compares seeds frame by frame without alignment, so timing differences across seeds count as variety.
+- **Diagnostics:** [`results/diagnostics.json`](results/diagnostics.json), from `code/analysis/exp030_diagnostics.py`.
+
 ## Data and evidence status
 
 - **Development evidence only:** these speakers informed EXP-029.
 - **Audio** is not committed.
-- **Results** will be stored under `results/` with a SHA-256 manifest.
+- **Results:** stored under `results/`, byte-identical to the Colab zip (sha256 `db4679f554dc...`), with the runner's SHA-256 `MANIFEST.json`. The one exception is `diagnostics.json`, which was added post hoc.
