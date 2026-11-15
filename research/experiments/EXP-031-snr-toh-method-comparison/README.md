@@ -1,8 +1,9 @@
 # EXP-031: three single-formula handovers against the previous handover methods
 
-**Status:** prepared and preregistered on 2026-11-15, before any synthesis.
+**Status:** prepared and preregistered on 2026-11-15, before any synthesis; current freeze `a28c78a6d87a...`.
 - **First freeze:** `ec06ed0568b4...`.
 - **Amendment 1 (same day, still before any synthesis):** QH3 and BTH3 were added, and the primary methods became three single-formula handovers with no routing. The preregistration was re-frozen as `df26da1412bf...`.
+- **Amendment 2 (same day, after the first Colab smoke test stopped and before any main-run synthesis):** the blind teacher's placeholder condition is now a one-frame zero mel instead of a 512-sample silent waveform, which was too short for the input routine's spectrogram padding. The placeholder is dropped in both guidance branches, so the method is unchanged. Re-frozen as `a28c78a6d87a...`.
 
 Task EVAL-024 (todo). The run needs a Colab Tesla T4, about 3 hours. Files: [notebook](../../../code/colab/DMOSpeech2_EXP031_SNR_TOH_Method_Comparison.ipynb), [runner](../../../code/colab/run_method_comparison.py), [tests](../../../code/tests/test_method_comparison.py).
 
@@ -107,7 +108,7 @@ All thresholds were fixed by earlier work. The comparison is paired: the same te
 - **EXP-027's W4:** reproduced (≤ 0.01).
 - **Micro runs:** both stages, including one babble prompt.
 
-## Hypotheses and verdict rule (frozen, Amendment 1)
+## Hypotheses and verdict rule (frozen, Amendments 1 and 2)
 
 These apply to each candidate X in TOH3, QH3 and BTH3.
 

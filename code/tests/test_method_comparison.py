@@ -102,6 +102,82 @@ class QuantileHandoverTests(unittest.TestCase):
         self.assertFalse(mc.toh_map_ok(np.arange(80, dtype=float) * 0.5, 80, 8))
 
 
+class _FT(np.ndarray):
+    """A numpy array with the few tensor methods the blind-teacher code calls."""
+    def clone(self):
+        return self.copy().view(_FT)
+
+    def unsqueeze(self, d):
+        return np.expand_dims(self, d).view(_FT)
+
+    def to(self, device):
+        return self
+
+
+class _FakeTorch:
+    float32 = np.float32
+
+    @staticmethod
+    def zeros(*shape, dtype=None, device=None):
+        return np.zeros(shape).view(_FT)
+
+    @staticmethod
+    def randn(*shape, dtype=None, generator=None):
+        return generator.standard_normal(shape).view(_FT)
+
+    @staticmethod
+    def tensor(x, device=None, dtype=None):
+        return float(x)
+
+    @staticmethod
+    def inference_mode():
+        import contextlib
+        return contextlib.nullcontext()
+
+
+class _FakePipe:
+    """Stands in for rf.Pipeline: records what reaches the input routine and the teacher."""
+    def __init__(self):
+        import math as _m
+        self.torch, self.device, self.calls, self.cond_shapes = _FakeTorch(), "cpu", [], []
+        self.convert_char_to_pinyin = lambda texts: texts
+        grid = [1 - _m.cos(_m.pi / 2 * i / 16) for i in range(17)]
+        self.sampler = type("S", (), {"CFG_STRENGTH": 2.0, "SWAY_TEACHER_GRID": grid,
+                                      "make_local_generator": staticmethod(lambda seed: np.random.default_rng(seed))})()
+        pipe = self
+
+        class TTS:
+            @staticmethod
+            def _prepare_inputs(cond, text, n):
+                pipe.cond_shapes.append(tuple(cond.shape))
+                return cond, "ids", np.zeros((1, n, 100)).view(_FT), None, n, n
+
+            @staticmethod
+            def teacher(drop_audio_cond, drop_text, x, cond, text, time, mask):
+                pipe.calls.append((drop_audio_cond, drop_text))
+                return 0.1 * x + (0.0 if drop_text else 0.05)
+
+        self.tts = TTS()
+
+
+class BlindTeacherTests(unittest.TestCase):
+    def test_blind_teacher_never_receives_the_prompt(self):
+        """Amendment 2 regression: the placeholder is a one-frame mel (no STFT), and both guidance branches drop the
+        audio condition, so nothing from the prompt reaches the teacher."""
+        pipe = _FakePipe()
+        bctx = mc.blind_context(pipe, {"gt_text": "hello world"}, 120, 5)
+        self.assertEqual(pipe.cond_shapes, [(1, 1, 100)])
+        self.assertEqual(bctx["m"], 120)
+        self.assertEqual(tuple(bctx["y0"].shape), (1, 120, 100))
+        ep = mc.blind_teacher_endpoint(pipe, bctx)
+        self.assertEqual(tuple(ep.shape), (1, 120, 100))
+        self.assertEqual(len(pipe.calls), 2 * (mc.HANDOVER_STEP + 1))
+        self.assertTrue(all(drop_audio for drop_audio, _ in pipe.calls))
+        self.assertEqual({drop_text for _, drop_text in pipe.calls}, {True, False})
+        again = mc.blind_teacher_endpoint(pipe, mc.blind_context(pipe, {"gt_text": "hello world"}, 120, 5))
+        np.testing.assert_array_equal(ep, again)
+
+
 class PolicyTests(unittest.TestCase):
     def test_constants_match_their_sources(self):
         swsr = (ROOT / "code/colab/run_swsr_handover_prelim.py").read_text(encoding="utf-8")
