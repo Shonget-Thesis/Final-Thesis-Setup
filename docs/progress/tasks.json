@@ -777,8 +777,8 @@
       "id": "EVAL-024",
       "title": "Three single-formula handovers (TOH, QH, BTH) against the previous handover methods, with a teacher-free random-map control (EXP-031)",
       "owner": "Rhenel Jhon R. Sajol",
-      "status": "todo",
-      "updated": "2026-11-15",
+      "status": "review",
+      "updated": "2026-11-16",
       "acceptance": "Preregistration is frozen before GPU synthesis (Amendment 2: a28c78a6d87a...; Amendment 1: df26da1412bf...; first freeze ec06ed0568b4...) with locked code and EXP-027/EXP-011/EXP-030/failure-config input hashes; the Colab T4 smoke test passes the split-student, identity-map, TOH-identity-equals-student, QH-self-identity, QH-value and blind-teacher repeat checks (<= 1e-5), the TOH3, BTH3 and random-map checks on real teacher runs, the policy checks, and EXP-027 W4 reproduction (<= 0.01); the run evaluates STU, W4, W5, W6, W8, TOH3, QH3, BTH3 and RND on development speakers 1-30 x clean, gauss25, noisy15, reverb03, reverb09 and babble15 (180 cases) and STU, W4, W8, TOH3, QH3, BTH3 and RND on 20 x 12 clean pitch diversity with aligned CVf0; applies the frozen T1/T2 (teacher), C (condition safety) and M (against W4, W8, STAC, CH3, CH3_LTT) rules to each of TOH3, QH3 and BTH3; reports the EXP-011 reproduction and the DEMAND hash; and writes MANIFEST.json.",
       "evidence": [
         "research/experiments/EXP-031-snr-toh-method-comparison/README.md",
@@ -788,7 +788,34 @@
         "code/tests/test_method_comparison.py",
         "docs/progress/log/2026-11-15-exp031-method-comparison-setup.md",
         "docs/progress/log/2026-11-15-handover-invariance-theory.md",
-        "docs/progress/log/2026-11-15-blind-teacher-handover-design.md"
+        "docs/progress/log/2026-11-15-blind-teacher-handover-design.md",
+        "research/experiments/EXP-031-snr-toh-method-comparison/results/MANIFEST.json",
+        "research/experiments/EXP-031-snr-toh-method-comparison/results/METHOD_COMPARISON_REPORT.md",
+        "research/experiments/EXP-031-snr-toh-method-comparison/results/method_comparison_results.json",
+        "research/experiments/EXP-031-snr-toh-method-comparison/results/quality.csv",
+        "research/experiments/EXP-031-snr-toh-method-comparison/results/diversity.csv",
+        "research/experiments/EXP-031-snr-toh-method-comparison/results/demand_sha256.txt",
+        "research/experiments/EXP-031-snr-toh-method-comparison/results/smoke/smoke_check.json",
+        "research/experiments/EXP-031-snr-toh-method-comparison/results/diagnostics.json",
+        "code/analysis/exp031_diagnostics.py",
+        "docs/progress/log/2026-11-16-exp031-results.md"
+      ],
+      "validation": "2026-11-16: Colab T4 run on 2026-11-15 under preregistration a28c78a6d87a... (180/180 quality, 20/20 x 12 diversity); smoke identities exactly 0, map and policy checks passed, EXP-027 W4 reproduced; manifest and preregistration hashes checked; analyze() recomputed locally from the CSVs gives the same results JSON and a byte-identical report; W4 and W8 reproduce EXP-011 (largest UTMOS difference 1.1e-3); recorded policy steps match recomputation in all 180 cases. Frozen verdicts: TOH3 teacher_not_shown_needed / beats_all_previous / condition_safety_shown; QH3 teacher_not_shown_needed / beats_no_previous / condition_safety_not_shown; BTH3 teacher_not_shown_needed / beats_all_previous / condition_safety_not_shown. Post hoc: the student alone also beats all five previous methods under the frozen M function. Development evidence only; awaiting requester review."
+    },
+    {
+      "id": "EVAL-025",
+      "title": "Variety per teacher pass against the DMOSpeech 2 paper's t_switch = 0.25, on clean and noisy prompts (EXP-032)",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "todo",
+      "updated": "2026-11-16",
+      "acceptance": "Preregistration is frozen before GPU synthesis (c952fe555d49...) with locked code and EXP-017/EXP-031/EXP-027 input hashes; the Colab T4 smoke test passes the split-student and repeated-P25 identities (<= 1e-5), the 32-interval teacher function against the 16-interval trajectory (<= 1e-4), EXP-027 W4 reproduction (<= 0.01), EXP-031 reproduction of STU, W4 and W8 on development speaker 1 under clean and noisy15 (<= 0.01), and a tensor-bank write and reload; the run evaluates STU, W1, W2, W3, W4, W8, P25, P25R and TCH on development speakers 1-30 x clean and noisy15 (60 cases) and all but TCH on 20 x 12 seeds x both conditions; the analysis applies the frozen label rules, reports the variety and quality curves against P25 with bootstrap intervals, the EXP-031 and EXP-017 reproductions, and writes MANIFEST.json and bank_index.json.",
+      "evidence": [
+        "research/experiments/EXP-032-variety-per-pass/README.md",
+        "research/experiments/EXP-032-variety-per-pass/preregistration.json",
+        "code/colab/run_variety_per_pass.py",
+        "code/colab/DMOSpeech2_EXP032_Variety_Per_Pass.ipynb",
+        "code/tests/test_variety_per_pass.py",
+        "docs/progress/log/2026-11-16-exp032-variety-per-pass-setup.md"
       ]
     }
   ]

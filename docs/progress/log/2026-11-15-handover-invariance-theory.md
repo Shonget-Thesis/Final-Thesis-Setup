@@ -75,6 +75,13 @@ The rank result is textbook invariance theory, used in rank tests. What is new h
 | P2 | Teacher information kept (pitch pattern, alignment-aware pitch variety): W ≥ Voice-Swap ≥ Affine ≥ QH ≥ TOH ≈ student alone |
 | P3 | On white-noise prompts, QH is as clean as TOH and keeps more of the teacher's pitch variety. On reverberation or babble, which are outside G3, QH may let the teacher's temporal smearing through, while TOH passes no patterns |
 
+**First test on the model (EXP-031, 2026-11-16; exploratory, development speakers):**
+- **P2, consistent:** aligned CVf0 ran W4 0.0584 ≥ QH3 0.0521 ≥ TOH3 0.0435 ≈ student alone 0.0410. QH3 − TOH3 was +0.0086 [+0.0022, +0.0160], and TOH3 − STU +0.0025 [−0.0021, +0.0074]. Voice-Swap and the Affine Handover were not run.
+- **P3, white noise:** QH3 was as clean as TOH3 (gauss25 3.479 against 3.470; noisy15 2.009 against 1.883).
+- **P3, reverberation and babble:** no difference was shown (QH3 − TOH3: −0.007 [−0.033, +0.019]).
+- **P1:** not measured.
+- **The frozen verdicts:** under these, QH3 did not show that its teacher is needed, because a random re-timing matched it on raw CVf0. See the [EXP-031 results log](2026-11-16-exp031-results.md).
+
 **It explains an earlier result.** White noise acts on log-mel as g(x) = log(eˣ + ν), which a per-band shift cannot undo. That is why Voice-Swap only reduced noisy-prompt failures from 126 to 74 of 300 in EXP-020, while the student alone did better.
 
 ## Toy check (synthetic spectrograms, not model outputs)

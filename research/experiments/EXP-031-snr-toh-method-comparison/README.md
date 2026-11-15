@@ -1,11 +1,11 @@
 # EXP-031: three single-formula handovers against the previous handover methods
 
-**Status:** prepared and preregistered on 2026-11-15, before any synthesis; current freeze `a28c78a6d87a...`.
+**Status:** ran on 2026-11-15 (Colab Tesla T4) under the frozen preregistration `a28c78a6d87a...`; results imported on 2026-11-16 (see [Results](#results-imported-2026-11-16)). Prepared and preregistered on 2026-11-15, before any synthesis.
 - **First freeze:** `ec06ed0568b4...`.
 - **Amendment 1 (same day, still before any synthesis):** QH3 and BTH3 were added, and the primary methods became three single-formula handovers with no routing. The preregistration was re-frozen as `df26da1412bf...`.
 - **Amendment 2 (same day, after the first Colab smoke test stopped and before any main-run synthesis):** the blind teacher's placeholder condition is now a one-frame zero mel instead of a 512-sample silent waveform, which was too short for the input routine's spectrogram padding. The placeholder is dropped in both guidance branches, so the method is unchanged. Re-frozen as `a28c78a6d87a...`.
 
-Task EVAL-024 (todo). The run needs a Colab Tesla T4, about 3 hours. Files: [notebook](../../../code/colab/DMOSpeech2_EXP031_SNR_TOH_Method_Comparison.ipynb), [runner](../../../code/colab/run_method_comparison.py), [tests](../../../code/tests/test_method_comparison.py).
+Task EVAL-024 (review). The run took a Colab Tesla T4, about 3 hours. Files: [notebook](../../../code/colab/DMOSpeech2_EXP031_SNR_TOH_Method_Comparison.ipynb), [runner](../../../code/colab/run_method_comparison.py), [tests](../../../code/tests/test_method_comparison.py).
 
 - **A development experiment:** the speakers are development speakers. It is not held-out evidence.
 - **Not adopted:** nothing here changes the thesis method, and no adviser has reviewed it.
@@ -26,7 +26,13 @@ DMOSpeech 2's handover is kept: the guided teacher runs 3 sway steps, then the s
 |---|---|---|
 | `TOH3` (EXP-030) | The teacher's timing | S₀ re-timed along a slope-limited DTW map from the teacher's estimate T₃ |
 | `QH3` (Quantile Handover) | Each band's time order | P_b(t) = sort(S₀,b)[rank of T₃,b(t)]. Every value is the student's own value in that band. Exactly unchanged by any stationary channel or noise floor |
-| `BTH3` (Blind-Teacher Handover) | The timing of a teacher that never receives the prompt | The teacher is given the target text only, over the target's frames, with the audio condition dropped in both guidance branches. Then TOH's map onto S₀. No property of the prompt can reach the teacher, and its passes run on the target's frames only |
+| `BTH3` (Blind-Teacher Handover) | The timing of a teacher that never receives the prompt | The teacher is given the target text only, over the target's frames, with the audio condition dropped in both guidance branches. Then TOH's map onto S₀. The prompt's audio never reaches the teacher, and its passes run on the target's frames only |
+
+**Correction (2026-11-16):** an earlier version of this row said that no property of the prompt can reach the blind teacher. It can, in two ways:
+- **The target length:** the pipeline's duration estimate sets it from the prompt, and in this run it changed with the condition for most speakers.
+- **The student's draft:** the map is aligned to S₀, which hears the prompt.
+
+Only the teacher's estimate at a given length is free of the prompt. See the [results log](../../../docs/progress/log/2026-11-16-exp031-results.md).
 
 S₀ is the student's one-step draft. The student's remaining three levels run from the payload with the same seeds as the student alone.
 
@@ -158,8 +164,36 @@ Bounds are 95% speaker-level bootstrap intervals (B = 2000, seed 2026).
 - **White noise is easy to win on:** two of the five degraded conditions are white noise, which is why C and the per-condition tables are reported separately.
 - **No listening test, and no held-out speakers.**
 
+## Results (imported 2026-11-16)
+
+Both stages completed: 180/180 quality cases and 20/20 × 12 diversity.
+- **Checks:** the smoke identities were exactly 0. The manifest and preregistration hashes match. `analyze()` reruns locally to the same results. The EXP-011 reproduction is within 1.1e-3 UTMOS.
+- **Full account:** the [results log](../../../docs/progress/log/2026-11-16-exp031-results.md).
+- **Descriptive diagnostics:** `results/diagnostics.json`, from `code/analysis/exp031_diagnostics.py`.
+
+**Frozen verdicts:**
+
+| Candidate | Teacher (T1, T2) | Method (M) | Condition safety (C) |
+|---|---|---|---|
+| `TOH3` | `teacher_not_shown_needed` | `beats_all_previous` | `condition_safety_shown` (lower bound +0.001) |
+| `QH3` | `teacher_not_shown_needed` | `beats_no_previous` (one utterance's inserted word puts the clean WER bound at +0.0125) | `condition_safety_not_shown` |
+| `BTH3` | `teacher_not_shown_needed` | `beats_all_previous` | `condition_safety_not_shown` |
+
+**What it means:**
+- **The teacher is not shown to be needed.** The teacher-free random re-timing (`RND`, 4 passes) matches every candidate on raw pitch variety and clean UTMOS. This is the outcome listed above as "random re-timing does as well".
+- **"Beats all previous" does not credit the teacher.** Under the same frozen M function (checked post hoc), the student alone (4 passes) also beats all five previous methods. The margins come almost entirely from white noise, which the teacher copies and the student does not.
+- **The teacher's measurable contribution is pitch variety beyond timing.** On aligned CVf0, W4 adds +0.0175 over the student. Some of it is carried by two candidates (exploratory):
+  - QH3: 64% of W4's gain, at W4's clean UTMOS;
+  - BTH3: 46%;
+  - TOH3 and RND: about 15%.
+- **Variety trades against UTMOS.** Arms with more of this variety have lower clean UTMOS, as in EXP-029.
+- **For the team:** whether the variety is wanted needs a listening test, and it is a team decision.
+- **BTH3's teacher** ran on about half the sequence (share 0.504), but no time was measured.
+
 ## Data and evidence status
 
 - **Development evidence only.**
 - **Audio** is not committed.
-- **Results** will be stored under `results/` with a SHA-256 manifest and the DEMAND file's hash (`demand_sha256.txt`).
+- **Results** are stored under `results/`:
+  - the nine files from the results zip, byte-identical, with a SHA-256 manifest and the DEMAND file's hash (`demand_sha256.txt`, `854dd0e5ef33...`);
+  - `diagnostics.json`.

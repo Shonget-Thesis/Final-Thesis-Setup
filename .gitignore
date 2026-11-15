@@ -19,6 +19,7 @@ venv/
 *.zip
 *.tar
 *.tar.gz
+*.npz
 code/vendor/dmospeech2/ckpts/
 research/data/
 research/runs/

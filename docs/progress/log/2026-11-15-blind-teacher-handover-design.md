@@ -76,3 +76,17 @@ No task ID yet. Requested by Rhenel Jhon R. Sajol: set the title and paper aside
 ## Checks run
 
 The three web searches above. No code was written and no model was run.
+
+## Correction and test result (2026-11-16)
+
+**"Exact independence from the prompt" above is wrong in two places:**
+- **"The map is a function of the text, the duration and the teacher's seed only":** wrong. The map is TOH's alignment of the blind teacher's estimate to the student's draft S₀, and S₀ hears the prompt.
+- **"The duration":** it is set by the pipeline's duration estimate, which reads the prompt. In EXP-031 it changed with the recording condition for 19 to 25 of 30 speakers per degraded condition.
+
+**What does hold:** the teacher's estimate at a given length is free of the prompt.
+
+**EXP-031:**
+- **Frozen verdicts for BTH3:** `teacher_not_shown_needed`, `beats_all_previous`, `condition_safety_not_shown`.
+- **Exploratory:** BTH3 carried 46% of W4's aligned pitch-variety gain, and its teacher ran on 0.504 of the full sequence.
+
+See the [EXP-031 results log](2026-11-16-exp031-results.md).
