@@ -723,7 +723,7 @@
       "id": "EVAL-022",
       "title": "Damped slow-band transmissibility calibration and mixed-condition STAC routing diagnostic (EXP-029)",
       "owner": "Rhenel Jhon R. Sajol",
-      "status": "todo",
+      "status": "in_progress",
       "updated": "2026-11-15",
       "acceptance": "Preregistration is frozen before GPU execution (e58f3856ad20...); Colab T4 smoke test verifies exact TB(alpha=0)==S1, TB(alpha=1)==TBRG, split-student identity (<= 1e-5), and EXP-027 W4 reproduction (<= 0.01); run evaluates 10 arms (W4, TB25, TB50, TB75, TBRG, BLND, W5R2, W6R2, W8R2, W8) across 30 dev speakers (61-90) x {clean, gauss18, noisy15} (90 cases) plus 20 x 12 clean diversity, leaving remaining 170 calibration and all 200 test speakers untouched, and reports clean Pareto frontier, noisy behavior, zero-extra-NFE telemetry correlations, and 5-fold mixed-condition STAC routing with SHA-256 MANIFEST.json.",
       "evidence": [
@@ -732,7 +732,16 @@
         "code/colab/run_damped_transmissibility_stac.py",
         "code/colab/DMOSpeech2_EXP029_Damped_Transmissibility_STAC.ipynb",
         "code/tests/test_damped_transmissibility_stac.py",
-        "docs/progress/log/2026-11-15-exp029-damped-transmissibility-stac-design.md"
+        "docs/progress/log/2026-11-15-exp029-damped-transmissibility-stac-design.md",
+        "research/experiments/EXP-029-damped-transmissibility-stac/results/MANIFEST.json",
+        "research/experiments/EXP-029-damped-transmissibility-stac/results/DAMPED_TRANSMISSIBILITY_REPORT.md",
+        "research/experiments/EXP-029-damped-transmissibility-stac/results/damped_transmissibility_results.json",
+        "research/experiments/EXP-029-damped-transmissibility-stac/results/quality.csv",
+        "research/experiments/EXP-029-damped-transmissibility-stac/results/smoke/smoke_check.json",
+        "research/experiments/EXP-029-damped-transmissibility-stac/results/diagnostics.json",
+        "code/analysis/exp029_diagnostics.py",
+        "docs/progress/log/2026-11-15-exp029-notebook-ram.md",
+        "docs/progress/log/2026-11-15-exp029-quality-stage-results.md"
       ]
     }
   ]
