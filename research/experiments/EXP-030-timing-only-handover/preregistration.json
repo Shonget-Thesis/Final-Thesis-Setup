@@ -1,0 +1,307 @@
+{
+  "experiment": "EXP-030",
+  "task_id": "EVAL-023",
+  "title": "Timing-Only Handover (TOH) pilot",
+  "framing": "Development pilot. DMOSpeech 2's teacher-guided handover is kept; only what crosses changes: the teacher's timing, as a slope-limited time map applied to the student's own one-step draft, instead of the teacher's spectral estimate. EXP-029's cohorts and seeds are reused.",
+  "mechanism": {
+    "teacher_steps": [
+      2,
+      3
+    ],
+    "n_groups": 10,
+    "feature_smooth": 3,
+    "band_frac": 0.1,
+    "min_band": 8,
+    "dtw_steps": [
+      [
+        1,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        1
+      ]
+    ],
+    "map": "mean student frame per teacher frame, endpoints pinned, made non-decreasing"
+  },
+  "conditions": [
+    "clean",
+    "gauss25",
+    "noisy15",
+    "telephone"
+  ],
+  "noise_conditions": [
+    "gauss25",
+    "noisy15"
+  ],
+  "arms": [
+    "STU",
+    "W2",
+    "W3",
+    "W4",
+    "TOH2",
+    "TOH3",
+    "MIR3",
+    "W8"
+  ],
+  "costs": {
+    "STU": 4,
+    "W2": 9,
+    "W3": 11,
+    "W4": 13,
+    "TOH2": 10,
+    "TOH3": 12,
+    "MIR3": 12,
+    "W8": 21
+  },
+  "n_qual_speakers": 30,
+  "n_qual_cases": 120,
+  "qual_utts": [
+    {
+      "utt_id": "common_voice_en_22461617-common_voice_en_22461638",
+      "speaker_id": "common_voice_en_22461617"
+    },
+    {
+      "utt_id": "common_voice_en_22839883-common_voice_en_22839889",
+      "speaker_id": "common_voice_en_22839883"
+    },
+    {
+      "utt_id": "common_voice_en_22941073-common_voice_en_22941074",
+      "speaker_id": "common_voice_en_22941073"
+    },
+    {
+      "utt_id": "common_voice_en_23252329-common_voice_en_23252333",
+      "speaker_id": "common_voice_en_23252329"
+    },
+    {
+      "utt_id": "common_voice_en_23750957-common_voice_en_23774578",
+      "speaker_id": "common_voice_en_23750957"
+    },
+    {
+      "utt_id": "common_voice_en_23998981-common_voice_en_23998980",
+      "speaker_id": "common_voice_en_23998981"
+    },
+    {
+      "utt_id": "common_voice_en_24518104-common_voice_en_24518109",
+      "speaker_id": "common_voice_en_24518104"
+    },
+    {
+      "utt_id": "common_voice_en_24819370-common_voice_en_24819368",
+      "speaker_id": "common_voice_en_24819370"
+    },
+    {
+      "utt_id": "common_voice_en_25127181-common_voice_en_25127184",
+      "speaker_id": "common_voice_en_25127181"
+    },
+    {
+      "utt_id": "common_voice_en_25200065-common_voice_en_25200064",
+      "speaker_id": "common_voice_en_25200065"
+    },
+    {
+      "utt_id": "common_voice_en_25216968-common_voice_en_25216966",
+      "speaker_id": "common_voice_en_25216968"
+    },
+    {
+      "utt_id": "common_voice_en_25568854-common_voice_en_25568855",
+      "speaker_id": "common_voice_en_25568854"
+    },
+    {
+      "utt_id": "common_voice_en_25662916-common_voice_en_25663069",
+      "speaker_id": "common_voice_en_25662916"
+    },
+    {
+      "utt_id": "common_voice_en_25693607-common_voice_en_25693608",
+      "speaker_id": "common_voice_en_25693607"
+    },
+    {
+      "utt_id": "common_voice_en_25880669-common_voice_en_25880691",
+      "speaker_id": "common_voice_en_25880669"
+    },
+    {
+      "utt_id": "common_voice_en_26453369-common_voice_en_26453364",
+      "speaker_id": "common_voice_en_26453369"
+    },
+    {
+      "utt_id": "common_voice_en_26933529-common_voice_en_26933532",
+      "speaker_id": "common_voice_en_26933529"
+    },
+    {
+      "utt_id": "common_voice_en_27434681-common_voice_en_27434683",
+      "speaker_id": "common_voice_en_27434681"
+    },
+    {
+      "utt_id": "common_voice_en_28003405-common_voice_en_28003408",
+      "speaker_id": "common_voice_en_28003405"
+    },
+    {
+      "utt_id": "common_voice_en_28065832-common_voice_en_28065833",
+      "speaker_id": "common_voice_en_28065832"
+    },
+    {
+      "utt_id": "common_voice_en_28917649-common_voice_en_28917648",
+      "speaker_id": "common_voice_en_28917649"
+    },
+    {
+      "utt_id": "common_voice_en_30232728-common_voice_en_30232726",
+      "speaker_id": "common_voice_en_30232728"
+    },
+    {
+      "utt_id": "common_voice_en_30757408-common_voice_en_30757409",
+      "speaker_id": "common_voice_en_30757408"
+    },
+    {
+      "utt_id": "common_voice_en_31005683-common_voice_en_31005688",
+      "speaker_id": "common_voice_en_31005683"
+    },
+    {
+      "utt_id": "common_voice_en_31499885-common_voice_en_31499889",
+      "speaker_id": "common_voice_en_31499885"
+    },
+    {
+      "utt_id": "common_voice_en_31959919-common_voice_en_31959922",
+      "speaker_id": "common_voice_en_31959919"
+    },
+    {
+      "utt_id": "common_voice_en_32125519-common_voice_en_32125526",
+      "speaker_id": "common_voice_en_32125519"
+    },
+    {
+      "utt_id": "common_voice_en_34054471-common_voice_en_34054473",
+      "speaker_id": "common_voice_en_34054471"
+    },
+    {
+      "utt_id": "common_voice_en_34184701-common_voice_en_34184697",
+      "speaker_id": "common_voice_en_34184701"
+    },
+    {
+      "utt_id": "common_voice_en_35734335-common_voice_en_35734342",
+      "speaker_id": "common_voice_en_35734335"
+    }
+  ],
+  "n_div_speakers": 20,
+  "div_seeds": 12,
+  "div_seed_base": 1000,
+  "div_utts": [
+    {
+      "utt_id": "common_voice_en_22461617-common_voice_en_22461638",
+      "speaker_id": "common_voice_en_22461617"
+    },
+    {
+      "utt_id": "common_voice_en_22839883-common_voice_en_22839889",
+      "speaker_id": "common_voice_en_22839883"
+    },
+    {
+      "utt_id": "common_voice_en_22941073-common_voice_en_22941074",
+      "speaker_id": "common_voice_en_22941073"
+    },
+    {
+      "utt_id": "common_voice_en_23252329-common_voice_en_23252333",
+      "speaker_id": "common_voice_en_23252329"
+    },
+    {
+      "utt_id": "common_voice_en_23750957-common_voice_en_23774578",
+      "speaker_id": "common_voice_en_23750957"
+    },
+    {
+      "utt_id": "common_voice_en_23998981-common_voice_en_23998980",
+      "speaker_id": "common_voice_en_23998981"
+    },
+    {
+      "utt_id": "common_voice_en_24518104-common_voice_en_24518109",
+      "speaker_id": "common_voice_en_24518104"
+    },
+    {
+      "utt_id": "common_voice_en_24819370-common_voice_en_24819368",
+      "speaker_id": "common_voice_en_24819370"
+    },
+    {
+      "utt_id": "common_voice_en_25127181-common_voice_en_25127184",
+      "speaker_id": "common_voice_en_25127181"
+    },
+    {
+      "utt_id": "common_voice_en_25200065-common_voice_en_25200064",
+      "speaker_id": "common_voice_en_25200065"
+    },
+    {
+      "utt_id": "common_voice_en_25216968-common_voice_en_25216966",
+      "speaker_id": "common_voice_en_25216968"
+    },
+    {
+      "utt_id": "common_voice_en_25568854-common_voice_en_25568855",
+      "speaker_id": "common_voice_en_25568854"
+    },
+    {
+      "utt_id": "common_voice_en_25662916-common_voice_en_25663069",
+      "speaker_id": "common_voice_en_25662916"
+    },
+    {
+      "utt_id": "common_voice_en_25693607-common_voice_en_25693608",
+      "speaker_id": "common_voice_en_25693607"
+    },
+    {
+      "utt_id": "common_voice_en_25880669-common_voice_en_25880691",
+      "speaker_id": "common_voice_en_25880669"
+    },
+    {
+      "utt_id": "common_voice_en_26453369-common_voice_en_26453364",
+      "speaker_id": "common_voice_en_26453369"
+    },
+    {
+      "utt_id": "common_voice_en_26933529-common_voice_en_26933532",
+      "speaker_id": "common_voice_en_26933529"
+    },
+    {
+      "utt_id": "common_voice_en_27434681-common_voice_en_27434683",
+      "speaker_id": "common_voice_en_27434681"
+    },
+    {
+      "utt_id": "common_voice_en_28003405-common_voice_en_28003408",
+      "speaker_id": "common_voice_en_28003405"
+    },
+    {
+      "utt_id": "common_voice_en_28065832-common_voice_en_28065833",
+      "speaker_id": "common_voice_en_28065832"
+    }
+  ],
+  "bars": {
+    "clean_utmos": -0.08,
+    "wer": 0.01,
+    "sim": -0.01,
+    "variety_ni_margin": -0.01,
+    "noise_student_margin": -0.1,
+    "runaway_wer": 1.0
+  },
+  "hypotheses": {
+    "H1a": "Clean pitch variety: CVf0(TOH3) - CVf0(STU), 95% bootstrap lower bound > 0 (the teacher's timing adds variety).",
+    "H1b": "Clean pitch variety: CVf0(TOH3) - CVf0(W3), lower bound >= -0.010 (timing alone keeps W3's variety).",
+    "H2a": "Noise blocked: per-speaker mean over gauss25 and noisy15 of UTMOS(TOH3) - UTMOS(W4), lower bound > 0.",
+    "H2b": "As good as the student on noise: same pooling, UTMOS(TOH3) - UTMOS(STU), lower bound >= -0.10.",
+    "H3": "Clean quality against W8: mean dUTMOS >= -0.08, dWER upper bound <= +0.01, dSIM lower bound >= -0.01."
+  },
+  "verdict_rule": "supported if H1a, H1b, H2a, H2b and H3 hold for TOH3; timing_does_not_carry_variety if H2a, H2b and H3 hold but H1a or H1b fails; not_supported if H2a, H2b or H3 fails; partial if a stage is missing. TOH2 is evaluated by the same rule against W2 as a secondary result and does not change the verdict. Telephone, MIR3, runaway counts (WER > 1) and the EXP-029 reproduction are exploratory or checks.",
+  "code_hashes": {
+    "run_timing_only_handover.py": "817e2bd600cd36ed93b4de9e4e5f5e6cd870d475f4c04cd564449954f5b8094e",
+    "run_damped_transmissibility_stac.py": "d569118c21c2990b0521b0713d2c538d38d2065672a406a878d4a21f9217738a",
+    "run_transmissibility_bridge.py": "e0939d83ff93544d02cfb5b75662d90c285cb4f3f700bff91c10381612b103fd",
+    "run_transmissibility_confirm.py": "f1e160797fc5e6970f1667481ea78f5f6cff9743571b6bf4584c028a6fd134bc",
+    "run_transmissibility_test.py": "be6b7dfe74b38399ce3b2f0c5ce3942abf7a4fe90e680f5e473591aab22701e1",
+    "run_selective_handover_prelim.py": "b61ef06b9ed0a7411d532d277e2525c436c08aab6a4ca541454672a9ea9be603",
+    "run_consistency_gate_prelim.py": "5d83b1acdf668e7b13981a5df0f6e24e24602fe31e051d00190fd5273a2ce6e3",
+    "run_grid32_prelim.py": "c7b4152da3449264ef2d7aefcea3492e04f9d45399e373ba2b6d448912bf0b84",
+    "run_noise_guidance_prelim.py": "48150a13101d1ecd5ed6da1085e6fd914381f8e22288f5bda7c48f2625dc064b",
+    "run_followup_tests.py": "6bce906980ff4c6c4b1209b086cab4fcbe11f7a2955a27badd698c2906af1801"
+  },
+  "input_hashes": {
+    "research/experiments/EXP-027-transmissibility-confirmation/results/quality.csv": "fadc58e2d5463f33749306771543ec475a63d2266b7268fbb451db42e5fc60e6",
+    "research/experiments/EXP-029-damped-transmissibility-stac/results/quality.csv": "b8434c365eccdefc1520113cf5642be3a6cd0a27fa0d938b1ca14ca9de841d16",
+    "research/experiments/EXP-029-damped-transmissibility-stac/results/diversity.csv": "a3fab2b29e7203daff9eb9c1a802b7d4b4ff75f944c079edfed63de235b65231"
+  },
+  "seed": 2026,
+  "boot_b": 2000,
+  "sha256": "575df86863299ae7ad30f2dcce8bb641076fb5b74f4677603ec5e43e184e65fe",
+  "created_utc": "2026-11-15T08:17:42.305782+00:00"
+}

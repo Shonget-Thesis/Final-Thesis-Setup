@@ -1,6 +1,6 @@
 {
   "experiment": "EXP-029",
-  "utc": "2026-11-15T04:21:08.060606+00:00",
+  "utc": "2026-11-15T07:06:20.174865+00:00",
   "files": {
     "preregistration": {
       "path": "/content/Final-Thesis-Setup/research/experiments/EXP-029-damped-transmissibility-stac/preregistration.json",
@@ -10,13 +10,17 @@
       "sha256": "b8434c365eccdefc1520113cf5642be3a6cd0a27fa0d938b1ca14ca9de841d16",
       "bytes": 168807
     },
+    "diversity.csv": {
+      "sha256": "a3fab2b29e7203daff9eb9c1a802b7d4b4ff75f944c079edfed63de235b65231",
+      "bytes": 26090
+    },
     "damped_transmissibility_results.json": {
-      "sha256": "93bcc4a972bff950afa2eac9d54cb0c5f22cf79a5235a1ad76db694ffc3d8e4c",
-      "bytes": 195261
+      "sha256": "76fe059cbf6ba0d29c686c1d218554df4527b37fdc9c9861785756c6745b7a46",
+      "bytes": 218123
     },
     "DAMPED_TRANSMISSIBILITY_REPORT.md": {
-      "sha256": "7c39f645e8f38cfa96f2905ee30976ce3ec3229f8deadd16e8aa9bc931fc12ac",
-      "bytes": 4463
+      "sha256": "2f9f2a9588b5b43a64a3d4cfdfc4898352fed60d45313d7795b49cd0c65993e8",
+      "bytes": 5056
     }
   }
 }

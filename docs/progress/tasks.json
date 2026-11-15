@@ -723,7 +723,7 @@
       "id": "EVAL-022",
       "title": "Damped slow-band transmissibility calibration and mixed-condition STAC routing diagnostic (EXP-029)",
       "owner": "Rhenel Jhon R. Sajol",
-      "status": "in_progress",
+      "status": "review",
       "updated": "2026-11-15",
       "acceptance": "Preregistration is frozen before GPU execution (e58f3856ad20...); Colab T4 smoke test verifies exact TB(alpha=0)==S1, TB(alpha=1)==TBRG, split-student identity (<= 1e-5), and EXP-027 W4 reproduction (<= 0.01); run evaluates 10 arms (W4, TB25, TB50, TB75, TBRG, BLND, W5R2, W6R2, W8R2, W8) across 30 dev speakers (61-90) x {clean, gauss18, noisy15} (90 cases) plus 20 x 12 clean diversity, leaving remaining 170 calibration and all 200 test speakers untouched, and reports clean Pareto frontier, noisy behavior, zero-extra-NFE telemetry correlations, and 5-fold mixed-condition STAC routing with SHA-256 MANIFEST.json.",
       "evidence": [
@@ -741,7 +741,26 @@
         "research/experiments/EXP-029-damped-transmissibility-stac/results/diagnostics.json",
         "code/analysis/exp029_diagnostics.py",
         "docs/progress/log/2026-11-15-exp029-notebook-ram.md",
-        "docs/progress/log/2026-11-15-exp029-quality-stage-results.md"
+        "docs/progress/log/2026-11-15-exp029-quality-stage-results.md",
+        "research/experiments/EXP-029-damped-transmissibility-stac/results/diversity.csv",
+        "docs/progress/log/2026-11-15-exp029-final-results.md"
+      ]
+    },
+    {
+      "id": "EVAL-023",
+      "title": "Timing-Only Handover (TOH) pilot: hand over only the teacher's timing as a time map of the student's draft (EXP-030)",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "todo",
+      "updated": "2026-11-15",
+      "acceptance": "Preregistration is frozen before GPU synthesis (575df8686329...) with locked code and EXP-027/EXP-029 input hashes; the Colab T4 smoke test passes the split-student, identity-map and TOH-identity-equals-student checks (<= 1e-5), the time-map checks on real teacher estimates, and EXP-027 W4 reproduction (<= 0.01); the run evaluates STU, W2, W3, W4, W8, TOH2, TOH3 and MIR3 on EXP-029's 30 development speakers x clean, gauss25, noisy15 and telephone (120 cases) and 20 x 12 clean pitch diversity, applies the frozen H1a/H1b/H2a/H2b/H3 verdict rule to TOH3 (TOH2 secondary), reports the EXP-029 reproduction of W4 and W8, and writes MANIFEST.json.",
+      "evidence": [
+        "research/experiments/EXP-030-timing-only-handover/README.md",
+        "research/experiments/EXP-030-timing-only-handover/preregistration.json",
+        "code/colab/run_timing_only_handover.py",
+        "code/colab/DMOSpeech2_EXP030_Timing_Only_Handover.ipynb",
+        "code/tests/test_timing_only_handover.py",
+        "docs/progress/log/2026-11-15-timing-only-handover-design.md",
+        "docs/progress/log/2026-11-15-exp030-timing-only-handover-setup.md"
       ]
     }
   ]

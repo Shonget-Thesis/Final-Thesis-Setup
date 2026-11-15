@@ -77,7 +77,24 @@ Task: EVAL-022 (now in_progress). Rhenel Jhon R. Sajol ran the EXP-029 notebook 
 
 ## Remaining blockers
 
-- **Diversity stage:** set `STAGE = "diversity"` in the notebook's setup cell and Run all.
+- **Diversity stage:** the notebook now defaults to it (see "Notebook default changed" below), so Run all is enough.
   - Step 3 restores `quality.csv` from Drive, and the analysis then runs the full rule.
   - About 45 minutes on a T4.
 - **Algorithm:** the agreed next step (create the algorithm after EXP-029) waits on that stage. Whether any 13-NFE bridge adds pitch variety over W4 decides which direction is open.
+
+## Notebook default changed (later on 2026-11-15)
+
+**What happened:**
+- A second zip (`...Results (1).zip`, sha256 `5ca827daa3a4a50c...`) was a rerun of the quality stage. It had no `diversity.csv`.
+- Its quality file, report, smoke files and diagnostics are byte-identical to the imported ones. Its results JSON differs only in its timestamp. It was not imported.
+- **Cause:** `STAGE` was still `"quality"`. The edit had been made in the Step 5 cell as `globals().get("STAGE", "Diversity")`, which keeps the setup cell's value, and the capital D would have been rejected anyway.
+
+**What changed:** notebook only. The runner and preregistration are unchanged, and `check_prereg()` still accepts `e58f3856ad20...`.
+- The setup cell now sets `STAGE = "diversity"`.
+- The Step 5 cell lowercases and checks `STAGE` and prints it before the run.
+- The title cell says the quality stage is complete.
+
+**Checks run:**
+- All notebook code cells compile.
+- `python -m unittest discover -s code/tests -p "test_damped_transmissibility_stac.py"`: 5 tests, OK.
+- `python scripts/check_workspace.py`: PASSED.
