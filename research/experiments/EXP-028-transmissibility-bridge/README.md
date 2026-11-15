@@ -1,6 +1,8 @@
 # EXP-028 — Transmissible Slow-Band Bridge (`TBRG`) & Controls
 
-- **Task:** `EVAL-021` (`todo`, prepared and amended on `2026-11-14` prior to GPU execution; ready for Colab Tesla T4 run)
+- **Task:** `EVAL-021` (`review`, executed on Google Colab Tesla T4 on `2026-11-14`; `20/20` + `30/30` primary prospective `unseen_cal` and `20/20` + `40/40` `61–100` dev)
+- **Results & Manifest:** [TRANSMISSIBILITY_BRIDGE_REPORT.md](results/TRANSMISSIBILITY_BRIDGE_REPORT.md) | [transmissibility_bridge_results.json](results/transmissibility_bridge_results.json) | [MANIFEST.json](results/MANIFEST.json)
+- **Results Log:** [2026-11-15-exp028-transmissibility-bridge-results.md](../../../docs/progress/log/2026-11-15-exp028-transmissibility-bridge-results.md)
 - **Framing:** **Theory-motivated, inference-time handover algorithm** (motivated post-EXP-027 by the $\tau_1$ vs $\tau_2$ transmissibility split, not predicted a priori) with **placement novelty at $\tau_2 = 0.2929$** and **no fitted parameters** (fixed design choices: 9-frame window, 3-band split, $\tau_2$ injection point). `STAC-TBRG` is kept strictly as a secondary exploratory diagnostic.
 - **Predecessors:** [EXP-027](../EXP-027-transmissibility-confirmation/README.md) (`supported_direction_only`, established clean-prompt transmissibility loss `H1` and late-restart recovery `H2` on fresh speakers `61–100`) | [EXP-020](../EXP-020-selective-handover-prelim/README.md) (`decompose`) | [EXP-018](../EXP-018-swsr-handover-prelim/README.md) (`STAC`)
 - **Runner:** [run_transmissibility_bridge.py](../../../code/colab/run_transmissibility_bridge.py)
@@ -49,3 +51,22 @@
   - `H1` and `H2` pass, but `TBRG` loses to `BLND` or `SHUF`: the three-band structure does not earn its place; report the simpler blend or perturbation finding honestly.
   - `H1` passes, but `H2` or `H3` fails: `TBRG` trades quality for diversity and does not beat `W6R2` at comparable budget.
 - **Verdict:** **`confirmed`** if `H1..H5` all clear frozen bounds; **`supported_direction_only`** if `TBRG > W4` on `CVf0` and `TBRG > W4R2` on `UTMOS` clear `0` without clearing every stricter bound; **`refuted`** if any safety/non-inferiority upper bound fails (`W4`, `W8R2`, `W4R2`, or `W8` WER/SIM); **`mixed`** otherwise.
+
+## Executed Results (2026-11-14 UTC, Colab Tesla T4)
+
+- **Primary Prospective Cohort (`unseen_cal`: `20/20 x 15` div, `30/30` qual):** **`supported_direction_only`** (`FULL`).
+- **Development Cohort (`speakers 61–100`: `20/20 x 20` div, `40/40` qual paired vs locked `EXP-027`):** **`supported_direction_only`** (`FULL`).
+- **Smoke check (`smoke_check.json`):** `max_abs_split_diff = 0.0`, `max_d_wer = 0.0`, `max_d_sim = 5.96e-8` vs locked `EXP-027` `W4`.
+- **Directional Bridge Gains Hold Out-of-Sample (`TBRG`, `13 NFE`):**
+  - On `unseen_cal`, `TBRG` boosts `CVf0` over `W4` by **`+0.0076 [+0.0001, +0.0152]`** (`16/4`, $p = 0.0118$, `no-top2 = +0.0038`) and recovers over half of `W4R2`'s UTMOS collapse (`+0.199 [+0.102, +0.310]`, `3.557 -> 3.756`, `24/6`, $p = 0.00143$; `mel_spread -0.0216 [-0.0271, -0.0162]`).
+  - On `61–100`, `TBRG` boosts `CVf0` over `W4` by **`+0.0087 [+0.0022, +0.0167]`** (`no-top2 = +0.0039`), beats `W4R2` by **`+0.214 [+0.137, +0.286]`** UTMOS (`3.404 -> 3.618`, `32/8`, $p = 1.82 \times 10^{-4}$), and beats unnormalized `STS2` on UTMOS (`+0.046 [+0.000, +0.094]`, `3.618 vs 3.571`).
+- **Causal Slow-Band Prosody Tracking Confirmed (`unseen_cal` & `61–100`):**
+  - `slow_corr(TBRG) = 0.908` (`unseen_cal`) / `0.903` (`61–100`) vs `SHUF` `0.111` / `0.124` (`TBRG - SHUF = +0.7971 [+0.7312, +0.8630]`, `20/0`, $p = 1.91 \times 10^{-6}$).
+  - Paired $f_0(t)$ contour correlation with `W8R2` on `unseen_cal` is **`0.895` matched-seed vs `0.526` shifted-seed** (`+0.3690 [+0.3152, +0.4334]`), whereas `SHUF` drops to `0.117 / 0.075`.
+  - Raw `H5` `CVf0(TBRG - SHUF)` was `-0.0154` / `-0.0130` because mismatched donor slow bands collapsed `SHUF` synthesis (`WER = 1.0004` / `1.1349`, `UTMOS = 2.716` / `2.749`), inducing erratic pYIN pitch jumps (`CVf0 = 0.1170` / `0.0958`).
+- **Why `confirmed` Was Not Reached (Quality-Diversity Trade-Off & `16-NFE` `W6R2`):**
+  - **`W8R2` (`20 NFE`) non-inferiority failed:** On `unseen_cal`, `CVf0(TBRG - W8R2) = -0.0061 [-0.0113, -0.0007]` (lower CI `< -0.008`) and `UTMOS(TBRG - W8R2) = -0.088 [-0.170, -0.008]` (lower CI `< -0.05`).
+  - **`H3` clean `W8` UTMOS drop exceeded `-0.08`:** `dUTMOS(TBRG - W8) = -0.193 [-0.284, -0.111]` on `unseen_cal` (`3.756 vs 3.949`) and `-0.160 [-0.234, -0.088]` on `61–100` (`3.618 vs 3.777`), though `WER` (`+0.0037` / `-0.0050`) and `SIM` (`+0.0030` / `+0.0004`) preserved `W8`.
+  - **`TBRG` vs naive linear blend `BLND` (`13 NFE`):** `TBRG` beats `BLND` on `CVf0` (`+0.0057 [+0.0002, +0.0120]` / `+0.0065 [+0.0007, +0.0130]`) but loses on `UTMOS` (`-0.124 [-0.219, -0.024]` / `-0.121 [-0.188, -0.055]`), trading perceptual quality for pitch diversity.
+  - **`W6R2` (`16 NFE`) emerges as the strongest Pareto arm:** With 6 teacher steps + `[tau_2, tau_3]` restart (`16 NFE`, `-23.8%` vs `W8`), `W6R2` achieves `CVf0 = 0.1029` (`unseen_cal`) / `0.0840` (`61–100`), `UTMOS = 3.887` (`-0.063 [-0.143, +0.020]` vs `W8`) / `3.714` (`-0.063 [-0.125, +0.001]` vs `W8`), `WER = 0.0000` / `0.0128`, `SIM = 0.9420` / `0.9357`, and `f0_corr_w8r2 = 0.963`, outperforming `13-NFE` `TBRG` on UTMOS by `+0.131 [+0.031, +0.227]` (`unseen_cal`) and `+0.096 [+0.011, +0.184]` (`61–100`).
+- **Secondary `STAC-TBRG` Routing:** Routed `3/40` `TBRG` and `37/40` `W8R2` (`19.48` mean NFE, `dUTMOS = -0.129`), offering negligible routing benefit over uniform `W6R2`/`W8R2`.
