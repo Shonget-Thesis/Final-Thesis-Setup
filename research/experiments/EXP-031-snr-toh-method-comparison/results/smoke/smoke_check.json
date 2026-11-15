@@ -1,0 +1,62 @@
+{
+  "checks": [
+    {
+      "utt_id": "common_voice_en_22461617-common_voice_en_22461638",
+      "split_diff": 0.0,
+      "identity_map_diff": 0.0,
+      "toh_identity_vs_student": 0.0,
+      "qh_self_diff": 0.0,
+      "qh_value_diff": 0.0,
+      "blind_repeat_diff": 0.0,
+      "map_ok": true,
+      "bth_ok": true,
+      "rnd_ok": true,
+      "policy_ok": true,
+      "steps": {
+        "stac": 4,
+        "ch3": 6,
+        "ch3_ltt": 4
+      },
+      "prompt_snr": 32.456451416015625,
+      "toh_rms": 16.44113545018974,
+      "bth_rms": 22.607773789699205,
+      "rnd_rms": 13.484440011236028,
+      "rnd_shrink": 0.7762615860477824,
+      "band": 60,
+      "seq_len": 1069,
+      "blind_seq_len": 599,
+      "d_wer": 0.0,
+      "d_sim": 0.0
+    },
+    {
+      "utt_id": "common_voice_en_22839883-common_voice_en_22839889",
+      "split_diff": 0.0,
+      "identity_map_diff": 0.0,
+      "toh_identity_vs_student": 0.0,
+      "qh_self_diff": 0.0,
+      "qh_value_diff": 0.0,
+      "blind_repeat_diff": 0.0,
+      "map_ok": true,
+      "bth_ok": true,
+      "rnd_ok": true,
+      "policy_ok": true,
+      "steps": {
+        "stac": 4,
+        "ch3": 6,
+        "ch3_ltt": 4
+      },
+      "prompt_snr": 33.49633026123047,
+      "toh_rms": 11.723040239076784,
+      "bth_rms": 36.82622709329293,
+      "rnd_rms": 15.051,
+      "rnd_shrink": 1.0,
+      "band": 52,
+      "seq_len": 1031,
+      "blind_seq_len": 519,
+      "d_wer": 0.0,
+      "d_sim": 5.960464477539063e-08
+    }
+  ],
+  "demand_sha256": "854dd0e5ef334a66abdd02d6d2b3e9d01b685df033d0acd1cd06e471c062550b",
+  "utc": "2026-11-15T14:17:43.890383+00:00"
+}
