@@ -1,0 +1,370 @@
+{
+  "experiment": "EXP-031",
+  "task_id": "EVAL-024",
+  "title": "Three single-formula handovers (TOH, QH, BTH) against the previous handover methods, with a teacher-free control",
+  "framing": "Development experiment. DMOSpeech 2's teacher runs 3 steps and the student finishes; the three candidates differ only in what crosses (TOH: timing; QH: per-band time order with the student's values; BTH: timing from a teacher that never receives the prompt) and are applied to every input with no routing. Compared on the same cases with W4, W8, STAC, CH3 and CH3_LTT (thresholds fixed by earlier work) and with a teacher-free random re-timing (RND). Speakers have not been through TOH.",
+  "amendments": [
+    {
+      "id": 1,
+      "date": "2026-11-15",
+      "before_synthesis": true,
+      "first_freeze_sha256": "ec06ed0568b4",
+      "change": "Added QH3 (Quantile Handover) and BTH3 (Blind-Teacher Handover) as arms in both stages; the primary methods are now the three single-formula handovers TOH3, QH3 and BTH3 applied to every input, each judged by T1, T2, C and M; SNR_TOH and the first design's S1 are exploratory."
+    }
+  ],
+  "candidates": [
+    "TOH3",
+    "QH3",
+    "BTH3"
+  ],
+  "handover_step": 3,
+  "routing": {
+    "theta_db": 20.0,
+    "ch3_candidates": [
+      4,
+      5,
+      6
+    ],
+    "ch3_reference": 8,
+    "ch3_lambda": 0.35,
+    "ch3_lambda_ltt": 1.2,
+    "stac_lambdas": {
+      "4": 1.51279,
+      "5": 1.64678,
+      "6": 1.71607
+    }
+  },
+  "random_map": {
+    "rms_frac": 0.029,
+    "sigma_frac": 0.1,
+    "slope_dev": 0.45,
+    "seed_offset": 7919
+  },
+  "toh": {
+    "n_groups": 10,
+    "feature_smooth": 3,
+    "band_frac": 0.1,
+    "min_band": 8
+  },
+  "qh": "per band, the student's draft values sorted and placed at the teacher's time ranks (stable sort)",
+  "bth": "teacher input = target text only over the target's frames, two-hop silent placeholder audio, audio condition dropped in both guidance branches, same seed as the case; TOH map onto the student's draft",
+  "conditions": [
+    "clean",
+    "gauss25",
+    "noisy15",
+    "reverb03",
+    "reverb09",
+    "babble15"
+  ],
+  "degraded_conditions": [
+    "gauss25",
+    "noisy15",
+    "reverb03",
+    "reverb09",
+    "babble15"
+  ],
+  "hidden_conditions": [
+    "reverb03",
+    "reverb09",
+    "babble15"
+  ],
+  "arms": [
+    "STU",
+    "W4",
+    "W5",
+    "W6",
+    "W8",
+    "TOH3",
+    "QH3",
+    "BTH3",
+    "RND"
+  ],
+  "diversity_arms": [
+    "STU",
+    "W4",
+    "W8",
+    "TOH3",
+    "QH3",
+    "BTH3",
+    "RND"
+  ],
+  "methods": [
+    "STU",
+    "RND",
+    "W4",
+    "W8",
+    "TOH3",
+    "QH3",
+    "BTH3",
+    "STAC",
+    "CH3",
+    "CH3_LTT",
+    "SNR_W4",
+    "SNR_TOH",
+    "SNR_RND"
+  ],
+  "previous": [
+    "W4",
+    "W8",
+    "STAC",
+    "CH3",
+    "CH3_LTT"
+  ],
+  "costs": {
+    "STU": 4,
+    "W4": 13,
+    "W5": 15,
+    "W6": 17,
+    "W8": 21,
+    "TOH3": 12,
+    "QH3": 12,
+    "BTH3": 12,
+    "RND": 4
+  },
+  "n_qual_speakers": 30,
+  "n_qual_cases": 180,
+  "qual_utts": [
+    {
+      "utt_id": "common_voice_en_10933823-common_voice_en_10933825",
+      "speaker_id": "common_voice_en_10933823"
+    },
+    {
+      "utt_id": "common_voice_en_13900-common_voice_en_13901",
+      "speaker_id": "common_voice_en_13900"
+    },
+    {
+      "utt_id": "common_voice_en_155313-common_voice_en_155315",
+      "speaker_id": "common_voice_en_155313"
+    },
+    {
+      "utt_id": "common_voice_en_15734837-common_voice_en_15734838",
+      "speaker_id": "common_voice_en_15734837"
+    },
+    {
+      "utt_id": "common_voice_en_15735839-common_voice_en_15735837",
+      "speaker_id": "common_voice_en_15735839"
+    },
+    {
+      "utt_id": "common_voice_en_15903802-common_voice_en_15903807",
+      "speaker_id": "common_voice_en_15903802"
+    },
+    {
+      "utt_id": "common_voice_en_17259121-common_voice_en_17259122",
+      "speaker_id": "common_voice_en_17259121"
+    },
+    {
+      "utt_id": "common_voice_en_17263752-common_voice_en_17263750",
+      "speaker_id": "common_voice_en_17263752"
+    },
+    {
+      "utt_id": "common_voice_en_17278904-common_voice_en_17278909",
+      "speaker_id": "common_voice_en_17278904"
+    },
+    {
+      "utt_id": "common_voice_en_17451108-common_voice_en_17451109",
+      "speaker_id": "common_voice_en_17451108"
+    },
+    {
+      "utt_id": "common_voice_en_17738848-common_voice_en_19083939",
+      "speaker_id": "common_voice_en_17738848"
+    },
+    {
+      "utt_id": "common_voice_en_17851231-common_voice_en_17851256",
+      "speaker_id": "common_voice_en_17851231"
+    },
+    {
+      "utt_id": "common_voice_en_17861489-common_voice_en_17861487",
+      "speaker_id": "common_voice_en_17861489"
+    },
+    {
+      "utt_id": "common_voice_en_17875915-common_voice_en_17875925",
+      "speaker_id": "common_voice_en_17875915"
+    },
+    {
+      "utt_id": "common_voice_en_18234333-common_voice_en_18234353",
+      "speaker_id": "common_voice_en_18234333"
+    },
+    {
+      "utt_id": "common_voice_en_18240348-common_voice_en_18240305",
+      "speaker_id": "common_voice_en_18240348"
+    },
+    {
+      "utt_id": "common_voice_en_18522556-common_voice_en_18522557",
+      "speaker_id": "common_voice_en_18522556"
+    },
+    {
+      "utt_id": "common_voice_en_18529345-common_voice_en_18529361",
+      "speaker_id": "common_voice_en_18529345"
+    },
+    {
+      "utt_id": "common_voice_en_18575865-common_voice_en_18575864",
+      "speaker_id": "common_voice_en_18575865"
+    },
+    {
+      "utt_id": "common_voice_en_18754308-common_voice_en_18754312",
+      "speaker_id": "common_voice_en_18754308"
+    },
+    {
+      "utt_id": "common_voice_en_18770703-common_voice_en_18770702",
+      "speaker_id": "common_voice_en_18770703"
+    },
+    {
+      "utt_id": "common_voice_en_18829843-common_voice_en_18829842",
+      "speaker_id": "common_voice_en_18829843"
+    },
+    {
+      "utt_id": "common_voice_en_18994068-common_voice_en_18994069",
+      "speaker_id": "common_voice_en_18994068"
+    },
+    {
+      "utt_id": "common_voice_en_18994734-common_voice_en_18994738",
+      "speaker_id": "common_voice_en_18994734"
+    },
+    {
+      "utt_id": "common_voice_en_19022657-common_voice_en_19022667",
+      "speaker_id": "common_voice_en_19022657"
+    },
+    {
+      "utt_id": "common_voice_en_19289713-common_voice_en_19289715",
+      "speaker_id": "common_voice_en_19289713"
+    },
+    {
+      "utt_id": "common_voice_en_19294198-common_voice_en_19294199",
+      "speaker_id": "common_voice_en_19294198"
+    },
+    {
+      "utt_id": "common_voice_en_19517720-common_voice_en_19517721",
+      "speaker_id": "common_voice_en_19517720"
+    },
+    {
+      "utt_id": "common_voice_en_19641039-common_voice_en_19641037",
+      "speaker_id": "common_voice_en_19641039"
+    },
+    {
+      "utt_id": "common_voice_en_19669708-common_voice_en_19669704",
+      "speaker_id": "common_voice_en_19669708"
+    }
+  ],
+  "n_div_speakers": 20,
+  "div_seeds": 12,
+  "div_seed_base": 1000,
+  "div_utts": [
+    {
+      "utt_id": "common_voice_en_10933823-common_voice_en_10933825",
+      "speaker_id": "common_voice_en_10933823"
+    },
+    {
+      "utt_id": "common_voice_en_13900-common_voice_en_13901",
+      "speaker_id": "common_voice_en_13900"
+    },
+    {
+      "utt_id": "common_voice_en_155313-common_voice_en_155315",
+      "speaker_id": "common_voice_en_155313"
+    },
+    {
+      "utt_id": "common_voice_en_15734837-common_voice_en_15734838",
+      "speaker_id": "common_voice_en_15734837"
+    },
+    {
+      "utt_id": "common_voice_en_15735839-common_voice_en_15735837",
+      "speaker_id": "common_voice_en_15735839"
+    },
+    {
+      "utt_id": "common_voice_en_15903802-common_voice_en_15903807",
+      "speaker_id": "common_voice_en_15903802"
+    },
+    {
+      "utt_id": "common_voice_en_17259121-common_voice_en_17259122",
+      "speaker_id": "common_voice_en_17259121"
+    },
+    {
+      "utt_id": "common_voice_en_17263752-common_voice_en_17263750",
+      "speaker_id": "common_voice_en_17263752"
+    },
+    {
+      "utt_id": "common_voice_en_17278904-common_voice_en_17278909",
+      "speaker_id": "common_voice_en_17278904"
+    },
+    {
+      "utt_id": "common_voice_en_17451108-common_voice_en_17451109",
+      "speaker_id": "common_voice_en_17451108"
+    },
+    {
+      "utt_id": "common_voice_en_17738848-common_voice_en_19083939",
+      "speaker_id": "common_voice_en_17738848"
+    },
+    {
+      "utt_id": "common_voice_en_17851231-common_voice_en_17851256",
+      "speaker_id": "common_voice_en_17851231"
+    },
+    {
+      "utt_id": "common_voice_en_17861489-common_voice_en_17861487",
+      "speaker_id": "common_voice_en_17861489"
+    },
+    {
+      "utt_id": "common_voice_en_17875915-common_voice_en_17875925",
+      "speaker_id": "common_voice_en_17875915"
+    },
+    {
+      "utt_id": "common_voice_en_18234333-common_voice_en_18234353",
+      "speaker_id": "common_voice_en_18234333"
+    },
+    {
+      "utt_id": "common_voice_en_18240348-common_voice_en_18240305",
+      "speaker_id": "common_voice_en_18240348"
+    },
+    {
+      "utt_id": "common_voice_en_18522556-common_voice_en_18522557",
+      "speaker_id": "common_voice_en_18522556"
+    },
+    {
+      "utt_id": "common_voice_en_18529345-common_voice_en_18529361",
+      "speaker_id": "common_voice_en_18529345"
+    },
+    {
+      "utt_id": "common_voice_en_18575865-common_voice_en_18575864",
+      "speaker_id": "common_voice_en_18575865"
+    },
+    {
+      "utt_id": "common_voice_en_18754308-common_voice_en_18754312",
+      "speaker_id": "common_voice_en_18754308"
+    }
+  ],
+  "bars": {
+    "clean_utmos": -0.08,
+    "wer": 0.01,
+    "sim": -0.01,
+    "variety_margin": 0.01,
+    "runaway_wer": 1.0
+  },
+  "hypotheses": {
+    "T1": "For each candidate X in TOH3, QH3, BTH3: clean pitch variety CVf0(X) - CVf0(RND), 95% bootstrap lower bound > 0 (the teacher adds variety beyond a random re-timing of the same size).",
+    "T2": "For each candidate X: clean UTMOS(X) - UTMOS(RND), lower bound > 0 (the teacher's contribution sounds more natural than random re-timing).",
+    "C": "For each candidate X: per-speaker mean over reverb03, reverb09 and babble15 of UTMOS(X) - UTMOS(W4), lower bound > 0 (X keeps recording conditions other than white noise out better than DMOSpeech 2's handover).",
+    "M": "Candidate X beats a previous method C if, against C, (a) clean prompts: mean dUTMOS >= -0.08, dWER upper bound <= +0.01 and dSIM lower bound >= -0.01, and (b) the per-speaker mean over the five degraded conditions: dUTMOS lower bound > 0, dWER upper bound <= +0.01 and dSIM lower bound >= -0.01. Previous methods: W4, W8, STAC, CH3 and CH3_LTT."
+  },
+  "verdict_rule": "Per candidate X in TOH3, QH3 and BTH3, three labels: teacher = teacher_needed if T1 or T2 holds, else teacher_not_shown_needed; method = beats_all_previous if M holds against all five previous methods, beats_some_previous if against at least one, else beats_no_previous; condition = condition_safety_shown if C holds, else condition_safety_not_shown. partial if a stage is missing. Candidates are not ranked by the frozen rule; no correction for the three candidates (development pilot). Exploratory: contrasts between candidates (including aligned CVf0 QH3 - TOH3 and reverb/babble UTMOS BTH3 - TOH3), the SNR-routed methods SNR_TOH, SNR_W4 and SNR_RND, the first design's S1 (SNR_TOH - SNR_W4 on gated-in reverb and babble cases), STU against the previous methods, per-condition tables, aligned CVf0 and timing spread, BTH3's teacher sequence length, the EXP-030 replication, Definition 3.1 failures against W8, the policies' step choices, runaway outputs (WER > 1) and the EXP-011 reproduction.",
+  "code_hashes": {
+    "run_method_comparison.py": "a0f434381f088d6d895626ed5f4ff28ac2ac333e49df6651c0992bcd7315504d",
+    "run_timing_only_handover.py": "d04f27fc0bef25bbc96a9e282faebde6ac0680c4106880dd73a9ae996bed5436",
+    "run_damped_transmissibility_stac.py": "d569118c21c2990b0521b0713d2c538d38d2065672a406a878d4a21f9217738a",
+    "run_transmissibility_bridge.py": "e0939d83ff93544d02cfb5b75662d90c285cb4f3f700bff91c10381612b103fd",
+    "run_transmissibility_confirm.py": "f1e160797fc5e6970f1667481ea78f5f6cff9743571b6bf4584c028a6fd134bc",
+    "run_transmissibility_test.py": "be6b7dfe74b38399ce3b2f0c5ce3942abf7a4fe90e680f5e473591aab22701e1",
+    "run_selective_handover_prelim.py": "b61ef06b9ed0a7411d532d277e2525c436c08aab6a4ca541454672a9ea9be603",
+    "run_consistency_gate_prelim.py": "5d83b1acdf668e7b13981a5df0f6e24e24602fe31e051d00190fd5273a2ce6e3",
+    "run_grid32_prelim.py": "c7b4152da3449264ef2d7aefcea3492e04f9d45399e373ba2b6d448912bf0b84",
+    "run_noise_guidance_prelim.py": "48150a13101d1ecd5ed6da1085e6fd914381f8e22288f5bda7c48f2625dc064b",
+    "run_followup_tests.py": "6bce906980ff4c6c4b1209b086cab4fcbe11f7a2955a27badd698c2906af1801"
+  },
+  "input_hashes": {
+    "research/experiments/EXP-027-transmissibility-confirmation/results/quality.csv": "fadc58e2d5463f33749306771543ec475a63d2266b7268fbb451db42e5fc60e6",
+    "research/experiments/EXP-011-followup-t4/results/pilot/pilot_grid.csv": "c110cc49d6f8ac05d8384a7759445c1bf160bb2e2b3a8ab1188f1bd04f1a0a5b",
+    "research/experiments/EXP-030-timing-only-handover/results/quality.csv": "94c93b8526b7bd6738107bfa463537043369f7c9d5eb9f4150f112dfe1c36a6b",
+    "code/scheduling/failure_config.json": "13a8fbfdbc11048c2b68f7c5b865369c622f4ec601a6ff7e6a3fa3409ce97b53"
+  },
+  "seed": 2026,
+  "boot_b": 2000,
+  "sha256": "df26da1412bf48ce52a2edbdfefefac0db2ecd47b988b8e9972900b7911f44a8",
+  "created_utc": "2026-11-15T13:14:12.432169+00:00"
+}

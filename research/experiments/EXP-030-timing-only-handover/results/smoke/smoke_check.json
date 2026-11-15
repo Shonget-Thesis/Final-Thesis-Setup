@@ -1,0 +1,27 @@
+{
+  "checks": [
+    {
+      "utt_id": "common_voice_en_22461617-common_voice_en_22461638",
+      "split_diff": 0.0,
+      "identity_map_diff": 0.0,
+      "toh_identity_vs_student": 0.0,
+      "map_ok": true,
+      "warp_rms_3": 16.44113545018974,
+      "band": 60,
+      "d_wer": 0.0,
+      "d_sim": 0.0
+    },
+    {
+      "utt_id": "common_voice_en_22839883-common_voice_en_22839889",
+      "split_diff": 0.0,
+      "identity_map_diff": 0.0,
+      "toh_identity_vs_student": 0.0,
+      "map_ok": true,
+      "warp_rms_3": 11.723040239076784,
+      "band": 52,
+      "d_wer": 0.0,
+      "d_sim": 5.960464477539063e-08
+    }
+  ],
+  "utc": "2026-11-15T09:16:02.515187+00:00"
+}

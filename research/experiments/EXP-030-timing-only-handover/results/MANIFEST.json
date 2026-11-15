@@ -1,0 +1,26 @@
+{
+  "experiment": "EXP-030",
+  "utc": "2026-11-15T11:17:58.841868+00:00",
+  "files": {
+    "preregistration": {
+      "path": "/content/Final-Thesis-Setup/research/experiments/EXP-030-timing-only-handover/preregistration.json",
+      "sha256": "e2e93cc5f5a9a6b688a023d18543b46ebf08009fcd4ad76e30be52206c4dd0d7"
+    },
+    "quality.csv": {
+      "sha256": "94c93b8526b7bd6738107bfa463537043369f7c9d5eb9f4150f112dfe1c36a6b",
+      "bytes": 135250
+    },
+    "diversity.csv": {
+      "sha256": "70c3aa2d868564efcec5e57325fac3bfc3507696afe6b1520ed6d2a8bbfa0179",
+      "bytes": 12835
+    },
+    "timing_only_handover_results.json": {
+      "sha256": "5db39c00863df2b006ad47ed28f4c945b3bf52a253627158b4621322c091224a",
+      "bytes": 210557
+    },
+    "TIMING_ONLY_HANDOVER_REPORT.md": {
+      "sha256": "a825d3aae292e4de8a8fea33d50911c61c8dfaaa5bcc6171ba8a5e828370383d",
+      "bytes": 6263
+    }
+  }
+}
