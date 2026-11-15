@@ -560,5 +560,30 @@ class NotebookTests(unittest.TestCase):
                 ast.parse("".join(cell["source"]))
 
 
+class ImportedResultsTests(unittest.TestCase):
+    def test_committed_exp028_results_and_manifest(self):
+        res_dir = tb.EXP_DIR / "results"
+        manifest = json.loads((res_dir / "MANIFEST.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["experiment"], "EXP-028")
+        for name, info in manifest["files"].items():
+            target = tb.PREREG_PATH if name == "preregistration" else res_dir / name
+            self.assertTrue(target.exists(), f"Missing {target}")
+            self.assertEqual(sh.sha256_text(target), info["sha256"], name)
+
+        smoke = json.loads((res_dir / "smoke/smoke_check.json").read_text(encoding="utf-8"))
+        self.assertEqual(smoke["max_abs_split_diff"], 0.0)
+        self.assertLessEqual(smoke["max_d_wer"], tb.REPRODUCTION_TOLERANCE)
+        self.assertLessEqual(smoke["max_d_sim"], tb.REPRODUCTION_TOLERANCE)
+
+        res = json.loads((res_dir / "transmissibility_bridge_results.json").read_text(encoding="utf-8"))
+        self.assertFalse(res["partial"])
+        self.assertEqual(res["primary_prospective_verdict"], "supported_direction_only")
+        self.assertEqual(res["verdict"], "supported_direction_only")
+        self.assertEqual(res["n_diversity"], 20)
+        self.assertEqual(res["n_quality"], 40)
+        self.assertEqual(res["unseen_replication"]["n_diversity"], 20)
+        self.assertEqual(res["unseen_replication"]["n_quality"], 30)
+
+
 if __name__ == "__main__":
     unittest.main()

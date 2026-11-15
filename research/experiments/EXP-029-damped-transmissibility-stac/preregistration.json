@@ -1,0 +1,278 @@
+{
+  "experiment": "EXP-029",
+  "task_id": "EVAL-022",
+  "title": "Damped Slow-Band Transmissibility Bridge & Mixed-Condition STAC Diagnostic",
+  "framing": "Development diagnostic following EXP-028 Outcome 3: calibrates energy-preserving slow-band interpolation TB_alpha (alpha in {0.25, 0.50, 0.75, 1.00}) and Step 5/6 (W5R2/W6R2) on clean and degraded prompts (gauss18, noisy15), leaving all 170 remaining calibration speakers and all 200 test speakers untouched.",
+  "formula": "X_TB(alpha) = v_S + (||s_S|| / (||s_mix|| + eps)) * ((1 - alpha)*s_S + alpha*s_tilde_T) + f_S",
+  "conditions": [
+    "clean",
+    "gauss18",
+    "noisy15"
+  ],
+  "arms": [
+    "W4",
+    "TB25",
+    "TB50",
+    "TB75",
+    "TBRG",
+    "BLND",
+    "W5R2",
+    "W6R2",
+    "W8R2",
+    "W8"
+  ],
+  "tb_alphas": {
+    "TB25": 0.25,
+    "TB50": 0.5,
+    "TB75": 0.75,
+    "TBRG": 1.0
+  },
+  "costs": {
+    "W4": 13,
+    "TB25": 13,
+    "TB50": 13,
+    "TB75": 13,
+    "TBRG": 13,
+    "BLND": 13,
+    "W5R2": 14,
+    "W6R2": 16,
+    "W8R2": 20,
+    "W8": 21
+  },
+  "n_qual_speakers": 30,
+  "n_qual_cases": 90,
+  "qual_utts": [
+    {
+      "utt_id": "common_voice_en_22461617-common_voice_en_22461638",
+      "speaker_id": "common_voice_en_22461617"
+    },
+    {
+      "utt_id": "common_voice_en_22839883-common_voice_en_22839889",
+      "speaker_id": "common_voice_en_22839883"
+    },
+    {
+      "utt_id": "common_voice_en_22941073-common_voice_en_22941074",
+      "speaker_id": "common_voice_en_22941073"
+    },
+    {
+      "utt_id": "common_voice_en_23252329-common_voice_en_23252333",
+      "speaker_id": "common_voice_en_23252329"
+    },
+    {
+      "utt_id": "common_voice_en_23750957-common_voice_en_23774578",
+      "speaker_id": "common_voice_en_23750957"
+    },
+    {
+      "utt_id": "common_voice_en_23998981-common_voice_en_23998980",
+      "speaker_id": "common_voice_en_23998981"
+    },
+    {
+      "utt_id": "common_voice_en_24518104-common_voice_en_24518109",
+      "speaker_id": "common_voice_en_24518104"
+    },
+    {
+      "utt_id": "common_voice_en_24819370-common_voice_en_24819368",
+      "speaker_id": "common_voice_en_24819370"
+    },
+    {
+      "utt_id": "common_voice_en_25127181-common_voice_en_25127184",
+      "speaker_id": "common_voice_en_25127181"
+    },
+    {
+      "utt_id": "common_voice_en_25200065-common_voice_en_25200064",
+      "speaker_id": "common_voice_en_25200065"
+    },
+    {
+      "utt_id": "common_voice_en_25216968-common_voice_en_25216966",
+      "speaker_id": "common_voice_en_25216968"
+    },
+    {
+      "utt_id": "common_voice_en_25568854-common_voice_en_25568855",
+      "speaker_id": "common_voice_en_25568854"
+    },
+    {
+      "utt_id": "common_voice_en_25662916-common_voice_en_25663069",
+      "speaker_id": "common_voice_en_25662916"
+    },
+    {
+      "utt_id": "common_voice_en_25693607-common_voice_en_25693608",
+      "speaker_id": "common_voice_en_25693607"
+    },
+    {
+      "utt_id": "common_voice_en_25880669-common_voice_en_25880691",
+      "speaker_id": "common_voice_en_25880669"
+    },
+    {
+      "utt_id": "common_voice_en_26453369-common_voice_en_26453364",
+      "speaker_id": "common_voice_en_26453369"
+    },
+    {
+      "utt_id": "common_voice_en_26933529-common_voice_en_26933532",
+      "speaker_id": "common_voice_en_26933529"
+    },
+    {
+      "utt_id": "common_voice_en_27434681-common_voice_en_27434683",
+      "speaker_id": "common_voice_en_27434681"
+    },
+    {
+      "utt_id": "common_voice_en_28003405-common_voice_en_28003408",
+      "speaker_id": "common_voice_en_28003405"
+    },
+    {
+      "utt_id": "common_voice_en_28065832-common_voice_en_28065833",
+      "speaker_id": "common_voice_en_28065832"
+    },
+    {
+      "utt_id": "common_voice_en_28917649-common_voice_en_28917648",
+      "speaker_id": "common_voice_en_28917649"
+    },
+    {
+      "utt_id": "common_voice_en_30232728-common_voice_en_30232726",
+      "speaker_id": "common_voice_en_30232728"
+    },
+    {
+      "utt_id": "common_voice_en_30757408-common_voice_en_30757409",
+      "speaker_id": "common_voice_en_30757408"
+    },
+    {
+      "utt_id": "common_voice_en_31005683-common_voice_en_31005688",
+      "speaker_id": "common_voice_en_31005683"
+    },
+    {
+      "utt_id": "common_voice_en_31499885-common_voice_en_31499889",
+      "speaker_id": "common_voice_en_31499885"
+    },
+    {
+      "utt_id": "common_voice_en_31959919-common_voice_en_31959922",
+      "speaker_id": "common_voice_en_31959919"
+    },
+    {
+      "utt_id": "common_voice_en_32125519-common_voice_en_32125526",
+      "speaker_id": "common_voice_en_32125519"
+    },
+    {
+      "utt_id": "common_voice_en_34054471-common_voice_en_34054473",
+      "speaker_id": "common_voice_en_34054471"
+    },
+    {
+      "utt_id": "common_voice_en_34184701-common_voice_en_34184697",
+      "speaker_id": "common_voice_en_34184701"
+    },
+    {
+      "utt_id": "common_voice_en_35734335-common_voice_en_35734342",
+      "speaker_id": "common_voice_en_35734335"
+    }
+  ],
+  "n_div_speakers": 20,
+  "div_seeds": 12,
+  "div_seed_base": 1000,
+  "div_utts": [
+    {
+      "utt_id": "common_voice_en_22461617-common_voice_en_22461638",
+      "speaker_id": "common_voice_en_22461617"
+    },
+    {
+      "utt_id": "common_voice_en_22839883-common_voice_en_22839889",
+      "speaker_id": "common_voice_en_22839883"
+    },
+    {
+      "utt_id": "common_voice_en_22941073-common_voice_en_22941074",
+      "speaker_id": "common_voice_en_22941073"
+    },
+    {
+      "utt_id": "common_voice_en_23252329-common_voice_en_23252333",
+      "speaker_id": "common_voice_en_23252329"
+    },
+    {
+      "utt_id": "common_voice_en_23750957-common_voice_en_23774578",
+      "speaker_id": "common_voice_en_23750957"
+    },
+    {
+      "utt_id": "common_voice_en_23998981-common_voice_en_23998980",
+      "speaker_id": "common_voice_en_23998981"
+    },
+    {
+      "utt_id": "common_voice_en_24518104-common_voice_en_24518109",
+      "speaker_id": "common_voice_en_24518104"
+    },
+    {
+      "utt_id": "common_voice_en_24819370-common_voice_en_24819368",
+      "speaker_id": "common_voice_en_24819370"
+    },
+    {
+      "utt_id": "common_voice_en_25127181-common_voice_en_25127184",
+      "speaker_id": "common_voice_en_25127181"
+    },
+    {
+      "utt_id": "common_voice_en_25200065-common_voice_en_25200064",
+      "speaker_id": "common_voice_en_25200065"
+    },
+    {
+      "utt_id": "common_voice_en_25216968-common_voice_en_25216966",
+      "speaker_id": "common_voice_en_25216968"
+    },
+    {
+      "utt_id": "common_voice_en_25568854-common_voice_en_25568855",
+      "speaker_id": "common_voice_en_25568854"
+    },
+    {
+      "utt_id": "common_voice_en_25662916-common_voice_en_25663069",
+      "speaker_id": "common_voice_en_25662916"
+    },
+    {
+      "utt_id": "common_voice_en_25693607-common_voice_en_25693608",
+      "speaker_id": "common_voice_en_25693607"
+    },
+    {
+      "utt_id": "common_voice_en_25880669-common_voice_en_25880691",
+      "speaker_id": "common_voice_en_25880669"
+    },
+    {
+      "utt_id": "common_voice_en_26453369-common_voice_en_26453364",
+      "speaker_id": "common_voice_en_26453369"
+    },
+    {
+      "utt_id": "common_voice_en_26933529-common_voice_en_26933532",
+      "speaker_id": "common_voice_en_26933529"
+    },
+    {
+      "utt_id": "common_voice_en_27434681-common_voice_en_27434683",
+      "speaker_id": "common_voice_en_27434681"
+    },
+    {
+      "utt_id": "common_voice_en_28003405-common_voice_en_28003408",
+      "speaker_id": "common_voice_en_28003405"
+    },
+    {
+      "utt_id": "common_voice_en_28065832-common_voice_en_28065833",
+      "speaker_id": "common_voice_en_28065832"
+    }
+  ],
+  "clean_utmos_bar": -0.08,
+  "wer_bar": 0.01,
+  "sim_bar": -0.01,
+  "route_clean_utmos_tol": -0.08,
+  "route_pooled_wer_tol": 0.005,
+  "route_pooled_sim_tol": -0.005,
+  "route_min_early_frac": 0.2,
+  "route_min_nfe_saving_vs_w8": 0.1,
+  "code_hashes": {
+    "run_damped_transmissibility_stac.py": "d569118c21c2990b0521b0713d2c538d38d2065672a406a878d4a21f9217738a",
+    "run_transmissibility_bridge.py": "e0939d83ff93544d02cfb5b75662d90c285cb4f3f700bff91c10381612b103fd",
+    "run_transmissibility_confirm.py": "f1e160797fc5e6970f1667481ea78f5f6cff9743571b6bf4584c028a6fd134bc",
+    "run_transmissibility_test.py": "be6b7dfe74b38399ce3b2f0c5ce3942abf7a4fe90e680f5e473591aab22701e1",
+    "run_selective_handover_prelim.py": "b61ef06b9ed0a7411d532d277e2525c436c08aab6a4ca541454672a9ea9be603",
+    "run_consistency_gate_prelim.py": "5d83b1acdf668e7b13981a5df0f6e24e24602fe31e051d00190fd5273a2ce6e3",
+    "run_grid32_prelim.py": "c7b4152da3449264ef2d7aefcea3492e04f9d45399e373ba2b6d448912bf0b84",
+    "run_noise_guidance_prelim.py": "48150a13101d1ecd5ed6da1085e6fd914381f8e22288f5bda7c48f2625dc064b",
+    "run_followup_tests.py": "6bce906980ff4c6c4b1209b086cab4fcbe11f7a2955a27badd698c2906af1801"
+  },
+  "input_hashes": {
+    "research/experiments/EXP-027-transmissibility-confirmation/results/quality.csv": "fadc58e2d5463f33749306771543ec475a63d2266b7268fbb451db42e5fc60e6"
+  },
+  "seed": 2026,
+  "boot_b": 2000,
+  "folds": 5,
+  "sha256": "e58f3856ad209a5af36c6f100003de342e6e65ef75220266440383e03f0bc949",
+  "created_utc": "2026-11-15T01:02:28.627500+00:00"
+}

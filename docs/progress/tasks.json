@@ -698,8 +698,8 @@
       "id": "EVAL-021",
       "title": "Transmissible Slow-Band Bridge (TBRG) with causal/cheap controls and unseen calibration replication (EXP-028)",
       "owner": "Rhenel Jhon R. Sajol",
-      "status": "todo",
-      "updated": "2026-11-14",
+      "status": "review",
+      "updated": "2026-11-15",
       "acceptance": "Preregistration is frozen before GPU synthesis (5c6c66ab8fee...; pre-synthesis chain 8d6d68afa1d2... -> 4caf6c951669... -> 5c6c66ab8fee...) with locked dependency and EXP-027 CSV SHA-256 hashes; Colab T4 smoke check passes split-student identity (max_abs_split_diff <= 1e-5) and reproduces EXP-027 W4 within 0.01; full run evaluates TBRG (13 NFE, explicitly re-noised at tau_2 = 0.2929), W4, W4R2, BLND, SHUF, W6R2, W8R2, and W8 jointly on the primary prospective unseen_cal cohort (20x15 div + matched/shifted f0 correlation vs W8R2, 30 qual) plus the 61-100 development cohort (20x20 div, 40 qual paired vs EXP-027), tests co-primary gatekeeper H1-H2 (intersection-union at alpha = 0.05) and hierarchical secondary H3-H5 including W8R2 non-inferiority, reports secondary STAC-TBRG CV routing, and writes MANIFEST.json.",
       "evidence": [
         "research/experiments/EXP-028-transmissibility-bridge/README.md",
@@ -707,7 +707,32 @@
         "code/colab/run_transmissibility_bridge.py",
         "code/colab/DMOSpeech2_EXP028_Transmissibility_Bridge.ipynb",
         "code/tests/test_transmissibility_bridge.py",
-        "docs/progress/log/2026-11-14-exp028-transmissibility-bridge.md"
+        "docs/progress/log/2026-11-14-exp028-transmissibility-bridge.md",
+        "research/experiments/EXP-028-transmissibility-bridge/results/MANIFEST.json",
+        "research/experiments/EXP-028-transmissibility-bridge/results/TRANSMISSIBILITY_BRIDGE_REPORT.md",
+        "research/experiments/EXP-028-transmissibility-bridge/results/transmissibility_bridge_results.json",
+        "research/experiments/EXP-028-transmissibility-bridge/results/diversity.csv",
+        "research/experiments/EXP-028-transmissibility-bridge/results/quality.csv",
+        "research/experiments/EXP-028-transmissibility-bridge/results/unseen_diversity.csv",
+        "research/experiments/EXP-028-transmissibility-bridge/results/unseen_quality.csv",
+        "research/experiments/EXP-028-transmissibility-bridge/results/smoke/smoke_check.json",
+        "docs/progress/log/2026-11-15-exp028-transmissibility-bridge-results.md"
+      ]
+    },
+    {
+      "id": "EVAL-022",
+      "title": "Damped slow-band transmissibility calibration and mixed-condition STAC routing diagnostic (EXP-029)",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "todo",
+      "updated": "2026-11-15",
+      "acceptance": "Preregistration is frozen before GPU execution (e58f3856ad20...); Colab T4 smoke test verifies exact TB(alpha=0)==S1, TB(alpha=1)==TBRG, split-student identity (<= 1e-5), and EXP-027 W4 reproduction (<= 0.01); run evaluates 10 arms (W4, TB25, TB50, TB75, TBRG, BLND, W5R2, W6R2, W8R2, W8) across 30 dev speakers (61-90) x {clean, gauss18, noisy15} (90 cases) plus 20 x 12 clean diversity, leaving remaining 170 calibration and all 200 test speakers untouched, and reports clean Pareto frontier, noisy behavior, zero-extra-NFE telemetry correlations, and 5-fold mixed-condition STAC routing with SHA-256 MANIFEST.json.",
+      "evidence": [
+        "research/experiments/EXP-029-damped-transmissibility-stac/README.md",
+        "research/experiments/EXP-029-damped-transmissibility-stac/preregistration.json",
+        "code/colab/run_damped_transmissibility_stac.py",
+        "code/colab/DMOSpeech2_EXP029_Damped_Transmissibility_STAC.ipynb",
+        "code/tests/test_damped_transmissibility_stac.py",
+        "docs/progress/log/2026-11-15-exp029-damped-transmissibility-stac-design.md"
       ]
     }
   ]

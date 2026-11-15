@@ -1,0 +1,71 @@
+{
+  "description": "Outputs of the EXP-026 notebook run on 2026-11-14 UTC (Colab Tesla T4): CVf0 of W4, W8, W4R2, W8R2 and T16 on 20 development speakers x clean x 20 seeds, quality of W4R2, W8R2 and T16 on 40 speakers x clean, the report and the smoke checks. Byte-identical copies from the results zip. The zip's code/ snapshot was not copied: its seven runner modules are identical, line endings normalised, to code/colab/ at the commit below. Recomputing `run_transmissibility_test.py analyze` locally from the two CSV files gave an identical transmissibility_results.json and report.",
+  "source_zip": "DMOSpeech2_EXP026_Transmissibility_Test_Results.zip",
+  "source_zip_sha256": "7315a07899b5429e12f03b39c72662c23483214d00cbb67de1b59ba66d151c1b",
+  "thesis_commit_at_run": "999870951576ee5cbf5b330ab45f766c09b45601",
+  "dmo_commit_at_run": "8a7868fc3345702a586173447f4869205b501f26",
+  "device": "Tesla T4",
+  "zipped_at_utc": "2026-11-14T02:43:59.773422+00:00",
+  "preregistration_sha256": "78f3432d54ebe994c32d0a6744f67edddb43ac240f60d2fcf78f83307e37507f",
+  "runner_sha256": "be6b7dfe74b38399ce3b2f0c5ce3942abf7a4fe90e680f5e473591aab22701e1",
+  "files": [
+    {
+      "file": "TRANSMISSIBILITY_REPORT.md",
+      "bytes": 2028,
+      "sha256": "65ff011e3a777b3d680c92664cae9ce8d4063af127305cd162110547c6809a40"
+    },
+    {
+      "file": "transmissibility_results.json",
+      "bytes": 3122,
+      "sha256": "40ca32605991d3a58d369fb87cbcf84460b059923b392f6aa502413266ffe33d"
+    },
+    {
+      "file": "diversity.csv",
+      "bytes": 6521,
+      "sha256": "d05f8aed9991d223785d2881c8af694d4c9490fb1d0c7b6ea9f0b1bd55e46fd5"
+    },
+    {
+      "file": "quality.csv",
+      "bytes": 18877,
+      "sha256": "a25f4b840b4b9a02859a7bc8a5576e0048fc11d949d19e346767cca8595d976b"
+    },
+    {
+      "file": "preregistration.json",
+      "bytes": 5447,
+      "sha256": "90ae9b7c32d2b3a1f48ae21dc8b6431cc61b35e83b1cf55d5f51f8015765ff0a"
+    },
+    {
+      "file": "RUN_INFO.txt",
+      "bytes": 181,
+      "sha256": "8d695e1f41bbfdb931750df801bb5121caa6a9218a0206f267403b330df447ab"
+    },
+    {
+      "file": "smoke/quality.csv",
+      "bytes": 1789,
+      "sha256": "7853f76c66dda8fc79a75c81388f9f168ed08fc362698b504ea8f8ff8b5334fe"
+    },
+    {
+      "file": "smoke/diversity.csv",
+      "bytes": 474,
+      "sha256": "f09fdbb158a7a4907438fbc33458f8580bb1164c96a47d53a78c84d8b17d9588"
+    },
+    {
+      "file": "smoke/reproduction.json",
+      "bytes": 1163,
+      "sha256": "d679795e3a32c7efafedfcb9df3a00b73174bbe15510d22d5392bdb58d49faa5"
+    }
+  ],
+  "derived": {
+    "description": "Generated locally from the imported CSV files after the results were seen; descriptive, outside the frozen verdict rule.",
+    "script": "code/analysis/exp026_diagnostics.py",
+    "script_sha256": "fd9e5f6ac0c7b6dc7e9a70b4f97d1b9c951ea1a1b189a15a44887011dec09f57",
+    "thesis_commit": "999870951576ee5cbf5b330ab45f766c09b45601",
+    "files": [
+      {
+        "file": "diagnostics.json",
+        "bytes": 2998,
+        "sha256": "ef48233ba372b4f534e9f7fa2df34b8ca6b93055d9768724af9373d0d581aace"
+      }
+    ]
+  }
+}

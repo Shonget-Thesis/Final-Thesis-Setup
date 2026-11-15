@@ -1,0 +1,34 @@
+{
+  "experiment": "EXP-028",
+  "utc": "2026-11-14T15:21:31.714673+00:00",
+  "files": {
+    "preregistration": {
+      "path": "/content/Final-Thesis-Setup/research/experiments/EXP-028-transmissibility-bridge/preregistration.json",
+      "sha256": "37c7213f35a758b0da3de8dbc224783bdc2835d678a107e74ffbec1674b1f248"
+    },
+    "diversity.csv": {
+      "sha256": "552879e98a1ec8dc2308d5d737ad166c5c50f5539b62e643606646f80bb7685c",
+      "bytes": 10510
+    },
+    "quality.csv": {
+      "sha256": "a995eb4d68b0078730d420093e95020dd58b89129f642ed2954d6f4fd280ab23",
+      "bytes": 32963
+    },
+    "transmissibility_bridge_results.json": {
+      "sha256": "fcd4990493b566cbd2dadcae883d0cab40fb33d6b4f7ac067140bc3b31f90086",
+      "bytes": 82396
+    },
+    "TRANSMISSIBILITY_BRIDGE_REPORT.md": {
+      "sha256": "1ca07181224c9da5ebe169a8c9dee5e594444717a071f57ada4bdef8126200bd",
+      "bytes": 7237
+    },
+    "unseen_diversity.csv": {
+      "sha256": "f80cb9be12985337af7a55eae6a38ec0981e401e38feff464af413bff80aa8c4",
+      "bytes": 21337
+    },
+    "unseen_quality.csv": {
+      "sha256": "e79bdd187f260f5a264743f804da60cd0cdd306e29b59a691d05924bd8dc9a05",
+      "bytes": 32838
+    }
+  }
+}
