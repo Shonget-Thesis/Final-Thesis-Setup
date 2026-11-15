@@ -1,4 +1,5 @@
 % Figure: teacher time grid, candidate switching times and their cost
+% Updated 15 Nov 2026: step 7 (s = 0.20) added as a candidate.
 \begin{figure}[!htbp]
 \centering
 \begin{adjustbox}{max width=\linewidth}
@@ -12,7 +13,7 @@
   \ifnum\i=0 \node[below, gray!80!black, font=\figsmall] at (\t,-0.08) {$t_{0}$};\fi
 }
 % candidate stopping points with stacked cost bars (teacher passes + 3 student passes)
-\foreach \t/\k/\teach/\c/\s in {0.0761/4/10/13/0.07, 0.1181/5/12/15/0.10, 0.1685/6/14/17/0.15, 0.2929/8/18/21/0.25} {
+\foreach \t/\k/\teach/\c/\s in {0.0761/4/10/13/0.07, 0.1181/5/12/15/0.10, 0.1685/6/14/17/0.15, 0.2270/7/16/19/0.20, 0.2929/8/18/21/0.25} {
   \fill[black] (\t,0) circle (2.2pt);
   \fill[gray!45] (\t-0.008,0.2) rectangle (\t+0.008,0.2+\teach*0.12);
   \fill[white] (\t-0.008,0.2+\teach*0.12) rectangle (\t+0.008,0.2+\teach*0.12+0.36);
