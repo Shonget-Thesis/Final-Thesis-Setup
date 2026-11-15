@@ -752,7 +752,7 @@
       "owner": "Rhenel Jhon R. Sajol",
       "status": "todo",
       "updated": "2026-11-15",
-      "acceptance": "Preregistration is frozen before GPU synthesis (575df8686329...) with locked code and EXP-027/EXP-029 input hashes; the Colab T4 smoke test passes the split-student, identity-map and TOH-identity-equals-student checks (<= 1e-5), the time-map checks on real teacher estimates, and EXP-027 W4 reproduction (<= 0.01); the run evaluates STU, W2, W3, W4, W8, TOH2, TOH3 and MIR3 on EXP-029's 30 development speakers x clean, gauss25, noisy15 and telephone (120 cases) and 20 x 12 clean pitch diversity, applies the frozen H1a/H1b/H2a/H2b/H3 verdict rule to TOH3 (TOH2 secondary), reports the EXP-029 reproduction of W4 and W8, and writes MANIFEST.json.",
+      "acceptance": "Preregistration is frozen before GPU synthesis (ebe2b773c02f...) with locked code and EXP-027/EXP-029 input hashes; the Colab T4 smoke test passes the split-student, identity-map and TOH-identity-equals-student checks (<= 1e-5), the time-map checks on real teacher estimates, and EXP-027 W4 reproduction (<= 0.01); the run evaluates STU, W2, W3, W4, W8, TOH2, TOH3 and MIR3 on EXP-029's 30 development speakers x clean, gauss25, noisy15 and telephone (120 cases) and 20 x 12 clean pitch diversity, applies the frozen H1a/H1b/H2a/H2b/H3 verdict rule to TOH3 (TOH2 secondary), reports the EXP-029 reproduction of W4 and W8, and writes MANIFEST.json.",
       "evidence": [
         "research/experiments/EXP-030-timing-only-handover/README.md",
         "research/experiments/EXP-030-timing-only-handover/preregistration.json",

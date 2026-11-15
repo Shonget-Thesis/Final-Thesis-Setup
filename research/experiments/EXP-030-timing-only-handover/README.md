@@ -1,6 +1,6 @@
 # EXP-030: Timing-Only Handover (TOH) pilot
 
-**Status:** prepared and preregistered on 2026-11-15, before any synthesis (`575df8686329...`). Task EVAL-023 (todo). The run needs a Colab Tesla T4: [notebook](../../../code/colab/DMOSpeech2_EXP030_Timing_Only_Handover.ipynb), [runner](../../../code/colab/run_timing_only_handover.py), [tests](../../../code/tests/test_timing_only_handover.py).
+**Status:** prepared and preregistered on 2026-11-15, before any synthesis (`ebe2b773c02f...`). Amendment 1 (same day, before any main-run synthesis): the first Colab smoke test stopped on the time-map check; the map's last frame is no longer pinned (see the [setup log](../../../docs/progress/log/2026-11-15-exp030-timing-only-handover-setup.md)), and the preregistration was re-frozen (first freeze `575df8686329...`). Task EVAL-023 (todo). The run needs a Colab Tesla T4: [notebook](../../../code/colab/DMOSpeech2_EXP030_Timing_Only_Handover.ipynb), [runner](../../../code/colab/run_timing_only_handover.py), [tests](../../../code/tests/test_timing_only_handover.py).
 
 - **A development pilot:** it tests whether one new part works. It is not evidence for a final method.
 - **Not adopted:** nothing here changes the thesis method, and no adviser has reviewed it.
