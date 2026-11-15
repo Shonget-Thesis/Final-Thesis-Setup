@@ -1,0 +1,22 @@
+{
+  "experiment": "EXP-029",
+  "utc": "2026-11-15T04:21:08.060606+00:00",
+  "files": {
+    "preregistration": {
+      "path": "/content/Final-Thesis-Setup/research/experiments/EXP-029-damped-transmissibility-stac/preregistration.json",
+      "sha256": "988595223233dabbeb43e8f7a089d96e2293803f57eed4ab61db672416264a5c"
+    },
+    "quality.csv": {
+      "sha256": "b8434c365eccdefc1520113cf5642be3a6cd0a27fa0d938b1ca14ca9de841d16",
+      "bytes": 168807
+    },
+    "damped_transmissibility_results.json": {
+      "sha256": "93bcc4a972bff950afa2eac9d54cb0c5f22cf79a5235a1ad76db694ffc3d8e4c",
+      "bytes": 195261
+    },
+    "DAMPED_TRANSMISSIBILITY_REPORT.md": {
+      "sha256": "7c39f645e8f38cfa96f2905ee30976ce3ec3229f8deadd16e8aa9bc931fc12ac",
+      "bytes": 4463
+    }
+  }
+}
