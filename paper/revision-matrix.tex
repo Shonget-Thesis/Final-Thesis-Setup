@@ -1,0 +1,68 @@
+% Revision matrix for the proposal defense (task R29).
+% Section and page numbers are read from build/main.aux, so compile
+% main.tex first, then this file:  pdflatex revision-matrix.tex
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=2cm,landscape]{geometry}
+\usepackage{xr}
+\externaldocument{build/main}
+\usepackage{longtable,booktabs,array}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\newcommand{\loc}[1]{\S\ref{#1}, p.~\pageref{#1}}
+\newcommand{\pend}[1]{\textcolor{orange!70!black}{\textit{Pending:} #1}}
+\newcommand{\conf}[1]{\textcolor{blue!60!black}{\textit{To confirm:} #1}}
+\setlength{\parindent}{0pt}
+\begin{document}
+
+{\large\bfseries Revision Matrix: Concept Defense (October 27, 2026)}\\[2pt]
+\textit{A Risk-Calibrated Adaptive Handover Method for Teacher-Guided Flow-Matching Text-to-Speech Inference}\\[2pt]
+Panel comments are taken from the signed minutes of the concept defense. Section and page numbers refer to the current manuscript.
+
+\medskip
+{\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.6cm} >{\raggedright\arraybackslash}p{2.0cm} >{\raggedright\arraybackslash}p{5.4cm} >{\raggedright\arraybackslash}p{10.6cm} >{\raggedright\arraybackslash}p{4.6cm}@{}}
+\toprule
+\textbf{No.} & \textbf{Panelist} & \textbf{Comment} & \textbf{Action taken} & \textbf{Where (section, page)} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{No.} & \textbf{Panelist} & \textbf{Comment} & \textbf{Action taken} & \textbf{Where (section, page)} \\
+\midrule
+\endhead
+\midrule\multicolumn{5}{r}{\textit{Continued on next page}}\\
+\endfoot
+\bottomrule
+\endlastfoot
+1 & Ms.~Pagal & What is the handover? & The handover (switching time) is defined in plain words, with the cap and the reference step, and the terms are listed in the Definition of Terms. & \loc{sec:background}; \loc{sec:terms} \\
+2 & Ms.~Pagal & Give sample inputs of the study. & \pend{clean, moderately noisy and very noisy sample prompts (R21, Rhenel; depends on R13).} & \loc{sec:conceptual}; \loc{sec:data} \\
+3 & Ms.~Pagal & Does the teacher pass features, gradients or weights to the student? & Stated that the teacher passes only its estimate of the final mel-spectrogram, computed from its velocity at no extra cost; no weights, gradients or separate features are passed. ``Velocity'' and ``Endpoint estimate'' are defined. & \loc{sec:background}; \loc{sec:rrl-handover}; \loc{sec:terms} \\
+4 & Ms.~Pagal & Are there published studies on the limit or best value? Identify the candidates and features. & The candidates are listed as five teacher grid points (steps 4--8, 13--21 passes), with step 7 added; no feature is selected. No published study gives a best or limiting value; DMOSpeech~2 only suggests ranges. & \loc{sec:obj1}; Table~\ref{tab:cost}, p.~\pageref{tab:cost} \\
+5 & Ms.~Pagal & Is the study looking for the lowest or the highest handover that keeps quality? & Stated: the earliest (lowest) switching time that keeps quality, with the reference as fallback. & \loc{sec:objectives}; Eq.~\ref{eq:objective}, p.~\pageref{eq:objective} \\
+6 & Ms.~Pagal & State the metrics and the statistical method for comparing the baseline and the early handover. & Paired Wilcoxon, exact McNemar, Holm correction and equivalence tests stated; the significance level is separated from the tolerance $\alpha$ and the confidence parameter $\delta$ in a new table. & \loc{sec:stats}; Table~\ref{tab:levels}, p.~\pageref{tab:levels}; \loc{sec:rrl-eval} \\
+7 & Ms.~Pagal & What is the basis for counting a candidate as a failure? & Plain-language rule: distance from the reference output on the same input (WER at most 1 point higher or under the ceiling; SIM at most 0.02 lower). Failures are counted as a frequency, not removed. \conf{keep the rule relative to the reference (see the open decisions).} & Definition~\ref{def:failure}, p.~\pageref{def:failure} \\
+8 & Ms.~Pagal & How are the two decision signals compared? & Three versions of the policy, calibrated alike: SNR only, stabilization only, and both (full policy), plus SNR-gated controls. & \loc{sec:compared}; Table~\ref{tab:methods}, p.~\pageref{tab:methods} \\
+9 & Dr.~Landicho & Where does the method come from? & The method is now introduced from the problem: the handover is treated as a per-utterance decision with a cost--risk formulation, a signal that costs no forward pass, a calibrated bound, and proven properties. & \loc{sec:background} \\
+10 & Dr.~Landicho & Justify Learn-Then-Test for TTS; do $\alpha=0.05$ and 90\% confidence come from a study? & LTT is shown to be task-independent (it needs only pass/fail outcomes, exchangeable data and fixed candidates); $\alpha$ and $\delta$ are stated as design choices, with the reason. & \loc{sec:rrl-risk}; \loc{sec:calsize} \\
+11 & Dr.~Landicho & Lead with the problem; state the gap from the RRL. & Problem statement rewritten around the computational cost of the fixed handover; the gap is tied to the reviewed literature. & \loc{sec:problem}; \loc{sec:rrl-synthesis} \\
+12 & Dr.~Landicho & Categorize the related studies (TTS vs.\ speech recognition). & Domain column and grouping restored in Table~2.2, with counts by domain, and a paragraph separating distillation from switching. & \loc{sec:rrl-synthesis}; Table~\ref{tab:synthesis}, p.~\pageref{tab:synthesis} \\
+13 & Dr.~Landicho & Show that the saving is significant; define the ``cap'' and how cost is measured. & The cap is defined as teacher step 8 (21 forward passes); cost is counted in forward passes, with runtime on the T4; savings are given with numbers (13--19 passes, 10--38\%) and preliminary timing. & \loc{sec:problem}; \loc{sec:baseline}; \loc{sec:terms} \\
+14 & Dr.~Landicho & Is 0.25 the best threshold? & Cited where DMOSpeech~2 uses 0.25 and the ranges it suggests (0.1--0.2 for efficiency, 0.4--0.5 for diversity); the paper does not test whether 0.25 is best, so the study measures it per utterance. & \loc{sec:rrl-handover} \\
+15 & Dr.~Landicho & Present the claims; theoretical framework in TTS terms; conceptual framework with components, process and output. & Three claims, one per research question; theory headings rewritten in TTS terms; conceptual framework redrawn as the architecture of the method. & \loc{sec:theoretical}; \loc{sec:conceptual}; Fig.~\ref{fig:conceptual}, p.~\pageref{fig:conceptual} \\
+16 & Dr.~Landicho & Calibration is part of the method; one problem. & Calibration folded into the cost problem as a requirement; research questions and objectives reduced from four to three. & \loc{sec:problem}; \loc{sec:objectives} \\
+17 & Dr.~Landicho & Use the pre-experiment to validate the problem. & Appendix D result summarized in the problem statement (500 speakers; hindsight per-input choice 14.85 passes, 29\% fewer; noisy-prompt failures). & \loc{sec:problem}; Appendix~\ref{app:prelim}, p.~\pageref{app:prelim} \\
+18 & Dr.~Landicho & Do not set the baseline failure to zero; measure DMOSpeech~2's quality. & The baseline's WER, SIM and UTMOS will be reported as absolute values per condition, with the number of reference outputs above the WER ceiling. \pend{reproduction of DMOSpeech~2 (R12, Rhenel).} & Definition~\ref{def:failure}, p.~\pageref{def:failure}; Table~\ref{tab:matrix}, p.~\pageref{tab:matrix} \\
+19 & Dr.~Landicho & Keep the lightweight goal consistent. & Goal stated as low computation per utterance with quality within a stated limit; experiments on the Tesla T4, low-end devices as future work. & \loc{sec:background}; \loc{sec:scope} \\
+20 & Dr.~Landicho & Establish a threshold future researchers can use. & The calibrated threshold is reported with the conditions under which it holds and a procedure for recalibrating it. & \loc{sec:verify}; \loc{sec:significance} \\
+21 & Dr.~Landicho & Define the metrics and the comparison in the RRL. & Metrics, their limits, and the paired comparison stated in the RRL. \pend{naming the unseen dataset (R13).} & \loc{sec:rrl-eval} \\
+22 & Dr.~Landicho & Establish novelty against flow-matching work in image generation. & Image and video methods (FastFlow, CoFlow, AdaDiff, T-Stitch, Starodubcev et al., Jazbec et al.) named, with how each differs. & \loc{sec:rrl-adaptive} \\
+23 & Dr.~Landicho & Add moderate noise; use an unseen dataset. & \pend{R13, Rhenel.} & \loc{sec:data} \\
+24 & Ms.~Eder & Working prototype by the proposal defense. & \pend{R25, Rhenel.} & Appendix~\ref{app:prototype}, p.~\pageref{app:prototype} \\
+25 & Ms.~Eder & Comparison matrix against the baseline. & New comparison matrix (preliminary values; step 7 to be run). & Table~\ref{tab:matrix}, p.~\pageref{tab:matrix} \\
+26 & Ms.~Eder & Back the threshold with literature. & Thresholds of this kind cited from CALM, thought calibration, FlowGuard and SmoothCache. & \loc{sec:verify}; \loc{sec:rrl-adaptive} \\
+27 & Ms.~Eder & Proposal defense in the first or second week of November. & \pend{date to be confirmed with Ms.~Eder (R28).} & --- \\
+\end{longtable}
+}
+\end{document}

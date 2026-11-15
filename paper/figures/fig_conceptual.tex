@@ -1,47 +1,72 @@
-% Figure: conceptual framework, input-process-output (Chapter 1)
+% Figure: conceptual framework drawn as the architecture of the proposed
+% method (Chapter 1). Replaced the input-process-output version, 14 Nov 2026.
 \begin{figure}[!htbp]
 \centering
 \begin{adjustbox}{max width=\linewidth}
 \begin{tikzpicture}[
   font=\figfont,
-  io/.style={draw=frozenLine, fill=frozenFill, rounded corners=2pt, align=left, text width=3.9cm, minimum height=8.6cm, inner sep=5pt},
-  outbox/.style={draw=newLine, fill=newFill, rounded corners=2pt, align=left, text width=3.9cm, minimum height=8.6cm, inner sep=5pt},
-  ostep/.style={draw=newLine, very thick, fill=white, rounded corners=2pt, align=left, text width=4.3cm, minimum height=1.75cm, inner sep=4pt},
+  frozen/.style={draw=frozenLine, fill=frozenFill, rounded corners=2pt, align=center, text width=2.25cm, minimum height=1.45cm, inner sep=3pt},
+  added/.style={draw=newLine, thick, fill=newFill, rounded corners=2pt, align=center, text width=2.45cm, minimum height=1.45cm, inner sep=3pt},
+  offl/.style={draw=offLine, thick, fill=offFill, rounded corners=2pt, align=center, text width=2.45cm, minimum height=1.45cm, inner sep=3pt},
+  inbox/.style={draw, rounded corners=2pt, fill=white, align=center, text width=2.1cm, minimum height=1.45cm, inner sep=3pt},
+  outbox/.style={draw, very thick, rounded corners=2pt, fill=white, align=left, text width=2.9cm, minimum height=1.25cm, inner sep=4pt},
   head/.style={font=\figfont\bfseries, align=center},
-  arr/.style={-{Stealth[length=2.2mm]}, very thick}
+  arr/.style={-{Stealth[length=2mm]}, thick},
+  lab/.style={font=\figsmall, align=center}
 ]
-\node[head] at (0,1.0)   {INPUT};
-\node[head] at (5.4,1.0) {PROCESS};
-\node[head] at (10.8,1.0){OUTPUT};
+% ---------------------------------------------------------------- headers
+\node[head] at (0,4.0)    {INPUT};
+\node[head] at (8.0,4.0)  {COMPONENTS AND PROCESS};
+\node[head] at (17.8,4.0) {OUTPUT};
 
-\node[io, anchor=north] (in) at (0,0.6) {%
-\textbf{Test material}\\
-Seed-TTS English prompts and texts; clean and 15~dB noisy prompts; speaker-disjoint development, calibration and test sets\\[5pt]
-\textbf{Models (weights unchanged)}\\
-F5-TTS teacher, DMOSpeech~2 student, duration predictor, vocoder\\[5pt]
-\textbf{Settings fixed in advance}\\
-candidate and reference switching times; added-failure rule; tolerated risk $\alpha$ and confidence parameter $\delta$};
+% ------------------------------------------------- offline row (before use)
+\node[frozen, fill=white] (calset) at (5.6,2.7) {Calibration set\\(held-out speakers)};
+\node[offl] (cal) at (9.6,2.7) {\textbf{Offline calibrator}\\Learn-Then-Test\\with $\alpha$, $\delta$};
+\node[lab, anchor=east, text width=2.6cm] at (4.25,2.7) {\textit{Once, before use}};
 
-\node[ostep, anchor=north] (o1) at (5.4,0.6)   {\textbf{Objective 1.} Run every candidate switching time; measure quality and cost};
-\node[ostep, below=0.45cm of o1] (o2) {\textbf{Objective 2.} State the cost--risk problem; define the stopping rule from prompt SNR and endpoint stabilization};
-\node[ostep, below=0.45cm of o2] (o3) {\textbf{Objective 3.} Calibrate the threshold with Learn-Then-Test; check the guarantee on held-out speakers};
-\node[ostep, below=0.45cm of o3] (o4) {\textbf{Objective 4.} Compare with fixed switching times, SNR-only rule and oracle; clean and noisy prompts; calibration sizes};
+% --------------------------------------------- generation row (per utterance)
+\node[inbox] (in) at (0,0) {Prompt audio,\\prompt text,\\target text};
+\node[frozen] (dur) at (2.9,0) {Duration\\predictor};
+\node[frozen] (teach) at (5.8,0) {Teacher\\(F5-TTS)\\guided step};
+\node[added] (ctrl) at (9.6,0) {\textbf{Stopping controller}\\endpoint change $d_i$\\and prompt SNR};
+\node[frozen] (stud) at (14.0,0) {Student\\(DMOSpeech~2)\\3 steps};
+\node[frozen] (voc) at (14.0,-2.4) {Vocoder\\(Vocos)};
 
-\node[outbox, anchor=north] (out) at (10.8,0.6) {%
-\textbf{Per-utterance switching time} and the speech it produces\\[5pt]
-\textbf{Calibrated threshold} with a stated bound on added quality failures\\[5pt]
-\textbf{Quality and cost} of every compared method: WER, SIM, UTMOS, forward passes, runtime\\[5pt]
-\textbf{Evidence} on whether endpoint stabilization adds value beyond prompt SNR};
+% ----------------------------------------------------------------- outputs
+\node[outbox] (othr) at (17.8,2.7) {\textbf{Calibrated threshold} $\hat\lambda$, with a bound on added quality failures};
+\node[outbox] (osw)  at (17.8,0)   {\textbf{Switching time} chosen for the utterance, and its cost in forward passes};
+\node[outbox] (osp)  at (17.8,-2.4) {\textbf{Speech} for the utterance (waveform)};
 
-\draw[arr] (o1) -- (o2);
-\draw[arr] (o2) -- (o3);
-\draw[arr] (o3) -- (o4);
-\coordinate (pin)  at ($(o1.west)!0.5!(o4.west)$);
-\coordinate (pout) at ($(o1.east)!0.5!(o4.east)$);
-\draw[arr] (in.east |- pin) -- (pin);
-\draw[arr] (pout) -- (out.west |- pout);
+% ------------------------------------------------------------------ arrows
+\draw[arr] (in) -- (dur);
+\draw[arr] (dur) -- (teach);
+\draw[arr] (teach) -- node[lab, above] {state,} node[lab, below] {velocity} (ctrl);
+\draw[arr] (ctrl) -- node[lab, above] {stop: hand} node[lab, below, align=center] {over endpoint\\estimate} (stud);
+\draw[arr] (stud) -- node[lab, right] {mel-spectrogram} (voc);
+\draw[arr] (voc) -- (osp);
+% teacher loop
+\draw[arr] (ctrl.south) -- ++(0,-1.2) coordinate (lp) -| (teach.south);
+\node[lab, below] at ($(lp)!0.5!(lp-|teach.south)$) {continue: next teacher step (at most to the reference step)};
+% prompt audio to the controller (SNR)
+\draw[arr] (in.north) |- ($(ctrl.north)+(-0.75,0.75)$) -- ($(ctrl.north)+(-0.75,0)$);
+\coordinate (pl) at ($(ctrl.north)+(-0.75,0.75)$);
+\node[lab, anchor=south, inner sep=1.5pt] at (pl -| dur) {prompt audio (for SNR)};
+% calibration
+\draw[arr] (calset) -- (cal);
+\draw[arr] (cal) -- node[lab, right, pos=0.3] {threshold $\hat\lambda$} (ctrl);
+\draw[arr] (cal) -- (othr);
+% switching time and cost
+\draw[arr] ($(ctrl.north)+(0.75,0)$) -- ++(0,0.32) -| ($(osw.north)+(-0.9,0)$);
+
+% ------------------------------------------------------------------ legend
+\node[frozen, minimum height=0.35cm, text width=0.45cm] (l1) at (0.2,-3.9) {};
+\node[right, lab] at (l1.east) {released model, weights unchanged};
+\node[added, minimum height=0.35cm, text width=0.45cm] (l2) at (5.4,-3.9) {};
+\node[right, lab] at (l2.east) {added, during generation (no extra pass)};
+\node[offl, minimum height=0.35cm, text width=0.45cm] (l3) at (11.1,-3.9) {};
+\node[right, lab] at (l3.east) {added, offline};
 \end{tikzpicture}
 \end{adjustbox}
-\caption{Conceptual framework of the study in input--process--output form. The process stage follows the four specific objectives.}
+\caption{Conceptual framework of the study, drawn as the architecture of the proposed method. Gray components are the released DMOSpeech~2 sampler with unchanged weights; the stopping controller (teal) decides for each utterance where the teacher stops, and the offline calibrator (orange) sets its threshold before use.}
 \label{fig:conceptual}
 \end{figure}
