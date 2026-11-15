@@ -2,10 +2,10 @@
   "note": "post hoc and descriptive; outside the frozen verdict rule (EXP-029 preregistration e58f3856ad20...)",
   "stage": {
     "quality_rows": 90,
-    "diversity_rows": 0,
-    "frozen_verdict": "clean_pareto_found_no_stac_headroom",
-    "partial": true,
-    "meaning": "diversity.csv is missing, so determine_verdict treated the CVf0 condition as met: the passed arms passed on quality only"
+    "diversity_rows": 20,
+    "frozen_verdict": "monotone_tradeoff_only",
+    "partial": false,
+    "meaning": "both stages present: the frozen verdict is final"
   },
   "clean_utmos": {
     "TB25_minus_W4": {
@@ -424,6 +424,7 @@
   "router_criteria_missed": {
     "TB25_to_W8_via_A_4": {
       "missed": [
+        "arm_not_in_passed_clean_arms",
         "pooled_dsim_lo"
       ],
       "early_by_condition": {
@@ -436,6 +437,7 @@
     },
     "TB25_to_W8_via_A_4_norm": {
       "missed": [
+        "arm_not_in_passed_clean_arms",
         "pooled_dwer_hi",
         "pooled_dsim_lo"
       ],
@@ -449,6 +451,7 @@
     },
     "TB50_to_W8_via_A_4": {
       "missed": [
+        "arm_not_in_passed_clean_arms",
         "pooled_dwer_hi",
         "pooled_dsim_lo"
       ],
@@ -462,6 +465,7 @@
     },
     "TB50_to_W8_via_A_4_norm": {
       "missed": [
+        "arm_not_in_passed_clean_arms",
         "pooled_dwer_hi",
         "pooled_dsim_lo"
       ],
@@ -528,6 +532,7 @@
     },
     "BLND_to_W8_via_A_4": {
       "missed": [
+        "arm_not_in_passed_clean_arms",
         "pooled_dwer_hi",
         "pooled_dsim_lo"
       ],
@@ -541,6 +546,7 @@
     },
     "BLND_to_W8_via_A_4_norm": {
       "missed": [
+        "arm_not_in_passed_clean_arms",
         "pooled_dwer_hi",
         "pooled_dsim_lo"
       ],
@@ -634,5 +640,118 @@
       "pooled_dsim_lo": -0.014797447787390814,
       "saving_vs_W8": 0.215873015873016
     }
+  },
+  "frontier": {
+    "arms": {
+      "W4": {
+        "dutmos_vs_W8": -0.026351213455200195,
+        "within_utmos_bar": true,
+        "cvf0": 0.0734844603217388,
+        "dcvf0_vs_W4": 0.0,
+        "dcvf0_vs_W4_ci": null,
+        "adds_variety_over_W4": false
+      },
+      "TB25": {
+        "dutmos_vs_W8": -0.06513636112213135,
+        "within_utmos_bar": true,
+        "cvf0": 0.07315101523907723,
+        "dcvf0_vs_W4": -0.0003334450826615796,
+        "dcvf0_vs_W4_ci": [
+          -0.0031871392687617614,
+          0.0023406571801699865
+        ],
+        "adds_variety_over_W4": false
+      },
+      "TB50": {
+        "dutmos_vs_W8": -0.05223289330800374,
+        "within_utmos_bar": true,
+        "cvf0": 0.07272029909859211,
+        "dcvf0_vs_W4": -0.0007641612231466983,
+        "dcvf0_vs_W4_ci": [
+          -0.004035381350211121,
+          0.0022919968795630527
+        ],
+        "adds_variety_over_W4": false
+      },
+      "TB75": {
+        "dutmos_vs_W8": -0.09148740768432617,
+        "within_utmos_bar": false,
+        "cvf0": 0.0770474401255103,
+        "dcvf0_vs_W4": 0.0035629798037714946,
+        "dcvf0_vs_W4_ci": [
+          -0.0010183404201293863,
+          0.008796967273196076
+        ],
+        "adds_variety_over_W4": false
+      },
+      "TBRG": {
+        "dutmos_vs_W8": -0.19008009433746337,
+        "within_utmos_bar": false,
+        "cvf0": 0.08549554273473786,
+        "dcvf0_vs_W4": 0.012011082412999053,
+        "dcvf0_vs_W4_ci": [
+          0.0021945286133932193,
+          0.026601267276884825
+        ],
+        "adds_variety_over_W4": true
+      },
+      "BLND": {
+        "dutmos_vs_W8": -0.06170033613840739,
+        "within_utmos_bar": true,
+        "cvf0": 0.07574839292201471,
+        "dcvf0_vs_W4": 0.0022639326002759012,
+        "dcvf0_vs_W4_ci": [
+          -0.00059382924587465,
+          0.005797644084794833
+        ],
+        "adds_variety_over_W4": false
+      },
+      "W5R2": {
+        "dutmos_vs_W8": -0.11445110638936361,
+        "within_utmos_bar": false,
+        "cvf0": 0.08068278166460575,
+        "dcvf0_vs_W4": 0.007198321342866934,
+        "dcvf0_vs_W4_ci": [
+          0.0025284877842780243,
+          0.01192945192719079
+        ],
+        "adds_variety_over_W4": true
+      },
+      "W6R2": {
+        "dutmos_vs_W8": -0.09455628395080566,
+        "within_utmos_bar": false,
+        "cvf0": 0.08224951116241686,
+        "dcvf0_vs_W4": 0.008765050840678044,
+        "dcvf0_vs_W4_ci": [
+          0.002641808154651191,
+          0.014405700915290429
+        ],
+        "adds_variety_over_W4": true
+      },
+      "W8R2": {
+        "dutmos_vs_W8": -0.12463885943094889,
+        "within_utmos_bar": false,
+        "cvf0": 0.08565384691018275,
+        "dcvf0_vs_W4": 0.012169386588443944,
+        "dcvf0_vs_W4_ci": [
+          0.006909748650503401,
+          0.017690542119142245
+        ],
+        "adds_variety_over_W4": true
+      },
+      "W8": {
+        "dutmos_vs_W8": 0.0,
+        "within_utmos_bar": true,
+        "cvf0": 0.07200723302386604,
+        "dcvf0_vs_W4": -0.001477227297872781,
+        "dcvf0_vs_W4_ci": [
+          -0.004063118113151079,
+          0.00037910624173872787
+        ],
+        "adds_variety_over_W4": false
+      }
+    },
+    "inside_bar_and_adds_variety": [],
+    "spearman_dutmos_vs_dcvf0_across_arms": -0.9285714285714286
   }
 }

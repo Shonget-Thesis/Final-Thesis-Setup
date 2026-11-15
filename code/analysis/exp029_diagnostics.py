@@ -12,6 +12,9 @@ preregistered verdict. Committed files are only read, and the runner is not impo
   the mean WER is dominated by a few runaway cases.
 - Routing: which frozen criterion each non-SNR W8-reference router missed, and how closely the teacher features track
   prompt SNR across all 90 cases.
+- Frontier (when diversity.csv exists): per arm, clean dUTMOS vs W8 next to dCVf0 vs W4 (both from the runner's results
+  JSON), whether the arm is inside the -0.08 UTMOS bar and whether its CVf0 gain over W4 has a lower bound above zero,
+  and the Spearman correlation across the cheap arms between the two.
 
 Usage: python code/analysis/exp029_diagnostics.py [results dir]
 """
@@ -88,7 +91,8 @@ def main():
            "stage": {"quality_rows": len(qual), "diversity_rows": len(div),
                      "frozen_verdict": results["verdict"], "partial": results["partial"],
                      "meaning": ("diversity.csv is missing, so determine_verdict treated the CVf0 condition as met: "
-                                 "the passed arms passed on quality only") if not div else "both stages present"}}
+                                 "the passed arms passed on quality only") if not div else
+                                "both stages present: the frozen verdict is final"}}
 
     clean = [r for r in qual if r["condition"] == "clean"]
     out["clean_utmos"] = {
@@ -128,6 +132,25 @@ def main():
         misses[key] = {"missed": missed, "early_by_condition": r["cond_early_frac"],
                        "pooled_dsim_lo": r["pooled_dsim_vs_ref"]["lo"], "saving_vs_W8": r["saving_vs_W8"]}
     out["router_criteria_missed"] = misses
+
+    cd = results.get("clean_diversity")
+    if cd:
+        cq = results["condition_quality"]["clean"]["arms"]
+        frontier = {}
+        for a in ARMS:
+            du = 0.0 if a == "W8" else cq[a]["vs_W8"]["utmos"]["boot"]["mean"]
+            dc = cd[a].get("cvf0_minus_W4", {}).get("boot") if a != "W4" else None
+            frontier[a] = {"dutmos_vs_W8": du, "within_utmos_bar": du >= prereg["clean_utmos_bar"],
+                           "cvf0": cd[a]["cvf0"]["mean"],
+                           "dcvf0_vs_W4": dc["mean"] if dc else 0.0,
+                           "dcvf0_vs_W4_ci": [dc["lo"], dc["hi"]] if dc else None,
+                           "adds_variety_over_W4": bool(dc and dc["lo"] > 0)}
+        cheap = [a for a in ARMS if a not in ("W4", "W8")]
+        out["frontier"] = {
+            "arms": frontier,
+            "inside_bar_and_adds_variety": [a for a in cheap if frontier[a]["within_utmos_bar"] and frontier[a]["adds_variety_over_W4"]],
+            "spearman_dutmos_vs_dcvf0_across_arms": spearman([frontier[a]["dutmos_vs_W8"] for a in cheap],
+                                                             [frontier[a]["dcvf0_vs_W4"] for a in cheap])}
 
     path = RES / "diagnostics.json"
     with open(path, "w", encoding="utf-8", newline="\n") as f:  # LF on every platform: results/ is stored as -text
