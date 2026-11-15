@@ -4,7 +4,7 @@ Sway-grid figure for Chapter 2 (Figure 2.2) plus the grid check behind
 
 Panel (a): sway map t = 1 - cos(pi/2 * u) (s = -1) against the identity (s = 0),
            the 17 points of the released 16-interval teacher grid, t_switch = 0.25,
-           and the candidate handover steps 4/5/6/8 with their NFE.
+           and the candidate handover steps 4/5/6/7/8 with their NFE.
 Panel (b): 16- vs 32-interval grids near t_switch = 0.25 and the teacher stop
            index under the two stopping rules (code: first t_k > s; paper: last t_k <= s).
 
@@ -67,7 +67,7 @@ def panel_sway_map(ax):
     ax.text(0.02, 0.12, "teacher\n(t ≤ 0.25)", fontsize=9, color=INK_2, va="center")
     ax.text(0.02, 0.62, "student", fontsize=9, color=INK_2, va="center")
 
-    label_y = {4: 0.03, 5: 0.09, 6: 0.15, 8: 0.33}
+    label_y = {4: 0.03, 5: 0.09, 6: 0.15, 7: 0.21, 8: 0.33}
     for k, ty in label_y.items():
         x, y = k / 16, g16[k]
         ax.scatter([x], [y], s=70, color=ORANGE, edgecolor=SURFACE, linewidth=2, zorder=4)

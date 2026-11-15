@@ -14,10 +14,10 @@
 \node[head] at (5.0,1.25) {What it gives the study};
 \node[head] at (10.0,1.25) {Proposed method};
 
-\node[theory] (t1) at (0,0)     {\textbf{Flow matching}\\straight paths from noise to speech};
-\node[theory] (t2) at (0,-2.0)  {\textbf{Knowledge distillation and teacher-guided sampling}};
-\node[theory] (t3) at (0,-4.0)  {\textbf{Input-adaptive computation}\\stop when enough is done};
-\node[theory] (t4) at (0,-6.0)  {\textbf{Statistical risk control}\\Learn-Then-Test};
+\node[theory] (t1) at (0,0)     {\textbf{Flow-matching speech synthesis}\\straight paths from noise to a mel-spectrogram};
+\node[theory] (t2) at (0,-2.0)  {\textbf{Teacher-guided TTS}\\distilled student finishes the teacher's work};
+\node[theory] (t3) at (0,-4.0)  {\textbf{Per-utterance computation}\\stop when enough is done};
+\node[theory] (t4) at (0,-6.0)  {\textbf{Reliability of an inference setting}\\Learn-Then-Test};
 
 \node[gives] (g1) at (5.0,0)    {Endpoint estimate at every teacher step, at no extra cost, and a score of whether it has settled};
 \node[gives] (g2) at (5.0,-2.0) {A student that finishes from the teacher's state; the switching time sets the cost};
