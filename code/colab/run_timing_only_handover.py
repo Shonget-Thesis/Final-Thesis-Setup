@@ -185,16 +185,16 @@ def constrained_dtw(cost, band):
 
 
 def path_to_map(path, n, m):
-    """Mean student frame per teacher frame: a non-decreasing map with w[0] = 0 and w[n-1] = m - 1."""
+    """Mean student frame per teacher frame: non-decreasing, steps between 0 and 2, w[0] = 0 and w[n-1] in
+    [m - 1.5, m - 1]. The last frame is not pinned to m - 1: when the path ends with two (1,2) steps, pinning made a
+    step of 2.5 (Amendment 1)."""
     sums, counts = np.zeros(n), np.zeros(n)
     for i, j in path:
         sums[i] += j
         counts[i] += 1
     if np.any(counts == 0):
         raise RuntimeError("Path leaves a teacher frame unmatched")
-    w = sums / counts
-    w[0], w[-1] = 0.0, float(m - 1)
-    return np.maximum.accumulate(w)
+    return np.maximum.accumulate(sums / counts)
 
 
 def timing_map(student_gen, teacher_gen, band_frac=BAND_FRAC, min_band=MIN_BAND):
@@ -353,7 +353,7 @@ def smoke(pipe, out_dir, prereg_path=PREREG_PATH):
         toh_id = gl.student(pipe, ctx, x_id, taus)
         _, w3, band = timing_handover(s0, ends[3], plen)
         dw = np.diff(w3)
-        map_ok = bool(w3[0] == 0.0 and w3[-1] == n - 1 and np.all(dw >= -1e-9) and np.all(dw <= 2.0 + 1e-9)
+        map_ok = bool(w3[0] == 0.0 and n - 1.5 <= w3[-1] <= n - 1 and np.all(dw >= -1e-9) and np.all(dw <= 2.0 + 1e-9)
                       and np.max(np.abs(w3 - np.arange(n))) <= band + 1.0)
         rec = {"utt_id": item["utt_id"], "split_diff": tb._max_abs(stu_split - stu_full),
                "identity_map_diff": tb._max_abs(x_id - s0), "toh_identity_vs_student": tb._max_abs(toh_id - stu_full),
@@ -362,6 +362,7 @@ def smoke(pipe, out_dir, prereg_path=PREREG_PATH):
         ref = stored[item["utt_id"]]
         rec["d_wer"] = abs(m["wer"] - float(ref["wer_W4"]))
         rec["d_sim"] = abs(m["similarity"] - float(ref["similarity_W4"]))
+        print(f"[smoke] {json.dumps(rec)}", flush=True)
         checks.append(rec)
         if max(rec["split_diff"], rec["identity_map_diff"], rec["toh_identity_vs_student"]) > SPLIT_TOL or not map_ok:
             raise RuntimeError(f"Identity or map check failed: {rec}")

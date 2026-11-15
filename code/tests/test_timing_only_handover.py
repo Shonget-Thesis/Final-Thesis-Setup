@@ -46,12 +46,29 @@ class TimingMapTests(unittest.TestCase):
         rng = np.random.default_rng(3)
         for n in (40, 180, 600):
             w, band = toh.timing_map(rng.normal(size=(n, 100)), rng.normal(size=(n, 100)))
-            d = np.diff(w)
-            self.assertEqual(w[0], 0.0)
-            self.assertEqual(w[-1], n - 1)
-            self.assertTrue(np.all(d >= -1e-12))
-            self.assertTrue(np.all(d <= 2.0 + 1e-12))
-            self.assertLessEqual(float(np.max(np.abs(w - np.arange(n)))), band + 1.0)
+            self.assert_smoke_map_check(w, band, n)
+
+    def assert_smoke_map_check(self, w, band, n):
+        """The smoke test's map check (run_timing_only_handover.smoke)."""
+        d = np.diff(w)
+        self.assertEqual(w[0], 0.0)
+        self.assertTrue(n - 1.5 <= w[-1] <= n - 1)
+        self.assertTrue(np.all(d >= -1e-9))
+        self.assertTrue(np.all(d <= 2.0 + 1e-9), f"largest step {d.max()}")
+        self.assertLessEqual(float(np.max(np.abs(w - np.arange(n)))), band + 1.0)
+
+    def test_structured_retimings_pass_the_smoke_map_check(self):
+        """Regression for Amendment 1: pinning the last frame gave a final step of 2.5 on retimed, speech-like
+        inputs (18 of 400 in a local search), which failed the first Colab smoke test."""
+        rng = np.random.default_rng(0)
+        for _ in range(60):
+            n = int(rng.integers(150, 900))
+            base = np.cumsum(rng.normal(size=(n + 80, 10)), 0)[40:40 + n]
+            student = np.repeat(base, 10, 1)
+            shift = rng.uniform(2, 15) * np.sin(np.pi * np.arange(n) / (n - 1) * rng.integers(1, 4))
+            teacher = toh.warp_frames(student, np.arange(n) + shift) + 0.3 * rng.normal(size=student.shape)
+            w, band = toh.timing_map(student, teacher)
+            self.assert_smoke_map_check(w, band, n)
 
     def test_recovers_a_known_retiming_despite_a_recording_condition(self):
         rng = np.random.default_rng(4)
@@ -89,7 +106,7 @@ class TimingMapTests(unittest.TestCase):
         w, _ = toh.timing_map(rng.normal(size=(n, 100)), rng.normal(size=(n, 100)))
         m = toh.mirror_map(w)
         self.assertEqual(m[0], 0.0)
-        self.assertEqual(m[-1], n - 1)
+        self.assertEqual(m[-1], w[-1])
         self.assertTrue(np.all(np.diff(m) >= -1e-12))
         self.assertAlmostEqual(toh.map_stats(m)[0], toh.map_stats(w)[0], places=9)
         self.assertAlmostEqual(toh.map_stats(m)[1], toh.map_stats(w)[1], places=9)
