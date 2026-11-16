@@ -444,10 +444,15 @@
       "title": "Follow-up check of the student restart level (j=1 versus j=2) on the T4",
       "owner": "unassigned",
       "status": "todo",
-      "updated": "2026-10-27",
+      "updated": "2026-11-16",
       "acceptance": "On the 100 development speakers, clean and 15 dB noisy, on the Colab T4 with identical seeds, j=1 and j=2 are run at switching times 0.07, 0.10, 0.15 and 0.25 and scored by WER and SIM against ground truth and against each setting's own reference; the hypothesis and decision rule are written down before synthesis; results and hashes are committed. If j=2 is no worse in absolute terms it is recorded as a possible extension; it does not change the proposal's scope.",
       "evidence": [
-        "docs/progress/log/2026-10-27-restart-level-reasoning.md"
+        "docs/progress/log/2026-10-27-restart-level-reasoning.md",
+        "research/experiments/EXP-026-transmissibility-test/README.md",
+        "research/experiments/EXP-027-transmissibility-confirmation/README.md",
+        "research/experiments/EXP-028-transmissibility-bridge/README.md",
+        "research/experiments/EXP-029-damped-transmissibility-stac/README.md",
+        "docs/progress/log/2026-11-16-exp032-results.md"
       ]
     },
     {
@@ -806,7 +811,7 @@
       "id": "EVAL-025",
       "title": "Variety per teacher pass against the DMOSpeech 2 paper's t_switch = 0.25, on clean and noisy prompts (EXP-032)",
       "owner": "Rhenel Jhon R. Sajol",
-      "status": "todo",
+      "status": "review",
       "updated": "2026-11-16",
       "acceptance": "Preregistration is frozen before GPU synthesis (c952fe555d49...) with locked code and EXP-017/EXP-031/EXP-027 input hashes; the Colab T4 smoke test passes the split-student and repeated-P25 identities (<= 1e-5), the 32-interval teacher function against the 16-interval trajectory (<= 1e-4), EXP-027 W4 reproduction (<= 0.01), EXP-031 reproduction of STU, W4 and W8 on development speaker 1 under clean and noisy15 (<= 0.01), and a tensor-bank write and reload; the run evaluates STU, W1, W2, W3, W4, W8, P25, P25R and TCH on development speakers 1-30 x clean and noisy15 (60 cases) and all but TCH on 20 x 12 seeds x both conditions; the analysis applies the frozen label rules, reports the variety and quality curves against P25 with bootstrap intervals, the EXP-031 and EXP-017 reproductions, and writes MANIFEST.json and bank_index.json.",
       "evidence": [
@@ -815,8 +820,64 @@
         "code/colab/run_variety_per_pass.py",
         "code/colab/DMOSpeech2_EXP032_Variety_Per_Pass.ipynb",
         "code/tests/test_variety_per_pass.py",
-        "docs/progress/log/2026-11-16-exp032-variety-per-pass-setup.md"
+        "docs/progress/log/2026-11-16-exp032-variety-per-pass-setup.md",
+        "research/experiments/EXP-032-variety-per-pass/results/MANIFEST.json",
+        "research/experiments/EXP-032-variety-per-pass/results/VARIETY_PER_PASS_REPORT.md",
+        "research/experiments/EXP-032-variety-per-pass/results/variety_per_pass_results.json",
+        "research/experiments/EXP-032-variety-per-pass/results/quality.csv",
+        "research/experiments/EXP-032-variety-per-pass/results/diversity.csv",
+        "research/experiments/EXP-032-variety-per-pass/results/bank_index.json",
+        "research/experiments/EXP-032-variety-per-pass/results/smoke/smoke_check.json",
+        "research/experiments/EXP-032-variety-per-pass/results/diagnostics.json",
+        "code/analysis/exp032_diagnostics.py",
+        "docs/progress/log/2026-11-16-exp032-results.md",
+        "code/analysis/exp032_bank_pitch_screen.py",
+        "research/experiments/EXP-032-variety-per-pass/offline/bank_pitch_screen.json",
+        "docs/progress/log/2026-11-16-exp032-bank-pitch-screen.md",
+        "code/analysis/paper_anchor_rescreen.py",
+        "research/experiments/EXP-032-variety-per-pass/offline/paper_anchor_rescreen.json",
+        "docs/progress/log/2026-11-16-paper-anchor-rescreen.md"
+      ],
+      "validation": "2026-11-16: Colab T4 run on 2026-11-15 under preregistration c952fe555d49... (60/60 quality, 40/40 variety); smoke identities exactly 0, EXP-027 W4 reproduced, tensor-bank write and reload passed; manifest and preregistration hashes checked and the nine files imported byte-identically; analyze() recomputed locally from the CSVs gives the same results JSON and the same report apart from the tensor-bank line (bank not local); STU, W4 and W8 reproduce EXP-031 (largest UTMOS difference 4.3e-4) and every shared arm reproduces EXP-017 (2.6e-3). Frozen labels: cheapest_step_point none, cheapest_step_confirmed none, w8_matches_paper false, noisy_cheapest_step_point none (not a finding: noisy15 pitch variety is undefined because pYIN voices no frames in the teacher arms' outputs), noisy_quality_safe_arms empty. Post hoc diagnostics in diagnostics.json. The tensor bank was received on 2026-11-16 and all 120 files match bank_index.json; a post hoc offline screen of it (CPU vocoding and pYIN, no TTS network; CPU re-tracking agrees with the stored T4 tracks) is in offline/bank_pitch_screen.json. Development evidence only; awaiting requester review."
+    },
+    {
+      "id": "EVAL-026",
+      "title": "Cheaper teacher paths to the DMOSpeech 2 paper's t_switch = 0.25: which handover keeps its variety and quality for the fewest passes (EXP-033)",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "todo",
+      "updated": "2026-11-16",
+      "acceptance": "Preregistration is frozen before GPU synthesis (12aec5f7f9fd...) with locked code and EXP-032/EXP-026/EXP-027 input hashes, and discloses the local CPU screen; the Colab T4 smoke test passes the teacher identities (<= 1e-4), the student identities (<= 1e-5), every arm run on its own against the shared run with its counted forward passes equal to the cost table, EXP-027 W4 reproduction (<= 0.01) and EXP-032 reproduction of STU, W8 and P25 on development speaker 1 under clean and noisy15 (<= 0.01); the run evaluates P25, W8R2, W8, W6R2, W4R2, STU and the candidates CPH12, CPH8, CPH6, GI, SST and CWH4 on development speakers 1-30 x clean and noisy15 (60 quality cases), on 20 speakers x 12 seeds of clean prompts for variety, and each arm alone on 10 clean cases for passes and time; the analysis applies the frozen label rules against P25, reports the cost table, the equal-cost contrasts, SNR routing and the EXP-032 and EXP-026 reproductions, and writes MANIFEST.json.",
+      "evidence": [
+        "research/experiments/EXP-033-cheaper-teacher-path/README.md",
+        "code/colab/run_cheaper_teacher_path.py",
+        "code/colab/DMOSpeech2_EXP033_Cheaper_Teacher_Path.ipynb",
+        "code/tests/test_cheaper_teacher_path.py",
+        "research/experiments/EXP-033-cheaper-teacher-path/preregistration.json",
+        "docs/progress/log/2026-11-16-exp033-cheaper-teacher-path-setup.md",
+        "code/analysis/local_candidate_screen.py",
+        "research/experiments/EXP-032-variety-per-pass/offline/local_candidate_screen.json"
       ]
+    },
+    {
+      "id": "PROTO-001",
+      "title": "Local SNR + drift handover prototype (demo): HTML interface in the presentation's design, DMOSpeech 2 on CPU",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "review",
+      "updated": "2026-11-16",
+      "acceptance": "SNR + drift lives in its own file (code/prototype/snr_drift.py) with no model or interface code and agrees with code/scheduling/sampler.py and the experiments' Chapter 3 policy; the prototype runs locally on CPU from verified checkpoints and the Seed-TTS English set, stops the teacher when the rule decides, reports SNR, drifts, the handover step and passes against the 21-pass reference, and serves an HTML page in the design of presentation/index.html; examples are development speakers only; nothing in code/vendor, the experiments or the manuscript changes.",
+      "evidence": [
+        "code/prototype/snr_drift.py",
+        "code/prototype/engine.py",
+        "code/prototype/server.py",
+        "code/prototype/cli.py",
+        "code/prototype/web/index.html",
+        "code/prototype/README.md",
+        "code/prototype/requirements.txt",
+        "code/prototype/start_prototype.bat",
+        "code/tests/test_prototype_snr_drift.py",
+        "docs/progress/log/2026-11-16-snr-drift-prototype.md"
+      ],
+      "validation": "2026-11-16: 12 unit tests OK with the system Python and in .venv (PyTorch drift equals the sampler's exactly); checkpoints match the published SHA-256; local CPU runs reproduce EXP-031's T4 records (speaker 1 clean: SNR 28.2 dB, d1-d8 equal to 3 decimals, Step 8; speaker 5 clean: Step 4, 13 of 21 passes; speaker 5 noisy15: gate closed, Step 8); the upload path, the launcher and the page script (node --check) work. The page was not reviewed in a browser by the requester yet. Development demonstration; not adviser-reviewed."
     }
   ]
 }
