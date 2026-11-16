@@ -1,5 +1,7 @@
 # Keep maintained text portable across Windows and Linux.
 * text=auto eol=lf
+# Windows batch files need CRLF.
+*.bat text eol=crlf
 # Imported bytes are evidence: do not normalize their original line endings.
 code/vendor/** -text
 code/experiments/legacy/** -text
@@ -28,3 +30,4 @@ research/experiments/EXP-029-damped-transmissibility-stac/results/** -text
 research/experiments/EXP-030-timing-only-handover/results/** -text
 research/experiments/EXP-031-snr-toh-method-comparison/results/** -text
 research/experiments/EXP-032-variety-per-pass/results/** -text
+research/experiments/EXP-033-cheaper-teacher-path/results/** -text
