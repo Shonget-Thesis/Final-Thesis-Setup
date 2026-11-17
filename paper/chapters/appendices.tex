@@ -19,7 +19,7 @@
 \section[APPENDIX A.\ SAMPLE CALCULATIONS]{Sample Calculations}
 \label{app:calc}
 
-This appendix works through the formulas of Chapter~\ref{sec:method} with numbers small enough to check by hand. Sections~\ref{app:calc-grid} to \ref{app:calc-fail} follow one toy utterance through the stopping policy; Section~\ref{app:calc-ltt} computes the calibration p-values and the sample-size limit. In the toy example each ``output'' has only three numbers, the threshold is $\lambda=0.50$ and the SNR gate is $\theta=20$~dB. The values illustrate the computation and are not experimental results.
+This appendix works through the formulas of Chapter~\ref{sec:method} on recorded values from the team's runs on Google Colab Tesla T4 GPUs (\nolinkurl{research/evidence/benchmarks/gpu_grid_all1000.csv} and the \texttt{EXP-011} pilot \nolinkurl{worked_example.json}), using the development split only. Sections~\ref{app:calc-grid} to~\ref{app:calc-fail} follow one development utterance through the stopping policy with $\lambda=0.50$ and $\theta=20$~dB: \nolinkurl{common_voice_en_13900-common_voice_en_13901} (target text ``We don't have the budget to produce it in studio quality.''), chosen as the first development utterance in ID order that this policy keeps past Step~4. Section~\ref{app:calc-ltt} then computes the fixed-sequence Learn-Then-Test p-values and sample-size limit on the 100 development speakers. Notice that the initial T4 development grid and \texttt{EXP-011} recorded Steps~$\{4,5,6,8\}$, whereas candidate Step~7 ($s=0.20$, 19 passes; Table~\ref{tab:app-grid}) was added afterwards and benchmarked on the Tesla T4 in \texttt{EXP-018} (Table~\ref{tab:prelim-steps1to7}).
 
 \subsection{Teacher Grid and Cost of Each Candidate}
 \label{app:calc-grid}
@@ -46,67 +46,69 @@ Step $k$ & $t_k$ & Role & Teacher passes & Cost $C$ & Saving vs.\ 21 \\
 
 \subsection{Prompt SNR Estimate}
 
-Suppose the prompt has ten frames with energies 0.010, 0.012, 0.00001, 0.0002, 0.011, 0.009, 0.0003, 0.013, 0.010 and 0.0002. The quietest 10\% is one frame, so $\bar E_{\text{bottom}} = 0.00001$. The loudest half is 0.010, 0.010, 0.011, 0.012 and 0.013, so $\bar E_{\text{top}} = 0.0112$. By \Cref{eq:snr},
+In the \texttt{EXP-011} Tesla T4 recording of \nolinkurl{common_voice_en_13900-common_voice_en_13901}, the prompt spans 459 frames (25~ms window, 10~ms hop), so the quietest 10\% is 46 frames and the loudest half is 230 frames. Under the clean prompt, $\bar E_{\text{bottom}} = 1.747\times 10^{-5}$ and $\bar E_{\text{top}} = 2.043\times 10^{-2}$; by \Cref{eq:snr},
 \[
-\hat S = 10\log_{10}\frac{0.0112}{0.00001} = 10\log_{10}1120 = 30.5\ \text{dB}.
+\hat S = 10\log_{10}\frac{0.02043}{1.747\times 10^{-5}} = 10\log_{10}1169.4 = 30.68\ \text{dB}\ (\text{30.7~dB in the T4 grid}).
 \]
-Since $30.5\ge\theta=20$, the SNR gate is open and early stopping is allowed (Algorithm~\ref{alg:handover}, line~1).
+Since $30.7\ge\theta=20$, the SNR gate is open and early stopping is allowed (Algorithm~\ref{alg:handover}, line~1). Under the same utterance's \texttt{noisy15} prompt (15~dB white noise added), $\bar E_{\text{bottom}} = 3.563\times 10^{-4}$ and $\bar E_{\text{top}} = 2.076\times 10^{-2}$, giving $\hat S = 10\log_{10}(0.02076/3.563\times 10^{-4}) = 17.65\ \text{dB}$ ($17.7$~dB $<20$), so the gate closes and holds the teacher until Step~8.
 
 \subsection{Endpoint Estimate}
 
-At step 5 ($t_5=0.1181$), take one entry of the state, $x_{t_5}=0.8$, with guided velocity $v=1.5$ (\Cref{eq:guided}). By \Cref{eq:endpoint} the endpoint estimate of that entry is
+At step 5 ($t_5=0.1181$) on the clean prompt of \nolinkurl{common_voice_en_13900-common_voice_en_13901}, the \texttt{EXP-011} T4 trace records at mel bin 50 of generated frame 10 the state entry $x_{t_5}=-0.6905$ and guided velocity $v=-0.5198$ (\Cref{eq:guided}). By \Cref{eq:endpoint}, that entry's endpoint estimate is
 \[
-\hat x_1(t_5) = 0.8 + (1-0.1181)\times1.5 = 0.8 + 0.8819\times1.5 = 2.12.
+\hat x_1(t_5) = -0.6905 + (1-0.1181)\times(-0.5198) = -0.6905 - 0.4584 = -1.1489.
 \]
-The velocity is computed anyway for the Euler step, so this estimate costs no forward pass (Proposition~\ref{prop:zero}).
+The same operation is applied across every entry of the generated mel-spectrogram. The velocity is computed anyway for the Euler step, so this estimate costs no forward pass (Proposition~\ref{prop:zero}).
 
 \subsection{Endpoint-Stabilization Score and Stopping Decision}
 
-Let the three-number endpoint estimates at steps 3, 4 and 5 be $[0.5,\,0.2,\,0.9]$, $[2.0,\,1.0,\,2.0]$ and $[2.2,\,1.0,\,1.6]$. With \Cref{eq:stab}:
+Across all generated frames of \nolinkurl{common_voice_en_13900-common_voice_en_13901} on the Tesla T4 (\texttt{EXP-011} / \texttt{gpu\_grid\_all1000.csv}) using \Cref{eq:stab} with $\lambda=0.50$:
 \begin{itemize}
-\item Step 4 (first candidate): the change is $[1.5,\,0.8,\,1.1]$ with norm $\sqrt{2.25+0.64+1.21}=\sqrt{4.10}=2.025$; the estimate's norm is $\sqrt{4+1+4}=3.000$; so $d_4 = 2.025/3.000 = 0.675 > \lambda = 0.50$. By \Cref{eq:policy} the teacher continues (Algorithm~\ref{alg:handover}, line~7).
-\item Step 5: the change is $[0.2,\,0,\,-0.4]$ with norm $\sqrt{0.20}=0.447$; the estimate's norm is $\sqrt{4.84+1+2.56}=\sqrt{8.40}=2.898$; so $d_5 = 0.447/2.898 = 0.154 \le 0.50$, and $\hat S\ge\theta$. The teacher stops at step 5 (lines~4--5).
+\item Step 4 (first candidate, clean): the change norm is $\|\hat x_1(t_4)-\hat x_1(t_3)\|_M = 116.17$ and the estimate norm is $\|\hat x_1(t_4)\|_M = 218.01$, so $d_4 = 116.17/218.01 = 0.533 > \lambda = 0.50$. By \Cref{eq:policy} the teacher continues (Algorithm~\ref{alg:handover}, line~7).
+\item Step 5 (clean): the change norm falls to $85.92$ and the estimate norm is $204.42$, so $d_5 = 85.92/204.42 = 0.420 \le 0.50$, and $\hat S=30.7\ge20$. The teacher stops at step 5 (lines~4--5). (For reference, $d_6 = 65.97/197.16 = 0.335$.)
 \end{itemize}
-By \Cref{eq:cost} the utterance costs $2(5+1)+3 = 15$ forward passes instead of 21, a saving of $6/21 = 28.6\%$. Had $\hat S$ been 17.8~dB, the gate would have kept the teacher running to the reference step however settled the estimates looked, and the cost would have been 21.
+By \Cref{eq:cost} the clean utterance costs $2(5+1)+3 = 15$ forward passes instead of 21, saving $6/21 = 28.6\%$. Under its \texttt{noisy15} prompt, by contrast, Step~4 already shows $d_4 = 42.93/295.32 = 0.145 \le 0.50$ ($d_5=0.135$, $d_6=0.116$), illustrating how noise makes the score drop prematurely (Appendix~\ref{app:prelim-dev}); the SNR gate ($\hat S=17.7<20$~dB) therefore keeps the teacher running to Step~8 at 21 passes.
 
 \subsection{Added-Failure Check}
 \label{app:calc-fail}
 
-With \Cref{eq:failure} and $c=12.5\%$, $m_W=1$ point, $m_S=0.02$:
+With \Cref{eq:failure} and $c=12.5\%$, $m_W=1$ point, $m_S=0.02$ on the Tesla T4 runs (\nolinkurl{gpu_grid_all1000.csv}):
 \begin{itemize}
-\item \emph{No failure.} Reference output: WER 0\%, SIM 0.80. Candidate output: WER 0\%, SIM 0.79. The WER limit is $\max(12.5\%,\,0\%+1\%)=12.5\%$ and the SIM limit is $0.80-0.02=0.78$; both are respected, so $f=0$.
-\item \emph{Failure.} Reference output: WER 15.38\% (2 errors in 13 words). Candidate output: WER 23.08\% (3 errors). The WER limit is $\max(12.5\%,\,15.38\%+1\%)=16.38\%$, which is exceeded, so $f=1$ regardless of SIM.
+\item \emph{No failure.} Development utterance \nolinkurl{common_voice_en_13900-common_voice_en_13901} (clean) at its chosen Step~5: WER 0\%, SIM 0.963; Step-8 reference: WER 0\%, SIM 0.966. The WER limit is $\max(12.5\%,\,0\%+1\%)=12.5\%$ and the SIM limit is $0.966-0.02=0.946$; both are respected, so $f=0$.
+\item \emph{Failure.} Development utterance \nolinkurl{common_voice_en_15734837-common_voice_en_15734838} with its \texttt{noisy15} prompt at Step~4 (which the SNR gate blocks at $\hat S=17.5$~dB): WER 37.50\% (3 errors in 8 normalized words), SIM 0.889; Step-8 reference: WER 0\%, SIM 0.916. Both the WER limit ($12.5\%$) and the SIM limit ($0.916-0.02=0.896$) are missed, so $f=1$.
 \end{itemize}
 
 \subsection{Calibration p-Values and Sample Size}
 \label{app:calc-ltt}
 
-Take $n=100$ calibration inputs, $\alpha=0.05$ and $\delta=0.10$, and suppose the thresholds of the grid produce the failure counts in Table~\ref{tab:app-ltt}. For brevity the example uses a four-value grid; the grid of the study is given in Section~\ref{sec:calibration}. Each p-value follows from \Cref{eq:pvalue}; for example, with one failure,
+To illustrate Algorithm~\ref{alg:ltt} on real T4 counts without touching the calibration split, take the $n=100$ development speakers from \nolinkurl{gpu_grid_all1000.csv} with $\alpha=0.05$, $\delta=0.10$, SNR gate $\theta=20$~dB, and the full 21-value grid $\Lambda=\{0.20,0.25,\dots,1.20\}$ of Section~\ref{sec:calibration} (counting a speaker as failing when either its clean or its \texttt{noisy15} case fails). Table~\ref{tab:app-ltt} lists the observed failure counts and binomial p-values from \Cref{eq:pvalue}; for example, with one failure,
 \[
 \begin{aligned}
 p &= \P\big(\mathrm{Bin}(100,0.05)\le1\big) = 0.95^{100} + 100\times0.05\times0.95^{99}\\
-  &= 0.0059 + 0.0312 = 0.0371.
+  &= 0.0059 + 0.0312 = 0.0371,
 \end{aligned}
 \]
-Algorithm~\ref{alg:ltt} certifies $\lambda=0.40$ and $\lambda=0.50$, stops at $\lambda=0.60$, and returns $\hat\lambda=0.50$. By \Cref{eq:guarantee}, with probability at least 90\%, this threshold adds failures to at most 5\% of new inputs from the same population.
+whereas two failures yield $p=\P\big(\mathrm{Bin}(100,0.05)\le2\big)=0.1183 > 0.10$. Algorithm~\ref{alg:ltt} certifies $\lambda=0.20$ through $\lambda=0.50$, stops at $\lambda=0.55$, and returns $\hat\lambda=0.50$. By \Cref{eq:guarantee}, on an independent calibration split of $n$ speakers this guarantees $R(\pi_{\hat\lambda})\le 5\%$ with probability at least 90\%. (Appendix~\ref{app:prelim-cv} reports what actually occurred when Algorithm~\ref{alg:ltt} ran on the 200 calibration speakers of \nolinkurl{gpu_grid_all1000.csv}, where every threshold up to $\hat\lambda=1.20$ was certified, and across multi-noise T4 runs in \texttt{EXP-012}/\texttt{EXP-017}, where premature stabilization kept all thresholds uncertified.)
 
 \begin{table}[!htbp]
 \centering\small
-\caption{Fixed-sequence calibration with $n=100$, $\alpha=0.05$, $\delta=0.10$ (illustrative failure counts).}
+\caption{Fixed-sequence Learn-Then-Test calibration on the $n=100$ development speakers from \nolinkurl{gpu_grid_all1000.csv} (Tesla T4, $\alpha=0.05$, $\delta=0.10$, $\theta=20$~dB).}
 \label{tab:app-ltt}
 \begin{tabular}{@{}cccccl@{}}
 \toprule
 Order $g$ & $\lambda_g$ & Failures $n\hat R_g$ & $p_g$ (\Cref{eq:pvalue}) & $p_g\le0.10$? & Action \\
 \midrule
-1 & 0.40 & 0 & 0.0059 & yes & certify, continue \\
-2 & 0.50 & 1 & 0.0371 & yes & certify, continue \\
-3 & 0.60 & 3 & 0.2578 & no & stop \\
-4 & 0.70 & 6 & not tested & --- & --- \\
+1--4 & 0.20--0.35 & 0 & 0.0059 & yes & certify, continue \\
+5 & 0.40 & 1 & 0.0371 & yes & certify, continue \\
+6 & 0.45 & 1 & 0.0371 & yes & certify, continue \\
+7 & 0.50 & 1 & 0.0371 & yes & certify, continue \\
+8 & 0.55 & 2 & 0.1183 & no & stop \\
+9--21 & 0.60--1.20 & --- & not tested & --- & --- \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\emph{Smallest calibration set with zero failures.} With no failures, \Cref{eq:pvalue} gives $p=(1-\alpha)^n$. Certifying $\alpha=0.05$ at $\delta=0.10$ needs $0.95^n\le0.10$, i.e.\ $n\ge\ln0.10/\ln0.95 = 44.9$. Indeed $0.95^{44}=0.105$ fails and $0.95^{45}=0.099$ passes, so at least 45 independent inputs are needed. With 36 inputs, $p=0.95^{36}=0.158>0.10$, which is why the earlier cross-validation (Appendix~\ref{app:prelim}) could not certify this tolerance.
+\emph{Smallest calibration set with zero failures.} With no failures, \Cref{eq:pvalue} gives $p=(1-\alpha)^n$. Certifying $\alpha=0.05$ at $\delta=0.10$ needs $0.95^n\le0.10$, i.e.\ $n\ge\ln0.10/\ln0.95 = 44.9$. Indeed $0.95^{44}=0.105$ fails and $0.95^{45}=0.099$ passes, so at least 45 independent inputs are needed. With 36 inputs, $p=0.95^{36}=0.158>0.10$, which is why an earlier sub-45 sample could not certify this tolerance.
 
 % =====================================================================
 \section[APPENDIX B.\ SAMPLE SIMULATION]{Sample Simulation}
@@ -124,7 +126,7 @@ A candidate fails with a probability that grows with its score and is higher on 
 \[
 \P\big(f(x,k)=1\big) = \sigma\big(-4.4 + 3.2\,d_k + 1.6\,\mathbb 1[\text{noisy}] - 0.45\,(k-4)\big),
 \]
-where $\sigma$ is the logistic function; the reference never fails, as in Definition~\ref{def:failure}. The policy of \Cref{eq:policy} uses $\theta=20$~dB and the grid $\lambda\in\{0.20,0.25,\dots,1.20\}$, with costs from \Cref{eq:cost}. The true risk of every threshold is computed on 400{,}000 simulated utterances (Figure~\ref{fig:app-sim}). Calibration is then repeated 1{,}000 times for each calibration size $n$, with $\alpha=0.05$ and $\delta=0.10$, and the true risk of each returned threshold is recorded. The script, \texttt{sim/ltt\_sim.py}, accompanies this manuscript.
+where $\sigma$ is the logistic function; the reference never fails, as in Definition~\ref{def:failure}. The policy of \Cref{eq:policy} uses $\theta=20$~dB and the grid $\lambda\in\{0.20,0.25,\dots,1.20\}$, with costs from \Cref{eq:cost}. The true risk of every threshold is computed on 400{,}000 simulated utterances (Figure~\ref{fig:app-sim}). Calibration is then repeated 1{,}000 times for each calibration size $n$, with $\alpha=0.05$ and $\delta=0.10$, and the true risk of each returned threshold is recorded. The script \nolinkurl{code/analysis/ltt_sim.py} runs both this synthetic stress test (chosen so thresholds above $0.85$ violate $\alpha=0.05$) and the same model fitted directly to the Colab Tesla T4 development split (\texttt{-{}-fitted} below). Note that \nolinkurl{gpu_grid_all1000.csv} evaluates candidates $\{4,5,6\}$ and Step~8, so both simulation regimes use those three candidates.
 
 \begin{figure}[!htbp]
 \centering
@@ -177,7 +179,9 @@ $n$ & Method & $\P(R\le\alpha)$ & Mean $R$ & Mean passes & Reference only & Medi
 \end{adjustbox}
 \end{table}
 
-The simulation assumes independent inputs from one distribution, exactly the condition of Proposition~\ref{prop:ltt}. It therefore shows that the procedure is implemented and behaves as the theory says, not that the condition holds for real speech; that is what the held-out and repeated-split checks of Section~\ref{sec:obj3} will test.
+The simulation assumes independent inputs from one distribution, exactly the condition of Proposition~\ref{prop:ltt}. It therefore shows that the procedure is implemented and behaves as the theory says when unsafe thresholds exist, not that the condition holds for real speech; that is what the held-out and repeated-split checks of Section~\ref{sec:obj3} will test.
+
+\emph{Model fitted to the Colab Tesla T4 development data.} Running the same simulation with parameters fitted to the 100 development speakers' Tesla T4 runs (\texttt{python code/analysis/ltt\_sim.py -{}-fitted}, reading \nolinkurl{gpu_grid_all1000.csv}) produces equal clean and \texttt{noisy15} proportions; prompt SNR $37.9\pm7.5$~dB (clean) vs.\ $17.8\pm0.3$~dB (\texttt{noisy15}); lower stabilization scores on noisy prompts ($\ln d_4 = -1.739\pm0.198$ vs.\ $-0.542\pm0.217$ clean); and a fitted failure logit $(-2.640 - 2.504\,d_k + 3.583\,\mathbb{1}[\text{noisy}] - 0.350\,(k-4))$, which rises steeply with prompt noise but decreases with $d_k$ ($-2.504$). Because the 20~dB gate sends every \texttt{noisy15} prompt to Step~8, true risk stays at most $0.0089$ ($<1\%$) across the entire grid (largest safe threshold $1.20$, risk $0.0080$, $17.05$ passes). Over 1{,}000 repetitions at every $n\in\{50,100,200,400\}$, both Learn-Then-Test and the naive rule stay below $\alpha=0.05$ in $100.0\%$ of repetitions; Learn-Then-Test is simply more cautious at smaller $n$, progressing from median $\hat\lambda=0.40$ ($18.96$ passes, $8.6\%$ reference-only) at $n=50$ and $\hat\lambda=0.60$ ($18.19$ passes, $1.3\%$ reference-only) at $n=100$ to $\hat\lambda=1.20$ ($17.08$ passes, $0.0\%$ reference-only) at $n=200$ (matching the 200-speaker calibration T4 outcome in Appendix~\ref{app:prelim-cv}, whereas adding intermediate noise changes the behavior as documented in Appendix~\ref{app:prelim-cv}--\ref{app:prelim-dev}).
 
 % =====================================================================
 \section[APPENDIX C.\ PROTOTYPE]{Prototype}
@@ -192,7 +196,7 @@ The three boxes at the bottom of Figure~\ref{fig:glance} correspond to what the 
 \begin{landscape}
 \begin{figure}[p]
 \centering
-\resizebox{\linewidth}{!}{%
+\resizebox{0.88\linewidth}{!}{%
 \begin{tikzpicture}[x=1cm,y=1cm,
   frozen/.style={draw=frozenLine, fill=frozenFill, rounded corners=3pt, minimum height=9mm, align=center, font=\small, text=black!75},
   newbox/.style={draw=newLine, fill=white, line width=0.9pt, rounded corners=3pt, align=left, font=\small, inner sep=5pt},
@@ -209,7 +213,7 @@ The three boxes at the bottom of Figure~\ref{fig:glance} correspond to what the 
 }
 % (a) baseline
 \node[anchor=west, font=\small\bfseries] at (-0.3,1.25) {(a) Baseline: one fixed handover for every input};
-\foreach \y/\name in {0/{Input A\\[-2pt]\scriptsize clean, easy}, -0.85/{Input B\\[-2pt]\scriptsize moderate}, -1.7/{Input C\\[-2pt]\scriptsize noisy, hard}}{
+\foreach \y/\name in {0/{Input A\\[-2pt]\scriptsize clean, settles early}, -0.85/{Input B\\[-2pt]\scriptsize clean, settles late}, -1.7/{Input C\\[-2pt]\scriptsize noisy (15 dB)}}{
   \node[rowlbl] at (\xo-0.15,\y) {\name};
   \draw[tbar] (\xo,\y-0.28) rectangle ({\xo+18*\u},\y+0.28);
   \node[inbar] at ({\xo+9*\u},\y) {teacher \ 18 passes};
@@ -231,9 +235,9 @@ The three boxes at the bottom of Figure~\ref{fig:glance} correspond to what the 
 \node[font=\scriptsize\bfseries, text=newLine, align=center, anchor=south] at ({\xo+14*\u},\yb-0.72)
   {CONTRIBUTION: where the handover happens};
 \foreach \yy/\name/\tp/\saved/\note in
-   {1.25/{Input A\\[-2pt]\scriptsize clean, easy}/10/8/{saved 8 passes (38\%)},
-    2.10/{Input B\\[-2pt]\scriptsize moderate}/14/4/{saved 4 passes (19\%)},
-    2.95/{Input C\\[-2pt]\scriptsize noisy, hard}/18/0/{0 saved (= baseline)}}{
+   {1.25/{Input A\\[-2pt]\scriptsize clean, settles early}/10/8/{saved 8 passes (38\%)},
+    2.10/{Input B\\[-2pt]\scriptsize clean, settles late}/14/4/{saved 4 passes (19\%)},
+    2.95/{Input C\\[-2pt]\scriptsize noisy (15 dB)}/18/0/{0 saved (= baseline)}}{
   \pgfmathsetmacro{\yc}{\yb-\yy}
   \node[rowlbl] at (\xo-0.15,\yc) {\name};
   \draw[tbar] (\xo,\yc-0.28) rectangle ({\xo+\tp*\u},\yc+0.28);
@@ -246,7 +250,7 @@ The three boxes at the bottom of Figure~\ref{fig:glance} correspond to what the 
   \node[draw=white, fill=newLine, diamond, inner sep=1.8pt, line width=0.6pt] at ({\xo+\tp*\u},\yc) {};
   \node[anchor=west, font=\scriptsize\bfseries, text=newLine] at ({\xo+21*\u+0.15},\yc) {\note};
 }
-\foreach \tp/\t in {10/0.076, 12/0.118, 14/0.169, 18/0.293}{
+\foreach \tp/\t in {10/0.076, 12/0.118, 14/0.169, 16/0.227, 18/0.293}{
   \draw[newLine, line width=0.8pt] ({\xo+\tp*\u},\yb-3.35) -- ({\xo+\tp*\u},\yb-3.5);
   \node[font=\scriptsize, text=newLine] at ({\xo+\tp*\u},\yb-3.7) {$\t$};
 }
@@ -259,7 +263,7 @@ The three boxes at the bottom of Figure~\ref{fig:glance} correspond to what the 
 \end{scope}
 \node[newbox, anchor=north west, text width=78mm, minimum height=17mm] at (-0.3,\yb-4.9)
   {\textbf{\textcolor{newLine}{1. Decide}} \ (\textit{when} to hand over)\\[2pt]
-   Stop once the teacher's guess of the final speech stops changing, $d_i\le\hat\lambda$.
+   Stop once $\hat S\ge\theta$ and the teacher's speech estimate settles, $d_i\le\hat\lambda$.
    Uses values already computed: \textbf{0 extra passes}.};
 \node[offbox, anchor=north west, text width=78mm, minimum height=17mm] at (8.9,\yb-4.9)
   {\textbf{\textcolor{offLine}{2. Guarantee}} \ (\textit{how safe} it is)\\[2pt]
@@ -269,7 +273,7 @@ The three boxes at the bottom of Figure~\ref{fig:glance} correspond to what the 
   {\textbf{\textcolor{newLine}{3. Fall back}} \ (\textit{never worse} in cost)\\[2pt]
    Never hands over later than the baseline; if no threshold is certified, the method \emph{is} the baseline.};
 \end{tikzpicture}}
-\caption{The prototype at a glance. Bar length is computation in forward passes. (a)~The baseline hands over at the same point for every input, so every input costs 21 passes. (b)~The prototype moves the handover inside the highlighted region, separately for each input: settled, easy inputs hand over early and save computation (hatched); hard inputs keep the full teacher run and cost exactly what the baseline costs. Costs are exact (Proposition~\ref{prop:cost}); which input stops where is illustrative.}
+\caption[The prototype at a glance]{The prototype at a glance. Bar length is computation in forward passes. (a)~The baseline hands over at the same point for every input, so every input costs 21 passes. (b)~The prototype moves the handover inside the highlighted region, separately for each input: settled, clean inputs hand over early and save computation (hatched); hard or noisy inputs keep the full teacher run and cost exactly what the baseline costs. Costs are exact (Proposition~\ref{prop:cost}). Inputs A--C are real development utterances from Google Colab Tesla T4 runs (\nolinkurl{gpu_grid_all1000.csv}) under Definition~\ref{def:policy} with $\lambda=0.50$ and $\theta=20$~dB: A, \nolinkurl{common_voice_en_15734837-common_voice_en_15734838} ($\hat S=26.5$~dB, $d_4=0.438$), stops at Step~4 (WER 0.0\%, SIM 0.914); B, \nolinkurl{common_voice_en_10933823-common_voice_en_10933825} ($\hat S=28.2$~dB; $d_4=0.844$, $d_5=0.750$, $d_6=0.401$), stops at Step~6 (WER 16.7\%, SIM 0.973 matching Step~8); C, the \texttt{noisy15} prompt of \nolinkurl{common_voice_en_13900-common_voice_en_13901} ($\hat S=17.7$~dB), is held at Step~8. None of the three fails at its chosen step.}
 \label{fig:glance}
 \end{figure}
 \end{landscape}
@@ -279,7 +283,7 @@ The three boxes at the bottom of Figure~\ref{fig:glance} correspond to what the 
 \section[APPENDIX D.\ PRELIMINARY EXPERIMENTS]{Preliminary Experiments}
 \label{app:prelim}
 
-The team's earlier experiments are reported here as preliminary evidence. They motivated the architecture of Section~\ref{sec:architecture} and fixed several of its choices, but they are not evidence for the calibrated method. The initial preliminary experiments used the three early candidates of the time (teacher steps 4, 5 and 6) and the reference; teacher step 7 ($s=0.20$) was added to the candidate set afterwards and will be included in the main experiments. The simulation of Appendix~\ref{app:sim} likewise uses three early candidates. This appendix also consolidates subsequent Tesla T4 development benchmarks across earlier and intermediate checkpoints (Steps~1--7) and multi-seed prosodic variety across teacher steps and student restart levels (\texttt{EXP-003}, \texttt{EXP-018}, \texttt{EXP-020}, \texttt{EXP-026}--\texttt{EXP-029}, and \texttt{EXP-032}). The fixed-switching analysis and the cross-validated stabilization policy were run on the Tesla T4 GPU with the evaluation models of Section~\ref{sec:measures}. The student-restart experiment used 12 speakers from Seed-TTS test-en \parencite{anastassiou2024seedtts} under four conditions: a clean prompt, the target duration shortened and lengthened by 15\%, and a prompt with white Gaussian noise added at 15~dB, giving 48 instances. It ran on a central processing unit (CPU) with one seed per instance, measured WER with Whisper-base \parencite{radford2023whisper} and SIM with a lightweight speaker encoder against the prompt, and is therefore not directly comparable with the measures of Section~\ref{sec:measures}. Table~\ref{tab:prelim} summarizes what each experiment found and what it changed in the design.
+The team's preliminary and post-proposal development experiments are reported here as development evidence. Every benchmark, calibration replay, timing check, and diversity measurement in this appendix was executed on Google Colab Tesla T4 GPUs with the evaluation models of Section~\ref{sec:measures} (\texttt{Whisper-large-v3}, \texttt{WavLM-Base+}, \texttt{UTMOS}, and \texttt{pYIN}); only Colab T4 experiments are included so that all appendices rest uniformly on GPU evidence. The initial 500-speaker T4 benchmarks used the three early candidate steps of the time (teacher steps 4, 5 and 6) and the Step-8 reference; teacher step 7 ($s=0.20$) was added to the candidate set afterwards and benchmarked on the Tesla T4 alongside earlier checkpoints (\texttt{Steps~1--7}) in \texttt{EXP-003}, \texttt{EXP-017}, and \texttt{EXP-018}, followed by multi-seed variety and handover probes (\texttt{EXP-020}, \texttt{EXP-022}, \texttt{EXP-026}--\texttt{EXP-033}). They motivated the architecture of Section~\ref{sec:architecture} and fixed several of its design settings, but they remain development evidence rather than independent held-out proof. Table~\ref{tab:prelim} summarizes what each Colab T4 experiment found and what it changed in the study.
 
 \subsection{Fixed Switching Times}
 
@@ -319,7 +323,7 @@ All (1{,}000) & 666 & 100 & 55 & 179 & 14.85 \\
 
  This per-input choice cannot be deployed, but it bounds what an adaptive rule can save, and the variation between inputs is the observation that motivates this study. A subsequent two-grid Tesla T4 rehearsal (\texttt{EXP-017}, $n=360$ across six clean and noisy prompt conditions; \nolinkurl{research/experiments/EXP-017-grid32-prelim/}) confirmed the same headroom on both solver schedules: the hindsight oracle saved $29.7\%$ of forward passes on the 16-interval sway grid ($14.76$ vs.\ $21.00$ NFE) and $33.7\%$ on the 32-interval sway grid ($21.88$ vs.\ $33.00$ NFE). Because the calibration and test splits enter these analyses, these figures remain development evidence, and an independent evaluation needs data not used here.
 
-\subsubsection*{Earlier and Intermediate Switching Times (Steps~1--7)}
+\subsubsection{Earlier and Intermediate Switching Times (Steps~1--7)}
 \label{app:prelim-steps1to7}
 
 While Table~\ref{tab:fixed-fail} covers the original candidate grid $\{4,5,6,8\}$, two subsequent Tesla T4 development benchmarks measured speech quality across all earlier and intermediate checkpoints on the 16-interval sway grid (\texttt{Steps~1--7} against the \texttt{Step~8} reference, Table~\ref{tab:prelim-steps1to7}): an expanded 100-speaker check at Steps~2 and~3 (\texttt{EXP-003}, \nolinkurl{research/evidence/benchmarks/early_handover/}) and a complete eight-step synthesis on $60$ development speakers across six prompt conditions (\texttt{EXP-018}, $n=360$: $60$ clean and $300$ noisy across 15~dB and 18--25~dB Gaussian noise).
@@ -352,7 +356,7 @@ Table~\ref{tab:prelim-steps1to7} separates clean convergence from degraded-promp
 
 \subsection{Student Restart Level and Paper Baselines}
 
-Restarting the student one grid point later ($j=2$, two student steps, the main configuration reported for DMOSpeech~2; \cite{li2025dmospeech2}) saves one forward pass. On the initial 48-instance CPU check, its outputs departed from the $j=1$ reference more often than those of the released default $j=1$ did, at every switching time tested: 26 versus 11 of 48 at $s=0.07$, 13 versus 8 at $s=0.10$, 9 versus 8 at $s=0.15$, and 14 versus 0 at $s=0.25$. This finding was subsequently verified at scale on the Tesla T4 across $360$ benchmark utterances (\texttt{EXP-017}): the paper's $14+2$ configuration ($j=2$, $30$ NFE) incurred $140$ of $360$ ($38.9\%$) added failures against the 16-grid Step-8 reference ($34.17\%$ WER on 15~dB noisy prompts vs.\ $24.16\%$), and exact Algorithm~2 ($32$ NFE) incurred $172$ of $360$ ($47.8\%$) added failures ($41.01\%$ noisy WER), whereas the 32-interval $s=0.25$ reference ($j=1$, $33$ NFE) matched 16-grid Step~8 in continuous quality ($6.84\%$ vs.\ $6.79\%$ WER; $0.810$ vs.\ $0.810$ SIM) at $+57\%$ higher cost ($5.03$~s vs.\ $3.23$~s). Meanwhile, 32-step teacher-only F5-TTS \parencite{chen2024f5} required $64$ NFE ($9.65$~s) and suffered $97.36\%$ WER on 15~dB noisy prompts due to unregularized classifier-free guidance noise amplification. The restart level is therefore fixed at $j=1$ ($\tau=0.0761$, three student passes) as a controlled setting, and the teacher-to-student switching time is the sole handover variable varied in this study.
+Restarting the student one grid point later ($j=2$, two student steps, the configuration reported in the DMOSpeech~2 paper \parencite{li2025dmospeech2}) saves one forward pass relative to $j=1$ ($\tau=0.0761$, three student steps). Tested on the Tesla T4 across $360$ benchmark utterances spanning six prompt conditions (\texttt{EXP-017}), the paper's $14+2$ configuration ($j=2$, $30$ NFE) incurred $140$ of $360$ ($38.9\%$) added failures against the 16-grid Step-8 reference ($34.17\%$ noisy WER vs.\ $24.16\%$ for Step~4, or $7.61\%$ for Step~8 in \texttt{EXP-018}), and exact Algorithm~2 ($32$ NFE) incurred $172$ of $360$ ($47.8\%$) added failures ($41.01\%$ noisy WER), whereas matching $s=0.25$ on the 32-interval grid with $j=1$ ($33$ NFE) matched 16-grid Step~8 in continuous quality ($6.84\%$ vs.\ $6.79\%$ WER; $0.810$ vs.\ $0.810$ SIM) at $+57\%$ higher runtime ($5.03$~s vs.\ $3.23$~s). Meanwhile, 32-step teacher-only F5-TTS \parencite{chen2024f5} required $64$ NFE ($9.65$~s) and suffered $97.36\%$ WER on noisy prompts due to unregularized classifier-free guidance noise amplification. The restart level in Chapter~\ref{sec:method} is therefore fixed at $j=1$ ($\tau=0.0761$, three student passes) as a controlled setting, and the teacher-to-student switching time is the sole handover variable varied (while Section~\ref{app:prelim-variety} documents how $j=1$ vs.\ $j=2$ affects multi-seed clean prosodic variety).
 
 \subsection{Prosodic Variety Across Switching Steps and Restart Levels}
 \label{app:prelim-variety}
@@ -415,10 +419,10 @@ Table~\ref{tab:prelim-variety-steps} also uncovers a structural difference betwe
 \end{adjustbox}
 \end{table}
 
-\subsection{Stabilization Policy with a Cross-Validated Threshold}
+\subsection{Stabilization Policy: Cross-Validation, Runtime, and Multi-Noise Learn-Then-Test}
 \label{app:prelim-cv}
 
-Unlike the other experiments in this appendix, this one was re-run on the Tesla T4 GPU with the evaluation models of Section~\ref{sec:measures}, on the 100 development speakers under the clean and the noisy15 prompt conditions (200 instances; \nolinkurl{code/analysis/cv_stabilization_t4.py}). The policy of Definition~\ref{def:policy}, with an SNR gate of 20~dB, was evaluated by four-fold speaker-grouped cross-validation. In each fold the threshold $\lambda$ was chosen on 75 speakers (150 instances) as the largest value in $\{0.20,0.25,\dots,0.60\}$ with zero added failures and frozen before scoring the 25 held-out speakers. The folds selected $\lambda=0.35$, 0.35, 0.35 and 0.50. Out of fold, mean cost fell from 21 to 18.88 forward passes ($-10.1\%$) with one added failure in 200 instances, against 50 of 200 for a fixed $s=0.15$, and the SNR gate sent all 100 noisy prompts to the reference, so the saving came from the clean prompts. Tables~\ref{tab:cv-policies} and~\ref{tab:cv-quality} compare it on the same 200 instances with the methods of Chapter~\ref{sec:method} (Table~\ref{tab:methods}), measured and tested as planned there. Against every fixed early switching time the policy had far fewer added failures (exact McNemar $p<10^{-13}$ for each), and the upper end of its 95\% interval for the failure rate, 2.8\%, stayed below the 5\% tolerance. Against the reference it used significantly fewer forward passes (Wilcoxon signed-rank test on speaker-level values, Holm-adjusted $p<10^{-15}$), while its differences in WER, SIM and UTMOS were not significant (Holm-adjusted $p=1.00$ for each); a claim that its quality equals the reference's needs the two one-sided tests with margins fixed before the held-out test. On clean prompts it saved 20.2\% of the passes and chose Steps~4, 5 and~6 for 6, 28 and 52 inputs, so the choice adapted per input. The SNR-gated controls behaved similarly on these data: SNR-only, the SNR gate followed by Step~5 or Step~6, and a random assignment of the policy's own steps among the gated inputs (2{,}000 draws, mean 0.75 failures) all stayed within 0 to 3 failures, and none differed significantly from the policy (exact McNemar $p\ge0.50$). Stabilization alone, without the gate, found no threshold with zero training failures in any fold and kept every input at the reference, because noisy prompts stabilize early. With at most three failures per method, these data cannot separate the SNR-gated variants; the comparison on the test split (Section~\ref{sec:drift-plan}) is designed for that. The earlier CPU version of this experiment, on 12 speakers with lighter evaluation models, had selected the edge of the search range, $\lambda=0.60$, in every fold; on the T4 data the selected thresholds lie inside the range, and widening it to 1.20 leaves them unchanged. Two limitations remain. Selecting a threshold with zero training failures is not a risk certificate: with 75 training speakers and no failures, the smallest risk that can be certified at $\delta=0.10$ is about 3\% (Appendix~\ref{app:calc-ltt}); after zero observed failures the upper confidence limit shrinks only in proportion to $1/n$, about $3/n$ at 95\% confidence \parencite{hanley1983zero}. And the development split also served other design decisions, so these out-of-fold figures may be optimistic, because reusing data that guided earlier choices to select and then report performance is a known source of selection bias \parencite{cawley2010overfitting}. Objective~2 replaces this selection with Learn-Then-Test on speaker-disjoint data with one utterance per speaker.
+Using the 100 development speakers on the Google Colab Tesla T4 GPU with the evaluation models of Section~\ref{sec:measures} under the clean and \texttt{noisy15} prompt conditions (200 instances; \texttt{EXP-009}, \nolinkurl{code/analysis/cv_stabilization_t4.py}), the policy of Definition~\ref{def:policy} with $\theta=20$~dB was first evaluated by four-fold speaker-grouped cross-validation across the early candidates $\{4,5,6,8\}$. In each fold the threshold $\lambda$ was chosen on 75 speakers (150 instances) as the largest value in $\{0.20,0.25,\dots,0.60\}$ with zero added failures and frozen before scoring the 25 held-out speakers. The folds selected $\lambda=0.35$, 0.35, 0.35 and 0.50; widening the search range to 1.20 leaves these four T4 fold thresholds unchanged. Out of fold, mean cost fell from 21 to 18.88 forward passes ($-10.1\%$) with one added failure in 200 instances, against 50 of 200 for a fixed $s=0.15$, and the SNR gate sent all 100 noisy prompts to the reference, so the saving came from the clean prompts. Tables~\ref{tab:cv-policies} and~\ref{tab:cv-quality} compare it on the same 200 instances with the methods of Chapter~\ref{sec:method} (Table~\ref{tab:methods}), measured and tested as planned there. Against every fixed early switching time the policy had far fewer added failures (exact McNemar $p<10^{-13}$ for each), and the upper end of its 95\% interval for the failure rate, 2.8\%, stayed below the 5\% tolerance. Against the reference it used significantly fewer forward passes (Wilcoxon signed-rank test on speaker-level values, Holm-adjusted $p<10^{-15}$), while its differences in WER, SIM and UTMOS were not significant (Holm-adjusted $p=1.00$ for each); a claim that its quality equals the reference's needs the two one-sided tests with margins fixed before the held-out test. On clean prompts it saved 20.2\% of the passes and chose Steps~4, 5 and~6 for 6, 28 and 52 inputs, so the choice adapted per input. The SNR-gated controls behaved similarly on these data: SNR-only, the SNR gate followed by Step~5 or Step~6, and a random assignment of the policy's own steps among the gated inputs (2{,}000 draws, mean 0.75 failures) all stayed within 0 to 3 failures, and none differed significantly from the policy (exact McNemar $p\ge0.50$). Stabilization alone, without the gate, found no threshold with zero training failures in any fold and kept every input at the reference, because noisy prompts stabilize early. With at most three failures per method, these data cannot separate the SNR-gated variants; the comparison on the test split (Section~\ref{sec:drift-plan}) is designed for that. Two limitations remain for this cross-validation step. Selecting a threshold with zero training failures is not a Learn-Then-Test certificate: with 75 training speakers and no failures, the smallest risk that can be certified at $\delta=0.10$ is about 3\% (Appendix~\ref{app:calc-ltt}); after zero observed failures the upper confidence limit shrinks only in proportion to $1/n$, about $3/n$ at 95\% confidence \parencite{hanley1983zero}. And the development split also served other design decisions, so these out-of-fold figures may be optimistic, because reusing data that guided earlier choices to select and then report performance is a known source of selection bias \parencite{cawley2010overfitting}. Objective~2 replaces this cross-validation heuristic with fixed-sequence Learn-Then-Test on speaker-disjoint data.
 
 \begin{table}[!htbp]
 \centering\small
@@ -473,11 +477,11 @@ Oracle (hindsight) & 2.04\% & 0.934 & 3.86 & 6.74\% & 0.828 & 2.55 \\
 \end{tabular}
 \end{table}
 
-The full policy was also timed with real early stopping on the Tesla T4 (\nolinkurl{research/evidence/benchmarks/gpu_timing_summary_by_condition.csv}), on the 200 test-split speakers under both prompt conditions, with GPU synchronization around a timed region that covered the prompt SNR estimate, the teacher steps with the stopping decision, the student and the vocoder (Table~\ref{tab:cv-runtime}). On clean prompts the mean synthesis time fell from 3.29~s at the reference to 2.40~s, 27\% less, which matches the 27\% fewer forward passes (15.30 instead of 21), so on this pipeline the pass saving carried over to time. Noisy prompts took 3.37~s under all three policies, so evaluating the gate and the stabilization score added no measurable time. Over both conditions the policy saved 0.44~s per utterance (95\% cluster-bootstrap interval 0.42 to 0.47~s). This run used $\lambda=0.50$, a value chosen from the earlier CPU labels rather than calibrated on the T4, and its speakers had been inspected in earlier analyses, so it is development evidence for the cost side of the method and not a test of its risk.
+The policy was also timed with real early stopping on the Google Colab Tesla T4 GPU (\texttt{EXP-010}, \nolinkurl{research/evidence/benchmarks/gpu_timing_summary_by_condition.csv}), on the 200 test-split speakers under both prompt conditions, with GPU synchronization around a timed region that covered the prompt SNR estimate, the teacher steps with the stopping decision, the student and the vocoder (Table~\ref{tab:cv-runtime}). On clean prompts the mean synthesis time fell from 3.29~s at the reference to 2.40~s at $\lambda=0.50$ ($-27\%$, matching $15.30$ vs.\ $21.00$ passes) and to 2.06~s under \texttt{SNR-only} ($-37\%$, $13.08$ passes, equivalent on clean vs.\ \texttt{noisy15} to T4 calibration $\hat\lambda=1.20$), confirming that pass reductions transfer directly to wall-clock speedup on the Tesla T4. Noisy prompts took 3.37~s under all three policies, so evaluating the gate and stabilization score added no measurable overhead. Across both conditions, $\lambda=0.50$ saved 0.44~s per utterance (95\% cluster-bootstrap interval 0.42 to 0.47~s). Here $\lambda=0.50$ matches the top T4 cross-validation fold (and Table~\ref{tab:app-ltt}); because these test speakers had already been inspected in earlier exploratory analyses, Table~\ref{tab:cv-runtime} establishes live pipeline timing rather than unbiased held-out risk.
 
 \begin{table}[!htbp]
 \centering\small
-\caption{Measured synthesis time per utterance on the Tesla T4 with real early stopping (200 test-split speakers; mean time and real-time factor).}
+\caption{Measured synthesis time per utterance on the Google Colab Tesla T4 with live early stopping (\texttt{EXP-010}, 200 test-split speakers; mean passes, time, and real-time factor).}
 \label{tab:cv-runtime}
 \setlength{\tabcolsep}{5pt}
 \begin{tabular}{@{}l r r r r r@{}}
@@ -487,18 +491,55 @@ The full policy was also timed with real early stopping on the Tesla T4 (\nolink
 \textbf{Policy} & \textbf{Passes} & \textbf{Time} & \textbf{RTF} & \textbf{Time} & \textbf{RTF} \\
 \midrule
 Reference (Step 8) & 21.00 & 3.29~s & 0.73 & 3.37~s & 0.71 \\
-SNR-only (Step 4) & 13.08 & 2.06~s & 0.45 & 3.37~s & 0.71 \\
+SNR-only ($\approx$ T4 LTT $\hat\lambda=1.20$) & 13.08 & 2.06~s & 0.45 & 3.37~s & 0.71 \\
 Full policy ($\lambda=0.50$) & 15.30 & 2.40~s & 0.53 & 3.37~s & 0.71 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\emph{Verdict, post-proposal audit, and binary noise floor.} Taken together, the 200-instance cross-validation supported per-input switching on clean versus 15~dB prompts (1 failure against 50 to 66 of 200, saving 10.1\% of passes overall and 27\% of clean synthesis time). However, subsequent Tesla T4 audits (\texttt{AUDIT-001}, \nolinkurl{research/audits/2026-10-25/FINDINGS.md}) and multi-condition rehearsals (\texttt{EXP-012} and \texttt{EXP-017}, $n=360$) uncovered two structural limits of this initial formulation. First, on the 500-speaker T4 benchmark, fixed-sequence Learn-Then-Test on the 200 calibration speakers certified every grid value up to $\hat\lambda=1.20$ (reducing Definition~\ref{def:policy} to SNR-only at $17.04$ NFE), whereas across the six noise levels of \texttt{EXP-012}/\texttt{EXP-017}, Definition~\ref{def:policy}'s low-drift inequality ($d_i\le\lambda$) certified \emph{no} threshold on the 16-interval grid ($0.0\%$ saving, $21.00$ NFE) and saved only $1.8\%$ on the 32-interval grid. Second, comparing the two equal-quality references directly (32-grid $s=0.25$ versus 16-grid Step~8, $0.000$ mean SIM difference) still flagged $81$ of $360$ ($22.5\%$) binary ``added failures'' solely from stochastic student seed variance on noisy prompts. This $22.5\%$ binary noise floor motivates evaluating handover policies via paired continuous differences and Two One-Sided Tests (TOST) equivalence \parencite{schuirmann1987} alongside Chapter~3's binary failure counts.
+\emph{Verdict, Learn-Then-Test across two vs.\ six conditions, and all-checkpoint vs.\ policy comparison.} Taken together, the 200-instance T4 cross-validation (Tables~\ref{tab:cv-policies}--\ref{tab:cv-quality}) and \texttt{EXP-010} timing run supported per-input switching when prompts are restricted to clean vs.\ 15~dB noise (1/200 failure vs.\ 50--66/200 for fixed early steps, saving 10.1\% of passes overall and 27\% of clean synthesis time). However, auditing Chapter~3's Learn-Then-Test calibration directly on Tesla T4 data uncovered why those preliminary clean-vs-\texttt{noisy15} cross-validation results do not carry over unchanged to LTT:
+\begin{enumerate}[leftmargin=1.4em]
+\item \textbf{Two-condition T4 benchmark (\texttt{AUDIT-001}, 200 calibration speakers, Steps $\{4,5,6,8\}$):} Because $\theta=20$~dB blocked all \texttt{noisy15} prompts ($16.8$--$18.2$~dB) and clean early stops rarely failed, every p-value on $\Lambda=\{0.20..1.20\}$ stayed $\le 0.0623\le\delta=0.10$, so LTT certified the grid maximum $\hat\lambda=1.20$ and reduced Definition~\ref{def:policy} to \texttt{SNR-only} ($17.04$ NFE, $4/200$ test failures).
+\item \textbf{Six-condition T4 benchmarks (\texttt{EXP-012}, \texttt{EXP-017}, \texttt{EXP-018}, $n=360$ across 60 dev speakers $\times$ 6 conditions):} When intermediate white noise (18--25~dB) entered alongside clean and 15~dB noise, prompts in 18--22~dB crossed $\theta=20$~dB ($23.9\%$ failures for uncalibrated \texttt{SNR-only}), while noise lowered $d_i$ prematurely (Section~\ref{app:prelim-dev}). Consequently, under LTT (5-fold out-of-fold speaker CV, $\alpha=0.05$, $\delta=0.10$), Definition~\ref{def:policy} ($\theta=20$~dB) certified \emph{no} threshold on the 16-grid ($0.0\%$ saving, $21.00$ NFE in both \texttt{EXP-017} on $\{4,5,6,8\}$ and \texttt{EXP-018} across Steps~1--8), and saved only $1.8\%$ on the 32-grid. Over $\{4,5,6,8\}$ in \texttt{EXP-017}, calibrating the SNR gate itself ($\hat\theta=26$~dB) yielded $18.71$ NFE ($7/360 = 1.9\%$ failures, TOST $p_{\mathrm{WER}}=3\times 10^{-24}$), and pairing Objective~1's $28$~dB gate with $\hat\lambda=1.20$ gave $19.53$ NFE ($4/360 = 1.1\%$, $p_{\mathrm{WER}}=7\times 10^{-29}$).
+\item \textbf{Binary noise floor ($22.5\%$):} Comparing the two equal-quality references directly in \texttt{EXP-017} (32-grid $s=0.25$ vs.\ 16-grid Step~8, $0.000$ mean SIM difference) still flagged $81$ of $360$ ($22.5\%$) binary ``added failures'' solely from stochastic student seed variance on noisy prompts, motivating paired continuous differences and TOST equivalence alongside binary counts.
+\end{enumerate}
+
+To make the comparison across \emph{all} checkpoints (\texttt{Steps~1--8}) and Chapter~3's adaptive policies explicit on the same Colab Tesla T4 cohort (addressing why Tables~\ref{tab:cv-policies}--\ref{tab:cv-quality} cover only $\{4,5,6,8\}$ while Table~\ref{tab:prelim-steps1to7} covers only fixed switching), Table~\ref{tab:t4-steps1to8-policies} compiles all eight fixed checkpoints alongside Chapter~3's policies from \texttt{EXP-018} ($n=360$, 60 dev speakers $\times$ 6 conditions). Adding Steps~1--3 expands potential clean speedup (7 passes at Step~1), but makes the uncalibrated 20~dB \texttt{SNR-only} rule route 297 prompts (including 18--25~dB noisy leaks) to Step~1 ($187.87\%$ noisy WER, TOST fail $p=1.00$), compresses the calibrated SNR gate to $20.69$ NFE ($1.5\%$ saved, $p=6.2\times 10^{-29}$), and leaves both stabilization rules ($\theta=-\infty$ and Definition~\ref{def:policy} at $\theta=20$~dB) at full fallback ($21.00$ NFE, \texttt{S8:360}).
+
+\begin{table}[!htbp]
+\centering\small
+\caption{All fixed checkpoints (\texttt{Steps~1--8}) vs.\ Chapter~\ref{sec:method} adaptive policies on the same 360 Google Colab Tesla T4 instances (\texttt{EXP-018}, 60 dev speakers $\times$ 6 conditions: clean, noisy15, gauss18--25). Runtime is synthesis time on the Tesla T4; TOST $p_{\mathrm{WER}}$ tests equivalence against Step~8 within $+1.0$~percentage point \parencite{schuirmann1987}.}
+\label{tab:t4-steps1to8-policies}
+\setlength{\tabcolsep}{3.5pt}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}l r r r r r r l@{}}
+\toprule
+\textbf{Method} & \textbf{NFE (Sav.)} & \textbf{Time (s)} & \textbf{Clean WER} & \textbf{Noisy WER} & \textbf{All WER} & \textbf{All SIM} & \textbf{TOST $p_{\mathrm{WER}}$ / Routing} \\
+\midrule
+Fixed Step~1 ($t_1=0.0048$) & 7.00 (66.7\%) & 1.14 & $3.06\%$ & $280.17\%$ & $233.98\%$ & 0.7419 & 1.00 / \texttt{S1:360} \\
+Fixed Step~2 ($t_2=0.0192$) & 9.00 (57.1\%) & 1.44 & $2.64\%$ & $43.44\%$ & $36.64\%$ & 0.7922 & 1.00 / \texttt{S2:360} \\
+Fixed Step~3 ($t_3=0.0431$) & 11.00 (47.6\%) & 1.74 & $2.79\%$ & $35.69\%$ & $30.20\%$ & 0.7981 & 0.97 / \texttt{S3:360} \\
+Fixed Step~4 ($t_4=0.0761$, def.) & 13.00 (38.1\%) & 2.04 & $2.34\%$ & $24.69\%$ & $20.97\%$ & 0.8033 & 0.87 / \texttt{S4:360} \\
+Fixed Step~5 ($t_5=0.1181$) & 15.00 (28.6\%) & 2.34 & $2.61\%$ & $8.16\%$ & $7.23\%$ & 0.8069 & 0.19 / \texttt{S5:360} \\
+Fixed Step~6 ($t_6=0.1685$) & 17.00 (19.0\%) & 2.64 & $2.55\%$ & $7.42\%$ & $6.61\%$ & 0.8085 & 0.077 / \texttt{S6:360} \\
+Fixed Step~7 ($t_7=0.2270$) & 19.00 (9.5\%) & 2.94 & $2.72\%$ & $7.65\%$ & $6.83\%$ & 0.8099 & 0.0047 / \texttt{S7:360} \\
+Fixed Step~8 (ref., $t_8=0.2929$) & 21.00 (0.0\%) & 3.23 & $2.72\%$ & $7.61\%$ & $6.79\%$ & 0.8104 & --- / \texttt{S8:360} \\
+\midrule
+SNR-only ($\theta=20$~dB $\to$ Step~1) & 9.45 (55.0\%) & 1.51 & $3.06\%$ & $187.87\%$ & $157.07\%$ & 0.7549 & 1.00 / \texttt{S1:297, S8:63} \\
+SNR-only (calibrated gate) & 20.69 (1.5\%) & 3.19 & $3.00\%$ & $7.61\%$ & $6.84\%$ & 0.8101 & $6.2\times 10^{-29}$ / \texttt{S1:8, S8:352} \\
+SNR ($\theta=20$~dB) $+$ fixed Step~5 & 16.05 (23.6\%) & 2.49 & $2.61\%$ & $8.11\%$ & $7.20\%$ & 0.8085 & 0.081 / \texttt{S5:297, S8:63} \\
+SNR ($\theta=20$~dB) $+$ fixed Step~6 & 17.70 (15.7\%) & 2.74 & $2.55\%$ & $7.75\%$ & $6.89\%$ & 0.8098 & 0.0025 / \texttt{S6:297, S8:63} \\
+Stabilization only ($d_k\le\lambda$) & 21.00 (0.0\%) & 3.23 & $2.72\%$ & $7.61\%$ & $6.79\%$ & 0.8104 & --- / \texttt{S8:360} \\
+Full policy (Def.~\ref{def:policy}, $\theta=20$~dB) & 21.00 (0.0\%) & 3.23 & $2.72\%$ & $7.61\%$ & $6.79\%$ & 0.8104 & --- / \texttt{S8:360} \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
 
 \subsection{Development-Split Signal Diagnostic and Premature Stabilization}
 \label{app:prelim-dev}
 
-A first diagnostic of the two signals was run on the 100 development speakers with the evaluation models of this study (Section~\ref{sec:measures}), each under the clean and the 15~dB noisy condition. On those two extreme conditions alone, the estimated prompt SNR separated the groups completely: 23.3 to 50.0~dB for clean prompts and 16.8 to 18.2~dB for 15~dB noisy prompts, so a 20~dB gate sent every 15~dB noisy prompt to the reference. Blind estimation of SNR from statistics of the waveform is established practice \parencite{kim2008wada}; the estimator of Definition~\ref{def:snr} uses a ratio of frame energies instead. However, when tested across intermediate and Out-of-Distribution (OOD) acoustic corruptions on the Tesla T4 (\texttt{EXP-011} and \texttt{EXP-012}), both initial signal assumptions broke down:
+A first diagnostic of the two signals was run on the 100 development speakers on the Tesla T4 with the evaluation models of this study (Section~\ref{sec:measures}), each under the clean and the 15~dB noisy condition. On those two extreme conditions alone, the estimated prompt SNR separated the groups completely: 23.3 to 50.0~dB for clean prompts and 16.8 to 18.2~dB for 15~dB noisy prompts, so a 20~dB gate sent every 15~dB noisy prompt to the reference. Blind estimation of SNR from statistics of the waveform is established practice \parencite{kim2008wada}; the estimator of Definition~\ref{def:snr} uses a ratio of frame energies instead. However, when tested across intermediate and Out-of-Distribution (OOD) acoustic corruptions on the Tesla T4 (\texttt{EXP-011} and \texttt{EXP-012}), both initial signal assumptions broke down:
 \begin{enumerate}[leftmargin=1.4em]
 \item \textbf{Prompt SNR failure on moderate and OOD noise.} Prompts degraded with 18 to 22~dB white Gaussian noise produced frame-energy estimates of 19.0 to 24.8~dB, crossing the $\theta=20$~dB gate and causing $86$ of $360$ ($23.9\%$) added failures---$4.8\times$ above the $5\%$ tolerance. On OOD corruptions (\texttt{EXP-011}, $n=100$), bandpass telephone filtering silenced pause frames so that the estimator reported a mean SNR of $44.2$~dB (``ultra-clean'') and prematurely exited on degraded speech, while 20~dB babble measured $23.6$~dB and waveform SNR estimation added $1.85$~ms of overhead per utterance.
 \item \textbf{Premature stabilization of single-step drift.} On clean prompts, single-step $d_4$ showed near-chance failure discrimination (ROC area $\approx 0.47$ from two to three failures). Across noise levels (\texttt{EXP-012}, $n=360$), acoustic noise weakened classifier-free guidance contrast (Spearman $\rho=0.89$ with the conditional--unconditional gap, whose median fell from $0.236$ on clean prompts to $0.116$ at 15~dB), causing median $d_4$ to drop from $0.61$ (clean) to $0.17$ (15~dB noisy). Degraded trajectories therefore \emph{stabilize prematurely}: stopping when $d_i\le\lambda$ hands noisy prompts over first rather than last.
@@ -514,21 +555,29 @@ Because the value of the single-step stabilization score was uncertain at the pr
 \item \textbf{Conditions the SNR cannot see.} Evaluate zero-shot generalization on prompts degraded by reverberation, multi-talker babble, and telephone bandpass filtering.
 \item \textbf{Richer zero-cost signals.} Explore trajectory statistics computed strictly from intermediate velocity tensors already materialized in GPU memory, without extra forward passes.
 \end{enumerate}
-Executing Steps~1--4 on the development cohort (\texttt{EXP-011} through \texttt{EXP-017}) showed that eight state-altering handover and guidance operators (\texttt{EXP-013}--\texttt{015}: endpoint extrapolation, coherence-gated extrapolation, trajectory consistency restart, spherical endpoint averaging, self-noise negative guidance, antithetic student sampling, SNR-controlled guidance, and post-handover error cancellation) failed preregistered routing criterion C3, while binary single-threshold gates (calibrated SNR and Mahalanobis Trajectory Anomaly Score) collapsed to $1.5\%$ NFE saving when Step~1 ($7$ NFE) entered the candidate set. If the stabilization score adds no measurable value in subsequent held-out tests, the SNR-gated variant of the policy will be recommended and the stabilization score reported as a tested negative result; the contribution of the study remains a per-utterance handover framework with a certified bound on added quality failures.
+Executing Steps~1--4 across subsequent Colab Tesla T4 development cohorts yielded three consolidated negative or exploratory findings:
+\begin{itemize}[leftmargin=1.4em]
+\item \textbf{State-altering handover operators (\texttt{EXP-013}--\texttt{EXP-015}):} Eight candidate operators (endpoint extrapolation, coherence-gated extrapolation, trajectory consistency restart, spherical endpoint averaging, self-noise negative guidance, antithetic student sampling, SNR-controlled guidance, and post-handover error cancellation) failed preregistered routing criterion C3.
+\item \textbf{Timing- and distribution-based handover controls (\texttt{EXP-030}, \texttt{EXP-031}):} Timing-only handover (\texttt{TOH3}, 12 passes) avoided copied white noise on the Tesla T4 ($+0.885$~UTMOS vs.\ \texttt{W4} pooled over \texttt{gauss25} and \texttt{noisy15} in \texttt{EXP-030}), but in \texttt{EXP-031} ($n=180$ across clean, white noise, reverberation, and DEMAND cafeteria babble; $20\times 12$ aligned pitch variety), both student-only (\texttt{STU}, 4 passes) and random per-seed re-timing (\texttt{RND}, 4 passes) matched \texttt{TOH3} on raw $\mathrm{CV}_{f_0}$ and clean UTMOS (\texttt{teacher\_not\_shown\_needed}), while Chapter~3's policy (\texttt{CH3} $\lambda=0.35$ at $18.28$ passes; \texttt{CH3\_LTT} $\lambda=1.20$ at $16.33$ passes) still scored $1.250$ \texttt{noisy15} UTMOS vs.\ $1.970$ for \texttt{STU}. Post hoc, after sequence alignment, per-band quantile transfer (\texttt{QH3}) retained $64\%$ of \texttt{W4}'s aligned pitch-variety gain without copied white noise.
+\item \textbf{Coarse-grid commit-point teacher path (\texttt{EXP-033}):} On the Tesla T4 ($n=60$ quality, $20\times 12$ clean variety, $10$ timed cases), walking to $t_8=0.2929$ in half the teacher steps and restarting the student at $j=2$ (\texttt{CPH8}, 12 passes, $1.842$~s) retained $94\%$ ($\mathrm{CV}_{f_0}$) and $97\%$ (aligned) of \texttt{P25}'s clean variety gain at $-0.022$ UTMOS (\texttt{P25}: $30$ passes, $4.589$~s), though not confirmed at the 90\% bar with $n=20$ speakers; on \texttt{noisy15} prompts, all coarse teacher paths produced $7$--$11$ of $30$ runaway outputs unless gated to \texttt{STU} ($8.0$ mean passes post hoc vs.\ $19.2$ for Chapter~3's policy at $\lambda=0.35$).
+\end{itemize}
+All \texttt{EXP-030}--\texttt{EXP-033} findings remain unapproved Colab T4 development evidence pending fresh-speaker confirmation, listening checks, literature audits, and adviser review; Chapter~\ref{sec:method} is unchanged. If the stabilization score adds no measurable value in subsequent held-out tests, the SNR-gated variant of the policy will be recommended and the stabilization score reported as a tested negative result; the contribution remains a per-utterance handover framework with a certified bound on added quality failures.
 
 \begin{table}[!htbp]
-\centering\small
-\caption{Preliminary and post-proposal development experiments on the Tesla T4 and their consequences for the handover design.}
+\centering\footnotesize
+\renewcommand{\arraystretch}{0.94}
+\caption{Colab Tesla T4 development experiments in Appendix~\ref{app:prelim} and their consequences for the study.}
 \label{tab:prelim}
-\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.1cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X@{}}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.9cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X@{}}
 \toprule
-\textbf{Experiment} & \textbf{Finding} & \textbf{Consequence for this study} \\
+\textbf{Experiment} & \textbf{Finding (Colab Tesla T4)} & \textbf{Consequence for this study} \\
 \midrule
-Fixed switching times (\texttt{EXP-001}, \texttt{EXP-003}, \texttt{EXP-017}, \texttt{EXP-018}) & On 1{,}000, 200, and 360 T4 instances across \texttt{Steps~1--8}, early switches fail heavily on noisy prompts ($25\%$--$280\%$ raw WER across Steps~1--4), whereas clean quality converges by Step~2--3 ($3/100$ at Step~3) and Step~7 is earliest to pass pooled TOST equivalence vs.\ Step~8 & Motivates per-utterance switching (Objective~1) and candidate floor $t_k\ge 0.019$ across 16- and 32-interval grids \\
-Student restart \& paper baselines (\texttt{EXP-017}) & Paper $14+2$ ($j=2$) adds $140/360$ failures (noisy WER $34.2\%$); Algorithm~2 adds $172/360$; 32-grid $s=0.25$ matches 16-grid Step~8 at $+57\%$ cost & Fixes $j=1$ ($\tau=0.0761$, 3 student passes) on the 16-grid for Chapter~3; switching time is the sole variable \\
-Prosodic variety \& restart sensitivity (\texttt{EXP-026}--\texttt{EXP-029}, \texttt{EXP-032}) & Under $j=1$, clean $\mathrm{CV}_{f_0}$ plateaus from Step~3 to Step~8 (\texttt{W8} keeps $35\%$ of \texttt{P25}'s aligned gain); $j=2$ (\texttt{W8R2}) recovers \texttt{T16}/\texttt{P25} variety at $-0.11$ to $-0.17$ UTMOS and more \texttt{noisy15} runaways; noisy pYIN pitch tracking is undefined on teacher outputs & Shows Chapter~3's candidates (\texttt{4--6}) keep \texttt{W8}'s variety, documents the $j=1$ vs.\ \texttt{P25} trade-off (\texttt{EVAL-009}), and keeps diversity outside Chapter~3's primary scope \\
-Audited stabilization \& binary floor (\texttt{AUDIT-001}, \texttt{EXP-017}) & Original $d_i\le\lambda$ certifies $0.0\%$ saving on the 16-grid under LTT; equal-quality references disagree on $22.5\%$ of binary labels due to student noise & Replaces $d_i\le\lambda$ and supplements binary counts with paired continuous TOST equivalence \\
+Fixed switching times (\texttt{EXP-001}, \texttt{EXP-003}, \texttt{EXP-017}, \texttt{EXP-018}) & Across 1{,}000, 200, and 360 T4 instances (\texttt{Steps~1--8}), early switches fail heavily on noisy prompts ($25\%$--$280\%$ raw WER across Steps~1--4), clean quality converges by Step~2--3 ($3/100$ at Step~3), and Step~7 is earliest to pass pooled TOST equivalence vs.\ Step~8 & Motivates per-utterance switching (Objective~1) and candidate floor $t_k\ge 0.019$ across 16- and 32-interval grids \\
+Student restart \& paper baselines (\texttt{EXP-017}) & Paper $14+2$ ($j=2$) adds $140/360$ failures (noisy WER $34.2\%$); Algorithm~2 adds $172/360$; 32-grid $s=0.25$ matches 16-grid Step~8 at $+57\%$ runtime ($5.03$~s vs.\ $3.23$~s); F5-TTS teacher-only takes $9.65$~s with $97.4\%$ noisy WER & Fixes $j=1$ ($\tau=0.0761$, 3 student passes) on the 16-grid for Chapter~3; switching time is the sole variable varied \\
+Prosodic variety \& restart sensitivity (\texttt{EXP-020}, \texttt{EXP-022}, \texttt{EXP-026}--\texttt{EXP-029}, \texttt{EXP-032}) & Under $j=1$, clean $\mathrm{CV}_{f_0}$ plateaus from Step~3 to Step~8 (\texttt{W8} keeps $35\%$ of \texttt{P25}'s aligned gain); $j=2$ (\texttt{W8R2}) recovers \texttt{T16}/\texttt{P25} variety at $-0.11$ to $-0.17$ UTMOS and more \texttt{noisy15} runaways; noisy pYIN pitch tracking is undefined on teacher outputs & Shows Chapter~3's candidates (\texttt{4--6}) keep \texttt{W8}'s variety, documents the $j=1$ vs.\ \texttt{P25} trade-off (\texttt{EVAL-009}), and keeps diversity outside Chapter~3's primary scope \\
+Cross-validation, T4 LTT audit \& binary floor (\texttt{EXP-009}, \texttt{EXP-010}, \texttt{AUDIT-001}, \texttt{EXP-017}, \texttt{EXP-018}) & T4 4-fold CV saves $10.1\%$ ($1/200$ failure) and live timing saves $27\%$ on clean prompts ($\lambda=0.50$); under LTT on T4, 2 conditions certify $\hat\lambda=1.20$ (\texttt{SNR-only}, $17.04$ NFE), whereas 6 noise conditions leave $d_i\le\lambda$ uncertified ($0.0\%$ saving, $21.00$ NFE across Steps~1--8); equal references disagree on $22.5\%$ of binary labels & Distinguishes pre-LTT CV / test timing from real T4 LTT and supplements binary failure counts with continuous TOST equivalence (Table~\ref{tab:t4-steps1to8-policies}) \\
 Signal diagnostic (\texttt{EXP-011}, \texttt{EXP-012}) & $\theta=20$~dB SNR fails on 18--22~dB noise ($23.9\%$) and telephone OOD ($44.2$~dB); noise lowers median $d_4$ ($0.61\to 0.17$, premature stabilization) & Confirms the 20~dB gate handles 15~dB noise while intermediate noise (18--22~dB) and bandwidth OOD prompts require tighter gate bounds or future zero-cost signals \\
+Post-proposal timing \& coarse-grid handovers (\texttt{EXP-030}, \texttt{EXP-031}, \texttt{EXP-033}) & On 180 multi-condition T4 cases, \texttt{STU}/\texttt{RND} match \texttt{TOH3} on raw $\mathrm{CV}_{f_0}$ and clean UTMOS while Chapter~3 ($\lambda=0.35, 1.20$) copies noise ($1.25$ UTMOS); coarse 4-step \texttt{CPH8} (12 passes, $1.84$~s) keeps $94\%$--$97\%$ of \texttt{P25}'s clean variety gain ($4.59$~s) but needs clean-prompt routing & Recorded as exploratory T4 development evidence (pending confirmation, listening tests, and adviser review); Chapter~3 remains unchanged \\
 \bottomrule
 \end{tabularx}
 \end{table}

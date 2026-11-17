@@ -318,15 +318,18 @@
     {
       "id": "PAPER-012",
       "title": "Base Appendices A-C on the T4 development data",
-      "owner": "Claude (manuscript), for a team member",
-      "status": "todo",
-      "updated": "2026-10-25",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "review",
+      "updated": "2026-11-17",
       "acceptance": "Appendix A follows a real development utterance and real development-split LTT counts; Appendix B adds a simulation fitted to the T4 development data while keeping the stress test; Appendix C's figure uses real development utterances; figure designs unchanged; builds under latexmk -Werror with no new warnings.",
       "evidence": [
         "code/analysis/ltt_sim.py",
-        "docs/progress/log/2026-10-25-appendices-real-data.md"
+        "paper/chapters/appendices.tex",
+        "research/experiments/EXP-011-followup-t4/results/pilot/worked_example.json",
+        "docs/progress/log/2026-10-25-appendices-real-data.md",
+        "docs/progress/log/2026-11-17-appendices-colab-alignment.md"
       ],
-      "validation": "Implemented in commit 5cb7829, then reverted at the team's request on 2026-10-25: paper/chapters/appendices.tex and 03-methodology.tex are identical to main again. The real values and the fitted simulation (ltt_sim.py --fitted) remain available for a later edit."
+      "validation": "2026-11-17: Re-applied on top of PR #19 / PAPER-016 cleanly in paper/chapters/appendices.tex (Chapters 1-3 untouched): Appendix A now uses EXP-011 worked_example.json and gpu_grid_all1000.csv (including Table A.2 n=100 dev T4 LTT counts); Appendix B adds ltt_sim.py --fitted T4 parameters; Appendix C Figure C.1 uses 3 real T4 development utterances plus Step 7 tick (0.227) and SNR gate in Box 1; latexmk -Werror exited 0 (93 pages)."
     },
     {
       "id": "EVAL-004",
@@ -1034,6 +1037,21 @@
         "docs/progress/log/2026-11-17-merge-origin-main.md"
       ],
       "validation": "2026-11-17: Merged origin/main (d169bef) into rhnl-3 at e0bb5c4; verified empty diff against origin/main on all 12 non-appendix PR #19 files and reconciled paper/chapters/appendices.tex with Table A.1 Step 7, 3-objective numbering, Appendix D Steps 1-7 & prosodic variety, and STAC removal; latexmk -Werror exited 0 (paper/build/main.pdf, 90 pages, 1,182,187 bytes)."
+    },
+    {
+      "id": "PAPER-017",
+      "title": "Align Appendices A-D exclusively on Colab Tesla T4 experiments and add all-checkpoint Steps 1-8 vs Chapter 3 policy table",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "review",
+      "updated": "2026-11-17",
+      "acceptance": "All appendices A-D in paper/chapters/appendices.tex rest strictly on Colab Tesla T4 runs (EXP-011/gpu_grid_all1000.csv in Appendix A, ltt_sim.py --fitted in Appendix B, real T4 utterances + Step 7 tick in Figure C.1, all CPU restart/CV prose removed from Appendix D); Appendix D clarifies pre-LTT CV vs AUDIT-001 vs multi-condition LTT, adds Table D.9 comparing Steps 1-8 vs Chapter 3 policies from EXP-018 without STAC, and summarizes EXP-030/031/033 in D.6 and Table D.10; Chapters 1-3 remain untouched; latexmk -Werror, check_workspace.py, and unittest pass.",
+      "evidence": [
+        "paper/chapters/appendices.tex",
+        "research/experiments/EXP-011-followup-t4/results/pilot/worked_example.json",
+        "research/experiments/EXP-018-swsr-handover-prelim/results/SWSR_HANDOVER_REPORT.md",
+        "docs/progress/log/2026-11-17-appendices-colab-alignment.md"
+      ],
+      "validation": "2026-11-17: Updated paper/chapters/appendices.tex (Chapters 1-3 untouched on origin/main PR #19); latexmk -interaction=nonstopmode -halt-on-error -Werror main.tex exited 0 (93 pages, 1,213,460 bytes, zero undefined refs/citations, zero Float too large warnings); Figure C.1 and Tables D.9-D.10 visually inspected via pdftoppm; pending team and adviser review."
     }
   ]
 }
