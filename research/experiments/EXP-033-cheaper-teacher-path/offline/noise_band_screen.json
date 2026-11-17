@@ -1,0 +1,84 @@
+{
+  "kind": "local CPU screen (screening only, not evidence)",
+  "rules": {
+    "spread_max": 0.33,
+    "masking_min": 0.67
+  },
+  "summary": {
+    "nb68_harm": 0.05941323439280192,
+    "white25_harm": 1.9929895798365276,
+    "ratio": 0.02981111140464428,
+    "supported_explanation": "spread",
+    "nb68_inn_median": 44.555457847700666,
+    "nb68_inn_at_or_above_40": 6
+  },
+  "cases": [
+    {
+      "utt_id": "common_voice_en_15735839-common_voice_en_15735837",
+      "condition": "nb68",
+      "snr": 27.74968147277832,
+      "snr_inn": 45.19707593679229,
+      "flatness": 0.13702621632745715,
+      "utmos_STU": 3.4694864749908447,
+      "utmos_W8": 3.4675891399383545,
+      "harm_W8": 0.0018973350524902344,
+      "white25_harm_W8": 2.042155623435974
+    },
+    {
+      "utt_id": "common_voice_en_17861489-common_voice_en_17861487",
+      "condition": "nb68",
+      "snr": 27.094289779663086,
+      "snr_inn": 43.913839758609036,
+      "flatness": 0.19455700528341685,
+      "utmos_STU": 3.4137866497039795,
+      "utmos_W8": 3.7049901485443115,
+      "harm_W8": -0.29120349884033203,
+      "white25_harm_W8": 1.4339683055877686
+    },
+    {
+      "utt_id": "common_voice_en_17851231-common_voice_en_17851256",
+      "condition": "nb68",
+      "snr": 27.57871437072754,
+      "snr_inn": 41.2520108205062,
+      "flatness": 0.24029696253235072,
+      "utmos_STU": 3.693246841430664,
+      "utmos_W8": 4.033488750457764,
+      "harm_W8": -0.3402419090270996,
+      "white25_harm_W8": 2.9351646900177
+    },
+    {
+      "utt_id": "common_voice_en_18575865-common_voice_en_18575864",
+      "condition": "nb68",
+      "snr": 26.625154495239258,
+      "snr_inn": 40.43845579287991,
+      "flatness": 0.29316089387122113,
+      "utmos_STU": 4.110154151916504,
+      "utmos_W8": 3.8902406692504883,
+      "harm_W8": 0.21991348266601562,
+      "white25_harm_W8": 2.8939112424850464
+    },
+    {
+      "utt_id": "common_voice_en_18522556-common_voice_en_18522557",
+      "condition": "nb68",
+      "snr": 28.38854217529297,
+      "snr_inn": 47.44329165581391,
+      "flatness": 0.09395698525654951,
+      "utmos_STU": 3.4568369388580322,
+      "utmos_W8": 2.820376396179199,
+      "harm_W8": 0.636460542678833,
+      "white25_harm_W8": 0.9666104316711426
+    },
+    {
+      "utt_id": "common_voice_en_19289713-common_voice_en_19289715",
+      "condition": "nb68",
+      "snr": 26.92882537841797,
+      "snr_inn": 46.117070808877536,
+      "flatness": 0.11624758056616769,
+      "utmos_STU": 3.680593490600586,
+      "utmos_W8": 3.5509400367736816,
+      "harm_W8": 0.1296534538269043,
+      "white25_harm_W8": 1.6861271858215332
+    }
+  ],
+  "seconds": 144
+}
