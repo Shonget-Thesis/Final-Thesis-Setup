@@ -1,6 +1,6 @@
 # EXP-034: the invariant residual against SNR only and Chapter 3's drift
 
-**Status:** prepared and preregistered on 2026-11-17 (Asia/Manila), before any GPU synthesis; freeze `7c2ec8fca37b...`. Not yet run.
+**Status:** prepared and preregistered on 2026-11-17 (Asia/Manila), before any GPU synthesis; freeze `eb1a38d3225a...` after Amendment 1 (first freeze `7c2ec8fca37b...`). Not yet run.
 
 Task EVAL-029 (in progress). Files: [notebook](../../../code/colab/DMOSpeech2_EXP034_Invariant_Residual.ipynb), [runner](../../../code/colab/run_invariant_residual.py), [tests](../../../code/tests/test_invariant_residual_run.py), [preregistration](preregistration.json), [design log](../../../docs/progress/log/2026-11-17-exp034-invariant-residual-setup.md).
 
@@ -100,6 +100,18 @@ A run stops before synthesis if any of these fails, on development speaker 1:
 - **Re-chosen thresholds:** chosen on positions 31–45 and applied to 46–60.
 - **EVAL-027's spread-weighted SNR gate:** below 40 dB, descriptive.
 - **The per-case best of the two payloads:** the oracle.
+
+## Amendments
+
+**Amendment 1 (2026-11-17, before any main synthesis):** the runner now loads DEMAND's cafeteria track and records its SHA-256 in `demand_sha256.txt`, as EXP-031 did. The notebook downloads the track, caching it on Drive, and passes its folder to the runner.
+- **Why:** the first smoke test on the T4 stopped at `babble15`, because no track was loaded.
+- **What that smoke test had already shown:**
+  - every identity check passed with a difference of 0.0;
+  - every arm and rule run on its own matched the shared run;
+  - every counted pass matched the cost table;
+  - 7 of the 8 conditions ran on development speaker 1.
+- **What did not change:** no arm, threshold, cohort, estimand or hypothesis.
+- **The freeze:** re-frozen as `eb1a38d3225a...`; it was `7c2ec8fca37b...`.
 
 ## How to run
 
