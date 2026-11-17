@@ -14,6 +14,7 @@ Follow-up to EVAL-026 and EVAL-027; no new task ID.
 | [A First-Step Bias Restores Lost Diversity](https://arxiv.org/html/2610.37110) (ReSeed, 2026) | Corrects only the student's first step | Same principle |
 | [Restoring Diversity by Probing Activations](https://arxiv.org/html/2611.18550v1) (2026) | Perturbs activations along the teacher's principal directions at the first step, training-free | Same principle, inside the network |
 | [T-Stitch](https://arxiv.org/abs/2402.14167) (ICLR 2025) | A small model first, a large one later, on a fixed schedule | Model switching on a fixed schedule |
+| [Distillation++](https://openaccess.thecvf.com/content/ICCV2025/papers/Park_Inference_Time_Diffusion_Model_Distillation_ICCV_2025_paper.pdf) (ICCV 2025; [arXiv 2412.08871](https://arxiv.org/html/2412.08871v1)) | The teacher guides the student's sampling in its early stages, at inference | Teacher guidance of a student at inference; added 2026-11-17 from the invariant-residual search |
 
 ## B. Training the early segment for diversity
 
@@ -83,7 +84,7 @@ Covered in the [adaptive teacher log](2026-11-16-adaptive-teacher-screen.md):
 - Routing by noise type through spectral flatness (the [spread-weighted SNR log](2026-11-17-spread-weighted-snr.md)).
 
 **What follows:**
-- **The candidate:** an algorithm aimed at G1 that uses G3's operator, the Commit-Point Quantile Handover (`code/analysis/cpqh_screen.py`). Its screen is logged separately.
+- **The candidate:** an algorithm aimed at G1 that uses G3's operator, the Commit-Point Quantile Handover. Its screens are in the [CP-QH log](2026-11-17-commit-point-quantile-handover.md).
 - **G2:** a measurement result for Chapter 4, not an algorithm.
 
 ## Queries (2026-11-16 and 2026-11-17)

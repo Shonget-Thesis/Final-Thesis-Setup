@@ -903,6 +903,55 @@
       ]
     },
     {
+      "id": "EVAL-028",
+      "title": "Condition-safe commit-point handovers for noisy prompts (CP-QH, FCH, RQH) and the invariant residual as a replacement for Chapter 3's drift: literature map, local screens with controls, and T4 confirmation",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "in_progress",
+      "updated": "2026-11-17",
+      "acceptance": "Each candidate is screened on this computer's CPU against rules fixed in its script before the run, on development sentences not used to design it, and every outcome is logged with its JSON; a candidate that passes all its rules, or a configuration the team chooses from the logged evidence, is then tested in a preregistered Colab T4 run on development speakers against the student alone, the student's draft restarted at 0.2929 (STUR2), CPH8 and P25 on clean and noisy prompts (white, pink, babble, reverberation), scored by WER, speaker similarity, UTMOS, voiced share, CVf0 and aligned CVf0 (variety compared only where both arms voice at least 30% of frames); the result, whichever way it goes, is imported with hashes and reported.",
+      "evidence": [
+        "docs/progress/log/2026-11-17-literature-map.md",
+        "docs/progress/log/2026-11-17-commit-point-quantile-handover.md",
+        "code/analysis/cpqh_screen.py",
+        "code/analysis/floor_canonical_screen.py",
+        "code/analysis/cpqh_controls_screen.py",
+        "code/analysis/roughness_band_probe.py",
+        "code/analysis/rqh_screen.py",
+        "code/analysis/prompt_region_control.py",
+        "research/experiments/EXP-033-cheaper-teacher-path/offline/cpqh_screen.json",
+        "research/experiments/EXP-033-cheaper-teacher-path/offline/floor_canonical_screen.json",
+        "research/experiments/EXP-033-cheaper-teacher-path/offline/cpqh_controls_screen.json",
+        "research/experiments/EXP-033-cheaper-teacher-path/offline/roughness_band_probe.json",
+        "research/experiments/EXP-033-cheaper-teacher-path/offline/rqh_screen.json",
+        "research/experiments/EXP-033-cheaper-teacher-path/offline/prompt_region_control.json",
+        "code/tests/test_cpqh_screen.py",
+        "code/tests/test_floor_canonical.py",
+        "code/tests/test_cpqh_controls_screen.py",
+        "code/tests/test_rqh_screen.py",
+        "code/tests/test_prompt_region_control.py",
+        "docs/progress/log/2026-11-17-invariant-residual.md",
+        "code/analysis/invariant_residual_screen.py",
+        "research/experiments/EXP-033-cheaper-teacher-path/offline/invariant_residual_screen.json",
+        "code/tests/test_invariant_residual.py"
+      ]
+    },
+    {
+      "id": "EVAL-029",
+      "title": "EXP-034: the invariant residual against SNR only and Chapter 3's drift on the T4 (which decision rule is better)",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "in_progress",
+      "updated": "2026-11-17",
+      "acceptance": "Preregistration is frozen before GPU synthesis (7c2ec8fca37b...) with locked code, the CPU screen's thresholds and EXP-031/EXP-033 input hashes; the Colab T4 smoke test passes the identities, every arm and rule run on its own with its counted passes equal to the cost table, and the EXP-033 (CPH8, STU, W8) and EXP-031 (STU, W8) reproductions on development speaker 1 (<= 0.01); the run covers development positions 31-60 x 8 prompt conditions (240 quality cases), 41-60 x 12 seeds x clean and gauss25 for variety, and 31-40 for passes and time; the analysis applies the frozen hypotheses H1-H5 and verdict labels, reports every rule's quality by condition, detection AUCs, wrong clean flags, variety and cost, and writes MANIFEST.json; the result, whichever way it goes, is imported with hashes and reported.",
+      "evidence": [
+        "research/experiments/EXP-034-invariant-residual/README.md",
+        "research/experiments/EXP-034-invariant-residual/preregistration.json",
+        "code/colab/run_invariant_residual.py",
+        "code/colab/DMOSpeech2_EXP034_Invariant_Residual.ipynb",
+        "code/tests/test_invariant_residual_run.py",
+        "docs/progress/log/2026-11-17-exp034-invariant-residual-setup.md"
+      ]
+    },
+    {
       "id": "PROTO-001",
       "title": "Local SNR + drift handover prototype (demo): HTML interface in the presentation's design, DMOSpeech 2 on CPU",
       "owner": "Rhenel Jhon R. Sajol",
