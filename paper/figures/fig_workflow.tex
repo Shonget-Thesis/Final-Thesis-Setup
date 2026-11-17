@@ -1,5 +1,6 @@
 % Figure: the whole methodology as a compact flowchart. One row per
-% stage (common setup and the four specific objectives); the details of
+% stage (common setup and the three specific objectives; Objective 2 takes
+% two rows, formulation and calibration); the details of
 % every step are in Table~\ref{tab:steps}.
 \begin{figure}[!htbp]
 \centering
@@ -11,7 +12,7 @@
   arr/.style={-{Stealth[length=1.8mm]}, thick},
   lane/.style={font=\figfont\bfseries, align=left, text width=2.0cm, anchor=west}
 ]
-\def\wfxa{3.3}\def\wfxb{6.4}\def\wfxc{9.5}\def\wfxd{12.6}
+\def\wfxa{3.3}\def\wfxb{6.4}\def\wfxc{9.5}\def\wfxd{12.6}\def\wfxe{15.7}
 % ---- rows ----
 \node[wf] (s1)  at (\wfxa,0)     {\textbf{1. Prepare data}\\ speaker splits 100\,/\,200\,/\,200};
 \node[wf] (s2)  at (\wfxb,0)     {\textbf{2. Prompt conditions}\\ clean and 15~dB noisy};
@@ -26,33 +27,31 @@
 \node[wf] (s8)  at (\wfxa,-5.7)  {\textbf{8. Fix protocol}\\ $\alpha$, $\delta$, threshold grid};
 \node[wf] (s9)  at (\wfxb,-5.7)  {\textbf{9. Calibrate}\\ binomial tests in order};
 \node[wfdec] (s10) at (\wfxc,-5.7) {\textbf{10. Threshold certified?}\\ no: use reference};
-\node[wf] (s11) at (\wfxd,-5.7)  {\textbf{11. Check guarantee}\\ test risk, 100 re-splits};
-
-\node[wf] (s12) at (\wfxa,-7.6)  {\textbf{12. Run locked variants}\\ on the test split};
-\node[wf] (s13) at (\wfxb,-7.6)  {\textbf{13. Compare}\\ cost, quality, paired tests};
-\node[wf] (s14) at (\wfxc,-7.6)  {\textbf{14. Robustness}\\ noise shift, size of $n$};
-\node[wf, fill=frozenFill] (s15) at (\wfxd,-7.6) {\textbf{15. Report}\\ including negative results};
+\node[wf] (s11) at (\wfxa,-7.6)  {\textbf{11. Check guarantee}\\ test risk, 100 re-splits};
+\node[wf] (s12) at (\wfxb,-7.6)  {\textbf{12. Run locked variants}\\ on the test split};
+\node[wf] (s13) at (\wfxc,-7.6)  {\textbf{13. Compare}\\ cost, quality, paired tests};
+\node[wf] (s14) at (\wfxd,-7.6)  {\textbf{14. Robustness}\\ noise shift, size of $n$};
+\node[wf, fill=frozenFill] (s15) at (\wfxe,-7.6) {\textbf{15. Report}\\ including negative results};
 
 % ---- arrows within rows ----
-\foreach \a/\b in {s1/s2,s2/s3,s4/s5,s5/s6,s8/s9,s9/s10,s12/s13,s13/s14,s14/s15}
+\foreach \a/\b in {s1/s2,s2/s3,s4/s5,s5/s6,s8/s9,s9/s10,s11/s12,s12/s13,s13/s14,s14/s15}
   \draw[arr] (\a) -- (\b);
-\draw[arr] (s10) -- (s11);
 % ---- arrows between rows ----
 \draw[arr] (s3.south)  -- (\wfxc,-0.95) -- (\wfxa,-0.95) -- (s4.north);
 \draw[arr] (s6.south)  -- (\wfxc,-2.85) -- (\wfxa,-2.85) -- (s7.north);
 \draw[arr] (s7.south)  -- (s8.north);
-\draw[arr] (s11.south) -- (\wfxd,-6.65) -- (\wfxa,-6.65) -- (s12.north);
+\draw[arr] (s10.south) -- (\wfxc,-6.65) -- (\wfxa,-6.65) -- (s11.north);
 
 % ---- bands with lane labels ----
 \begin{scope}[on background layer]
   \foreach \y in {0,-1.9,-3.8,-5.7,-7.6}
-    \draw[draw=frozenLine, fill=frozenFill, rounded corners=4pt] (-0.45,\y+0.75) rectangle (14.1,\y-0.75);
+    \draw[draw=frozenLine, fill=frozenFill, rounded corners=4pt] (-0.45,\y+0.75) rectangle (17.2,\y-0.75);
 \end{scope}
 \node[lane] at (-0.3,0)  {Common setup\\[1pt]\mdseries all splits};
 \node[lane] at (-0.3,-1.9)  {Objective 1\\[1pt]\mdseries development};
-\node[lane] at (-0.3,-3.8)  {Objective 2\\[1pt]\mdseries no data};
-\node[lane] at (-0.3,-5.7)  {Objective 3\\[1pt]\mdseries calibration, test};
-\node[lane] at (-0.3,-7.6) {Objective 4\\[1pt]\mdseries test};
+\node[lane] at (-0.3,-3.8)  {Objective 2\\[1pt]\mdseries formulate\\no data};
+\node[lane] at (-0.3,-5.7)  {Objective 2\\[1pt]\mdseries calibrate\\calibration};
+\node[lane] at (-0.3,-7.6) {Objective 3\\[1pt]\mdseries test};
 \end{tikzpicture}
 \end{adjustbox}
 \caption{Methodology of the study. Each shaded row is one stage, labelled with the data it uses; Table~\ref{tab:steps} describes every step. All networks stay frozen throughout.}
