@@ -1,0 +1,493 @@
+{
+  "note": "post hoc and descriptive; outside the frozen verdict rule (EXP-030 preregistration ebe2b773c02f...)",
+  "stage": {
+    "quality_rows": 120,
+    "diversity_rows": 20,
+    "frozen_verdict": "supported",
+    "secondary_verdict_TOH2": "not_supported",
+    "partial": false
+  },
+  "toh3_minus_mir3": {
+    "clean": {
+      "utmos": {
+        "mean": -0.012256868680318196,
+        "lo": -0.07542541027069091,
+        "hi": 0.053519916534423825,
+        "positive": 12,
+        "n": 30
+      },
+      "similarity": {
+        "mean": -0.002535349130630493,
+        "lo": -0.008546302715937296,
+        "hi": 0.003565665086110433,
+        "positive": 13,
+        "n": 30
+      },
+      "wer": {
+        "mean": 0.004166666666666667,
+        "lo": 0.0,
+        "hi": 0.0125,
+        "positive": 1,
+        "n": 30
+      }
+    },
+    "gauss25": {
+      "utmos": {
+        "mean": -0.02714871565500895,
+        "lo": -0.10994751453399658,
+        "hi": 0.05034305254618327,
+        "positive": 15,
+        "n": 30
+      },
+      "similarity": {
+        "mean": -0.001697017749150594,
+        "lo": -0.008899064858754475,
+        "hi": 0.005580707391103109,
+        "positive": 14,
+        "n": 30
+      },
+      "wer": {
+        "mean": -0.0008333333333333332,
+        "lo": -0.0125,
+        "hi": 0.01,
+        "positive": 1,
+        "n": 30
+      }
+    },
+    "noisy15": {
+      "utmos": {
+        "mean": 0.07223575909932455,
+        "lo": -0.009365689754486085,
+        "hi": 0.16058613459269205,
+        "positive": 21,
+        "n": 30
+      },
+      "similarity": {
+        "mean": -0.0015971899032592774,
+        "lo": -0.017798447608947755,
+        "hi": 0.013554940621058146,
+        "positive": 17,
+        "n": 30
+      },
+      "wer": {
+        "mean": 0.003505661005661005,
+        "lo": -0.03911421911421911,
+        "hi": 0.04582167832167832,
+        "positive": 7,
+        "n": 30
+      }
+    },
+    "telephone": {
+      "utmos": {
+        "mean": 0.0443703015645345,
+        "lo": -0.018372742335001628,
+        "hi": 0.10928810040156046,
+        "positive": 16,
+        "n": 30
+      },
+      "similarity": {
+        "mean": 0.010574710369110108,
+        "lo": -0.0006277799606323242,
+        "hi": 0.022118802865346274,
+        "positive": 19,
+        "n": 30
+      },
+      "wer": {
+        "mean": -0.00787037037037037,
+        "lo": -0.02361111111111111,
+        "hi": 0.008333333333333333,
+        "positive": 1,
+        "n": 30
+      }
+    },
+    "noise_pooled_per_speaker": {
+      "utmos": {
+        "mean": 0.022543521722157796,
+        "lo": -0.028677237033843995,
+        "hi": 0.07361604372660319,
+        "positive": 17,
+        "n": 30
+      },
+      "similarity": {
+        "mean": -0.0016471038262049357,
+        "lo": -0.010759176810582478,
+        "hi": 0.007898887991905213,
+        "positive": 16,
+        "n": 30
+      },
+      "wer": {
+        "mean": 0.001336163836163836,
+        "lo": -0.020764652014652014,
+        "hi": 0.022683566433566435,
+        "positive": 7,
+        "n": 30
+      }
+    }
+  },
+  "definition_3_1_vs_W8": {
+    "rule": "WER > max(0.125, WER_W8 + 0.01) or SIM < SIM_W8 - 0.02",
+    "by_condition": {
+      "clean": {
+        "n": 30,
+        "arms": {
+          "STU": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 3.685576836268107,
+            "mean_similarity": 0.9270661195119222,
+            "failures": 4,
+            "wer_failures": 0,
+            "sim_failures": 4
+          },
+          "W2": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 3.7130391120910646,
+            "mean_similarity": 0.9311176180839539,
+            "failures": 2,
+            "wer_failures": 0,
+            "sim_failures": 2
+          },
+          "W3": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 3.7110005537668864,
+            "mean_similarity": 0.928354698419571,
+            "failures": 1,
+            "wer_failures": 0,
+            "sim_failures": 1
+          },
+          "W4": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 3.737309201558431,
+            "mean_similarity": 0.925624837478002,
+            "failures": 1,
+            "wer_failures": 0,
+            "sim_failures": 1
+          },
+          "TOH2": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 3.7399807373682656,
+            "mean_similarity": 0.9301957825819651,
+            "failures": 0,
+            "wer_failures": 0,
+            "sim_failures": 0
+          },
+          "TOH3": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 3.719088339805603,
+            "mean_similarity": 0.9279225587844848,
+            "failures": 1,
+            "wer_failures": 0,
+            "sim_failures": 1
+          },
+          "MIR3": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 3.731345208485921,
+            "mean_similarity": 0.9304579079151154,
+            "failures": 5,
+            "wer_failures": 0,
+            "sim_failures": 5
+          },
+          "W8": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 3.763651172320048,
+            "mean_similarity": 0.9277267754077911
+          }
+        }
+      },
+      "gauss25": {
+        "n": 30,
+        "arms": {
+          "STU": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 3.646585289637248,
+            "mean_similarity": 0.9047107060750326,
+            "failures": 2,
+            "wer_failures": 0,
+            "sim_failures": 2
+          },
+          "W2": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 2.0884178201357524,
+            "mean_similarity": 0.8576722403367361,
+            "failures": 14,
+            "wer_failures": 1,
+            "sim_failures": 14
+          },
+          "W3": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 2.358093798160553,
+            "mean_similarity": 0.8688896278540293,
+            "failures": 8,
+            "wer_failures": 0,
+            "sim_failures": 8
+          },
+          "W4": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 2.438170325756073,
+            "mean_similarity": 0.8767379244168599,
+            "failures": 2,
+            "wer_failures": 0,
+            "sim_failures": 2
+          },
+          "TOH2": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 3.532030630111694,
+            "mean_similarity": 0.905994302034378,
+            "failures": 2,
+            "wer_failures": 0,
+            "sim_failures": 2
+          },
+          "TOH3": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 3.598948899904887,
+            "mean_similarity": 0.9045496761798859,
+            "failures": 1,
+            "wer_failures": 0,
+            "sim_failures": 1
+          },
+          "MIR3": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 3.6260976155598956,
+            "mean_similarity": 0.9062466939290365,
+            "failures": 1,
+            "wer_failures": 0,
+            "sim_failures": 1
+          },
+          "W8": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 2.3611526091893515,
+            "mean_similarity": 0.8758072237173716
+          }
+        }
+      },
+      "noisy15": {
+        "n": 30,
+        "arms": {
+          "STU": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 1.8823089917500815,
+            "mean_similarity": 0.8164024988810221,
+            "failures": 5,
+            "wer_failures": 4,
+            "sim_failures": 1
+          },
+          "W2": {
+            "median_wer": 0.36038961038961037,
+            "runaway_wer_gt_1": 4,
+            "mean_utmos": 1.2570155660311382,
+            "mean_similarity": 0.6817209561665852,
+            "failures": 24,
+            "wer_failures": 17,
+            "sim_failures": 15
+          },
+          "W3": {
+            "median_wer": 0.16783216783216784,
+            "runaway_wer_gt_1": 3,
+            "mean_utmos": 1.2498833696047464,
+            "mean_similarity": 0.6803007851044337,
+            "failures": 20,
+            "wer_failures": 11,
+            "sim_failures": 15
+          },
+          "W4": {
+            "median_wer": 0.125,
+            "runaway_wer_gt_1": 1,
+            "mean_utmos": 1.248936688899994,
+            "mean_similarity": 0.6883727629979451,
+            "failures": 17,
+            "wer_failures": 9,
+            "sim_failures": 10
+          },
+          "TOH2": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 1.7782405932744345,
+            "mean_similarity": 0.8142122546831767,
+            "failures": 5,
+            "wer_failures": 3,
+            "sim_failures": 2
+          },
+          "TOH3": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 1.8577580213546754,
+            "mean_similarity": 0.8042910854021709,
+            "failures": 8,
+            "wer_failures": 3,
+            "sim_failures": 5
+          },
+          "MIR3": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 1.7855222622553508,
+            "mean_similarity": 0.8058882753054301,
+            "failures": 5,
+            "wer_failures": 2,
+            "sim_failures": 3
+          },
+          "W8": {
+            "median_wer": 0.10555555555555556,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 1.2503257036209106,
+            "mean_similarity": 0.7026081134875616
+          }
+        }
+      },
+      "telephone": {
+        "n": 30,
+        "arms": {
+          "STU": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 1.6129472494125365,
+            "mean_similarity": 0.8543448408444723,
+            "failures": 7,
+            "wer_failures": 1,
+            "sim_failures": 7
+          },
+          "W2": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 1.713121275107066,
+            "mean_similarity": 0.8100941161314646,
+            "failures": 20,
+            "wer_failures": 1,
+            "sim_failures": 20
+          },
+          "W3": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 1.5735944668451944,
+            "mean_similarity": 0.8482573509216309,
+            "failures": 2,
+            "wer_failures": 0,
+            "sim_failures": 2
+          },
+          "W4": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 1.6171277046203614,
+            "mean_similarity": 0.854011994600296,
+            "failures": 2,
+            "wer_failures": 0,
+            "sim_failures": 2
+          },
+          "TOH2": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 1.6180569966634115,
+            "mean_similarity": 0.8511399547259013,
+            "failures": 3,
+            "wer_failures": 1,
+            "sim_failures": 3
+          },
+          "TOH3": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 1.6162323236465455,
+            "mean_similarity": 0.8560391803582509,
+            "failures": 3,
+            "wer_failures": 0,
+            "sim_failures": 3
+          },
+          "MIR3": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 1.571862022082011,
+            "mean_similarity": 0.8454644699891408,
+            "failures": 8,
+            "wer_failures": 0,
+            "sim_failures": 8
+          },
+          "W8": {
+            "median_wer": 0.0,
+            "runaway_wer_gt_1": 0,
+            "mean_utmos": 1.6106228590011598,
+            "mean_similarity": 0.8503665506839753
+          }
+        }
+      }
+    }
+  },
+  "time_map_by_condition": {
+    "clean": {
+      "TOH2": {
+        "mean_rms_frames": 10.978881505746555,
+        "mean_max_frames": 21.366666666666667,
+        "cases_max_at_band": 1
+      },
+      "TOH3": {
+        "mean_rms_frames": 11.625217878409815,
+        "mean_max_frames": 22.133333333333333,
+        "cases_max_at_band": 2
+      },
+      "mean_band_frames": 44.63333333333333,
+      "mean_frames": 445.3333333333333
+    },
+    "gauss25": {
+      "TOH2": {
+        "mean_rms_frames": 11.818960460775914,
+        "mean_max_frames": 23.8,
+        "cases_max_at_band": 1
+      },
+      "TOH3": {
+        "mean_rms_frames": 12.402122344427127,
+        "mean_max_frames": 24.066666666666666,
+        "cases_max_at_band": 3
+      },
+      "mean_band_frames": 45.833333333333336,
+      "mean_frames": 457.3333333333333
+    },
+    "noisy15": {
+      "TOH2": {
+        "mean_rms_frames": 11.036540551721034,
+        "mean_max_frames": 22.233333333333334,
+        "cases_max_at_band": 1
+      },
+      "TOH3": {
+        "mean_rms_frames": 12.374056024227652,
+        "mean_max_frames": 24.8,
+        "cases_max_at_band": 1
+      },
+      "mean_band_frames": 46.56666666666667,
+      "mean_frames": 464.6666666666667
+    },
+    "telephone": {
+      "TOH2": {
+        "mean_rms_frames": 12.508879585067671,
+        "mean_max_frames": 24.666666666666668,
+        "cases_max_at_band": 3
+      },
+      "TOH3": {
+        "mean_rms_frames": 13.59701441550958,
+        "mean_max_frames": 25.8,
+        "cases_max_at_band": 4
+      },
+      "mean_band_frames": 42.0,
+      "mean_frames": 419.0
+    }
+  },
+  "cvf0_gain_vs_map_displacement_spearman_20_speakers": {
+    "TOH3_minus_STU_vs_warp_rms_3_mean": 0.11578947368421053,
+    "MIR3_minus_STU_vs_warp_rms_3_mean": -0.009022556390977444,
+    "W3_minus_STU_vs_warp_rms_3_mean": 0.21954887218045113,
+    "TOH2_minus_STU_vs_warp_rms_2_mean": 0.0015037593984962407,
+    "W2_minus_STU_vs_warp_rms_2_mean": 0.26766917293233083
+  }
+}

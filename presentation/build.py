@@ -226,20 +226,101 @@ def serve_presentation(port: int = 8000):
 
 
 def export_pdf(output_path: Path = None, port: int = 8765) -> bool:
-    """Export slides to a vector PDF with selectable text using headless Edge/Chrome."""
-    import asyncio
+    """Export slides to a vector PDF with selectable text using headless Edge/Chrome (stdlib RFC 6455 CDP)."""
     import base64
     import json
+    import os
     import shutil
+    import socket
+    import struct
     import subprocess
     import tempfile
+    import urllib.parse
     import urllib.request
 
-    try:
-        import websockets  # type: ignore
-    except ImportError:
-        print("Error: 'websockets' package is required for PDF export. Run: pip install websockets")
-        return False
+    class _StdlibWS:
+        def __init__(self, url: str):
+            parsed = urllib.parse.urlparse(url)
+            host = parsed.hostname or "127.0.0.1"
+            ws_port = parsed.port or 80
+            path = (parsed.path or "/") + (f"?{parsed.query}" if parsed.query else "")
+            self.sock = socket.create_connection((host, ws_port), timeout=60)
+            key = base64.b64encode(os.urandom(16)).decode("ascii")
+            req = (
+                f"GET {path} HTTP/1.1\r\n"
+                f"Host: {host}:{ws_port}\r\n"
+                f"Upgrade: websocket\r\n"
+                f"Connection: Upgrade\r\n"
+                f"Sec-WebSocket-Key: {key}\r\n"
+                f"Sec-WebSocket-Version: 13\r\n\r\n"
+            )
+            self.sock.sendall(req.encode("ascii"))
+            buf = b""
+            while b"\r\n\r\n" not in buf:
+                chunk = self.sock.recv(4096)
+                if not chunk:
+                    raise RuntimeError("WebSocket handshake closed prematurely")
+                buf += chunk
+            hdr, self._rem = buf.split(b"\r\n\r\n", 1)
+            if b"101" not in hdr.splitlines()[0]:
+                raise RuntimeError("WebSocket handshake failed")
+
+        def _recv_exact(self, n: int) -> bytes:
+            while len(self._rem) < n:
+                chunk = self.sock.recv(65536)
+                if not chunk:
+                    raise RuntimeError("WebSocket closed during receive")
+                self._rem += chunk
+            data, self._rem = self._rem[:n], self._rem[n:]
+            return data
+
+        def send(self, text: str) -> None:
+            payload = text.encode("utf-8")
+            mask = os.urandom(4)
+            hdr = bytearray([0x81])
+            ln = len(payload)
+            if ln < 126:
+                hdr.append(0x80 | ln)
+            elif ln < 65536:
+                hdr.append(0x80 | 126)
+                hdr.extend(struct.pack("!H", ln))
+            else:
+                hdr.append(0x80 | 127)
+                hdr.extend(struct.pack("!Q", ln))
+            hdr.extend(mask)
+            masked = bytes(b ^ mask[i & 3] for i, b in enumerate(payload))
+            self.sock.sendall(bytes(hdr) + masked)
+
+        def recv(self) -> str:
+            msg = bytearray()
+            while True:
+                b1, b2 = self._recv_exact(2)
+                fin = bool(b1 & 0x80)
+                opcode = b1 & 0x0F
+                masked = bool(b2 & 0x80)
+                ln = b2 & 0x7F
+                if ln == 126:
+                    (ln,) = struct.unpack("!H", self._recv_exact(2))
+                elif ln == 127:
+                    (ln,) = struct.unpack("!Q", self._recv_exact(8))
+                mask_key = self._recv_exact(4) if masked else b""
+                data = self._recv_exact(ln)
+                if masked:
+                    data = bytes(b ^ mask_key[i & 3] for i, b in enumerate(data))
+                if opcode == 0x8:
+                    raise RuntimeError("WebSocket closed by browser")
+                if opcode == 0x9:
+                    self.sock.sendall(bytes([0x8A, 0x80, 0, 0, 0, 0]))
+                    continue
+                msg.extend(data)
+                if fin:
+                    return msg.decode("utf-8")
+
+        def close(self) -> None:
+            try:
+                self.sock.close()
+            except Exception:
+                pass
 
     target_pdf = output_path or (PRESENTATION_DIR / "proposal-defense-slides.pdf")
 
@@ -257,7 +338,7 @@ def export_pdf(output_path: Path = None, port: int = 8765) -> bool:
 
     print(f"Exporting PDF using {Path(browser_exe).name}...")
 
-    # Start local HTTP server
+    # Start local HTTP server on an available port
     class QuietHandler(http.server.SimpleHTTPRequestHandler):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, directory=str(PRESENTATION_DIR), **kwargs)
@@ -265,15 +346,19 @@ def export_pdf(output_path: Path = None, port: int = 8765) -> bool:
         def log_message(self, format, *args):
             pass
 
-    httpd = socketserver.TCPServer(("127.0.0.1", port), QuietHandler)
+    try:
+        httpd = socketserver.TCPServer(("127.0.0.1", port), QuietHandler)
+    except OSError:
+        httpd = socketserver.TCPServer(("127.0.0.1", 0), QuietHandler)
+        port = httpd.server_address[1]
     server_thread = threading.Thread(target=httpd.serve_forever, daemon=True)
     server_thread.start()
 
     temp_profile = tempfile.mkdtemp(prefix="slide_pdf_")
     proc = None
-    cdp_port = 9222
+    cdp_port = 9229
 
-    async def _run_cdp():
+    def _run_cdp():
         nonlocal proc
         cmd = [
             browser_exe,
@@ -288,7 +373,7 @@ def export_pdf(output_path: Path = None, port: int = 8765) -> bool:
 
         page_ws_url = None
         for _ in range(40):
-            await asyncio.sleep(0.25)
+            time.sleep(0.25)
             try:
                 resp = urllib.request.urlopen(f"http://127.0.0.1:{cdp_port}/json/list", timeout=1)
                 targets = json.loads(resp.read().decode())
@@ -304,31 +389,32 @@ def export_pdf(output_path: Path = None, port: int = 8765) -> bool:
         if not page_ws_url:
             raise RuntimeError("Failed to obtain Page WebSocket URL from browser.")
 
-        async with websockets.connect(page_ws_url, max_size=100 * 1024 * 1024) as ws:
+        ws = _StdlibWS(page_ws_url)
+        try:
             msg_id = 1
 
-            async def call(method, params=None):
+            def call(method, params=None):
                 nonlocal msg_id
                 cid = msg_id
                 msg_id += 1
                 payload = {"id": cid, "method": method}
                 if params:
                     payload["params"] = params
-                await ws.send(json.dumps(payload))
+                ws.send(json.dumps(payload))
                 while True:
-                    raw = await ws.recv()
+                    raw = ws.recv()
                     data = json.loads(raw)
                     if data.get("id") == cid:
                         if "error" in data:
                             raise RuntimeError(f"CDP error: {data['error']}")
                         return data.get("result", {})
 
-            await call("Page.enable")
-            await call("Runtime.enable")
-            await call("Page.navigate", {"url": f"http://127.0.0.1:{port}/index.html"})
+            call("Page.enable")
+            call("Runtime.enable")
+            call("Page.navigate", {"url": f"http://127.0.0.1:{port}/index.html"})
 
             while True:
-                raw = await ws.recv()
+                raw = ws.recv()
                 data = json.loads(raw)
                 if data.get("method") == "Page.loadEventFired":
                     break
@@ -342,12 +428,12 @@ def export_pdf(output_path: Path = None, port: int = 8765) -> bool:
                 return document.querySelectorAll('.scene').length;
             })()
             """
-            res = await call("Runtime.evaluate", {"expression": js_prep, "awaitPromise": True})
+            res = call("Runtime.evaluate", {"expression": js_prep, "awaitPromise": True})
             slide_count = res.get("result", {}).get("value", 0)
 
-            await asyncio.sleep(2.0)
+            time.sleep(2.0)
 
-            pdf_res = await call("Page.printToPDF", {
+            pdf_res = call("Page.printToPDF", {
                 "landscape": True,
                 "displayHeaderFooter": False,
                 "printBackground": True,
@@ -365,9 +451,11 @@ def export_pdf(output_path: Path = None, port: int = 8765) -> bool:
             pdf_bytes = base64.b64decode(data_b64)
             target_pdf.write_bytes(pdf_bytes)
             print(f"Successfully exported {slide_count} slides to {target_pdf.name} ({len(pdf_bytes):,} bytes)")
+        finally:
+            ws.close()
 
     try:
-        asyncio.run(_run_cdp())
+        _run_cdp()
         return True
     except Exception as exc:
         print(f"PDF export error: {exc}")

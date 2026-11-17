@@ -1,0 +1,57 @@
+{
+  "description": "Outputs of the EXP-022 notebook run on 2026-11-13 UTC (Colab Tesla T4): the Slow-Part handover at Steps 2 to 7 with part signals at every teacher step on 360 cases (60 development speakers x 6 conditions), CVf0 at Steps 2, 3, 4 and 8 on 20 speakers x clean and noisy15 x 20 seeds, the report and the smoke checks. Byte-identical copies from the results zip. The zip's code/ snapshot was not copied: its seven runner modules are identical, line endings normalised, to code/colab/ at the commit below.",
+  "source_zip": "DMOSpeech2_EXP022_Slow_Part_Handover_Results.zip",
+  "source_zip_sha256": "290a0f077b63c8c7676548026a37230c1696a13e8de2bddcaf12d81aa75f7732",
+  "thesis_commit_at_run": "a068a0d54bc14f5060dc18172543f1ba1cb9448c",
+  "dmo_commit_at_run": "8a7868fc3345702a586173447f4869205b501f26",
+  "device": "Tesla T4",
+  "preregistration_sha256": "c311aeb52d42434490d411f774c26d6cb215d62a894b8e972cf7a5f547376c47",
+  "runner_sha256": "692e2345bf2653d6a11e6cf83a9be43716ad1a1f2a088c998bf2596ad0616e06",
+  "files": [
+    {
+      "file": "SLOW_PART_REPORT.md",
+      "bytes": 5568,
+      "sha256": "518c27ec48eb934917dd12853e6bfd82a746d1b6bdcce082cd85c2d76afbc2d4"
+    },
+    {
+      "file": "slowpart.csv",
+      "bytes": 520840,
+      "sha256": "673440b0449a19e2df0e1b9394c21769456289647638cabdc7f89f29a4c0ae0a"
+    },
+    {
+      "file": "diversity.csv",
+      "bytes": 10314,
+      "sha256": "8d393886f91025fe44c77262e6c88f737981ca49a57cd24bb0ce2e90705e0748"
+    },
+    {
+      "file": "slowpart_results.json",
+      "bytes": 33726,
+      "sha256": "54d3ed60d157fdd0c54698c34c2c997c42f804acf1fe4292b6e8d2990dacad59"
+    },
+    {
+      "file": "RUN_INFO.txt",
+      "bytes": 181,
+      "sha256": "1a9d8e48aeea59806d01020ef27eca5e1c8259fd9eb8a7d0667f83e507e2f7aa"
+    },
+    {
+      "file": "preregistration.json",
+      "bytes": 5373,
+      "sha256": "d8993d29b149cef6140beb67b3958413da1e4bbd2384670753719d8efa1b01a6"
+    },
+    {
+      "file": "smoke/slowpart.csv",
+      "bytes": 6957,
+      "sha256": "98dc769b9a19b0c499edf3c0ed61b5fb8a7d5f015ed0dad14e72174031355044"
+    },
+    {
+      "file": "smoke/diversity.csv",
+      "bytes": 435,
+      "sha256": "c5a5e8a78b3b710b6e6ae7cbb0ac420066cb2ec8596e9797e9e428cb2b0e9c76"
+    },
+    {
+      "file": "smoke/reproduction.json",
+      "bytes": 1153,
+      "sha256": "318049e09fdc3e289381515bed64b49a0b92081eb346720640f92c81ce294677"
+    }
+  ]
+}

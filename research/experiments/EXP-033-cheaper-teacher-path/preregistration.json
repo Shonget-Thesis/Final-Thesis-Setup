@@ -1,0 +1,430 @@
+{
+  "experiment": "EXP-033",
+  "task_id": "EVAL-026",
+  "title": "Cheaper teacher paths to the DMOSpeech 2 paper's t_switch = 0.25: variety, quality and passes",
+  "framing": "Development test of handover candidates. The target is the paper's evaluated setting (t_switch = 0.25, Algorithm 2, 30 passes): keep its prosodic variety and quality on clean prompts for fewer forward passes. Five candidates make the teacher's path to t = 0.2929 cheaper (fewer and larger steps, guidance on the early steps only, a student draft in place of the first steps, or a commitment-weighted handover at Step 4); none is claimed to be novel before a literature audit. Development speakers only; not held-out evidence.",
+  "reference": {
+    "arm": "P25",
+    "k_paper": 14,
+    "grid": "32-interval sway grid",
+    "alg2_times": [
+      0.226989546637263,
+      0.6173165676349102
+    ]
+  },
+  "arms": [
+    "STU",
+    "W8",
+    "W8R2",
+    "W6R2",
+    "W4R2",
+    "P25",
+    "CPH12",
+    "CPH8",
+    "CPH6",
+    "GI",
+    "SST",
+    "CWH4"
+  ],
+  "known_arms": [
+    "STU",
+    "W8",
+    "W8R2",
+    "W6R2",
+    "W4R2",
+    "P25"
+  ],
+  "candidates": [
+    "CPH12",
+    "CPH8",
+    "CPH6",
+    "GI",
+    "SST",
+    "CWH4"
+  ],
+  "test_arms": [
+    "W8",
+    "W8R2",
+    "W6R2",
+    "W4R2",
+    "CPH12",
+    "CPH8",
+    "CPH6",
+    "GI",
+    "SST",
+    "CWH4"
+  ],
+  "design": {
+    "commit_time": 0.2928932188134524,
+    "cph_grids": [
+      12,
+      8,
+      6
+    ],
+    "gi_last_guided_step": 3,
+    "sst_first_teacher_step": 4,
+    "cwh_step": 4,
+    "cwh_kappa": "1 / (1 + (D / rms(D))^2), D = T_4 - T_3 over generated frames",
+    "student_levels_after_handover": [
+      0.2928932188134524,
+      0.6173165676349102
+    ]
+  },
+  "costs": {
+    "STU": 4,
+    "W8": 21,
+    "W8R2": 20,
+    "W6R2": 16,
+    "W4R2": 12,
+    "P25": 30,
+    "CPH12": 16,
+    "CPH8": 12,
+    "CPH6": 10,
+    "GI": 15,
+    "SST": 13,
+    "CWH4": 13
+  },
+  "teacher_passes": {
+    "STU": 0,
+    "W8": 18,
+    "W8R2": 18,
+    "W6R2": 14,
+    "W4R2": 10,
+    "P25": 28,
+    "CPH12": 14,
+    "CPH8": 10,
+    "CPH6": 8,
+    "GI": 13,
+    "SST": 10,
+    "CWH4": 10
+  },
+  "student_passes": {
+    "STU": 4,
+    "W8": 3,
+    "W8R2": 2,
+    "W6R2": 2,
+    "W4R2": 2,
+    "P25": 2,
+    "CPH12": 2,
+    "CPH8": 2,
+    "CPH6": 2,
+    "GI": 2,
+    "SST": 3,
+    "CWH4": 3
+  },
+  "conditions": [
+    "clean",
+    "noisy15"
+  ],
+  "diversity_condition": "clean",
+  "n_qual_speakers": 30,
+  "n_qual_cases": 60,
+  "qual_utts": [
+    {
+      "utt_id": "common_voice_en_10933823-common_voice_en_10933825",
+      "speaker_id": "common_voice_en_10933823"
+    },
+    {
+      "utt_id": "common_voice_en_13900-common_voice_en_13901",
+      "speaker_id": "common_voice_en_13900"
+    },
+    {
+      "utt_id": "common_voice_en_155313-common_voice_en_155315",
+      "speaker_id": "common_voice_en_155313"
+    },
+    {
+      "utt_id": "common_voice_en_15734837-common_voice_en_15734838",
+      "speaker_id": "common_voice_en_15734837"
+    },
+    {
+      "utt_id": "common_voice_en_15735839-common_voice_en_15735837",
+      "speaker_id": "common_voice_en_15735839"
+    },
+    {
+      "utt_id": "common_voice_en_15903802-common_voice_en_15903807",
+      "speaker_id": "common_voice_en_15903802"
+    },
+    {
+      "utt_id": "common_voice_en_17259121-common_voice_en_17259122",
+      "speaker_id": "common_voice_en_17259121"
+    },
+    {
+      "utt_id": "common_voice_en_17263752-common_voice_en_17263750",
+      "speaker_id": "common_voice_en_17263752"
+    },
+    {
+      "utt_id": "common_voice_en_17278904-common_voice_en_17278909",
+      "speaker_id": "common_voice_en_17278904"
+    },
+    {
+      "utt_id": "common_voice_en_17451108-common_voice_en_17451109",
+      "speaker_id": "common_voice_en_17451108"
+    },
+    {
+      "utt_id": "common_voice_en_17738848-common_voice_en_19083939",
+      "speaker_id": "common_voice_en_17738848"
+    },
+    {
+      "utt_id": "common_voice_en_17851231-common_voice_en_17851256",
+      "speaker_id": "common_voice_en_17851231"
+    },
+    {
+      "utt_id": "common_voice_en_17861489-common_voice_en_17861487",
+      "speaker_id": "common_voice_en_17861489"
+    },
+    {
+      "utt_id": "common_voice_en_17875915-common_voice_en_17875925",
+      "speaker_id": "common_voice_en_17875915"
+    },
+    {
+      "utt_id": "common_voice_en_18234333-common_voice_en_18234353",
+      "speaker_id": "common_voice_en_18234333"
+    },
+    {
+      "utt_id": "common_voice_en_18240348-common_voice_en_18240305",
+      "speaker_id": "common_voice_en_18240348"
+    },
+    {
+      "utt_id": "common_voice_en_18522556-common_voice_en_18522557",
+      "speaker_id": "common_voice_en_18522556"
+    },
+    {
+      "utt_id": "common_voice_en_18529345-common_voice_en_18529361",
+      "speaker_id": "common_voice_en_18529345"
+    },
+    {
+      "utt_id": "common_voice_en_18575865-common_voice_en_18575864",
+      "speaker_id": "common_voice_en_18575865"
+    },
+    {
+      "utt_id": "common_voice_en_18754308-common_voice_en_18754312",
+      "speaker_id": "common_voice_en_18754308"
+    },
+    {
+      "utt_id": "common_voice_en_18770703-common_voice_en_18770702",
+      "speaker_id": "common_voice_en_18770703"
+    },
+    {
+      "utt_id": "common_voice_en_18829843-common_voice_en_18829842",
+      "speaker_id": "common_voice_en_18829843"
+    },
+    {
+      "utt_id": "common_voice_en_18994068-common_voice_en_18994069",
+      "speaker_id": "common_voice_en_18994068"
+    },
+    {
+      "utt_id": "common_voice_en_18994734-common_voice_en_18994738",
+      "speaker_id": "common_voice_en_18994734"
+    },
+    {
+      "utt_id": "common_voice_en_19022657-common_voice_en_19022667",
+      "speaker_id": "common_voice_en_19022657"
+    },
+    {
+      "utt_id": "common_voice_en_19289713-common_voice_en_19289715",
+      "speaker_id": "common_voice_en_19289713"
+    },
+    {
+      "utt_id": "common_voice_en_19294198-common_voice_en_19294199",
+      "speaker_id": "common_voice_en_19294198"
+    },
+    {
+      "utt_id": "common_voice_en_19517720-common_voice_en_19517721",
+      "speaker_id": "common_voice_en_19517720"
+    },
+    {
+      "utt_id": "common_voice_en_19641039-common_voice_en_19641037",
+      "speaker_id": "common_voice_en_19641039"
+    },
+    {
+      "utt_id": "common_voice_en_19669708-common_voice_en_19669704",
+      "speaker_id": "common_voice_en_19669708"
+    }
+  ],
+  "n_div_speakers": 20,
+  "div_seeds": 12,
+  "div_seed_base": 1000,
+  "div_utts": [
+    {
+      "utt_id": "common_voice_en_10933823-common_voice_en_10933825",
+      "speaker_id": "common_voice_en_10933823"
+    },
+    {
+      "utt_id": "common_voice_en_13900-common_voice_en_13901",
+      "speaker_id": "common_voice_en_13900"
+    },
+    {
+      "utt_id": "common_voice_en_155313-common_voice_en_155315",
+      "speaker_id": "common_voice_en_155313"
+    },
+    {
+      "utt_id": "common_voice_en_15734837-common_voice_en_15734838",
+      "speaker_id": "common_voice_en_15734837"
+    },
+    {
+      "utt_id": "common_voice_en_15735839-common_voice_en_15735837",
+      "speaker_id": "common_voice_en_15735839"
+    },
+    {
+      "utt_id": "common_voice_en_15903802-common_voice_en_15903807",
+      "speaker_id": "common_voice_en_15903802"
+    },
+    {
+      "utt_id": "common_voice_en_17259121-common_voice_en_17259122",
+      "speaker_id": "common_voice_en_17259121"
+    },
+    {
+      "utt_id": "common_voice_en_17263752-common_voice_en_17263750",
+      "speaker_id": "common_voice_en_17263752"
+    },
+    {
+      "utt_id": "common_voice_en_17278904-common_voice_en_17278909",
+      "speaker_id": "common_voice_en_17278904"
+    },
+    {
+      "utt_id": "common_voice_en_17451108-common_voice_en_17451109",
+      "speaker_id": "common_voice_en_17451108"
+    },
+    {
+      "utt_id": "common_voice_en_17738848-common_voice_en_19083939",
+      "speaker_id": "common_voice_en_17738848"
+    },
+    {
+      "utt_id": "common_voice_en_17851231-common_voice_en_17851256",
+      "speaker_id": "common_voice_en_17851231"
+    },
+    {
+      "utt_id": "common_voice_en_17861489-common_voice_en_17861487",
+      "speaker_id": "common_voice_en_17861489"
+    },
+    {
+      "utt_id": "common_voice_en_17875915-common_voice_en_17875925",
+      "speaker_id": "common_voice_en_17875915"
+    },
+    {
+      "utt_id": "common_voice_en_18234333-common_voice_en_18234353",
+      "speaker_id": "common_voice_en_18234333"
+    },
+    {
+      "utt_id": "common_voice_en_18240348-common_voice_en_18240305",
+      "speaker_id": "common_voice_en_18240348"
+    },
+    {
+      "utt_id": "common_voice_en_18522556-common_voice_en_18522557",
+      "speaker_id": "common_voice_en_18522556"
+    },
+    {
+      "utt_id": "common_voice_en_18529345-common_voice_en_18529361",
+      "speaker_id": "common_voice_en_18529345"
+    },
+    {
+      "utt_id": "common_voice_en_18575865-common_voice_en_18575864",
+      "speaker_id": "common_voice_en_18575865"
+    },
+    {
+      "utt_id": "common_voice_en_18754308-common_voice_en_18754312",
+      "speaker_id": "common_voice_en_18754308"
+    }
+  ],
+  "n_time_cases": 10,
+  "time_utts": [
+    {
+      "utt_id": "common_voice_en_10933823-common_voice_en_10933825",
+      "speaker_id": "common_voice_en_10933823"
+    },
+    {
+      "utt_id": "common_voice_en_13900-common_voice_en_13901",
+      "speaker_id": "common_voice_en_13900"
+    },
+    {
+      "utt_id": "common_voice_en_155313-common_voice_en_155315",
+      "speaker_id": "common_voice_en_155313"
+    },
+    {
+      "utt_id": "common_voice_en_15734837-common_voice_en_15734838",
+      "speaker_id": "common_voice_en_15734837"
+    },
+    {
+      "utt_id": "common_voice_en_15735839-common_voice_en_15735837",
+      "speaker_id": "common_voice_en_15735839"
+    },
+    {
+      "utt_id": "common_voice_en_15903802-common_voice_en_15903807",
+      "speaker_id": "common_voice_en_15903802"
+    },
+    {
+      "utt_id": "common_voice_en_17259121-common_voice_en_17259122",
+      "speaker_id": "common_voice_en_17259121"
+    },
+    {
+      "utt_id": "common_voice_en_17263752-common_voice_en_17263750",
+      "speaker_id": "common_voice_en_17263752"
+    },
+    {
+      "utt_id": "common_voice_en_17278904-common_voice_en_17278909",
+      "speaker_id": "common_voice_en_17278904"
+    },
+    {
+      "utt_id": "common_voice_en_17451108-common_voice_en_17451109",
+      "speaker_id": "common_voice_en_17451108"
+    }
+  ],
+  "variety_measures": [
+    "cvf0",
+    "cvf0_aligned"
+  ],
+  "bars": {
+    "share": 0.9,
+    "clean_utmos": -0.08,
+    "wer": 0.01,
+    "sim": -0.01,
+    "runaway_wer": 1.0,
+    "snr_gate_db": 20.0
+  },
+  "estimands": {
+    "variety_share": "Clean prompts. For each arm A, with V = CVf0 or aligned CVf0 averaged over the 20 diversity speakers: share_A = (V_A - V_STU) / (V_P25 - V_STU), the part of the paper setting's variety gain over the student alone that A keeps; 95% speaker-level bootstrap interval of the ratio of means (EXP-032's estimand; P25 and STU are synthesized again in this run).",
+    "variety_90": "L_A = V_A - 0.9 V_P25 - 0.1 V_STU per speaker; a 95% bootstrap lower bound above 0 confirms that A keeps at least 90% of P25's gain.",
+    "quality_clean": "Clean prompts, A - P25 per case: mean dUTMOS >= -0.08, dWER upper bound <= +0.01 and dSIM lower bound >= -0.01 (EXP-032's bars, from EXP-029).",
+    "quality_noisy": "noisy15 prompts, A - STU per case under the same bars, and the number of runaway outputs (WER > 1).",
+    "cost": "Forward passes (teacher and student, counted by hooks on both networks in the timing stage) and wall-clock seconds of each arm run on its own on development speakers 1-10, clean prompts.",
+    "melody": "Descriptive. Per seed, the share of frames within one semitone of P25's pitch track over the frames both voice, averaged over the 12 seeds per speaker.",
+    "equal_cost": "Descriptive. CPH12 - W6R2 (16 passes each) and CPH8 - W4R2 (12 passes each) on variety and clean quality: reaching t = 0.2929 in larger steps against stopping earlier at the same cost.",
+    "estimate_distance": "Descriptive. ||E_A - E_8|| / ||E_8|| over generated frames, the distance of an arm's handed-over estimate from the 16-interval Step 8 estimate, for the CPH arms, GI and SST.",
+    "snr_routing": "Descriptive, no synthesis. With Chapter 3's 20 dB gate, prompts below the gate go to the student alone (4 passes) and the rest to arm A; mean passes and mean quality over the 60 quality cases."
+  },
+  "label_rules": {
+    "arm_labels": "For each arm in (W8, W8R2, W6R2, W4R2, CPH12, CPH8, CPH6, GI, SST, CWH4): 'matches_paper' if it keeps >= 90% of P25's gain on both CVf0 and aligned CVf0 (point estimates) and passes the clean quality bars against P25; 'matches_paper_confirmed' if in addition the 90% is confirmed on both measures; otherwise 'quality_short' (variety kept, bars failed), 'variety_short' (bars passed, variety not kept) or 'both_short'.",
+    "cheapest_match_point": "The arm with the fewest forward passes whose label is 'matches_paper' or 'matches_paper_confirmed'; 'none' if no arm qualifies. Ties go to the arm listed first.",
+    "cheapest_match_confirmed": "The same over arms labelled 'matches_paper_confirmed'.",
+    "w8r2_matches_paper": "W8R2's label is 'matches_paper' or 'matches_paper_confirmed' (the post hoc reading of EXP-026 joined to EXP-032, tested here on one run).",
+    "noisy_quality_safe_arms": "noisy15 prompts: the arms other than STU that pass the quality bars against the student alone.",
+    "partial": "Every label is 'partial' if the quality or the variety stage is incomplete."
+  },
+  "local_screen": "A local CPU screen of the five candidates (code/analysis/local_candidate_screen.py; three development speakers x six seeds, clean prompts) was started on 2026-11-16 before this freeze. Only its two-seed trial output on one speaker had been seen when the arms, estimands and label rules were fixed; the rules are EXP-032's and were not adjusted to it. All five candidates are run whatever the screen shows.",
+  "code_hashes": {
+    "run_cheaper_teacher_path.py": "de5c33267e92140866231beadd34992e5e4a5b8ce7be623919adb683990e1339",
+    "run_variety_per_pass.py": "fcc3808694da1f21f12d50bbea566ee48019c7af1ce2fbe94b8abe9559909c07",
+    "run_endpoint_extrapolation_prelim.py": "90aec6467ed881602b1e62e4938b1d3c845f5337e98b82b340b5d3d54631cafe",
+    "run_method_comparison.py": "6998df7169938debf50eac3c96a79ea6932f45210bbc1d8bb9ac91659d52aa11",
+    "run_timing_only_handover.py": "d04f27fc0bef25bbc96a9e282faebde6ac0680c4106880dd73a9ae996bed5436",
+    "run_damped_transmissibility_stac.py": "d569118c21c2990b0521b0713d2c538d38d2065672a406a878d4a21f9217738a",
+    "run_transmissibility_bridge.py": "e0939d83ff93544d02cfb5b75662d90c285cb4f3f700bff91c10381612b103fd",
+    "run_transmissibility_confirm.py": "f1e160797fc5e6970f1667481ea78f5f6cff9743571b6bf4584c028a6fd134bc",
+    "run_transmissibility_test.py": "be6b7dfe74b38399ce3b2f0c5ce3942abf7a4fe90e680f5e473591aab22701e1",
+    "run_selective_handover_prelim.py": "b61ef06b9ed0a7411d532d277e2525c436c08aab6a4ca541454672a9ea9be603",
+    "run_consistency_gate_prelim.py": "5d83b1acdf668e7b13981a5df0f6e24e24602fe31e051d00190fd5273a2ce6e3",
+    "run_grid32_prelim.py": "c7b4152da3449264ef2d7aefcea3492e04f9d45399e373ba2b6d448912bf0b84",
+    "run_noise_guidance_prelim.py": "48150a13101d1ecd5ed6da1085e6fd914381f8e22288f5bda7c48f2625dc064b",
+    "run_followup_tests.py": "6bce906980ff4c6c4b1209b086cab4fcbe11f7a2955a27badd698c2906af1801"
+  },
+  "input_hashes": {
+    "research/experiments/EXP-032-variety-per-pass/results/quality.csv": "c1957bc1f49162fced47fa8435b59ab5beebce3b81ae7883608e34a8c9c43335",
+    "research/experiments/EXP-032-variety-per-pass/results/diversity.csv": "cee3abf621cdd96c40b2375ebe9fe038df981f67fbfb924a81e991eefc5bf991",
+    "research/experiments/EXP-026-transmissibility-test/results/quality.csv": "b6d54b0c9400d5658d7ddd8a7e44e7f833614077c1dfbc057297a38dafc364dd",
+    "research/experiments/EXP-027-transmissibility-confirmation/results/quality.csv": "fadc58e2d5463f33749306771543ec475a63d2266b7268fbb451db42e5fc60e6"
+  },
+  "seed": 2026,
+  "boot_b": 2000,
+  "sha256": "12aec5f7f9fdc5e2a1c4137f2841bc59eabbe64acadf51e506a2a80e440b3dd4",
+  "created_utc": "2026-11-16T05:04:34.729221+00:00"
+}

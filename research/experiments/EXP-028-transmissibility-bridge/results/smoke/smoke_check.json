@@ -1,0 +1,21 @@
+{
+  "repro": [
+    {
+      "utt_id": "common_voice_en_22461617-common_voice_en_22461638",
+      "max_abs_split_diff": 0.0,
+      "d_wer": 0.0,
+      "d_sim": 0.0
+    },
+    {
+      "utt_id": "common_voice_en_22839883-common_voice_en_22839889",
+      "max_abs_split_diff": 0.0,
+      "d_wer": 0.0,
+      "d_sim": 5.960464477539063e-08
+    }
+  ],
+  "n_smoke_items": 2,
+  "max_abs_split_diff": 0.0,
+  "max_d_wer": 0.0,
+  "max_d_sim": 5.960464477539063e-08,
+  "utc": "2026-11-14T12:55:24.601026+00:00"
+}

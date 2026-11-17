@@ -1,0 +1,61 @@
+{
+  "experiment": "EXP-026",
+  "purpose": "Test the transmissibility theory of teacher-to-student handover: a mode-seeking student restarted at level tau keeps a committed teacher's minority prosodic mode with probability at most Phi((A - beta) / B), a ceiling that more teacher steps cannot raise and that a later restart level raises",
+  "theory": "two prosodic modes at +/-m with dominant weight pi; teacher log-odds l_k = log(pi/(1-pi)) + 2 m t x_t/(1-t)^2, estimate m tanh(l_k/2); handover y = tau * estimate + (1-tau) * fresh noise; student keeps the dominant mode iff beta + A tanh(l_k/2) + B eps' > 0 with A = 2 m^2 tau^2/(1-tau)^2, B = 2 m tau/(1-tau); retention ceiling R* = Phi((A - beta)/B)",
+  "arms": {
+    "W4": "student restarted at tau1 = 0.0761 from the Step-4 estimate (13 passes)",
+    "W8": "student restarted at tau1 from the Step-8 estimate: the 0.25 reference (21)",
+    "W4R2": "student restarted at tau2 = 0.2929 from the Step-4 estimate (12)",
+    "W8R2": "student restarted at tau2 from the Step-8 estimate (20)",
+    "T16": "the guided teacher alone, run to t = 1 on the released 16-interval grid (32)",
+    "shared": "all five arms come from one teacher trajectory per seed; the student loop is the released one (STUDENT_TAUS for tau1, STUDENT_TAUS[1:] for tau2)"
+  },
+  "passes": {
+    "W4": 13,
+    "W8": 21,
+    "W4R2": 12,
+    "W8R2": 20,
+    "T16": 32
+  },
+  "data": {
+    "diversity": "the first 20 EXP-012 Quick-set development speakers, clean prompts, 20 seeds (input_seed + 1000 + m), EXP-020's seeds; CVf0 across seeds of each arm",
+    "quality": "the first 40 speakers, clean, synthesis seed = input seed; W4R2, W8R2 and T16 scored against the stored reference (EXP-018)"
+  },
+  "hypotheses": {
+    "H1": "CVf0(T16) - CVf0(W8), speaker bootstrap 95% lower bound > 0",
+    "H2": "CVf0(W8R2) - CVf0(W8) lower bound > 0, and the mean absolute CVf0 gap to T16 is smaller for W8R2 than for W8",
+    "H3": "|mean CVf0(W8) - CVf0(W4)| <= 0.005",
+    "H4_exploratory": "Spearman correlation across speakers between CVf0(T16) - CVf0(W8) and CVf0(T16) - stored CVf0(student alone): positive under the theory (a more biased student loses more)"
+  },
+  "verdict_rule": "supported if H1 and H2 hold; refuted if H1 fails (the reference keeps the pure teacher's variety, so there is no ceiling to explain); mixed otherwise. Supported: design an algorithm aimed at the ceiling. Refuted: drop the theory's central prediction. No retuning on these data",
+  "power": "on EXP-020's 20 clean speakers the speaker-bootstrap 95% half-width of a CVf0 difference was 0.0016 between two handovers from the same teacher trajectory (plain_8 - plain_4), 0.0083 for Voice-Swap against the reference and 0.0215 for the student alone against the reference; smaller differences may go undetected",
+  "smoke": "2 cases (Quick-set positions 59-60): the teacher loop matches the released teacher at Steps 4 and 8 (max abs <= 0.0001) and the stored W4 and W8 scores are reproduced (tolerance 0.01); in the full run, the released W4 and W8 CVf0 are compared with EXP-020's stored values",
+  "bootstrap": {
+    "B": 2000,
+    "seed": 2026,
+    "unit": "speaker"
+  },
+  "novelty": "the theory is the candidate contribution: no published two-model analysis or retention ceiling for a biased student after re-noising was found (searches 2026-11-14; closest: speciation theory for one model, empirical first-step diversity papers, reflection coupling in speculative sampling); not certified",
+  "evidence_status": "development test of a theory on speakers that designed earlier experiments; not evidence for a method",
+  "adoption": "not adopted; changing the thesis method needs a dated decision record and adviser review",
+  "hardware": "Colab Tesla T4 only; Shonget-DMOSpeech2 at the pinned commit",
+  "dmo_commit": "8a7868fc3345702a586173447f4869205b501f26",
+  "code_hashes": {
+    "code/colab/run_transmissibility_test.py": "be6b7dfe74b38399ce3b2f0c5ce3942abf7a4fe90e680f5e473591aab22701e1",
+    "code/colab/run_selective_handover_prelim.py": "b61ef06b9ed0a7411d532d277e2525c436c08aab6a4ca541454672a9ea9be603",
+    "code/colab/run_grid32_prelim.py": "c7b4152da3449264ef2d7aefcea3492e04f9d45399e373ba2b6d448912bf0b84",
+    "code/colab/run_noise_guidance_prelim.py": "48150a13101d1ecd5ed6da1085e6fd914381f8e22288f5bda7c48f2625dc064b",
+    "code/colab/run_followup_tests.py": "6bce906980ff4c6c4b1209b086cab4fcbe11f7a2955a27badd698c2906af1801",
+    "code/colab/run_consistency_gate_prelim.py": "5d83b1acdf668e7b13981a5df0f6e24e24602fe31e051d00190fd5273a2ce6e3",
+    "code/colab/run_endpoint_extrapolation_prelim.py": "90aec6467ed881602b1e62e4938b1d3c845f5337e98b82b340b5d3d54631cafe"
+  },
+  "input_hashes": {
+    "research/experiments/EXP-018-swsr-handover-prelim/results/steps1to8.csv": "f904376d4ea784c5bf80e4f5284b5fe7a2bc4a8d8a0e9c9065b4dbfd13bd2600",
+    "research/experiments/EXP-020-selective-handover-prelim/results/diversity.csv": "5bf795afb6b6370e7b7b2ad5ea0e7cb6ff58160281c279eb5bc625eca8e63714",
+    "code/scheduling/failure_config.json": "13a8fbfdbc11048c2b68f7c5b865369c622f4ec601a6ff7e6a3fa3409ce97b53",
+    "research/protocols/splits/development_manifest.json": "1c4309b6f560a9d896b7a3a6cae53fc5806ef81222c3f8d62a08c7bf7b9fb65a"
+  },
+  "thesis_commit": "7d35e814aac1eadf7770488948be03f5ec54c66a",
+  "sha256": "78f3432d54ebe994c32d0a6744f67edddb43ac240f60d2fcf78f83307e37507f",
+  "created_utc": "2026-11-14T01:16:35.595287+00:00"
+}

@@ -1,0 +1,86 @@
+{
+  "description": "Outputs of the EXP-023 notebook run on 2026-11-13 UTC (Colab Tesla T4): the six Decision Handover outputs and the decision signals on 60 cases (20 development speakers x clean, gauss20 and noisy15), the teacher-only seed check (10 speakers x clean and noisy15 x 4 seeds), CVf0 on 10 speakers x clean x 20 seeds (including the Two-Axis Handover's Step-3 and Step-4 handovers), the report and the smoke checks. Byte-identical copies from the results zip. The zip's code/ snapshot was not copied: its seven runner modules are identical, line endings normalised, to code/colab/ at the commit below.",
+  "source_zip": "DMOSpeech2_EXP023_Decision_Handover_Pilot_Results.zip",
+  "source_zip_sha256": "a75b30448c16ebae32874056e7ba833227b53f29dca584c3062cb50e0bc84f91",
+  "thesis_commit_at_run": "7d35e814aac1eadf7770488948be03f5ec54c66a",
+  "dmo_commit_at_run": "8a7868fc3345702a586173447f4869205b501f26",
+  "device": "Tesla T4",
+  "zipped_at_utc": "2026-11-13T15:52:33.976071+00:00",
+  "preregistration_sha256": "469c90edf7c6094d0cc2eb31ed0d6fbf8c847847af42f06b717ba9d6f9182600",
+  "runner_sha256": "9199a20a9b23c93dafdc7ca302616c8bdfd4fb8a5c5d7bb53fa9e96a01738a9a",
+  "files": [
+    {
+      "file": "PILOT_REPORT.md",
+      "bytes": 7464,
+      "sha256": "43d39e8bb48ee28d103a5338eb310eb6cb477c5788a86322893bd91d1470d78e"
+    },
+    {
+      "file": "pilot.csv",
+      "bytes": 67750,
+      "sha256": "0cbd4f3f051f6288445c85113fb20befb41212e55c3f16f87051801d9ab7994e"
+    },
+    {
+      "file": "seeds.csv",
+      "bytes": 21798,
+      "sha256": "ecb04b632163939d2c00a9df9294457e4e7abc3690f2ee369a8a9532f96ffb69"
+    },
+    {
+      "file": "diversity.csv",
+      "bytes": 5298,
+      "sha256": "948da108cc185fb57eb4e270d58ff4cc6640fed999874f4f0bccdbfb27723e2a"
+    },
+    {
+      "file": "pilot_results.json",
+      "bytes": 29785,
+      "sha256": "40fac3c116b9687bd0be36bb6ddc01a30f56312b2a8756dd39668a110292cf1f"
+    },
+    {
+      "file": "RUN_INFO.txt",
+      "bytes": 181,
+      "sha256": "791d22a6a8f95d002997e670cfeae28450424a1d602a73c148837913afb5782d"
+    },
+    {
+      "file": "preregistration.json",
+      "bytes": 12542,
+      "sha256": "cad16312872586cdcd092a8a602f404e463f9f88d1ed8416c4b5472190fece15"
+    },
+    {
+      "file": "smoke/pilot.csv",
+      "bytes": 6287,
+      "sha256": "34156382041e812e602fab89c352783154ecffb41f6b0b9ac5af37d56cf3748a"
+    },
+    {
+      "file": "smoke/seeds.csv",
+      "bytes": 1851,
+      "sha256": "66fb89e836f79b5d7d1d5c3df1faf280b5c9fda5581c58a2576342ea79b9f7c8"
+    },
+    {
+      "file": "smoke/diversity.csv",
+      "bytes": 787,
+      "sha256": "e260b2ce728502656a7fe8ea9f2917c1b3f651baae5bafaf9179076fad5dabde"
+    },
+    {
+      "file": "smoke/reproduction.json",
+      "bytes": 1146,
+      "sha256": "75d85a63cd3a817d29f1c62e6055bc93339b027765661ebb788e73715949ae94"
+    }
+  ],
+  "derived": {
+    "description": "Generated locally from the imported CSV files by the pre-specified follow-up script (rules fixed before the run); exploratory, outside the frozen go/no-go.",
+    "script": "code/analysis/exp023_followups.py",
+    "script_sha256": "fd7fbcc0aacc4c0c3ff58bd33384f7da179055ab2822c924899c8b05755ed3ff",
+    "thesis_commit": "7d35e814aac1eadf7770488948be03f5ec54c66a",
+    "files": [
+      {
+        "file": "FOLLOWUPS_REPORT.md",
+        "bytes": 3365,
+        "sha256": "891e60d3663d8280e9605e6a180d1c3ca502f569886b6b9dc18c59edd1113778"
+      },
+      {
+        "file": "followups_results.json",
+        "bytes": 15913,
+        "sha256": "847913a0ad2e0da88de1b306e2913828e76d3da1fdaa161045590cfc0f4c085d"
+      }
+    ]
+  }
+}

@@ -1,0 +1,3304 @@
+{
+  "stored_cases": 270,
+  "local_cases": 48,
+  "auc_stored": {
+    "snr": 0.6492922665694673,
+    "inn": 0.8073021080128789,
+    "band_db": 0.7895024603608529,
+    "unmasked": 0.7203693578761922
+  },
+  "auc_local": {
+    "snr": 0.6223908918406073,
+    "inn": 0.9070208728652751,
+    "band_db": 0.777988614800759,
+    "unmasked": 0.6717267552182163
+  },
+  "spearman_local_condition_means_vs_harm": {
+    "snr": -0.30952380952380953,
+    "inn": -0.9047619047619048,
+    "band_db": -0.9047619047619048,
+    "unmasked": -0.9285714285714286
+  },
+  "best_threshold_stored": {
+    "snr": {
+      "threshold": 28.144147872924805,
+      "missed": 6,
+      "wasted": 80
+    },
+    "inn": {
+      "threshold": 38.683609169225875,
+      "missed": 8,
+      "wasted": 35
+    },
+    "band_db": {
+      "threshold": 24.193648786477283,
+      "missed": 16,
+      "wasted": 42
+    },
+    "unmasked": {
+      "threshold": 13.856231705381155,
+      "missed": 46,
+      "wasted": 34
+    }
+  },
+  "best_threshold_local": {
+    "snr": {
+      "threshold": 26.688011169433594,
+      "missed": 14,
+      "wasted": 2
+    },
+    "inn": {
+      "threshold": 40.112363361571795,
+      "missed": 3,
+      "wasted": 1
+    },
+    "band_db": {
+      "threshold": 27.49851621947269,
+      "missed": 3,
+      "wasted": 8
+    },
+    "unmasked": {
+      "threshold": 13.712139709059098,
+      "missed": 11,
+      "wasted": 4
+    }
+  },
+  "local_condition_means": {
+    "bp25": {
+      "snr": 27.399306615193684,
+      "inn": 45.44936099810445,
+      "band_db": 25.962233358427845,
+      "unmasked": 18.72127296828868,
+      "harm": 0.050834457079569496
+    },
+    "clean": {
+      "snr": 39.16336631774902,
+      "inn": 67.345645919775,
+      "band_db": 44.61652103673944,
+      "unmasked": 25.475308441576114,
+      "harm": -0.023555477460225422
+    },
+    "hp25": {
+      "snr": 27.361999193827312,
+      "inn": 36.67801673622659,
+      "band_db": 22.71295171569447,
+      "unmasked": 15.78245281876221,
+      "harm": 1.2883596618970234
+    },
+    "lp25": {
+      "snr": 27.62139892578125,
+      "inn": 63.23344651404838,
+      "band_db": 40.437707680165026,
+      "unmasked": 23.51838057518524,
+      "harm": -0.032501538594563804
+    },
+    "pink25": {
+      "snr": 27.625381787618,
+      "inn": 39.63267338453646,
+      "band_db": 23.478131104973208,
+      "unmasked": 17.686048968172685,
+      "harm": 0.8285109599431356
+    },
+    "ssn25": {
+      "snr": 27.664381980895996,
+      "inn": 50.214357060985314,
+      "band_db": 30.384928616107832,
+      "unmasked": 20.884010016627908,
+      "harm": 0.0951608419418335
+    },
+    "tone25": {
+      "snr": 27.34329636891683,
+      "inn": 65.95630613981203,
+      "band_db": 43.24685904080688,
+      "unmasked": 21.08197771652217,
+      "harm": -0.0046607255935668945
+    },
+    "white25": {
+      "snr": 27.383281707763672,
+      "inn": 35.484492386100975,
+      "band_db": 21.29296966852648,
+      "unmasked": 15.957230478602945,
+      "harm": 1.9929895798365276
+    }
+  },
+  "stored_condition_means": {
+    "clean": {
+      "snr": 38.29016733169556,
+      "inn": 65.5719367194803,
+      "band_db": 41.79708710223311,
+      "unmasked": 22.04352092208199,
+      "harm": -0.011493086814880371
+    },
+    "gauss25": {
+      "snr": 26.869496440887453,
+      "inn": 35.59993780400639,
+      "band_db": 20.19117617142921,
+      "unmasked": 15.002835117448942,
+      "harm": 1.270572429895401
+    },
+    "noisy15": {
+      "snr": 17.841630109151204,
+      "inn": 26.61557378800337,
+      "band_db": 15.244699180395004,
+      "unmasked": 12.684191474004917,
+      "harm": 0.6760945022106171
+    },
+    "reverb03": {
+      "snr": 30.007367642720542,
+      "inn": 59.58491594904785,
+      "band_db": 34.90850379869491,
+      "unmasked": 23.11951512319361,
+      "harm": -0.04696178833643595
+    },
+    "reverb09": {
+      "snr": 20.740847905476887,
+      "inn": 51.91322374960289,
+      "band_db": 28.389382160337323,
+      "unmasked": 21.22257264714909,
+      "harm": 0.027803591887156167
+    },
+    "telephone": {
+      "snr": 43.34201958974202,
+      "inn": 97.25311622274229,
+      "band_db": 43.34428723209577,
+      "unmasked": 20.079566295054672,
+      "harm": 0.0023243904113769533
+    }
+  },
+  "stored": [
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_10933823-common_voice_en_10933825",
+      "condition": "clean",
+      "snr": 28.18080711364746,
+      "inn": 50.1600176611771,
+      "band_db": 33.17099291837206,
+      "unmasked": 23.933579072101992,
+      "harm": -0.010078907012939453
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_10933823-common_voice_en_10933825",
+      "condition": "gauss25",
+      "snr": 24.9898681640625,
+      "inn": 34.76310168713802,
+      "band_db": 20.17656848912267,
+      "unmasked": 16.553638737926168,
+      "harm": 0.6711182594299316
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_10933823-common_voice_en_10933825",
+      "condition": "noisy15",
+      "snr": 17.525712966918945,
+      "inn": 26.398059776090793,
+      "band_db": 14.613791130838916,
+      "unmasked": 12.651905412680339,
+      "harm": 0.008064866065979004
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_10933823-common_voice_en_10933825",
+      "condition": "reverb03",
+      "snr": 23.865066528320312,
+      "inn": 45.4989038426329,
+      "band_db": 28.51275730055706,
+      "unmasked": 23.114354638262995,
+      "harm": 0.2476482391357422
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_10933823-common_voice_en_10933825",
+      "condition": "reverb09",
+      "snr": 16.62590980529785,
+      "inn": 42.02655677813193,
+      "band_db": 25.91047543749553,
+      "unmasked": 22.09080627391234,
+      "harm": -0.003901958465576172
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_13900-common_voice_en_13901",
+      "condition": "clean",
+      "snr": 30.67682456970215,
+      "inn": 70.81205276616865,
+      "band_db": 35.73217062284364,
+      "unmasked": 18.508454910944597,
+      "harm": -0.019541501998901367
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_13900-common_voice_en_13901",
+      "condition": "gauss25",
+      "snr": 25.968116760253906,
+      "inn": 35.64823184551241,
+      "band_db": 17.437215149831594,
+      "unmasked": 12.061953970630253,
+      "harm": 0.10892677307128906
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_13900-common_voice_en_13901",
+      "condition": "noisy15",
+      "snr": 17.654075622558594,
+      "inn": 26.57386924648419,
+      "band_db": 14.472722130235157,
+      "unmasked": 11.328579255032913,
+      "harm": 0.8787939548492432
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_13900-common_voice_en_13901",
+      "condition": "reverb03",
+      "snr": 26.951839447021484,
+      "inn": 63.82995784373536,
+      "band_db": 30.21710111574834,
+      "unmasked": 18.29309007153828,
+      "harm": -0.013369560241699219
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_13900-common_voice_en_13901",
+      "condition": "reverb09",
+      "snr": 15.032360076904297,
+      "inn": 56.72873220342056,
+      "band_db": 23.418720538134153,
+      "unmasked": 17.91943806592746,
+      "harm": -0.04114830493927002
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_155313-common_voice_en_155315",
+      "condition": "clean",
+      "snr": 38.78723907470703,
+      "inn": 66.2939214635541,
+      "band_db": 51.22885242837729,
+      "unmasked": 24.071112694047212,
+      "harm": -0.015982866287231445
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_155313-common_voice_en_155315",
+      "condition": "gauss25",
+      "snr": 27.560243606567383,
+      "inn": 35.539146678726546,
+      "band_db": 23.860606499670887,
+      "unmasked": 17.12680653439476,
+      "harm": 0.6887295246124268
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_155313-common_voice_en_155315",
+      "condition": "noisy15",
+      "snr": 17.968788146972656,
+      "inn": 26.5281324812096,
+      "band_db": 17.323249670588265,
+      "unmasked": 13.759983392504411,
+      "harm": 1.8202183246612549
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_155313-common_voice_en_155315",
+      "condition": "reverb03",
+      "snr": 25.819616317749023,
+      "inn": 58.413250567430964,
+      "band_db": 42.44631542856387,
+      "unmasked": 23.5332838800417,
+      "harm": -0.0781393051147461
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_155313-common_voice_en_155315",
+      "condition": "reverb09",
+      "snr": 16.657268524169922,
+      "inn": 46.395862692623666,
+      "band_db": 31.155547437223454,
+      "unmasked": 22.123516887184813,
+      "harm": -0.00725710391998291
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_15734837-common_voice_en_15734838",
+      "condition": "clean",
+      "snr": 26.546249389648438,
+      "inn": 55.28388571163795,
+      "band_db": 39.62069478695251,
+      "unmasked": 25.311111754386086,
+      "harm": 0.06951093673706055
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_15734837-common_voice_en_15734838",
+      "condition": "gauss25",
+      "snr": 24.17935562133789,
+      "inn": 35.12437211810441,
+      "band_db": 22.774219275508113,
+      "unmasked": 16.212392389870644,
+      "harm": 0.5803974866867065
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_15734837-common_voice_en_15734838",
+      "condition": "noisy15",
+      "snr": 17.455156326293945,
+      "inn": 26.42028695976995,
+      "band_db": 16.874691461967636,
+      "unmasked": 13.37563658671715,
+      "harm": -0.02342987060546875
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_15734837-common_voice_en_15734838",
+      "condition": "reverb03",
+      "snr": 26.4654541015625,
+      "inn": 50.69807471500114,
+      "band_db": 34.13935333024442,
+      "unmasked": 24.786000106620843,
+      "harm": -0.03900313377380371
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_15734837-common_voice_en_15734838",
+      "condition": "reverb09",
+      "snr": 24.014240264892578,
+      "inn": 46.14760879661905,
+      "band_db": 29.4499583279358,
+      "unmasked": 23.075064889951058,
+      "harm": 0.15475666522979736
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_15735839-common_voice_en_15735837",
+      "condition": "clean",
+      "snr": 44.262237548828125,
+      "inn": 64.84001440860203,
+      "band_db": 44.08918189652288,
+      "unmasked": 24.454840035370843,
+      "harm": -0.032926321029663086
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_15735839-common_voice_en_15735837",
+      "condition": "gauss25",
+      "snr": 27.840564727783203,
+      "inn": 35.73001185440935,
+      "band_db": 18.741483491641908,
+      "unmasked": 14.64786716306519,
+      "harm": 1.6487560272216797
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_15735839-common_voice_en_15735837",
+      "condition": "noisy15",
+      "snr": 18.047039031982422,
+      "inn": 26.659991604039817,
+      "band_db": 13.46352598753439,
+      "unmasked": 11.548235056418754,
+      "harm": 0.005585074424743652
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_15735839-common_voice_en_15735837",
+      "condition": "reverb03",
+      "snr": 28.071754455566406,
+      "inn": 60.20638327610604,
+      "band_db": 36.302951028553814,
+      "unmasked": 23.713184711311925,
+      "harm": -0.3367159366607666
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_15735839-common_voice_en_15735837",
+      "condition": "reverb09",
+      "snr": 18.847240447998047,
+      "inn": 49.46124052984074,
+      "band_db": 28.58772640616859,
+      "unmasked": 23.096606936546713,
+      "harm": 0.1714003086090088
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_15903802-common_voice_en_15903807",
+      "condition": "clean",
+      "snr": 36.05830383300781,
+      "inn": 67.10177404013912,
+      "band_db": 25.98916296829782,
+      "unmasked": 13.952788675115217,
+      "harm": 0.014023780822753906
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_15903802-common_voice_en_15903807",
+      "condition": "gauss25",
+      "snr": 27.199134826660156,
+      "inn": 36.045552285202206,
+      "band_db": 14.630591802158913,
+      "unmasked": 11.08963777914643,
+      "harm": 0.638857364654541
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_15903802-common_voice_en_15903807",
+      "condition": "noisy15",
+      "snr": 17.823516845703125,
+      "inn": 26.807912516255882,
+      "band_db": 12.472053565944739,
+      "unmasked": 10.630529883994937,
+      "harm": 1.5360172986984253
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_15903802-common_voice_en_15903807",
+      "condition": "reverb03",
+      "snr": 25.223047256469727,
+      "inn": 62.77958371659629,
+      "band_db": 22.759928441694097,
+      "unmasked": 14.204957854983292,
+      "harm": -0.140380859375
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_15903802-common_voice_en_15903807",
+      "condition": "reverb09",
+      "snr": 18.06351089477539,
+      "inn": 57.85051991729347,
+      "band_db": 21.120400632372885,
+      "unmasked": 14.29013138830106,
+      "harm": -0.04346966743469238
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17259121-common_voice_en_17259122",
+      "condition": "clean",
+      "snr": 44.786380767822266,
+      "inn": 61.839109264343335,
+      "band_db": 28.135859294619614,
+      "unmasked": 19.292625879652544,
+      "harm": -0.00029850006103515625
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17259121-common_voice_en_17259122",
+      "condition": "gauss25",
+      "snr": 27.829421997070312,
+      "inn": 36.09258897029871,
+      "band_db": 14.24472139444001,
+      "unmasked": 10.945669080962022,
+      "harm": 2.1326308250427246
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17259121-common_voice_en_17259122",
+      "condition": "noisy15",
+      "snr": 18.06024932861328,
+      "inn": 26.833516323124158,
+      "band_db": 12.321561600359425,
+      "unmasked": 10.471100794097527,
+      "harm": 0.016999244689941406
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17259121-common_voice_en_17259122",
+      "condition": "reverb03",
+      "snr": 33.632686614990234,
+      "inn": 53.390988941490264,
+      "band_db": 24.97414232908175,
+      "unmasked": 18.782384417331762,
+      "harm": -0.0707705020904541
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17259121-common_voice_en_17259122",
+      "condition": "reverb09",
+      "snr": 19.22983169555664,
+      "inn": 48.23772640439632,
+      "band_db": 22.642664763022008,
+      "unmasked": 19.412632375974773,
+      "harm": 0.0547027587890625
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17263752-common_voice_en_17263750",
+      "condition": "clean",
+      "snr": 29.363069534301758,
+      "inn": 55.38506042170958,
+      "band_db": 31.385596570506607,
+      "unmasked": 22.99026985705009,
+      "harm": 0.21598291397094727
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17263752-common_voice_en_17263750",
+      "condition": "gauss25",
+      "snr": 25.441783905029297,
+      "inn": 34.86538921594091,
+      "band_db": 16.383382591243777,
+      "unmasked": 12.836878992398312,
+      "harm": 0.9141175746917725
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17263752-common_voice_en_17263750",
+      "condition": "noisy15",
+      "snr": 17.495643615722656,
+      "inn": 26.347221393715134,
+      "band_db": 13.171156835339431,
+      "unmasked": 11.03927219468197,
+      "harm": 2.1566271781921387
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17263752-common_voice_en_17263750",
+      "condition": "reverb03",
+      "snr": 22.310855865478516,
+      "inn": 48.52518618583784,
+      "band_db": 24.607429011291938,
+      "unmasked": 21.191590035467627,
+      "harm": -0.5113983154296875
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17263752-common_voice_en_17263750",
+      "condition": "reverb09",
+      "snr": 15.206941604614258,
+      "inn": 43.09550385950253,
+      "band_db": 22.34444847776459,
+      "unmasked": 20.278600376203613,
+      "harm": 0.02556896209716797
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17278904-common_voice_en_17278909",
+      "condition": "clean",
+      "snr": 50.0,
+      "inn": 71.01509045728181,
+      "band_db": 35.30233713080769,
+      "unmasked": 14.223816417663793,
+      "harm": 0.04655599594116211
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17278904-common_voice_en_17278909",
+      "condition": "gauss25",
+      "snr": 28.05237579345703,
+      "inn": 35.802759038313724,
+      "band_db": 17.0294394409407,
+      "unmasked": 12.26682208719498,
+      "harm": 2.3412967920303345
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17278904-common_voice_en_17278909",
+      "condition": "noisy15",
+      "snr": 18.156911849975586,
+      "inn": 26.687436670072554,
+      "band_db": 13.733503384240677,
+      "unmasked": 11.192348711558457,
+      "harm": -0.02387690544128418
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17278904-common_voice_en_17278909",
+      "condition": "reverb03",
+      "snr": 50.0,
+      "inn": 70.48473502813236,
+      "band_db": 33.13899484581141,
+      "unmasked": 14.351289601247615,
+      "harm": -0.3141481876373291
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17278904-common_voice_en_17278909",
+      "condition": "reverb09",
+      "snr": 41.268310546875,
+      "inn": 62.71843155759923,
+      "band_db": 26.590229268896227,
+      "unmasked": 14.370468200699182,
+      "harm": -0.003933072090148926
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17451108-common_voice_en_17451109",
+      "condition": "clean",
+      "snr": 50.0,
+      "inn": 69.41453072399013,
+      "band_db": 50.31903204591524,
+      "unmasked": 25.49137621826315,
+      "harm": -0.07168340682983398
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17451108-common_voice_en_17451109",
+      "condition": "gauss25",
+      "snr": 27.980976104736328,
+      "inn": 35.89476324748403,
+      "band_db": 20.31805523130356,
+      "unmasked": 15.601100017497252,
+      "harm": 0.8217654228210449
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17451108-common_voice_en_17451109",
+      "condition": "noisy15",
+      "snr": 18.215099334716797,
+      "inn": 26.814518223726694,
+      "band_db": 14.736741051294345,
+      "unmasked": 12.217212995627202,
+      "harm": 1.7295650243759155
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17451108-common_voice_en_17451109",
+      "condition": "reverb03",
+      "snr": 44.12877655029297,
+      "inn": 65.60610846823019,
+      "band_db": 45.42716271246859,
+      "unmasked": 24.995328499042067,
+      "harm": 0.17597603797912598
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17451108-common_voice_en_17451109",
+      "condition": "reverb09",
+      "snr": 32.754581451416016,
+      "inn": 57.78773406159317,
+      "band_db": 37.06081401079185,
+      "unmasked": 24.38294847177248,
+      "harm": -0.18691182136535645
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17738848-common_voice_en_19083939",
+      "condition": "clean",
+      "snr": 47.589881896972656,
+      "inn": 73.59630824501633,
+      "band_db": 33.210995387764754,
+      "unmasked": 17.183830781337107,
+      "harm": -0.005678653717041016
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17738848-common_voice_en_19083939",
+      "condition": "gauss25",
+      "snr": 27.74932098388672,
+      "inn": 36.49621575901819,
+      "band_db": 15.456920081859586,
+      "unmasked": 11.166973957614722,
+      "harm": 0.5951240062713623
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17738848-common_voice_en_19083939",
+      "condition": "noisy15",
+      "snr": 17.946836471557617,
+      "inn": 26.986161047477594,
+      "band_db": 13.045776249145712,
+      "unmasked": 10.746309339629061,
+      "harm": 0.9362659454345703
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17738848-common_voice_en_19083939",
+      "condition": "reverb03",
+      "snr": 37.57945251464844,
+      "inn": 70.02252504278707,
+      "band_db": 31.23088678389097,
+      "unmasked": 17.27643769307099,
+      "harm": -0.03699076175689697
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17738848-common_voice_en_19083939",
+      "condition": "reverb09",
+      "snr": 19.316835403442383,
+      "inn": 63.952696214725684,
+      "band_db": 26.602664058427493,
+      "unmasked": 17.40687201018556,
+      "harm": -0.016279935836791992
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17851231-common_voice_en_17851256",
+      "condition": "clean",
+      "snr": 38.654197692871094,
+      "inn": 59.34896590403046,
+      "band_db": 51.59448540048741,
+      "unmasked": 46.56783815997844,
+      "harm": -0.20485401153564453
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17851231-common_voice_en_17851256",
+      "condition": "gauss25",
+      "snr": 27.453571319580078,
+      "inn": 34.35867217618798,
+      "band_db": 26.745011716588337,
+      "unmasked": 23.31738785121965,
+      "harm": 2.9413007497787476
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17851231-common_voice_en_17851256",
+      "condition": "noisy15",
+      "snr": 17.8843994140625,
+      "inn": 25.931482564142403,
+      "band_db": 19.205674036124535,
+      "unmasked": 16.331870851071603,
+      "harm": 0.010326385498046875
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17851231-common_voice_en_17851256",
+      "condition": "reverb03",
+      "snr": 27.76481819152832,
+      "inn": 49.54304274933199,
+      "band_db": 40.37186819639587,
+      "unmasked": 35.7394854695161,
+      "harm": -0.09608244895935059
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17851231-common_voice_en_17851256",
+      "condition": "reverb09",
+      "snr": 18.29621124267578,
+      "inn": 40.54339461732568,
+      "band_db": 32.25075623220219,
+      "unmasked": 27.138837027919678,
+      "harm": 0.2759585380554199
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17861489-common_voice_en_17861487",
+      "condition": "clean",
+      "snr": 34.233787536621094,
+      "inn": 68.2362063078658,
+      "band_db": 39.664488228613315,
+      "unmasked": 22.341635399594715,
+      "harm": -0.052491188049316406
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17861489-common_voice_en_17861487",
+      "condition": "gauss25",
+      "snr": 27.107898712158203,
+      "inn": 35.96942918618092,
+      "band_db": 18.921534973514383,
+      "unmasked": 12.725204864830342,
+      "harm": 0.26972246170043945
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17861489-common_voice_en_17861487",
+      "condition": "noisy15",
+      "snr": 18.06446647644043,
+      "inn": 26.902484675675243,
+      "band_db": 14.951506606153627,
+      "unmasked": 11.727559241218795,
+      "harm": 1.7977420091629028
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17861489-common_voice_en_17861487",
+      "condition": "reverb03",
+      "snr": 29.339256286621094,
+      "inn": 63.691951889349944,
+      "band_db": 34.69175084453582,
+      "unmasked": 21.668982008953137,
+      "harm": 0.2919142246246338
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17861489-common_voice_en_17861487",
+      "condition": "reverb09",
+      "snr": 26.680126190185547,
+      "inn": 56.922048273410375,
+      "band_db": 28.567036079942667,
+      "unmasked": 21.020202900824295,
+      "harm": -0.007186174392700195
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17875915-common_voice_en_17875925",
+      "condition": "clean",
+      "snr": 45.000919342041016,
+      "inn": 64.52909695936495,
+      "band_db": 49.46924909614307,
+      "unmasked": 25.43253842245239,
+      "harm": 0.8231215476989746
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17875915-common_voice_en_17875925",
+      "condition": "gauss25",
+      "snr": 27.987537384033203,
+      "inn": 35.94192854042143,
+      "band_db": 22.98203068363436,
+      "unmasked": 17.34268711489755,
+      "harm": 1.1754717826843262
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17875915-common_voice_en_17875925",
+      "condition": "noisy15",
+      "snr": 18.18372917175293,
+      "inn": 26.71313964821057,
+      "band_db": 16.283389051669232,
+      "unmasked": 13.274632186737065,
+      "harm": 0.02039039134979248
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17875915-common_voice_en_17875925",
+      "condition": "reverb03",
+      "snr": 39.16248321533203,
+      "inn": 59.264424820323526,
+      "band_db": 43.830748976427415,
+      "unmasked": 25.106460802887177,
+      "harm": -0.11928915977478027
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_17875915-common_voice_en_17875925",
+      "condition": "reverb09",
+      "snr": 25.2475643157959,
+      "inn": 48.25620015578969,
+      "band_db": 31.545436627788114,
+      "unmasked": 23.3422297533425,
+      "harm": 0.013038992881774902
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18234333-common_voice_en_18234353",
+      "condition": "clean",
+      "snr": 38.09605026245117,
+      "inn": 73.37104622338234,
+      "band_db": 29.4480836104756,
+      "unmasked": 17.088139995717196,
+      "harm": -0.1319417953491211
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18234333-common_voice_en_18234353",
+      "condition": "gauss25",
+      "snr": 27.619218826293945,
+      "inn": 36.4198697597095,
+      "band_db": 14.388822334782166,
+      "unmasked": 10.744627437812897,
+      "harm": 0.6260852813720703
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18234333-common_voice_en_18234353",
+      "condition": "noisy15",
+      "snr": 18.099225997924805,
+      "inn": 27.05489469846463,
+      "band_db": 12.658300315835763,
+      "unmasked": 10.463643466560162,
+      "harm": 0.14313066005706787
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18234333-common_voice_en_18234353",
+      "condition": "reverb03",
+      "snr": 28.945600509643555,
+      "inn": 69.8063345960915,
+      "band_db": 27.59683680978675,
+      "unmasked": 18.635261563518675,
+      "harm": 0.28061485290527344
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18234333-common_voice_en_18234353",
+      "condition": "reverb09",
+      "snr": 18.33133888244629,
+      "inn": 61.61592224354387,
+      "band_db": 23.880379928299728,
+      "unmasked": 18.712599138294213,
+      "harm": -0.11321473121643066
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18240348-common_voice_en_18240305",
+      "condition": "clean",
+      "snr": 29.4401912689209,
+      "inn": 63.695597571454634,
+      "band_db": 28.833971404500836,
+      "unmasked": 21.382042165687768,
+      "harm": 0.045060157775878906
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18240348-common_voice_en_18240305",
+      "condition": "gauss25",
+      "snr": 25.640153884887695,
+      "inn": 36.09404420051294,
+      "band_db": 13.663991036796535,
+      "unmasked": 11.024013634310545,
+      "harm": 1.2580711841583252
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18240348-common_voice_en_18240305",
+      "condition": "noisy15",
+      "snr": 17.692983627319336,
+      "inn": 26.97301074977482,
+      "band_db": 11.86785274361923,
+      "unmasked": 10.451609716127628,
+      "harm": 0.007699728012084961
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18240348-common_voice_en_18240305",
+      "condition": "reverb03",
+      "snr": 26.223194122314453,
+      "inn": 60.69151289378492,
+      "band_db": 27.154648052180505,
+      "unmasked": 21.971146798182254,
+      "harm": -0.07351922988891602
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18240348-common_voice_en_18240305",
+      "condition": "reverb09",
+      "snr": 14.828729629516602,
+      "inn": 53.577329355181675,
+      "band_db": 25.178393366245235,
+      "unmasked": 21.77873380452841,
+      "harm": 0.008842706680297852
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18522556-common_voice_en_18522557",
+      "condition": "clean",
+      "snr": 50.0,
+      "inn": 77.52136455442188,
+      "band_db": 49.43784990035867,
+      "unmasked": 18.361990446479318,
+      "harm": -0.18834972381591797
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18522556-common_voice_en_18522557",
+      "condition": "gauss25",
+      "snr": 28.10748863220215,
+      "inn": 36.28476737532693,
+      "band_db": 21.07098085813785,
+      "unmasked": 13.574270193014424,
+      "harm": 0.3940596580505371
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18522556-common_voice_en_18522557",
+      "condition": "noisy15",
+      "snr": 18.220165252685547,
+      "inn": 27.005928027924796,
+      "band_db": 16.14724394519085,
+      "unmasked": 12.560088970221342,
+      "harm": 0.992294430732727
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18522556-common_voice_en_18522557",
+      "condition": "reverb03",
+      "snr": 50.0,
+      "inn": 77.34398593263444,
+      "band_db": 47.4719923159892,
+      "unmasked": 18.447432964433617,
+      "harm": -0.06340277194976807
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18522556-common_voice_en_18522557",
+      "condition": "reverb09",
+      "snr": 36.88420867919922,
+      "inn": 68.44755719350199,
+      "band_db": 39.56366769945762,
+      "unmasked": 18.149742652024386,
+      "harm": -0.07522356510162354
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18529345-common_voice_en_18529361",
+      "condition": "clean",
+      "snr": 46.02033996582031,
+      "inn": 60.14324166665037,
+      "band_db": 44.9559586809863,
+      "unmasked": 24.630737423719257,
+      "harm": -0.009732246398925781
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18529345-common_voice_en_18529361",
+      "condition": "gauss25",
+      "snr": 27.77433204650879,
+      "inn": 35.22263955837508,
+      "band_db": 22.94303202343689,
+      "unmasked": 16.993387929151147,
+      "harm": 1.8080804347991943
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18529345-common_voice_en_18529361",
+      "condition": "noisy15",
+      "snr": 17.95224380493164,
+      "inn": 26.37454536977836,
+      "band_db": 16.692477191416685,
+      "unmasked": 13.5728532404356,
+      "harm": 1.7968297004699707
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18529345-common_voice_en_18529361",
+      "condition": "reverb03",
+      "snr": 30.28106689453125,
+      "inn": 51.47138154348347,
+      "band_db": 35.64050483822656,
+      "unmasked": 24.166827650116197,
+      "harm": -0.25559449195861816
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18529345-common_voice_en_18529361",
+      "condition": "reverb09",
+      "snr": 16.37701988220215,
+      "inn": 43.4569079274539,
+      "band_db": 28.171528313803517,
+      "unmasked": 21.78265153430797,
+      "harm": 0.07009077072143555
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18575865-common_voice_en_18575864",
+      "condition": "clean",
+      "snr": 32.414833068847656,
+      "inn": 60.73325386328413,
+      "band_db": 49.95888870295102,
+      "unmasked": 26.930630438927018,
+      "harm": -0.12591028213500977
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18575865-common_voice_en_18575864",
+      "condition": "gauss25",
+      "snr": 26.673961639404297,
+      "inn": 34.5401488087792,
+      "band_db": 26.596114895397385,
+      "unmasked": 19.052922937214806,
+      "harm": 2.822623610496521
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18575865-common_voice_en_18575864",
+      "condition": "noisy15",
+      "snr": 17.893543243408203,
+      "inn": 26.0414921953983,
+      "band_db": 19.515449823007458,
+      "unmasked": 16.18994102324511,
+      "harm": 0.3148747682571411
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18575865-common_voice_en_18575864",
+      "condition": "reverb03",
+      "snr": 26.516847610473633,
+      "inn": 52.3418649900184,
+      "band_db": 40.773277473366164,
+      "unmasked": 26.298481758932372,
+      "harm": -0.04568123817443848
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18575865-common_voice_en_18575864",
+      "condition": "reverb09",
+      "snr": 21.867691040039062,
+      "inn": 44.01272868264115,
+      "band_db": 32.82995329817684,
+      "unmasked": 24.2246911812061,
+      "harm": 0.31834256649017334
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18754308-common_voice_en_18754312",
+      "condition": "clean",
+      "snr": 44.88128662109375,
+      "inn": 68.01175551707757,
+      "band_db": 55.5520672611947,
+      "unmasked": 28.737434540118784,
+      "harm": -0.33351755142211914
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18754308-common_voice_en_18754312",
+      "condition": "gauss25",
+      "snr": 27.964637756347656,
+      "inn": 36.10949090861572,
+      "band_db": 25.878401996009355,
+      "unmasked": 19.788788727948813,
+      "harm": 2.1709840297698975
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18754308-common_voice_en_18754312",
+      "condition": "noisy15",
+      "snr": 18.20393943786621,
+      "inn": 26.8329840970504,
+      "band_db": 18.00354791432633,
+      "unmasked": 15.6102216139554,
+      "harm": 0.1778944730758667
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18754308-common_voice_en_18754312",
+      "condition": "reverb03",
+      "snr": 38.38026428222656,
+      "inn": 62.28550315649131,
+      "band_db": 50.291003395065296,
+      "unmasked": 44.576948027803674,
+      "harm": 0.14645862579345703
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18754308-common_voice_en_18754312",
+      "condition": "reverb09",
+      "snr": 33.09360885620117,
+      "inn": 56.88208600038571,
+      "band_db": 44.370192752092784,
+      "unmasked": 28.751357081608155,
+      "harm": 0.09068059921264648
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18770703-common_voice_en_18770702",
+      "condition": "clean",
+      "snr": 43.916481018066406,
+      "inn": 65.12172964299808,
+      "band_db": 45.93962911597515,
+      "unmasked": 22.790907941021445,
+      "harm": 0.28423452377319336
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18770703-common_voice_en_18770702",
+      "condition": "gauss25",
+      "snr": 27.456979751586914,
+      "inn": 35.17450310722718,
+      "band_db": 23.225687144741038,
+      "unmasked": 14.488181756001058,
+      "harm": 2.6122761964797974
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18770703-common_voice_en_18770702",
+      "condition": "noisy15",
+      "snr": 17.662389755249023,
+      "inn": 26.100289646869076,
+      "band_db": 17.687213961068515,
+      "unmasked": 13.472341004636244,
+      "harm": 1.2566359043121338
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18770703-common_voice_en_18770702",
+      "condition": "reverb03",
+      "snr": 22.73171615600586,
+      "inn": 57.887265717629965,
+      "band_db": 35.10606834181617,
+      "unmasked": 21.83630413671421,
+      "harm": 0.1490473747253418
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18770703-common_voice_en_18770702",
+      "condition": "reverb09",
+      "snr": 13.183904647827148,
+      "inn": 46.370356590940276,
+      "band_db": 25.13514385055156,
+      "unmasked": 20.327484558523977,
+      "harm": 0.35500454902648926
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18829843-common_voice_en_18829842",
+      "condition": "clean",
+      "snr": 23.27889633178711,
+      "inn": 53.46237143806217,
+      "band_db": 34.097591647607665,
+      "unmasked": 24.547276408354698,
+      "harm": -0.11472940444946289
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18829843-common_voice_en_18829842",
+      "condition": "gauss25",
+      "snr": 22.015113830566406,
+      "inn": 34.61128832850363,
+      "band_db": 18.34731138269651,
+      "unmasked": 15.51708718175006,
+      "harm": 0.8587236404418945
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18829843-common_voice_en_18829842",
+      "condition": "noisy15",
+      "snr": 16.8638858795166,
+      "inn": 26.294189018872714,
+      "band_db": 13.586657722420687,
+      "unmasked": 12.166376324879282,
+      "harm": -0.008506178855895996
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18829843-common_voice_en_18829842",
+      "condition": "reverb03",
+      "snr": 22.75167465209961,
+      "inn": 51.94284374641765,
+      "band_db": 27.794154031494685,
+      "unmasked": 23.23921627061654,
+      "harm": 0.06054282188415527
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18829843-common_voice_en_18829842",
+      "condition": "reverb09",
+      "snr": 20.84423828125,
+      "inn": 45.8318555638213,
+      "band_db": 24.277596952169258,
+      "unmasked": 21.743629463646098,
+      "harm": 0.034942626953125
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18994068-common_voice_en_18994069",
+      "condition": "clean",
+      "snr": 50.0,
+      "inn": 69.52878396397563,
+      "band_db": 38.91887187340684,
+      "unmasked": 17.916323119563977,
+      "harm": 0.19520258903503418
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18994068-common_voice_en_18994069",
+      "condition": "gauss25",
+      "snr": 27.984115600585938,
+      "inn": 36.34158068681929,
+      "band_db": 20.333731794899908,
+      "unmasked": 13.430627981655496,
+      "harm": 0.6456508636474609
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18994068-common_voice_en_18994069",
+      "condition": "noisy15",
+      "snr": 18.148681640625,
+      "inn": 26.909797004098767,
+      "band_db": 15.41583410600861,
+      "unmasked": 12.533299009821244,
+      "harm": 1.614410638809204
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18994068-common_voice_en_18994069",
+      "condition": "reverb03",
+      "snr": 42.3866081237793,
+      "inn": 68.52954951882279,
+      "band_db": 34.58545090821686,
+      "unmasked": 17.231410559203866,
+      "harm": 0.2121121883392334
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18994068-common_voice_en_18994069",
+      "condition": "reverb09",
+      "snr": 24.380828857421875,
+      "inn": 60.081039433679955,
+      "band_db": 26.76438313250645,
+      "unmasked": 16.742189140906316,
+      "harm": -0.07689666748046875
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18994734-common_voice_en_18994738",
+      "condition": "clean",
+      "snr": 29.341899871826172,
+      "inn": 56.8186839031729,
+      "band_db": 38.66018219995575,
+      "unmasked": 23.527627452963035,
+      "harm": -0.1288461685180664
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18994734-common_voice_en_18994738",
+      "condition": "gauss25",
+      "snr": 25.343582153320312,
+      "inn": 34.79124301718833,
+      "band_db": 20.523759985281867,
+      "unmasked": 15.21300980120757,
+      "harm": 2.5893248319625854
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18994734-common_voice_en_18994738",
+      "condition": "noisy15",
+      "snr": 17.325786590576172,
+      "inn": 26.055116256316513,
+      "band_db": 15.248712150373326,
+      "unmasked": 12.765829543808811,
+      "harm": 0.08842265605926514
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18994734-common_voice_en_18994738",
+      "condition": "reverb03",
+      "snr": 30.101224899291992,
+      "inn": 51.047685591079244,
+      "band_db": 32.63471378635971,
+      "unmasked": 23.022517280484518,
+      "harm": 0.005314350128173828
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_18994734-common_voice_en_18994738",
+      "condition": "reverb09",
+      "snr": 18.384090423583984,
+      "inn": 45.60793259507327,
+      "band_db": 26.683148559292594,
+      "unmasked": 21.26935865426633,
+      "harm": -0.0030213594436645508
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19022657-common_voice_en_19022667",
+      "condition": "clean",
+      "snr": 31.90915870666504,
+      "inn": 66.71655861113989,
+      "band_db": 44.49909205710583,
+      "unmasked": 27.517780681155166,
+      "harm": 0.48593711853027344
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19022657-common_voice_en_19022667",
+      "condition": "gauss25",
+      "snr": 26.368629455566406,
+      "inn": 35.03236488715677,
+      "band_db": 18.045680256689522,
+      "unmasked": 13.24520929457828,
+      "harm": 0.5401675701141357
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19022657-common_voice_en_19022667",
+      "condition": "noisy15",
+      "snr": 17.637187957763672,
+      "inn": 26.11828059309856,
+      "band_db": 14.111333343395781,
+      "unmasked": 11.427040737363189,
+      "harm": 1.0747301578521729
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19022657-common_voice_en_19022667",
+      "condition": "reverb03",
+      "snr": 22.638050079345703,
+      "inn": 57.75840665690624,
+      "band_db": 34.20652226910403,
+      "unmasked": 25.800745187879663,
+      "harm": -0.26548123359680176
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19022657-common_voice_en_19022667",
+      "condition": "reverb09",
+      "snr": 14.879399299621582,
+      "inn": 49.10307068837064,
+      "band_db": 28.44717708459002,
+      "unmasked": 23.82561700428913,
+      "harm": -0.026711463928222656
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19289713-common_voice_en_19289715",
+      "condition": "clean",
+      "snr": 35.41514205932617,
+      "inn": 73.39407048044569,
+      "band_db": 32.95423209150338,
+      "unmasked": 14.19491616910635,
+      "harm": -0.01524972915649414
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19289713-common_voice_en_19289715",
+      "condition": "gauss25",
+      "snr": 27.1162052154541,
+      "inn": 36.02392491572146,
+      "band_db": 15.682692075879032,
+      "unmasked": 12.425729862273258,
+      "harm": 1.24320387840271
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19289713-common_voice_en_19289715",
+      "condition": "noisy15",
+      "snr": 17.846710205078125,
+      "inn": 26.831768589452125,
+      "band_db": 12.144035542618479,
+      "unmasked": 10.861960450612418,
+      "harm": 0.44708216190338135
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19289713-common_voice_en_19289715",
+      "condition": "reverb03",
+      "snr": 24.190502166748047,
+      "inn": 62.45588550203245,
+      "band_db": 26.099977456899843,
+      "unmasked": 14.442781551879838,
+      "harm": -0.23539185523986816
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19289713-common_voice_en_19289715",
+      "condition": "reverb09",
+      "snr": 16.214984893798828,
+      "inn": 56.805469719610784,
+      "band_db": 19.710831237627318,
+      "unmasked": 13.96446329971848,
+      "harm": -0.07700622081756592
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19294198-common_voice_en_19294199",
+      "condition": "clean",
+      "snr": 29.102188110351562,
+      "inn": 65.04827952272086,
+      "band_db": 40.83644847317559,
+      "unmasked": 22.22387146306595,
+      "harm": -0.031215667724609375
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19294198-common_voice_en_19294199",
+      "condition": "gauss25",
+      "snr": 25.4103946685791,
+      "inn": 35.51758073086768,
+      "band_db": 20.250138979741138,
+      "unmasked": 13.461833153484227,
+      "harm": 0.6195323467254639
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19294198-common_voice_en_19294199",
+      "condition": "noisy15",
+      "snr": 17.571582794189453,
+      "inn": 26.578540719161406,
+      "band_db": 15.65034480888766,
+      "unmasked": 12.551136449223284,
+      "harm": 1.3560665845870972
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19294198-common_voice_en_19294199",
+      "condition": "reverb03",
+      "snr": 20.595653533935547,
+      "inn": 60.117979630874025,
+      "band_db": 35.387768277104755,
+      "unmasked": 21.933209397404006,
+      "harm": -0.029218435287475586
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19294198-common_voice_en_19294199",
+      "condition": "reverb09",
+      "snr": 13.91793155670166,
+      "inn": 51.55887820003332,
+      "band_db": 27.365349039537712,
+      "unmasked": 20.903068528002855,
+      "harm": -0.031481146812438965
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19517720-common_voice_en_19517721",
+      "condition": "clean",
+      "snr": 30.853195190429688,
+      "inn": 69.00856421513586,
+      "band_db": 55.175110574387915,
+      "unmasked": 26.232940305056403,
+      "harm": 0.4788355827331543
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19517720-common_voice_en_19517721",
+      "condition": "gauss25",
+      "snr": 25.897754669189453,
+      "inn": 35.45952824145963,
+      "band_db": 24.10970062078531,
+      "unmasked": 18.75219709697047,
+      "harm": 1.543107271194458
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19517720-common_voice_en_19517721",
+      "condition": "noisy15",
+      "snr": 17.463415145874023,
+      "inn": 26.436419536695155,
+      "band_db": 17.00108895296503,
+      "unmasked": 14.556100303395832,
+      "harm": 0.02204418182373047
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19517720-common_voice_en_19517721",
+      "condition": "reverb03",
+      "snr": 23.832019805908203,
+      "inn": 59.32833485178779,
+      "band_db": 44.25387044437767,
+      "unmasked": 25.797210335742587,
+      "harm": -0.4562431573867798
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19517720-common_voice_en_19517721",
+      "condition": "reverb09",
+      "snr": 17.7759952545166,
+      "inn": 47.06062462283682,
+      "band_db": 31.218963020959023,
+      "unmasked": 23.561530159170402,
+      "harm": -0.004846334457397461
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19641039-common_voice_en_19641037",
+      "condition": "clean",
+      "snr": 37.82255554199219,
+      "inn": 71.54250257233024,
+      "band_db": 36.348461254012264,
+      "unmasked": 19.386952548477836,
+      "harm": 0.4267609119415283
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19641039-common_voice_en_19641037",
+      "condition": "gauss25",
+      "snr": 27.492216110229492,
+      "inn": 36.14893975701551,
+      "band_db": 17.00760783641107,
+      "unmasked": 12.59851892377447,
+      "harm": 1.2830548286437988
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19641039-common_voice_en_19641037",
+      "condition": "noisy15",
+      "snr": 17.970720291137695,
+      "inn": 26.99748385746603,
+      "band_db": 13.498717265970331,
+      "unmasked": 11.340454613789873,
+      "harm": 1.4327402114868164
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19641039-common_voice_en_19641037",
+      "condition": "reverb03",
+      "snr": 29.840944290161133,
+      "inn": 68.76883632689997,
+      "band_db": 36.193216914362885,
+      "unmasked": 33.593307319852705,
+      "harm": 0.09763264656066895
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19641039-common_voice_en_19641037",
+      "condition": "reverb09",
+      "snr": 17.693565368652344,
+      "inn": 62.120689129711266,
+      "band_db": 30.433843400352103,
+      "unmasked": 27.270590683683203,
+      "harm": 0.01886606216430664
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19669708-common_voice_en_19669704",
+      "condition": "clean",
+      "snr": 24.465255737304688,
+      "inn": 61.09747561109134,
+      "band_db": 48.20514524652491,
+      "unmasked": 27.388377790739625,
+      "harm": 0.060446739196777344
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19669708-common_voice_en_19669704",
+      "condition": "gauss25",
+      "snr": 22.72217559814453,
+      "inn": 34.48563332624968,
+      "band_db": 23.83667740070728,
+      "unmasked": 19.023712147310427,
+      "harm": 1.1282047033309937
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19669708-common_voice_en_19669704",
+      "condition": "noisy15",
+      "snr": 16.780988693237305,
+      "inn": 25.872379777236244,
+      "band_db": 16.776664010490983,
+      "unmasked": 14.691841887338617,
+      "harm": 0.02053248882293701
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19669708-common_voice_en_19669704",
+      "condition": "reverb03",
+      "snr": 20.490554809570312,
+      "inn": 53.81499072949535,
+      "band_db": 39.41371830123082,
+      "unmasked": 25.835823102768085,
+      "harm": 0.1047055721282959
+    },
+    {
+      "set": "EXP-031",
+      "utt_id": "common_voice_en_19669708-common_voice_en_19669704",
+      "condition": "reverb09",
+      "snr": 16.326969146728516,
+      "inn": 44.74000847902875,
+      "band_db": 30.40403487629236,
+      "unmasked": 23.72111697155109,
+      "harm": -0.039598822593688965
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_22461617-common_voice_en_22461638",
+      "condition": "clean",
+      "snr": 32.456451416015625,
+      "inn": 59.30718852858654,
+      "band_db": 50.38833460087426,
+      "unmasked": 27.442293379746413,
+      "harm": 0.0919942855834961
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_22461617-common_voice_en_22461638",
+      "condition": "gauss25",
+      "snr": 26.466720581054688,
+      "inn": 35.03895900128426,
+      "band_db": 27.804401977222824,
+      "unmasked": 20.618168444174838,
+      "harm": 0.4466819763183594
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_22461617-common_voice_en_22461638",
+      "condition": "noisy15",
+      "snr": 17.700956344604492,
+      "inn": 26.403754917613554,
+      "band_db": 20.16466892125157,
+      "unmasked": 17.094761849056425,
+      "harm": 2.875281572341919
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_22461617-common_voice_en_22461638",
+      "condition": "telephone",
+      "snr": 40.031124114990234,
+      "inn": 94.74766911966766,
+      "band_db": 39.583333596767034,
+      "unmasked": 13.416352791448183,
+      "harm": 0.47815394401550293
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_22839883-common_voice_en_22839889",
+      "condition": "clean",
+      "snr": 33.49633026123047,
+      "inn": 59.92880650491787,
+      "band_db": 42.36922322749387,
+      "unmasked": 27.216469195063834,
+      "harm": -0.18793416023254395
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_22839883-common_voice_en_22839889",
+      "condition": "gauss25",
+      "snr": 26.82025909423828,
+      "inn": 35.301905062945295,
+      "band_db": 20.153016385558523,
+      "unmasked": 16.90494089448424,
+      "harm": 1.469405174255371
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_22839883-common_voice_en_22839889",
+      "condition": "noisy15",
+      "snr": 17.86089515686035,
+      "inn": 26.554675636570263,
+      "band_db": 14.209706757899609,
+      "unmasked": 12.51220919994477,
+      "harm": -0.0055419206619262695
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_22839883-common_voice_en_22839889",
+      "condition": "telephone",
+      "snr": 34.74348068237305,
+      "inn": 95.30966057445295,
+      "band_db": 33.431862150228945,
+      "unmasked": 13.91755109435013,
+      "harm": -0.019745588302612305
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_22941073-common_voice_en_22941074",
+      "condition": "clean",
+      "snr": 39.62646484375,
+      "inn": 59.640484199057,
+      "band_db": 46.76195822239165,
+      "unmasked": 27.141299045391257,
+      "harm": -0.30330896377563477
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_22941073-common_voice_en_22941074",
+      "condition": "gauss25",
+      "snr": 27.604196548461914,
+      "inn": 35.43141507360782,
+      "band_db": 24.93340496686735,
+      "unmasked": 19.138871471278534,
+      "harm": 0.6060028076171875
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_22941073-common_voice_en_22941074",
+      "condition": "noisy15",
+      "snr": 17.957746505737305,
+      "inn": 26.425062925258405,
+      "band_db": 17.545546554734575,
+      "unmasked": 15.111079756594156,
+      "harm": 1.185305118560791
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_22941073-common_voice_en_22941074",
+      "condition": "telephone",
+      "snr": 47.14524841308594,
+      "inn": 96.77653082041218,
+      "band_db": 41.498241242868,
+      "unmasked": 14.76122796648341,
+      "harm": 0.3337247371673584
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_23252329-common_voice_en_23252333",
+      "condition": "clean",
+      "snr": 50.0,
+      "inn": 78.42088016025228,
+      "band_db": 47.57868098032925,
+      "unmasked": 20.09531953684187,
+      "harm": -0.018468856811523438
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_23252329-common_voice_en_23252333",
+      "condition": "gauss25",
+      "snr": 27.92780113220215,
+      "inn": 36.04836455395858,
+      "band_db": 18.270765852723027,
+      "unmasked": 12.674377985264279,
+      "harm": 0.6591463088989258
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_23252329-common_voice_en_23252333",
+      "condition": "noisy15",
+      "snr": 18.0465145111084,
+      "inn": 26.80292009097691,
+      "band_db": 14.423602016359547,
+      "unmasked": 11.595423024471067,
+      "harm": 1.731643795967102
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_23252329-common_voice_en_23252333",
+      "condition": "telephone",
+      "snr": 50.0,
+      "inn": 108.59562726198446,
+      "band_db": 66.05059013042353,
+      "unmasked": 53.5216608497672,
+      "harm": -0.020814895629882812
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_23750957-common_voice_en_23774578",
+      "condition": "clean",
+      "snr": 34.76026153564453,
+      "inn": 59.38959573810226,
+      "band_db": 46.033204813463655,
+      "unmasked": 27.576680522324075,
+      "harm": 0.04722785949707031
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_23750957-common_voice_en_23774578",
+      "condition": "gauss25",
+      "snr": 27.045166015625,
+      "inn": 34.699573690737836,
+      "band_db": 23.677154348233937,
+      "unmasked": 17.80157251064776,
+      "harm": 1.517925500869751
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_23750957-common_voice_en_23774578",
+      "condition": "noisy15",
+      "snr": 17.842723846435547,
+      "inn": 26.113745739995075,
+      "band_db": 17.235576147707096,
+      "unmasked": 13.79491231641218,
+      "harm": 0.4055521488189697
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_23750957-common_voice_en_23774578",
+      "condition": "telephone",
+      "snr": 40.79216766357422,
+      "inn": 94.60854824655398,
+      "band_db": 39.616523117855465,
+      "unmasked": 14.435572228337312,
+      "harm": 0.041129112243652344
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_23998981-common_voice_en_23998980",
+      "condition": "clean",
+      "snr": 50.0,
+      "inn": 66.2889450338215,
+      "band_db": 51.0186459455454,
+      "unmasked": 26.63004127698885,
+      "harm": -0.23692774772644043
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_23998981-common_voice_en_23998980",
+      "condition": "gauss25",
+      "snr": 28.085851669311523,
+      "inn": 35.69808236011164,
+      "band_db": 22.980298410952244,
+      "unmasked": 18.593663037432364,
+      "harm": 1.9298453330993652
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_23998981-common_voice_en_23998980",
+      "condition": "noisy15",
+      "snr": 18.20269203186035,
+      "inn": 26.748951313112475,
+      "band_db": 15.971305219305727,
+      "unmasked": 13.995787129743224,
+      "harm": 0.040821075439453125
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_23998981-common_voice_en_23998980",
+      "condition": "telephone",
+      "snr": 50.0,
+      "inn": 101.40391021344911,
+      "band_db": 48.24319604922277,
+      "unmasked": 15.498798103350172,
+      "harm": -0.04099726676940918
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_24518104-common_voice_en_24518109",
+      "condition": "clean",
+      "snr": 48.18423843383789,
+      "inn": 72.73675315713086,
+      "band_db": 54.31643959619817,
+      "unmasked": 21.897702896088678,
+      "harm": -0.03383827209472656
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_24518104-common_voice_en_24518109",
+      "condition": "gauss25",
+      "snr": 27.878026962280273,
+      "inn": 36.24175228435068,
+      "band_db": 22.189497435205347,
+      "unmasked": 16.87576695985622,
+      "harm": 1.0042219161987305
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_24518104-common_voice_en_24518109",
+      "condition": "noisy15",
+      "snr": 18.083314895629883,
+      "inn": 26.86610876874417,
+      "band_db": 15.528324411859215,
+      "unmasked": 13.105374176839483,
+      "harm": 1.3975633382797241
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_24518104-common_voice_en_24518109",
+      "condition": "telephone",
+      "snr": 50.0,
+      "inn": 101.16071755124031,
+      "band_db": 45.134541214909724,
+      "unmasked": 14.387882580401797,
+      "harm": -0.0394589900970459
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_24819370-common_voice_en_24819368",
+      "condition": "clean",
+      "snr": 38.65652847290039,
+      "inn": 66.46081324176082,
+      "band_db": 34.78188165954768,
+      "unmasked": 20.72478699227906,
+      "harm": 0.19733285903930664
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_24819370-common_voice_en_24819368",
+      "condition": "gauss25",
+      "snr": 27.537315368652344,
+      "inn": 35.99643655452963,
+      "band_db": 16.256253202753367,
+      "unmasked": 11.832571909451634,
+      "harm": 1.802536129951477
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_24819370-common_voice_en_24819368",
+      "condition": "noisy15",
+      "snr": 17.98764991760254,
+      "inn": 26.809247992333226,
+      "band_db": 13.42195592807239,
+      "unmasked": 11.176486456763135,
+      "harm": 0.012237548828125
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_24819370-common_voice_en_24819368",
+      "condition": "telephone",
+      "snr": 43.03168869018555,
+      "inn": 95.42746177154463,
+      "band_db": 39.50323320647021,
+      "unmasked": 15.47976786659326,
+      "harm": -0.12015783786773682
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25127181-common_voice_en_25127184",
+      "condition": "clean",
+      "snr": 36.80061721801758,
+      "inn": 76.4879031498907,
+      "band_db": 31.475123574069364,
+      "unmasked": 15.80825322723885,
+      "harm": -0.15375924110412598
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25127181-common_voice_en_25127184",
+      "condition": "gauss25",
+      "snr": 27.218873977661133,
+      "inn": 36.82382372112607,
+      "band_db": 13.82862622459248,
+      "unmasked": 10.794106087767862,
+      "harm": 0.8325998783111572
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25127181-common_voice_en_25127184",
+      "condition": "noisy15",
+      "snr": 17.799964904785156,
+      "inn": 27.216478857081423,
+      "band_db": 12.098155552221895,
+      "unmasked": 10.391932479329324,
+      "harm": -0.0361933708190918
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25127181-common_voice_en_25127184",
+      "condition": "telephone",
+      "snr": 50.0,
+      "inn": 104.94030421839648,
+      "band_db": 39.63764870866072,
+      "unmasked": 12.836405718537184,
+      "harm": -0.031198740005493164
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25200065-common_voice_en_25200064",
+      "condition": "clean",
+      "snr": 40.6539192199707,
+      "inn": 65.66017628285076,
+      "band_db": 54.059790779325425,
+      "unmasked": 22.01239960407473,
+      "harm": -0.3325779438018799
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25200065-common_voice_en_25200064",
+      "condition": "gauss25",
+      "snr": 27.58397102355957,
+      "inn": 35.22196345645881,
+      "band_db": 27.251171707502845,
+      "unmasked": 19.63667307535617,
+      "harm": 2.948126435279846
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25200065-common_voice_en_25200064",
+      "condition": "noisy15",
+      "snr": 17.9716796875,
+      "inn": 26.40002480392893,
+      "band_db": 19.700308078611364,
+      "unmasked": 16.350230774120952,
+      "harm": 1.4415708780288696
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25200065-common_voice_en_25200064",
+      "condition": "telephone",
+      "snr": 42.313446044921875,
+      "inn": 94.61851519582781,
+      "band_db": 41.31610171489743,
+      "unmasked": 14.766669099335106,
+      "harm": 0.04149210453033447
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25216968-common_voice_en_25216966",
+      "condition": "clean",
+      "snr": 32.1888427734375,
+      "inn": 67.681284259009,
+      "band_db": 28.79694058004014,
+      "unmasked": 15.944576448473313,
+      "harm": -0.1887061595916748
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25216968-common_voice_en_25216966",
+      "condition": "gauss25",
+      "snr": 26.443593978881836,
+      "inn": 35.6262365818895,
+      "band_db": 14.832787907261357,
+      "unmasked": 11.424285728676937,
+      "harm": 2.5543997287750244
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25216968-common_voice_en_25216966",
+      "condition": "noisy15",
+      "snr": 17.70317840576172,
+      "inn": 26.628595801555882,
+      "band_db": 12.44293989450131,
+      "unmasked": 10.579158384925528,
+      "harm": 0.14808034896850586
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25216968-common_voice_en_25216966",
+      "condition": "telephone",
+      "snr": 39.44382095336914,
+      "inn": 93.72916467039296,
+      "band_db": 55.57489341797561,
+      "unmasked": 40.535525134361514,
+      "harm": -0.02959418296813965
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25568854-common_voice_en_25568855",
+      "condition": "clean",
+      "snr": 50.0,
+      "inn": 79.18545517674248,
+      "band_db": 54.95156233033285,
+      "unmasked": 20.960491012616885,
+      "harm": -0.1685328483581543
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25568854-common_voice_en_25568855",
+      "condition": "gauss25",
+      "snr": 28.037036895751953,
+      "inn": 35.790668679245655,
+      "band_db": 22.571292234213058,
+      "unmasked": 14.354720822231057,
+      "harm": 1.577028751373291
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25568854-common_voice_en_25568855",
+      "condition": "noisy15",
+      "snr": 18.114849090576172,
+      "inn": 26.632569398502078,
+      "band_db": 17.062698603935942,
+      "unmasked": 13.39950660764762,
+      "harm": -0.004637598991394043
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25568854-common_voice_en_25568855",
+      "condition": "telephone",
+      "snr": 50.0,
+      "inn": 106.79781102401282,
+      "band_db": 53.278950651228214,
+      "unmasked": 15.377854792369373,
+      "harm": -0.01074671745300293
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25662916-common_voice_en_25663069",
+      "condition": "clean",
+      "snr": 29.573945999145508,
+      "inn": 64.62375191777839,
+      "band_db": 44.327438859395194,
+      "unmasked": 21.469534938737983,
+      "harm": -0.22939586639404297
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25662916-common_voice_en_25663069",
+      "condition": "gauss25",
+      "snr": 25.527067184448242,
+      "inn": 34.78536679143716,
+      "band_db": 19.769049474014842,
+      "unmasked": 14.59915725909857,
+      "harm": 0.9819748401641846
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25662916-common_voice_en_25663069",
+      "condition": "noisy15",
+      "snr": 17.54778480529785,
+      "inn": 26.17390192842755,
+      "band_db": 14.979584577991496,
+      "unmasked": 12.127290128401924,
+      "harm": 0.2095184326171875
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25662916-common_voice_en_25663069",
+      "condition": "telephone",
+      "snr": 32.68375015258789,
+      "inn": 91.7403686274123,
+      "band_db": 37.26967889884783,
+      "unmasked": 14.451245836760956,
+      "harm": -0.0070743560791015625
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25693607-common_voice_en_25693608",
+      "condition": "clean",
+      "snr": 34.350643157958984,
+      "inn": 51.13747560264645,
+      "band_db": 37.15289500552162,
+      "unmasked": 20.848111744272252,
+      "harm": 0.021790027618408203
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25693607-common_voice_en_25693608",
+      "condition": "gauss25",
+      "snr": 27.05142593383789,
+      "inn": 35.016003662867135,
+      "band_db": 24.759666291004656,
+      "unmasked": 18.491195337851728,
+      "harm": 0.6700506210327148
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25693607-common_voice_en_25693608",
+      "condition": "noisy15",
+      "snr": 17.944761276245117,
+      "inn": 26.453690292994686,
+      "band_db": 17.878008551554398,
+      "unmasked": 14.978783184594384,
+      "harm": 2.310997247695923
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25693607-common_voice_en_25693608",
+      "condition": "telephone",
+      "snr": 40.1802864074707,
+      "inn": 90.0194197890123,
+      "band_db": 35.43404541915504,
+      "unmasked": 13.736191939619172,
+      "harm": -0.01688075065612793
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25880669-common_voice_en_25880691",
+      "condition": "clean",
+      "snr": 24.15196990966797,
+      "inn": 56.72253701550357,
+      "band_db": 28.86841768022215,
+      "unmasked": 20.297813599980596,
+      "harm": -0.02055835723876953
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25880669-common_voice_en_25880691",
+      "condition": "gauss25",
+      "snr": 22.499954223632812,
+      "inn": 34.608397428632294,
+      "band_db": 14.497920102992227,
+      "unmasked": 11.95147954511463,
+      "harm": 2.5015000104904175
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25880669-common_voice_en_25880691",
+      "condition": "noisy15",
+      "snr": 16.75014877319336,
+      "inn": 26.179412840850006,
+      "band_db": 12.140688198537559,
+      "unmasked": 10.670157302554754,
+      "harm": 0.029301166534423828
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_25880669-common_voice_en_25880691",
+      "condition": "telephone",
+      "snr": 30.491731643676758,
+      "inn": 86.80749325073458,
+      "band_db": 26.547046253004737,
+      "unmasked": 12.928853292311684,
+      "harm": 0.016376972198486328
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_26453369-common_voice_en_26453364",
+      "condition": "clean",
+      "snr": 37.404727935791016,
+      "inn": 57.971086382373365,
+      "band_db": 29.54977848827706,
+      "unmasked": 19.715252887767306,
+      "harm": -0.0380403995513916
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_26453369-common_voice_en_26453364",
+      "condition": "gauss25",
+      "snr": 27.460344314575195,
+      "inn": 35.97265335664162,
+      "band_db": 16.3106868797102,
+      "unmasked": 12.234882778012416,
+      "harm": 2.3740131855010986
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_26453369-common_voice_en_26453364",
+      "condition": "noisy15",
+      "snr": 18.007808685302734,
+      "inn": 26.861258762997014,
+      "band_db": 13.182770517571354,
+      "unmasked": 10.866868859075321,
+      "harm": 0.00213015079498291
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_26453369-common_voice_en_26453364",
+      "condition": "telephone",
+      "snr": 40.365596771240234,
+      "inn": 93.40724740300519,
+      "band_db": 34.65792039086056,
+      "unmasked": 14.505860783562634,
+      "harm": -0.015403032302856445
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_26933529-common_voice_en_26933532",
+      "condition": "clean",
+      "snr": 40.75189971923828,
+      "inn": 61.69482517654345,
+      "band_db": 45.67305389823554,
+      "unmasked": 21.381183322354005,
+      "harm": 0.2701714038848877
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_26933529-common_voice_en_26933532",
+      "condition": "gauss25",
+      "snr": 27.615327835083008,
+      "inn": 35.305933996857874,
+      "band_db": 23.974209741873707,
+      "unmasked": 17.74270518071239,
+      "harm": 1.02372145652771
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_26933529-common_voice_en_26933532",
+      "condition": "noisy15",
+      "snr": 17.983699798583984,
+      "inn": 26.538443790285267,
+      "band_db": 17.21715275067237,
+      "unmasked": 14.425591467303306,
+      "harm": 0.8221439123153687
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_26933529-common_voice_en_26933532",
+      "condition": "telephone",
+      "snr": 43.767921447753906,
+      "inn": 95.4841797865774,
+      "band_db": 65.52971393647667,
+      "unmasked": 45.34163136933965,
+      "harm": 0.014497160911560059
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_27434681-common_voice_en_27434683",
+      "condition": "clean",
+      "snr": 50.0,
+      "inn": 73.96725397560213,
+      "band_db": 48.06203926511385,
+      "unmasked": 21.016133134731994,
+      "harm": 0.16628336906433105
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_27434681-common_voice_en_27434683",
+      "condition": "gauss25",
+      "snr": 28.06366729736328,
+      "inn": 36.143173077869484,
+      "band_db": 17.633769909816206,
+      "unmasked": 12.796775767431605,
+      "harm": 0.7075173854827881
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_27434681-common_voice_en_27434683",
+      "condition": "noisy15",
+      "snr": 18.17796516418457,
+      "inn": 26.91477907600246,
+      "band_db": 13.864517305783503,
+      "unmasked": 11.336311039816216,
+      "harm": 1.3531478643417358
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_27434681-common_voice_en_27434683",
+      "condition": "telephone",
+      "snr": 50.0,
+      "inn": 101.21915289906934,
+      "band_db": 50.4046672464065,
+      "unmasked": 48.52880620053487,
+      "harm": 0.04577839374542236
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_28003405-common_voice_en_28003408",
+      "condition": "clean",
+      "snr": 44.2400016784668,
+      "inn": 63.02988665686315,
+      "band_db": 43.598959171342216,
+      "unmasked": 21.205188050911453,
+      "harm": -0.0715639591217041
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_28003405-common_voice_en_28003408",
+      "condition": "gauss25",
+      "snr": 27.911970138549805,
+      "inn": 36.068265538306896,
+      "band_db": 20.93822460684609,
+      "unmasked": 15.123465895138006,
+      "harm": 1.8361411094665527
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_28003405-common_voice_en_28003408",
+      "condition": "noisy15",
+      "snr": 18.179853439331055,
+      "inn": 26.9054844350553,
+      "band_db": 15.459732209884542,
+      "unmasked": 12.481001342602001,
+      "harm": 0.04989945888519287
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_28003405-common_voice_en_28003408",
+      "condition": "telephone",
+      "snr": 45.1204833984375,
+      "inn": 92.56000212330665,
+      "band_db": 38.68924170107215,
+      "unmasked": 12.938339781953971,
+      "harm": -0.03646838665008545
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_28065832-common_voice_en_28065833",
+      "condition": "clean",
+      "snr": 35.14338302612305,
+      "inn": 59.50307002500011,
+      "band_db": 42.01105313057569,
+      "unmasked": 21.164300432644836,
+      "harm": 0.06912446022033691
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_28065832-common_voice_en_28065833",
+      "condition": "gauss25",
+      "snr": 27.195640563964844,
+      "inn": 35.60863052711647,
+      "band_db": 22.00600848922401,
+      "unmasked": 16.600491563405335,
+      "harm": 2.011039137840271
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_28065832-common_voice_en_28065833",
+      "condition": "noisy15",
+      "snr": 17.97089195251465,
+      "inn": 26.721455587260884,
+      "band_db": 15.854672208812737,
+      "unmasked": 13.15189197303078,
+      "harm": 0.3901064395904541
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_28065832-common_voice_en_28065833",
+      "condition": "telephone",
+      "snr": 43.41994857788086,
+      "inn": 92.59280874704642,
+      "band_db": 33.2020917722697,
+      "unmasked": 12.523405140857331,
+      "harm": -0.009421229362487793
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_28917649-common_voice_en_28917648",
+      "condition": "clean",
+      "snr": 36.24080276489258,
+      "inn": 55.11325012467819,
+      "band_db": 36.55971004912753,
+      "unmasked": 20.95802481353641,
+      "harm": -0.04485344886779785
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_28917649-common_voice_en_28917648",
+      "condition": "gauss25",
+      "snr": 27.41271209716797,
+      "inn": 35.800044551839164,
+      "band_db": 21.98718241531313,
+      "unmasked": 15.534291381416532,
+      "harm": 2.4261666536331177
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_28917649-common_voice_en_28917648",
+      "condition": "noisy15",
+      "snr": 18.134857177734375,
+      "inn": 26.944819391391725,
+      "band_db": 16.26656183449524,
+      "unmasked": 13.05993552693749,
+      "harm": 0.0010699033737182617
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_28917649-common_voice_en_28917648",
+      "condition": "telephone",
+      "snr": 39.011627197265625,
+      "inn": 90.59354690005173,
+      "band_db": 34.09971671941401,
+      "unmasked": 14.20320020973689,
+      "harm": 0.03682386875152588
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_30232728-common_voice_en_30232726",
+      "condition": "clean",
+      "snr": 39.11812973022461,
+      "inn": 76.19293601149788,
+      "band_db": 40.903586586695695,
+      "unmasked": 18.408147669906672,
+      "harm": -0.46124768257141113
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_30232728-common_voice_en_30232726",
+      "condition": "gauss25",
+      "snr": 27.563398361206055,
+      "inn": 35.82072554228623,
+      "band_db": 17.022658938681694,
+      "unmasked": 11.89143672368205,
+      "harm": 0.8394360542297363
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_30232728-common_voice_en_30232726",
+      "condition": "noisy15",
+      "snr": 17.925113677978516,
+      "inn": 26.629690253119502,
+      "band_db": 13.988480897981248,
+      "unmasked": 11.083395089577087,
+      "harm": 0.1172475814819336
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_30232728-common_voice_en_30232726",
+      "condition": "telephone",
+      "snr": 43.56660461425781,
+      "inn": 102.05097327289022,
+      "band_db": 72.6308916323502,
+      "unmasked": 56.60282005050355,
+      "harm": 0.020984649658203125
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_30757408-common_voice_en_30757409",
+      "condition": "clean",
+      "snr": 45.51511764526367,
+      "inn": 73.7863185694056,
+      "band_db": 45.964206716762,
+      "unmasked": 18.843093750491864,
+      "harm": -0.15306711196899414
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_30757408-common_voice_en_30757409",
+      "condition": "gauss25",
+      "snr": 27.959285736083984,
+      "inn": 36.36037437768271,
+      "band_db": 19.258705904585764,
+      "unmasked": 13.436080009952855,
+      "harm": 0.5720119476318359
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_30757408-common_voice_en_30757409",
+      "condition": "noisy15",
+      "snr": 18.226158142089844,
+      "inn": 27.05501815028743,
+      "band_db": 14.630507749527425,
+      "unmasked": 11.881235044181874,
+      "harm": 1.8247103691101074
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_30757408-common_voice_en_30757409",
+      "condition": "telephone",
+      "snr": 49.97216796875,
+      "inn": 102.57252475704227,
+      "band_db": 44.45064963325026,
+      "unmasked": 14.799080068439405,
+      "harm": -0.0635291337966919
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_31005683-common_voice_en_31005688",
+      "condition": "clean",
+      "snr": 46.57862854003906,
+      "inn": 80.18239051645138,
+      "band_db": 38.86042311170232,
+      "unmasked": 14.292464252293563,
+      "harm": 0.11827349662780762
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_31005683-common_voice_en_31005688",
+      "condition": "gauss25",
+      "snr": 27.823902130126953,
+      "inn": 36.094369724618296,
+      "band_db": 16.206003264889986,
+      "unmasked": 12.13791406157413,
+      "harm": 0.879467248916626
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_31005683-common_voice_en_31005688",
+      "condition": "noisy15",
+      "snr": 18.01818084716797,
+      "inn": 26.936558902305766,
+      "band_db": 13.07612860969484,
+      "unmasked": 11.045284946866392,
+      "harm": 0.16333353519439697
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_31005683-common_voice_en_31005688",
+      "condition": "telephone",
+      "snr": 50.0,
+      "inn": 109.68108590539273,
+      "band_db": 46.98089393252865,
+      "unmasked": 14.727790910530754,
+      "harm": -0.017663121223449707
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_31499885-common_voice_en_31499889",
+      "condition": "clean",
+      "snr": 50.0,
+      "inn": 78.69547758864616,
+      "band_db": 44.32933600423448,
+      "unmasked": 16.50335645308755,
+      "harm": -0.2831735610961914
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_31499885-common_voice_en_31499889",
+      "condition": "gauss25",
+      "snr": 27.849735260009766,
+      "inn": 36.309500445478655,
+      "band_db": 20.383640720403513,
+      "unmasked": 13.501970474270992,
+      "harm": 0.5112788677215576
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_31499885-common_voice_en_31499889",
+      "condition": "noisy15",
+      "snr": 17.998428344726562,
+      "inn": 26.910909327544374,
+      "band_db": 15.349976288924452,
+      "unmasked": 12.404928188001083,
+      "harm": 0.2316352128982544
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_31499885-common_voice_en_31499889",
+      "condition": "telephone",
+      "snr": 50.0,
+      "inn": 106.59156334173471,
+      "band_db": 50.379981251980624,
+      "unmasked": 15.03916138742232,
+      "harm": -0.4237515926361084
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_31959919-common_voice_en_31959922",
+      "condition": "clean",
+      "snr": 36.13501739501953,
+      "inn": 59.26896995317354,
+      "band_db": 40.37711278328168,
+      "unmasked": 21.048398669383936,
+      "harm": 0.020331859588623047
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_31959919-common_voice_en_31959922",
+      "condition": "gauss25",
+      "snr": 27.214624404907227,
+      "inn": 35.337388324664886,
+      "band_db": 20.25098635914531,
+      "unmasked": 16.4490893977386,
+      "harm": 2.223471999168396
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_31959919-common_voice_en_31959922",
+      "condition": "noisy15",
+      "snr": 17.88974380493164,
+      "inn": 26.670569101398044,
+      "band_db": 14.492684954430647,
+      "unmasked": 12.694797376636798,
+      "harm": 0.015138387680053711
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_31959919-common_voice_en_31959922",
+      "condition": "telephone",
+      "snr": 34.42869567871094,
+      "inn": 88.10457517838786,
+      "band_db": 33.85332044514461,
+      "unmasked": 13.934456139522913,
+      "harm": -0.004971027374267578
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_32125519-common_voice_en_32125526",
+      "condition": "clean",
+      "snr": 40.24964141845703,
+      "inn": 62.37555349460897,
+      "band_db": 43.53483381234242,
+      "unmasked": 22.084609149141265,
+      "harm": -0.14326930046081543
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_32125519-common_voice_en_32125526",
+      "condition": "gauss25",
+      "snr": 27.61783790588379,
+      "inn": 35.80839673750993,
+      "band_db": 20.81117819528923,
+      "unmasked": 16.891650834145373,
+      "harm": 1.0881285667419434
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_32125519-common_voice_en_32125526",
+      "condition": "noisy15",
+      "snr": 17.957012176513672,
+      "inn": 26.83329921307102,
+      "band_db": 14.677951953499257,
+      "unmasked": 12.814347543321613,
+      "harm": 0.027605652809143066
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_32125519-common_voice_en_32125526",
+      "condition": "telephone",
+      "snr": 43.819236755371094,
+      "inn": 95.3618643069903,
+      "band_db": 34.710145992366094,
+      "unmasked": 14.023815107848957,
+      "harm": 0.030313968658447266
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_34054471-common_voice_en_34054473",
+      "condition": "clean",
+      "snr": 42.93785858154297,
+      "inn": 69.81402112861342,
+      "band_db": 50.87555834729114,
+      "unmasked": 21.34139709996021,
+      "harm": 0.16067123413085938
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_34054471-common_voice_en_34054473",
+      "condition": "gauss25",
+      "snr": 27.617820739746094,
+      "inn": 35.61907432501239,
+      "band_db": 21.92019750818645,
+      "unmasked": 15.934492318702656,
+      "harm": 0.06383728981018066
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_34054471-common_voice_en_34054473",
+      "condition": "noisy15",
+      "snr": 17.804872512817383,
+      "inn": 26.490628734860774,
+      "band_db": 15.876633552527474,
+      "unmasked": 13.248387846445738,
+      "harm": 0.20962238311767578
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_34054471-common_voice_en_34054473",
+      "condition": "telephone",
+      "snr": 50.0,
+      "inn": 103.80834080247467,
+      "band_db": 46.371416437261495,
+      "unmasked": 15.465252404725662,
+      "harm": -0.022162437438964844
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_34184701-common_voice_en_34184697",
+      "condition": "clean",
+      "snr": 28.57750129699707,
+      "inn": 60.84349765603881,
+      "band_db": 51.09203752159931,
+      "unmasked": 21.860405372690227,
+      "harm": -0.14255762100219727
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_34184701-common_voice_en_34184697",
+      "condition": "gauss25",
+      "snr": 25.063888549804688,
+      "inn": 35.054127463058805,
+      "band_db": 28.773487196959877,
+      "unmasked": 19.738110621490076,
+      "harm": 0.7149426937103271
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_34184701-common_voice_en_34184697",
+      "condition": "noisy15",
+      "snr": 17.35694694519043,
+      "inn": 26.203455668313307,
+      "band_db": 20.980889587825224,
+      "unmasked": 17.39364181032187,
+      "harm": 0.5720160007476807
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_34184701-common_voice_en_34184697",
+      "condition": "telephone",
+      "snr": 35.04544448852539,
+      "inn": 90.8497025386081,
+      "band_db": 36.76373390142853,
+      "unmasked": 14.497102914861335,
+      "harm": -0.08713603019714355
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_35734335-common_voice_en_35734342",
+      "condition": "clean",
+      "snr": 28.519744873046875,
+      "inn": 65.13430224904653,
+      "band_db": 30.818316522308326,
+      "unmasked": 20.10975967778745,
+      "harm": -0.29364943504333496
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_35734335-common_voice_en_35734342",
+      "condition": "gauss25",
+      "snr": 25.145240783691406,
+      "inn": 35.83495113579001,
+      "band_db": 14.612212189877667,
+      "unmasked": 11.23606037047044,
+      "harm": -0.2096385955810547
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_35734335-common_voice_en_35734342",
+      "condition": "noisy15",
+      "snr": 17.536338806152344,
+      "inn": 26.827582310712174,
+      "band_db": 12.285404428494509,
+      "unmasked": 10.770863357394271,
+      "harm": 1.4381920099258423
+    },
+    {
+      "set": "EXP-030",
+      "utt_id": "common_voice_en_35734335-common_voice_en_35734342",
+      "condition": "telephone",
+      "snr": 40.88611602783203,
+      "inn": 96.03271638459657,
+      "band_db": 35.484346197547964,
+      "unmasked": 15.204707087773464,
+      "harm": 0.02763211727142334
+    }
+  ],
+  "local": [
+    {
+      "utt_id": "common_voice_en_15735839-common_voice_en_15735837",
+      "condition": "clean",
+      "snr": 44.262237548828125,
+      "inn": 64.84001440860203,
+      "band_db": 44.08918189652288,
+      "unmasked": 24.454840035370843,
+      "harm": -0.05098295211791992
+    },
+    {
+      "utt_id": "common_voice_en_15735839-common_voice_en_15735837",
+      "condition": "white25",
+      "snr": 27.840564727783203,
+      "inn": 35.73001185440935,
+      "band_db": 18.741483491641908,
+      "unmasked": 14.64786716306519,
+      "harm": 2.042155623435974
+    },
+    {
+      "utt_id": "common_voice_en_15735839-common_voice_en_15735837",
+      "condition": "pink25",
+      "snr": 28.278980255126953,
+      "inn": 39.91012740993883,
+      "band_db": 21.426027693746857,
+      "unmasked": 17.12445976955273,
+      "harm": 0.41005873680114746
+    },
+    {
+      "utt_id": "common_voice_en_15735839-common_voice_en_15735837",
+      "condition": "ssn25",
+      "snr": 27.91657257080078,
+      "inn": 50.45652235700419,
+      "band_db": 29.76514394979999,
+      "unmasked": 21.464608780420992,
+      "harm": 0.10158538818359375
+    },
+    {
+      "utt_id": "common_voice_en_15735839-common_voice_en_15735837",
+      "condition": "lp25",
+      "snr": 27.896940231323242,
+      "inn": 60.147901408262754,
+      "band_db": 38.85184555211799,
+      "unmasked": 23.71636351085641,
+      "harm": -0.39414334297180176
+    },
+    {
+      "utt_id": "common_voice_en_15735839-common_voice_en_15735837",
+      "condition": "tone25",
+      "snr": 27.732486724853516,
+      "inn": 63.352706277649474,
+      "band_db": 42.62290725495708,
+      "unmasked": 21.429803049000483,
+      "harm": -0.5324826240539551
+    },
+    {
+      "utt_id": "common_voice_en_17861489-common_voice_en_17861487",
+      "condition": "clean",
+      "snr": 34.233787536621094,
+      "inn": 68.2362063078658,
+      "band_db": 39.664488228613315,
+      "unmasked": 22.341635399594715,
+      "harm": 0.10743951797485352
+    },
+    {
+      "utt_id": "common_voice_en_17861489-common_voice_en_17861487",
+      "condition": "white25",
+      "snr": 27.107898712158203,
+      "inn": 35.96942918618092,
+      "band_db": 18.921534973514383,
+      "unmasked": 12.725204864830342,
+      "harm": 1.4339683055877686
+    },
+    {
+      "utt_id": "common_voice_en_17861489-common_voice_en_17861487",
+      "condition": "pink25",
+      "snr": 26.879451751708984,
+      "inn": 40.38165697656159,
+      "band_db": 20.00909101669997,
+      "unmasked": 13.149018771372734,
+      "harm": 0.8503334522247314
+    },
+    {
+      "utt_id": "common_voice_en_17861489-common_voice_en_17861487",
+      "condition": "ssn25",
+      "snr": 27.123945236206055,
+      "inn": 51.40940172838541,
+      "band_db": 25.019065685022028,
+      "unmasked": 16.00392054790948,
+      "harm": 0.5739765167236328
+    },
+    {
+      "utt_id": "common_voice_en_17861489-common_voice_en_17861487",
+      "condition": "lp25",
+      "snr": 27.069900512695312,
+      "inn": 64.85000508301317,
+      "band_db": 36.29296717674385,
+      "unmasked": 21.944522509691776,
+      "harm": 0.1552715301513672
+    },
+    {
+      "utt_id": "common_voice_en_17861489-common_voice_en_17861487",
+      "condition": "tone25",
+      "snr": 27.153425216674805,
+      "inn": 66.91089614214087,
+      "band_db": 38.33864953446942,
+      "unmasked": 20.997978824898446,
+      "harm": -0.17028450965881348
+    },
+    {
+      "utt_id": "common_voice_en_17851231-common_voice_en_17851256",
+      "condition": "clean",
+      "snr": 38.654197692871094,
+      "inn": 59.34896590403046,
+      "band_db": 51.59448540048741,
+      "unmasked": 46.56783815997844,
+      "harm": 0.03403902053833008
+    },
+    {
+      "utt_id": "common_voice_en_17851231-common_voice_en_17851256",
+      "condition": "white25",
+      "snr": 27.453571319580078,
+      "inn": 34.35867217618798,
+      "band_db": 26.745011716588337,
+      "unmasked": 23.31738785121965,
+      "harm": 2.9351646900177
+    },
+    {
+      "utt_id": "common_voice_en_17851231-common_voice_en_17851256",
+      "condition": "pink25",
+      "snr": 27.732070922851562,
+      "inn": 38.12249305484353,
+      "band_db": 30.391076314608117,
+      "unmasked": 28.458224989451956,
+      "harm": 2.0717320442199707
+    },
+    {
+      "utt_id": "common_voice_en_17851231-common_voice_en_17851256",
+      "condition": "ssn25",
+      "snr": 27.684791564941406,
+      "inn": 47.75875055044918,
+      "band_db": 39.99717652924175,
+      "unmasked": 35.058283497273514,
+      "harm": 0.07382678985595703
+    },
+    {
+      "utt_id": "common_voice_en_17851231-common_voice_en_17851256",
+      "condition": "lp25",
+      "snr": 27.645553588867188,
+      "inn": 56.86999408709421,
+      "band_db": 49.10943499103481,
+      "unmasked": 36.75365714920966,
+      "harm": 0.048512935638427734
+    },
+    {
+      "utt_id": "common_voice_en_17851231-common_voice_en_17851256",
+      "condition": "tone25",
+      "snr": 27.448177337646484,
+      "inn": 58.311790234462634,
+      "band_db": 50.566194739300926,
+      "unmasked": 27.17394395083447,
+      "harm": 0.06281852722167969
+    },
+    {
+      "utt_id": "common_voice_en_18575865-common_voice_en_18575864",
+      "condition": "clean",
+      "snr": 32.414833068847656,
+      "inn": 60.73325386328413,
+      "band_db": 49.95888870295102,
+      "unmasked": 26.930630438927018,
+      "harm": 0.02496337890625
+    },
+    {
+      "utt_id": "common_voice_en_18575865-common_voice_en_18575864",
+      "condition": "white25",
+      "snr": 26.673961639404297,
+      "inn": 34.5401488087792,
+      "band_db": 26.596114895397385,
+      "unmasked": 19.052922937214806,
+      "harm": 2.8939112424850464
+    },
+    {
+      "utt_id": "common_voice_en_18575865-common_voice_en_18575864",
+      "condition": "pink25",
+      "snr": 26.67636489868164,
+      "inn": 38.5627288255347,
+      "band_db": 29.832665833950852,
+      "unmasked": 20.45166354913144,
+      "harm": 1.2688589096069336
+    },
+    {
+      "utt_id": "common_voice_en_18575865-common_voice_en_18575864",
+      "condition": "ssn25",
+      "snr": 26.699657440185547,
+      "inn": 48.32497131946675,
+      "band_db": 38.38593150937129,
+      "unmasked": 22.97834486034943,
+      "harm": 0.07895278930664062
+    },
+    {
+      "utt_id": "common_voice_en_18575865-common_voice_en_18575864",
+      "condition": "lp25",
+      "snr": 26.736698150634766,
+      "inn": 58.89780396477218,
+      "band_db": 48.122360254047166,
+      "unmasked": 26.451327278169728,
+      "harm": 0.09178638458251953
+    },
+    {
+      "utt_id": "common_voice_en_18575865-common_voice_en_18575864",
+      "condition": "tone25",
+      "snr": 26.64238739013672,
+      "inn": 59.94302196427999,
+      "band_db": 49.16314426415692,
+      "unmasked": 25.43783935103462,
+      "harm": -0.029057025909423828
+    },
+    {
+      "utt_id": "common_voice_en_18522556-common_voice_en_18522557",
+      "condition": "clean",
+      "snr": 50.0,
+      "inn": 77.52136455442188,
+      "band_db": 49.43784990035867,
+      "unmasked": 18.361990446479318,
+      "harm": -0.23584437370300293
+    },
+    {
+      "utt_id": "common_voice_en_18522556-common_voice_en_18522557",
+      "condition": "white25",
+      "snr": 28.10748863220215,
+      "inn": 36.28476737532693,
+      "band_db": 21.07098085813785,
+      "unmasked": 13.574270193014424,
+      "harm": 0.9666104316711426
+    },
+    {
+      "utt_id": "common_voice_en_18522556-common_voice_en_18522557",
+      "condition": "pink25",
+      "snr": 28.748546600341797,
+      "inn": 40.504434727135376,
+      "band_db": 22.36262431325586,
+      "unmasked": 13.923515570791487,
+      "harm": 0.1818850040435791
+    },
+    {
+      "utt_id": "common_voice_en_18522556-common_voice_en_18522557",
+      "condition": "ssn25",
+      "snr": 29.083847045898438,
+      "inn": 51.95957739813185,
+      "band_db": 28.226810211541274,
+      "unmasked": 15.948893188710258,
+      "harm": -0.24684762954711914
+    },
+    {
+      "utt_id": "common_voice_en_18522556-common_voice_en_18522557",
+      "condition": "lp25",
+      "snr": 28.845823287963867,
+      "inn": 70.73132905174708,
+      "band_db": 42.6621969885129,
+      "unmasked": 18.30015949127678,
+      "harm": -0.0927741527557373
+    },
+    {
+      "utt_id": "common_voice_en_18522556-common_voice_en_18522557",
+      "condition": "tone25",
+      "snr": 27.929126739501953,
+      "inn": 75.4661069551062,
+      "band_db": 47.38106908964141,
+      "unmasked": 18.195682356967744,
+      "harm": 0.7233664989471436
+    },
+    {
+      "utt_id": "common_voice_en_19289713-common_voice_en_19289715",
+      "condition": "clean",
+      "snr": 35.41514205932617,
+      "inn": 73.39407048044569,
+      "band_db": 32.95423209150338,
+      "unmasked": 14.19491616910635,
+      "harm": -0.02094745635986328
+    },
+    {
+      "utt_id": "common_voice_en_19289713-common_voice_en_19289715",
+      "condition": "white25",
+      "snr": 27.1162052154541,
+      "inn": 36.02392491572146,
+      "band_db": 15.682692075879032,
+      "unmasked": 12.425729862273258,
+      "harm": 1.6861271858215332
+    },
+    {
+      "utt_id": "common_voice_en_19289713-common_voice_en_19289715",
+      "condition": "pink25",
+      "snr": 27.43687629699707,
+      "inn": 40.31459931320476,
+      "band_db": 16.847301457577604,
+      "unmasked": 13.009411158735755,
+      "harm": 0.18819761276245117
+    },
+    {
+      "utt_id": "common_voice_en_19289713-common_voice_en_19289715",
+      "condition": "ssn25",
+      "snr": 27.47747802734375,
+      "inn": 51.3769190124745,
+      "band_db": 20.915443811670663,
+      "unmasked": 13.850009225103774,
+      "harm": -0.010528802871704102
+    },
+    {
+      "utt_id": "common_voice_en_19289713-common_voice_en_19289715",
+      "condition": "lp25",
+      "snr": 27.533477783203125,
+      "inn": 67.90364548940089,
+      "band_db": 27.58744111853344,
+      "unmasked": 13.944253511907078,
+      "harm": -0.003662586212158203
+    },
+    {
+      "utt_id": "common_voice_en_19289713-common_voice_en_19289715",
+      "condition": "tone25",
+      "snr": 27.1541748046875,
+      "inn": 71.75331526523304,
+      "band_db": 31.409189362315534,
+      "unmasked": 13.25661876639726,
+      "harm": -0.08232522010803223
+    },
+    {
+      "utt_id": "common_voice_en_15735839-common_voice_en_15735837",
+      "condition": "hp25",
+      "snr": 27.841453552246094,
+      "inn": 37.388089424906426,
+      "band_db": 20.598279795111857,
+      "unmasked": 14.419866641645333,
+      "harm": 0.47087574005126953
+    },
+    {
+      "utt_id": "common_voice_en_15735839-common_voice_en_15735837",
+      "condition": "bp25",
+      "snr": 27.899438858032227,
+      "inn": 45.61850736063913,
+      "band_db": 25.519493313396204,
+      "unmasked": 19.08709597694575,
+      "harm": -0.022172212600708008
+    },
+    {
+      "utt_id": "common_voice_en_17861489-common_voice_en_17861487",
+      "condition": "hp25",
+      "snr": 27.09571647644043,
+      "inn": 36.84897523706215,
+      "band_db": 20.176615053325527,
+      "unmasked": 12.662804405908187,
+      "harm": 0.8855903148651123
+    },
+    {
+      "utt_id": "common_voice_en_17861489-common_voice_en_17861487",
+      "condition": "bp25",
+      "snr": 27.068500518798828,
+      "inn": 46.31906328936874,
+      "band_db": 20.38820042735322,
+      "unmasked": 14.96850259165089,
+      "harm": 0.2633061408996582
+    },
+    {
+      "utt_id": "common_voice_en_17851231-common_voice_en_17851256",
+      "condition": "hp25",
+      "snr": 27.436790466308594,
+      "inn": 34.99701499503851,
+      "band_db": 27.409591320411938,
+      "unmasked": 22.783429014958227,
+      "harm": 2.9559736251831055
+    },
+    {
+      "utt_id": "common_voice_en_17851231-common_voice_en_17851256",
+      "condition": "bp25",
+      "snr": 27.43305206298828,
+      "inn": 43.192882411426545,
+      "band_db": 35.474049071923936,
+      "unmasked": 27.734682649144176,
+      "harm": 0.06597375869750977
+    },
+    {
+      "utt_id": "common_voice_en_18575865-common_voice_en_18575864",
+      "condition": "hp25",
+      "snr": 26.64449691772461,
+      "inn": 34.88651221089315,
+      "band_db": 27.03034825688345,
+      "unmasked": 18.88934027448419,
+      "harm": 2.8125144243240356
+    },
+    {
+      "utt_id": "common_voice_en_18575865-common_voice_en_18575864",
+      "condition": "bp25",
+      "snr": 26.546297073364258,
+      "inn": 43.640721235747435,
+      "band_db": 33.58981984017898,
+      "unmasked": 22.60985132883303,
+      "harm": 0.11123180389404297
+    },
+    {
+      "utt_id": "common_voice_en_18522556-common_voice_en_18522557",
+      "condition": "hp25",
+      "snr": 28.10036849975586,
+      "inn": 37.98946204026692,
+      "band_db": 23.081248951616974,
+      "unmasked": 13.536985640740047,
+      "harm": 0.3181891441345215
+    },
+    {
+      "utt_id": "common_voice_en_18522556-common_voice_en_18522557",
+      "condition": "bp25",
+      "snr": 28.286205291748047,
+      "inn": 46.834559996628016,
+      "band_db": 23.288786693982924,
+      "unmasked": 15.227662584609032,
+      "harm": -0.037880659103393555
+    },
+    {
+      "utt_id": "common_voice_en_19289713-common_voice_en_19289715",
+      "condition": "hp25",
+      "snr": 27.05316925048828,
+      "inn": 37.95804650919238,
+      "band_db": 17.98162691681707,
+      "unmasked": 12.402290934837268,
+      "harm": 0.2870147228240967
+    },
+    {
+      "utt_id": "common_voice_en_19289713-common_voice_en_19289715",
+      "condition": "bp25",
+      "snr": 27.16234588623047,
+      "inn": 47.09043169481683,
+      "band_db": 17.5130508037318,
+      "unmasked": 12.699842678549205,
+      "harm": -0.07545208930969238
+    }
+  ]
+}

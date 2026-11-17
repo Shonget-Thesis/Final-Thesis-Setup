@@ -1,0 +1,416 @@
+{
+  "experiment": "EXP-034",
+  "task_id": "EVAL-029",
+  "title": "The invariant residual against SNR only and Chapter 3's drift: which decision rule is better",
+  "framing": "Development test on new development speakers. Every policy chooses per prompt between the teacher's estimate at the commit point (CPH8) and its condition-safe version (CPQH); the policies differ only in the decision signal. The invariant residual is the proposed replacement for Chapter 3's drift. Not held-out evidence.",
+  "commit_time": 0.2928932188134524,
+  "student_levels_after_handover": [
+    0.2928932188134524,
+    0.6173165676349102
+  ],
+  "qual_arms": [
+    "STU",
+    "STUR2",
+    "CPH8",
+    "CPQH",
+    "W8"
+  ],
+  "div_arms": [
+    "STU",
+    "STUR2",
+    "CPH8",
+    "CPQH",
+    "P25"
+  ],
+  "policies": [
+    "SNR_ONLY",
+    "SNR_DRIFT",
+    "SNR_R",
+    "R_ONLY"
+  ],
+  "time_arms": [
+    "STU",
+    "STUR2",
+    "CPH8",
+    "CPQH",
+    "W8",
+    "P25",
+    "SNR_ONLY",
+    "SNR_R"
+  ],
+  "thresholds": {
+    "theta_db": 20.0,
+    "lambda_r": 0.34004843191300677,
+    "lambda_d": 0.2251750830960417,
+    "drift_direction": "flag when below",
+    "needed_utmos": 0.3,
+    "min_voiced": 0.3
+  },
+  "costs": {
+    "STU": 4,
+    "STUR2": 3,
+    "CPH8": 12,
+    "CPQH": 13,
+    "W8": 21,
+    "P25": 30,
+    "SNR_ONLY": 12,
+    "SNR_R": 13
+  },
+  "teacher_passes": {
+    "STU": 0,
+    "STUR2": 0,
+    "CPH8": 10,
+    "CPQH": 10,
+    "W8": 18,
+    "P25": 28,
+    "SNR_ONLY": 10,
+    "SNR_R": 10
+  },
+  "student_passes": {
+    "STU": 4,
+    "STUR2": 3,
+    "CPH8": 2,
+    "CPQH": 3,
+    "W8": 3,
+    "P25": 2,
+    "SNR_ONLY": 2,
+    "SNR_R": 3
+  },
+  "conditions": [
+    "clean",
+    "noisy15",
+    "gauss25",
+    "pink25",
+    "hp25",
+    "reverb09",
+    "telephone",
+    "babble15"
+  ],
+  "div_conditions": [
+    "clean",
+    "gauss25"
+  ],
+  "shaped_noises": {
+    "pink25": "1/sqrt(max(f, 20 Hz)), 25 dB total-power SNR",
+    "hp25": "1/sqrt(1 + (2000 Hz / f)^8), 25 dB total-power SNR"
+  },
+  "positions": {
+    "quality": [
+      31,
+      60
+    ],
+    "diversity": [
+      41,
+      60
+    ],
+    "timing": [
+      31,
+      40
+    ],
+    "calibration_last": 45
+  },
+  "n_qual_cases": 240,
+  "qual_utts": [
+    {
+      "utt_id": "common_voice_en_19670166-common_voice_en_19670165",
+      "speaker_id": "common_voice_en_19670166"
+    },
+    {
+      "utt_id": "common_voice_en_19691845-common_voice_en_19691884",
+      "speaker_id": "common_voice_en_19691845"
+    },
+    {
+      "utt_id": "common_voice_en_19698719-common_voice_en_19698716",
+      "speaker_id": "common_voice_en_19698719"
+    },
+    {
+      "utt_id": "common_voice_en_19741922-common_voice_en_19741926",
+      "speaker_id": "common_voice_en_19741922"
+    },
+    {
+      "utt_id": "common_voice_en_19744568-common_voice_en_19744566",
+      "speaker_id": "common_voice_en_19744568"
+    },
+    {
+      "utt_id": "common_voice_en_19770519-common_voice_en_19770517",
+      "speaker_id": "common_voice_en_19770519"
+    },
+    {
+      "utt_id": "common_voice_en_19816147-common_voice_en_19816145",
+      "speaker_id": "common_voice_en_19816147"
+    },
+    {
+      "utt_id": "common_voice_en_19845853-common_voice_en_19845856",
+      "speaker_id": "common_voice_en_19845853"
+    },
+    {
+      "utt_id": "common_voice_en_19898846-common_voice_en_19898849",
+      "speaker_id": "common_voice_en_19898846"
+    },
+    {
+      "utt_id": "common_voice_en_20005340-common_voice_en_20005343",
+      "speaker_id": "common_voice_en_20005340"
+    },
+    {
+      "utt_id": "common_voice_en_20006910-common_voice_en_20006912",
+      "speaker_id": "common_voice_en_20006910"
+    },
+    {
+      "utt_id": "common_voice_en_20026430-common_voice_en_20026432",
+      "speaker_id": "common_voice_en_20026430"
+    },
+    {
+      "utt_id": "common_voice_en_20177004-common_voice_en_20177058",
+      "speaker_id": "common_voice_en_20177004"
+    },
+    {
+      "utt_id": "common_voice_en_20323109-common_voice_en_20323110",
+      "speaker_id": "common_voice_en_20323109"
+    },
+    {
+      "utt_id": "common_voice_en_203357-common_voice_en_203358",
+      "speaker_id": "common_voice_en_203357"
+    },
+    {
+      "utt_id": "common_voice_en_20451876-common_voice_en_20451880",
+      "speaker_id": "common_voice_en_20451876"
+    },
+    {
+      "utt_id": "common_voice_en_20531306-common_voice_en_20531308",
+      "speaker_id": "common_voice_en_20531306"
+    },
+    {
+      "utt_id": "common_voice_en_20718170-common_voice_en_20718169",
+      "speaker_id": "common_voice_en_20718170"
+    },
+    {
+      "utt_id": "common_voice_en_20791751-common_voice_en_20791750",
+      "speaker_id": "common_voice_en_20791751"
+    },
+    {
+      "utt_id": "common_voice_en_20806032-common_voice_en_20806033",
+      "speaker_id": "common_voice_en_20806032"
+    },
+    {
+      "utt_id": "common_voice_en_20834082-common_voice_en_20834083",
+      "speaker_id": "common_voice_en_20834082"
+    },
+    {
+      "utt_id": "common_voice_en_20905661-common_voice_en_20905662",
+      "speaker_id": "common_voice_en_20905661"
+    },
+    {
+      "utt_id": "common_voice_en_20933101-common_voice_en_20933102",
+      "speaker_id": "common_voice_en_20933101"
+    },
+    {
+      "utt_id": "common_voice_en_21551805-common_voice_en_21551806",
+      "speaker_id": "common_voice_en_21551805"
+    },
+    {
+      "utt_id": "common_voice_en_21555942-common_voice_en_21555950",
+      "speaker_id": "common_voice_en_21555942"
+    },
+    {
+      "utt_id": "common_voice_en_21653057-common_voice_en_21653072",
+      "speaker_id": "common_voice_en_21653057"
+    },
+    {
+      "utt_id": "common_voice_en_21658335-common_voice_en_21658337",
+      "speaker_id": "common_voice_en_21658335"
+    },
+    {
+      "utt_id": "common_voice_en_21742650-common_voice_en_21742653",
+      "speaker_id": "common_voice_en_21742650"
+    },
+    {
+      "utt_id": "common_voice_en_21762342-common_voice_en_21762343",
+      "speaker_id": "common_voice_en_21762342"
+    },
+    {
+      "utt_id": "common_voice_en_21851751-common_voice_en_21851745",
+      "speaker_id": "common_voice_en_21851751"
+    }
+  ],
+  "n_div_speakers": 20,
+  "div_seeds": 12,
+  "div_seed_base": 1000,
+  "div_utts": [
+    {
+      "utt_id": "common_voice_en_20006910-common_voice_en_20006912",
+      "speaker_id": "common_voice_en_20006910"
+    },
+    {
+      "utt_id": "common_voice_en_20026430-common_voice_en_20026432",
+      "speaker_id": "common_voice_en_20026430"
+    },
+    {
+      "utt_id": "common_voice_en_20177004-common_voice_en_20177058",
+      "speaker_id": "common_voice_en_20177004"
+    },
+    {
+      "utt_id": "common_voice_en_20323109-common_voice_en_20323110",
+      "speaker_id": "common_voice_en_20323109"
+    },
+    {
+      "utt_id": "common_voice_en_203357-common_voice_en_203358",
+      "speaker_id": "common_voice_en_203357"
+    },
+    {
+      "utt_id": "common_voice_en_20451876-common_voice_en_20451880",
+      "speaker_id": "common_voice_en_20451876"
+    },
+    {
+      "utt_id": "common_voice_en_20531306-common_voice_en_20531308",
+      "speaker_id": "common_voice_en_20531306"
+    },
+    {
+      "utt_id": "common_voice_en_20718170-common_voice_en_20718169",
+      "speaker_id": "common_voice_en_20718170"
+    },
+    {
+      "utt_id": "common_voice_en_20791751-common_voice_en_20791750",
+      "speaker_id": "common_voice_en_20791751"
+    },
+    {
+      "utt_id": "common_voice_en_20806032-common_voice_en_20806033",
+      "speaker_id": "common_voice_en_20806032"
+    },
+    {
+      "utt_id": "common_voice_en_20834082-common_voice_en_20834083",
+      "speaker_id": "common_voice_en_20834082"
+    },
+    {
+      "utt_id": "common_voice_en_20905661-common_voice_en_20905662",
+      "speaker_id": "common_voice_en_20905661"
+    },
+    {
+      "utt_id": "common_voice_en_20933101-common_voice_en_20933102",
+      "speaker_id": "common_voice_en_20933101"
+    },
+    {
+      "utt_id": "common_voice_en_21551805-common_voice_en_21551806",
+      "speaker_id": "common_voice_en_21551805"
+    },
+    {
+      "utt_id": "common_voice_en_21555942-common_voice_en_21555950",
+      "speaker_id": "common_voice_en_21555942"
+    },
+    {
+      "utt_id": "common_voice_en_21653057-common_voice_en_21653072",
+      "speaker_id": "common_voice_en_21653057"
+    },
+    {
+      "utt_id": "common_voice_en_21658335-common_voice_en_21658337",
+      "speaker_id": "common_voice_en_21658335"
+    },
+    {
+      "utt_id": "common_voice_en_21742650-common_voice_en_21742653",
+      "speaker_id": "common_voice_en_21742650"
+    },
+    {
+      "utt_id": "common_voice_en_21762342-common_voice_en_21762343",
+      "speaker_id": "common_voice_en_21762342"
+    },
+    {
+      "utt_id": "common_voice_en_21851751-common_voice_en_21851745",
+      "speaker_id": "common_voice_en_21851751"
+    }
+  ],
+  "n_time_cases": 10,
+  "time_utts": [
+    {
+      "utt_id": "common_voice_en_19670166-common_voice_en_19670165",
+      "speaker_id": "common_voice_en_19670166"
+    },
+    {
+      "utt_id": "common_voice_en_19691845-common_voice_en_19691884",
+      "speaker_id": "common_voice_en_19691845"
+    },
+    {
+      "utt_id": "common_voice_en_19698719-common_voice_en_19698716",
+      "speaker_id": "common_voice_en_19698719"
+    },
+    {
+      "utt_id": "common_voice_en_19741922-common_voice_en_19741926",
+      "speaker_id": "common_voice_en_19741922"
+    },
+    {
+      "utt_id": "common_voice_en_19744568-common_voice_en_19744566",
+      "speaker_id": "common_voice_en_19744568"
+    },
+    {
+      "utt_id": "common_voice_en_19770519-common_voice_en_19770517",
+      "speaker_id": "common_voice_en_19770519"
+    },
+    {
+      "utt_id": "common_voice_en_19816147-common_voice_en_19816145",
+      "speaker_id": "common_voice_en_19816147"
+    },
+    {
+      "utt_id": "common_voice_en_19845853-common_voice_en_19845856",
+      "speaker_id": "common_voice_en_19845853"
+    },
+    {
+      "utt_id": "common_voice_en_19898846-common_voice_en_19898849",
+      "speaker_id": "common_voice_en_19898846"
+    },
+    {
+      "utt_id": "common_voice_en_20005340-common_voice_en_20005343",
+      "speaker_id": "common_voice_en_20005340"
+    }
+  ],
+  "bars": {
+    "wer": 0.01,
+    "sim": -0.01,
+    "auc_all": 0.8,
+    "auc_gain_over_drift": 0.1,
+    "max_wrong_clean": 0.15,
+    "variety_keep": 0.9,
+    "runaway_wer": 1.0
+  },
+  "estimands": {
+    "policy_quality": "Per case, a policy's outcome is the scores of the payload it chooses (CPH8 or CPQH; both are synthesized for every case). Paired differences between policies are averaged per speaker over the 8 conditions and bootstrapped over the 30 speakers (B = 2000, seed 2026).",
+    "detection": "'CPQH needed' = UTMOS(CPQH) - UTMOS(CPH8) > 0.30. AUC of r (high), drift d_4 on the 8-interval grid (better direction), the roughness share, Definition 3.3 (low) and the spread-weighted SNR (low), on all 240 cases and on the cases with Definition 3.3 >= 20 dB.",
+    "wrong_clean_flags": "Clean prompts routed to CPQH by a policy although CPQH is not needed, as a share of clean cases. Routes to CPQH where it is needed (a teacher that breaks on a clean prompt) are correct catches and do not count.",
+    "variety": "Per condition (clean, gauss25), speaker means of CVf0 and aligned CVf0 for each arm and policy (a policy's 12 outputs are the payloads it chose per seed); the share of CPH8's clean gain over STU kept by each policy, and the share of P25's gain, with speaker-level bootstrap intervals.",
+    "cost": "Forward passes counted by hooks and wall-clock seconds of each arm and policy run on its own, positions 31-40, clean prompts.",
+    "calibrated_secondary": "Secondary: lambda for r and for drift re-chosen on positions 31-45 (largest mean UTMOS with at most 15% wrong clean flags; drift in its better direction) and applied to 46-60.",
+    "spread_snr_gate": "Descriptive (EVAL-027): the policy CPQH below 40 dB of the spread-weighted SNR, else CPH8."
+  },
+  "label_rules": {
+    "H1_snr_r_vs_snr_only": "SNR_R - SNR_ONLY: mean UTMOS difference > 0 with the bootstrap lower bound > 0, WER difference upper bound <= +0.01 and similarity difference lower bound >= -0.01.",
+    "H2_snr_r_vs_snr_drift": "SNR_R - SNR_DRIFT under the same three conditions.",
+    "H3_detection": "AUC(r) >= 0.80 on all cases and >= drift's AUC (better direction) + 0.10.",
+    "H4_wrong_clean_flags": "SNR_R's wrong clean flags <= 15% of clean cases.",
+    "H5_clean_variety": "On clean prompts SNR_R keeps >= 90% of CPH8's gain over STU on both CVf0 and aligned CVf0 (point estimates).",
+    "verdict": "'snr_r_better' if H1-H5 all hold; 'snr_r_better_quality' if H1 holds and any of H2-H5 fails; 'snr_only_not_beaten' otherwise; 'partial' if the quality or variety stage is incomplete."
+  },
+  "local_screen": "The thresholds come from local CPU screens on development positions 1-30 (the 12 shortest clean EXP-033 quality sentences): lambda_r and lambda_d from code/analysis/invariant_residual_screen.py (its calibration half; output hashed below). Those screens are development screening, not evidence; this run uses positions 31-60, and 41-60 have not been used in any earlier T4 quality run.",
+  "code_hashes": {
+    "run_invariant_residual.py": "9b6faa7d64285a2735769749ccc35fdea6a0824627e34b43c74f49835cc7d480",
+    "run_cheaper_teacher_path.py": "de5c33267e92140866231beadd34992e5e4a5b8ce7be623919adb683990e1339",
+    "run_variety_per_pass.py": "fcc3808694da1f21f12d50bbea566ee48019c7af1ce2fbe94b8abe9559909c07",
+    "run_endpoint_extrapolation_prelim.py": "90aec6467ed881602b1e62e4938b1d3c845f5337e98b82b340b5d3d54631cafe",
+    "run_method_comparison.py": "6998df7169938debf50eac3c96a79ea6932f45210bbc1d8bb9ac91659d52aa11",
+    "run_timing_only_handover.py": "d04f27fc0bef25bbc96a9e282faebde6ac0680c4106880dd73a9ae996bed5436",
+    "run_damped_transmissibility_stac.py": "d569118c21c2990b0521b0713d2c538d38d2065672a406a878d4a21f9217738a",
+    "run_transmissibility_bridge.py": "e0939d83ff93544d02cfb5b75662d90c285cb4f3f700bff91c10381612b103fd",
+    "run_transmissibility_confirm.py": "f1e160797fc5e6970f1667481ea78f5f6cff9743571b6bf4584c028a6fd134bc",
+    "run_transmissibility_test.py": "be6b7dfe74b38399ce3b2f0c5ce3942abf7a4fe90e680f5e473591aab22701e1",
+    "run_selective_handover_prelim.py": "b61ef06b9ed0a7411d532d277e2525c436c08aab6a4ca541454672a9ea9be603",
+    "run_consistency_gate_prelim.py": "5d83b1acdf668e7b13981a5df0f6e24e24602fe31e051d00190fd5273a2ce6e3",
+    "run_grid32_prelim.py": "c7b4152da3449264ef2d7aefcea3492e04f9d45399e373ba2b6d448912bf0b84",
+    "run_noise_guidance_prelim.py": "48150a13101d1ecd5ed6da1085e6fd914381f8e22288f5bda7c48f2625dc064b",
+    "run_followup_tests.py": "6bce906980ff4c6c4b1209b086cab4fcbe11f7a2955a27badd698c2906af1801"
+  },
+  "input_hashes": {
+    "research/experiments/EXP-031-snr-toh-method-comparison/results/quality.csv": "d0438e982b4f9378ae8637b0ccaed68a465469a94e188c87524afb64291e5ebb",
+    "research/experiments/EXP-033-cheaper-teacher-path/results/quality.csv": "d4adf3f9441546cd292f288b67e3b4222113594939e21c079ec13b94adf85206",
+    "research/experiments/EXP-033-cheaper-teacher-path/offline/invariant_residual_screen.json": "944ee7d3eeab417ad9fe52eda12cfb8353bb02836d93885046fea68e93338e56"
+  },
+  "seed": 2026,
+  "boot_b": 2000,
+  "sha256": "7c2ec8fca37b4bf8b9598508f47c00a9a1a5883d16987d7cd6fd219757eeff74",
+  "created_utc": "2026-11-17T09:55:10.463999+00:00"
+}

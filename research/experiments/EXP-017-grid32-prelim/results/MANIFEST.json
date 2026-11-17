@@ -1,0 +1,58 @@
+{
+  "description": "Outputs of the EXP-017 notebook run on 2026-11-02 (Colab Tesla T4): a rehearsal of Chapter 3 (Objectives 1, 3 and 4) on the released 16-interval grid and a 32-interval grid with the paper's stopping rule, 13 outputs per input, on the EXP-012 Quick set (60 development speakers x 6 conditions), plus the smoke test and its reproduction check. Byte-identical copies from the downloaded results zip; the runner copies inside the zip are identical to commit c3f6cbe and are not duplicated here.",
+  "source_zip": "DMOSpeech2_Grid32_Results.zip",
+  "source_zip_sha256": "7d85e1d3bfa1e4bbda4ae3d68843e15449bf4fab234eabca505785f3e399c9d5",
+  "thesis_commit_at_run": "c3f6cbeec5191df177ca91bee7266d7e78bd6908",
+  "dmo_commit_at_run": "8a7868fc3345702a586173447f4869205b501f26",
+  "device": "Tesla T4",
+  "excluded": [
+    "code/ (copies of run_grid32_prelim.py, run_noise_guidance_prelim.py, run_endpoint_extrapolation_prelim.py, run_consistency_gate_prelim.py, run_followup_tests.py; identical to commit c3f6cbe)"
+  ],
+  "files": [
+    {
+      "file": "grid32.csv",
+      "bytes": 831113,
+      "sha256": "9cbe11d283e8684f8715befc63390e91ecd013e1a1b6f19ce3185db9036ff82f"
+    },
+    {
+      "file": "GRID32_REPORT.md",
+      "bytes": 25201,
+      "sha256": "699f1e07cdd0a7cee68ed6ba549d594f636a9cafa1b613feca271dc56da7ac32"
+    },
+    {
+      "file": "grid32_results.json",
+      "bytes": 86591,
+      "sha256": "3f37a5dcdd27eb8f5b2432a6bd327510c3836ba26ee3808a35631a5300bf37b9"
+    },
+    {
+      "file": "objective1_signals_g16.png",
+      "bytes": 71067,
+      "sha256": "4982b2ed9aa20d9df1068a4a03c2dba4c470ada4e66e1fb172c11e9604fa72a4"
+    },
+    {
+      "file": "objective1_signals_g32.png",
+      "bytes": 74110,
+      "sha256": "4382b5497dbb336a0e8733d2076985a6725bcc1d69adefd43b0f130411f03d0d"
+    },
+    {
+      "file": "preregistration.json",
+      "bytes": 6811,
+      "sha256": "76aa3ad637cb01514a7b12f43b06803a2d338fca28d7b68a6a0c7a1dd2112f40"
+    },
+    {
+      "file": "RUN_INFO.txt",
+      "bytes": 176,
+      "sha256": "d07744e817fc3aaef1afd30f3a186fcf32fbd7dfadfa12d3497bf8b396de7612"
+    },
+    {
+      "file": "smoke/grid32.csv",
+      "bytes": 11483,
+      "sha256": "9974acd9214614792beaf9448f39ce4aa172ed5c494d5e8babc29965bdb76e01"
+    },
+    {
+      "file": "smoke/reproduction.json",
+      "bytes": 3683,
+      "sha256": "3fd35f3526d47b80c71f731908d5504ba9d89e86f97dd25019b3fd68ab40fa00"
+    }
+  ]
+}

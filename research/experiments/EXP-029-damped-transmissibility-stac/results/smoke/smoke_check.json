@@ -1,0 +1,24 @@
+{
+  "repro": [
+    {
+      "utt_id": "common_voice_en_22461617-common_voice_en_22461638",
+      "diff_a0": 0.0,
+      "diff_a1": 0.0,
+      "split_diff": 0.0,
+      "d_wer": 0.0,
+      "d_sim": 0.0
+    },
+    {
+      "utt_id": "common_voice_en_22839883-common_voice_en_22839889",
+      "diff_a0": 0.0,
+      "diff_a1": 0.0,
+      "split_diff": 0.0,
+      "d_wer": 0.0,
+      "d_sim": 5.960464477539063e-08
+    }
+  ],
+  "max_diff_a0": 0.0,
+  "max_diff_a1": 0.0,
+  "max_split_diff": 0.0,
+  "utc": "2026-11-15T06:06:52.266080+00:00"
+}

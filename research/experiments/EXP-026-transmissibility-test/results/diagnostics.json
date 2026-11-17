@@ -1,0 +1,104 @@
+{
+  "note": "post hoc and descriptive; outside the frozen verdict rule (EXP-026 preregistration 78f3432d...)",
+  "speakers": 20,
+  "voiced_share": {
+    "W4": {
+      "mean": 0.6288854749559806,
+      "min": 0.2831858407079646
+    },
+    "W8": {
+      "mean": 0.6299844916096793,
+      "min": 0.28023598820059
+    },
+    "W4R2": {
+      "mean": 0.5613719571583116,
+      "min": 0.09734513274336283
+    },
+    "W8R2": {
+      "mean": 0.6186169654635354,
+      "min": 0.25663716814159293
+    },
+    "T16": {
+      "mean": 0.5202324190653855,
+      "min": 0.10914454277286136
+    }
+  },
+  "contrasts": {
+    "T16_minus_W8": {
+      "mean": 0.022621055891373455,
+      "median": 0.014293598755616074,
+      "positive": 18,
+      "n": 20,
+      "sign_test_p": 0.0004024505615234375,
+      "mean_without_top2": 0.012009806413822516,
+      "largest": {
+        "speaker_id": "common_voice_en_15735839",
+        "difference": 0.19489488418510673
+      }
+    },
+    "W8R2_minus_W8": {
+      "mean": 0.022252715372010096,
+      "median": 0.008927801982243168,
+      "positive": 18,
+      "n": 20,
+      "sign_test_p": 0.0004024505615234375,
+      "mean_without_top2": 0.010694108129481036,
+      "largest": {
+        "speaker_id": "common_voice_en_15735839",
+        "difference": 0.16819154326090494
+      }
+    },
+    "W4R2_minus_W4": {
+      "mean": 0.009435266418928851,
+      "median": 0.0037877744850104526,
+      "positive": 11,
+      "n": 20,
+      "sign_test_p": 0.8238029479980469,
+      "mean_without_top2": -0.00023325137730131779,
+      "largest": {
+        "speaker_id": "common_voice_en_15735839",
+        "difference": 0.10741020017890943
+      }
+    },
+    "T16_minus_W8R2": {
+      "mean": 0.0003683405193633603,
+      "median": 0.003630475931249263,
+      "positive": 12,
+      "n": 20,
+      "sign_test_p": 0.5034446716308594,
+      "mean_without_top2": -0.0029101629928014808,
+      "largest": {
+        "speaker_id": "common_voice_en_155313",
+        "difference": 0.03304640333349207
+      }
+    },
+    "W8_minus_W4": {
+      "mean": 0.0006856853813981198,
+      "median": -0.000288196634885024,
+      "positive": 9,
+      "n": 20,
+      "sign_test_p": 0.8238029479980469,
+      "mean_without_top2": -0.000256471445811244,
+      "largest": {
+        "speaker_id": "common_voice_en_155313",
+        "difference": 0.009792589400392779
+      }
+    }
+  },
+  "pitch_tracker_check": {
+    "speakers_in_both_files": 20,
+    "T16": {
+      "spearman_gain_vs_voiced_share_change": 0.022556390977443608,
+      "spearman_gain_vs_utmos": 0.24360902255639097
+    },
+    "W8R2": {
+      "spearman_gain_vs_voiced_share_change": -0.4573148123331186,
+      "spearman_gain_vs_utmos": -0.12481203007518797
+    }
+  },
+  "h3_provenance": {
+    "speakers_matched_to_exp020": 20,
+    "max_abs_difference": 0.0,
+    "meaning": "W4 and W8 CVf0 are EXP-020's stored values, so H3 is not new evidence"
+  }
+}
