@@ -428,16 +428,15 @@
         "presentation/slides/17-appendix-preliminary-experiments.html",
         "presentation/slides/18-appendix-signal-diagnostic.html",
         "presentation/slides/19-appendix-simulation-and-prototype.html",
-        "presentation/slides/20-appendix-stac-architecture.html",
-        "presentation/slides/21-appendix-stac-results.html",
         "presentation/proposal-defense-slides.pdf",
         "docs/progress/log/2026-10-25-defense-walkthrough.md",
         "docs/progress/log/2026-10-27-vector-slides-pdf.md",
         "docs/progress/log/2026-10-27-model-gap-novelty-slides.md",
         "docs/progress/log/2026-10-27-compact-deck.md",
-        "docs/progress/log/2026-11-07-exp018-stac-handover-prelim.md"
+        "docs/progress/log/2026-11-07-exp018-stac-handover-prelim.md",
+        "docs/progress/log/2026-11-17-remove-presentation-slides-20-22.md"
       ],
-      "validation": "Modularized slide structure (21 slides in presentation/slides/: 16 main proposal slides + 5 appendix slides), fast template builder (build.py) with --watch, --serve, --sync-md, and stdlib RFC 6455 --pdf export. 2026-11-07: updated Appendix slides 17-19 with verified Tesla T4 findings (AUDIT-001, EXP-011 to EXP-018, including live_swsr_t4.csv online early exit) and added slides 20-21 for the STAC / 1D-CRC-STAC modular architecture and cross-grid/cohort/OOD benchmark comparison (all explicitly labeled as development evidence); rebuilt index.html, SCRIPT.md, and proposal-defense-slides.pdf (21 pages) and verified zero bounding-box overflow or clipping in headless Edge."
+      "validation": "Modularized slide structure (currently 19 slides in presentation/slides/: 16 main proposal slides + 3 appendix slides 17-19 after PRES-002 removed slides 20-22 on 2026-11-17), fast template builder (build.py) with --watch, --serve, --sync-md, and stdlib RFC 6455 --pdf export. 2026-11-07 added slides 20-21 (STAC) and 2026-11-14 added slide 22 (Two-Axis); 2026-11-17 removed slides 20-22 from presentation/slides/ and rebuilt index.html, SCRIPT.md, and proposal-defense-slides.pdf (19 slides / 19 pages)."
     },
     {
       "id": "EVAL-009",
@@ -844,7 +843,7 @@
       "id": "EVAL-026",
       "title": "Cheaper teacher paths to the DMOSpeech 2 paper's t_switch = 0.25: which handover keeps its variety and quality for the fewest passes (EXP-033)",
       "owner": "Rhenel Jhon R. Sajol",
-      "status": "todo",
+      "status": "review",
       "updated": "2026-11-16",
       "acceptance": "Preregistration is frozen before GPU synthesis (12aec5f7f9fd...) with locked code and EXP-032/EXP-026/EXP-027 input hashes, and discloses the local CPU screen; the Colab T4 smoke test passes the teacher identities (<= 1e-4), the student identities (<= 1e-5), every arm run on its own against the shared run with its counted forward passes equal to the cost table, EXP-027 W4 reproduction (<= 0.01) and EXP-032 reproduction of STU, W8 and P25 on development speaker 1 under clean and noisy15 (<= 0.01); the run evaluates P25, W8R2, W8, W6R2, W4R2, STU and the candidates CPH12, CPH8, CPH6, GI, SST and CWH4 on development speakers 1-30 x clean and noisy15 (60 quality cases), on 20 speakers x 12 seeds of clean prompts for variety, and each arm alone on 10 clean cases for passes and time; the analysis applies the frozen label rules against P25, reports the cost table, the equal-cost contrasts, SNR routing and the EXP-032 and EXP-026 reproductions, and writes MANIFEST.json.",
       "evidence": [
@@ -855,7 +854,52 @@
         "research/experiments/EXP-033-cheaper-teacher-path/preregistration.json",
         "docs/progress/log/2026-11-16-exp033-cheaper-teacher-path-setup.md",
         "code/analysis/local_candidate_screen.py",
-        "research/experiments/EXP-032-variety-per-pass/offline/local_candidate_screen.json"
+        "research/experiments/EXP-032-variety-per-pass/offline/local_candidate_screen.json",
+        "research/experiments/EXP-033-cheaper-teacher-path/results/MANIFEST.json",
+        "research/experiments/EXP-033-cheaper-teacher-path/results/CHEAPER_TEACHER_PATH_REPORT.md",
+        "research/experiments/EXP-033-cheaper-teacher-path/results/cheaper_teacher_path_results.json",
+        "research/experiments/EXP-033-cheaper-teacher-path/results/quality.csv",
+        "research/experiments/EXP-033-cheaper-teacher-path/results/diversity.csv",
+        "research/experiments/EXP-033-cheaper-teacher-path/results/timing.csv",
+        "research/experiments/EXP-033-cheaper-teacher-path/results/smoke/smoke_check.json",
+        "research/experiments/EXP-033-cheaper-teacher-path/results/diagnostics.json",
+        "code/analysis/exp033_diagnostics.py",
+        "code/tests/test_exp033_diagnostics.py",
+        "docs/progress/log/2026-11-16-exp033-results.md",
+        "code/analysis/adaptive_teacher_screen.py",
+        "code/tests/test_adaptive_teacher_screen.py",
+        "research/experiments/EXP-033-cheaper-teacher-path/offline/adaptive_teacher_screen.json",
+        "docs/progress/log/2026-11-16-adaptive-teacher-screen.md",
+        "code/analysis/innovation_snr_screen.py",
+        "code/tests/test_innovation_snr_screen.py",
+        "research/experiments/EXP-033-cheaper-teacher-path/offline/innovation_snr_screen.json",
+        "docs/progress/log/2026-11-16-innovation-snr.md"
+      ],
+      "validation": "2026-11-16: Colab T4 run on 2026-11-16 under preregistration 12aec5f7f9fd... (60/60 quality, 20/20 x 12 variety, 10/10 timing); smoke identities exactly 0, every arm alone equal to the shared run with its counted passes equal to the cost table, EXP-027 W4 reproduced; manifest and preregistration hashes checked and the ten files imported byte-identically; analyze() recomputed locally from the CSVs gives the same results JSON and a byte-identical report; STU, W8 and P25 reproduce EXP-032 (variety identical, largest UTMOS difference 4.3e-4) and W8R2 and W4R2 reproduce EXP-026. Frozen labels: cheapest_match_point CPH8 (12 passes), cheapest_match_confirmed none, w8r2_matches_paper true, noisy_quality_safe_arms empty; W8R2, CPH8 and GI matches_paper. Post hoc diagnostics in diagnostics.json. One development run; a confirmation on new speakers is pending. Awaiting requester review."
+    },
+    {
+      "id": "EVAL-027",
+      "title": "Spread-weighted SNR gate: the teacher copies spread-out background texture; derivation, falsification screens and T4 confirmation",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "in_progress",
+      "updated": "2026-11-17",
+      "acceptance": "A preregistered Colab T4 run on development speakers not used in the screens compares the spread-weighted SNR with Definition 3.3 as the handover gate (student alone below the threshold, CPH8 above), each with its threshold frozen before synthesis, on white noise (15-25 dB), pink, high-pass, narrow-band, speech-shaped and low-pass noise, DEMAND babble, reverberation, telephone and clean prompts, scored by WER, speaker similarity and UTMOS; the result, whichever way it goes, is imported with hashes and reported.",
+      "evidence": [
+        "docs/progress/log/2026-11-16-innovation-snr.md",
+        "docs/progress/log/2026-11-17-spread-weighted-snr.md",
+        "code/analysis/innovation_snr_screen.py",
+        "code/analysis/noise_color_screen.py",
+        "code/analysis/noise_theory_screen.py",
+        "code/analysis/noise_band_screen.py",
+        "code/analysis/noise_statistic_compare.py",
+        "research/experiments/EXP-033-cheaper-teacher-path/offline/innovation_snr_screen.json",
+        "research/experiments/EXP-033-cheaper-teacher-path/offline/noise_color_screen.json",
+        "research/experiments/EXP-033-cheaper-teacher-path/offline/noise_theory_screen.json",
+        "research/experiments/EXP-033-cheaper-teacher-path/offline/noise_band_screen.json",
+        "research/experiments/EXP-033-cheaper-teacher-path/offline/noise_statistic_compare.json",
+        "code/tests/test_innovation_snr_screen.py",
+        "code/tests/test_noise_color_screen.py",
+        "code/tests/test_spread_snr.py"
       ]
     },
     {
@@ -878,6 +922,69 @@
         "docs/progress/log/2026-11-16-snr-drift-prototype.md"
       ],
       "validation": "2026-11-16: 12 unit tests OK with the system Python and in .venv (PyTorch drift equals the sampler's exactly); checkpoints match the published SHA-256; local CPU runs reproduce EXP-031's T4 records (speaker 1 clean: SNR 28.2 dB, d1-d8 equal to 3 decimals, Step 8; speaker 5 clean: Step 4, 13 of 21 passes; speaker 5 noisy15: gate closed, Step 8); the upload path, the launcher and the page script (node --check) work. The page was not reviewed in a browser by the requester yet. Development demonstration; not adviser-reviewed."
+    },
+    {
+      "id": "PAPER-014",
+      "title": "Update Appendix D with Step 1-7 quality benchmarks and prosodic variety findings",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "review",
+      "updated": "2026-11-16",
+      "acceptance": "Chapters 1-3 remain unchanged; Appendix D.1 adds the Step 1-7 quality benchmark table (EXP-003, EXP-018, EXP-032) and links cleanly to Appendix E; new Appendix D.3 (app:prelim-variety) documents clean CVf0, aligned CVf0, timing spread across STU/W1-W4/W8/P25/P25R (EXP-032), missing W5-W7 and W1R2-W3R2/W7R2 runs, j=2 restart variety-UTMOS trade-off across EXP-026..029, and noisy15 pYIN unvoiced limits; Table tab:prelim summarizes these additions; latexmk -Werror builds cleanly without new warnings.",
+      "evidence": [
+        "paper/chapters/appendices.tex",
+        "docs/progress/log/2026-11-16-appendix-d-steps1to7-and-variety.md"
+      ],
+      "validation": "2026-11-16: latexmk -interaction=nonstopmode -halt-on-error -Werror main.tex exited 0 (paper/build/main.pdf, 86 pages, zero undefined references, zero missing citations, zero overfull boxes). Workspace check and unit test suite verified separately. Pending adviser and team review."
+    },
+    {
+      "id": "PAPER-015",
+      "title": "Remove STAC, 1D-CRC-STAC, and Appendix E from the LaTeX manuscript while keeping Appendix D Steps 1-7 quality and prosodic variety",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "review",
+      "updated": "2026-11-17",
+      "acceptance": "All active STAC, 1D-CRC-STAC, and Appendix E (app:stac) content and cross-references are removed from paper/chapters/appendices.tex (Appendices B-E header, Appendix B CRC/STAC note, Appendix C live STAC section, Appendix D STAC cross-refs, and Appendix E), paper/frontmatter.tex removes unused CRC and STAC acronyms, and paper/main.tex header restores Appendices A-D, while preserving Appendix D's Steps 1-7 quality benchmark and prosodic variety subsection; latexmk -Werror builds cleanly with zero undefined refs/citations.",
+      "evidence": [
+        "paper/chapters/appendices.tex",
+        "paper/frontmatter.tex",
+        "paper/main.tex",
+        "docs/progress/log/2026-11-17-remove-stac-from-paper.md"
+      ],
+      "validation": "2026-11-17: Zero remaining STAC/app:stac/1D-CRC/Appendix E mentions in active paper files; latexmk -interaction=nonstopmode -halt-on-error -Werror main.tex exited 0 (paper/build/main.pdf, 78 pages, 1,054,567 bytes, zero undefined references, zero missing citations, zero overfull boxes). Pending adviser and team review."
+    },
+    {
+      "id": "PRES-002",
+      "title": "Remove slides 20, 21, and 22 from presentation/index.html and rebuild the 19-slide deck",
+      "owner": "Mark Vincent D. Limpahan",
+      "status": "review",
+      "updated": "2026-11-17",
+      "acceptance": "Slides 20 (STAC architecture), 21 (STAC benchmark results), and 22 (Two-Axis Handover architecture) are removed from presentation/slides/, presentation/index.html is rebuilt to 19 scenes via presentation/build.py --sync-md, presentation/SCRIPT.md and presentation/README.md reflect the 19-slide deck, and proposal-defense-slides.pdf is re-exported cleanly at 19 pages.",
+      "evidence": [
+        "presentation/index.html",
+        "presentation/SCRIPT.md",
+        "presentation/README.md",
+        "presentation/proposal-defense-slides.pdf",
+        "docs/progress/log/2026-11-17-remove-presentation-slides-20-22.md"
+      ],
+      "validation": "2026-11-17: Deleted slides/20-appendix-stac-architecture.html, slides/21-appendix-stac-results.html, and slides/22-appendix-two-axis-architecture.html; ran python presentation/build.py --sync-md --pdf (built index.html with 19 slides in 6.3 ms, synced SCRIPT.md to 19 scenes, exported 19-slide proposal-defense-slides.pdf, 9,535,551 bytes); verified zero stale slide_pdf_ Edge processes and 19 <section class=\"scene\"> blocks in presentation/index.html."
+    },
+    {
+      "id": "PAPER-016",
+      "title": "Merge origin/main (PR #19 post-concept revisions) into rhnl-3 and keep prototype, appendices, presentation, and EXP-016..033 work",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "review",
+      "updated": "2026-11-17",
+      "acceptance": "Local main is fast-forwarded to origin/main (d169bef), origin/main is merged into rhnl-3 (e0bb5c4) preserving all 13 PR #19 files (Chapters 1-3, 3 objectives, figures, references.bib, revision-matrix.tex, and Table A.1 Step 7 + Objective 2/3 renumbering in appendices.tex), while retaining PAPER-014/015, PRES-002, PROTO-001, and EXP-016..033 on top; latexmk -Werror, check_workspace.py, and unittest pass.",
+      "evidence": [
+        "paper/chapters/01-introduction.tex",
+        "paper/chapters/02-related-work.tex",
+        "paper/chapters/03-methodology.tex",
+        "paper/chapters/appendices.tex",
+        "paper/revision-matrix.tex",
+        "presentation/index.html",
+        "code/prototype/snr_drift.py",
+        "docs/progress/log/2026-11-17-merge-origin-main.md"
+      ],
+      "validation": "2026-11-17: Merged origin/main (d169bef) into rhnl-3 at e0bb5c4; verified empty diff against origin/main on all 12 non-appendix PR #19 files and reconciled paper/chapters/appendices.tex with Table A.1 Step 7, 3-objective numbering, Appendix D Steps 1-7 & prosodic variety, and STAC removal; latexmk -Werror exited 0 (paper/build/main.pdf, 90 pages, 1,182,187 bytes)."
     }
   ]
 }

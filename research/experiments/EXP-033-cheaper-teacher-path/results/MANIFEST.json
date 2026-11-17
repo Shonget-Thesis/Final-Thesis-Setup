@@ -1,0 +1,30 @@
+{
+  "experiment": "EXP-033",
+  "utc": "2026-11-16T08:57:42.418724+00:00",
+  "files": {
+    "preregistration": {
+      "path": "/content/Final-Thesis-Setup/research/experiments/EXP-033-cheaper-teacher-path/preregistration.json",
+      "sha256": "43ced0f11698942f04a1ce8b0995295846fca44230140a096ddf207725f81795"
+    },
+    "quality.csv": {
+      "sha256": "d4adf3f9441546cd292f288b67e3b4222113594939e21c079ec13b94adf85206",
+      "bytes": 151075
+    },
+    "diversity.csv": {
+      "sha256": "e324871eabe2a56b2a5b8b9061b4ca7f5aa8e1c2cc711c7613604b2dbe23594c",
+      "bytes": 38115
+    },
+    "timing.csv": {
+      "sha256": "885b33cafbc1a25b0030b1f1ce1ebe0b766726dae075579f30b2fa35ae3e3102",
+      "bytes": 3377
+    },
+    "cheaper_teacher_path_results.json": {
+      "sha256": "be417c42fcddbb1e34263ce7546bb78fdb9f9cfc68f90477853742ab4d1b0855",
+      "bytes": 71582
+    },
+    "CHEAPER_TEACHER_PATH_REPORT.md": {
+      "sha256": "2a14bffbb22f72d1d3f7bc10def10c5c282af9ee66c93aa861420501475d91e6",
+      "bytes": 12794
+    }
+  }
+}

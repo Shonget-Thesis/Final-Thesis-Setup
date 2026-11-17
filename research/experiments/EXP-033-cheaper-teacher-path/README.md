@@ -1,8 +1,8 @@
 # EXP-033: cheaper teacher paths to the paper's t_switch = 0.25
 
-**Status:** prepared and preregistered on 2026-11-16 (Asia/Manila), before any GPU synthesis; freeze `12aec5f7f9fd...`. Not yet run.
+**Status:** prepared and preregistered on 2026-11-16 (Asia/Manila), before any GPU synthesis; freeze `12aec5f7f9fd...`. Ran on a Colab Tesla T4 on 2026-11-16; results imported the same day ([results](#results-2026-11-16), [results log](../../../docs/progress/log/2026-11-16-exp033-results.md)).
 
-Task EVAL-026 (todo). The run needs a Colab Tesla T4, about 3 hours. Files: [notebook](../../../code/colab/DMOSpeech2_EXP033_Cheaper_Teacher_Path.ipynb), [runner](../../../code/colab/run_cheaper_teacher_path.py), [tests](../../../code/tests/test_cheaper_teacher_path.py).
+Task EVAL-026 (review). The run took about 3 hours on a Colab Tesla T4. Files: [notebook](../../../code/colab/DMOSpeech2_EXP033_Cheaper_Teacher_Path.ipynb), [runner](../../../code/colab/run_cheaper_teacher_path.py), [tests](../../../code/tests/test_cheaper_teacher_path.py).
 
 - **A development test:** the speakers are development speakers. It is not held-out evidence.
 - **Nothing is adopted:** the thesis method is unchanged. Adopting any arm is a team decision.
@@ -93,6 +93,50 @@ share_A = (V_A − V_STU) / (V_P25 − V_STU)
 | `cheapest_match_point` is `W8R2` or `none` | The cheaper paths lose variety or quality. The paper's variety then costs about 20 passes, and saving more needs a different idea |
 | `noisy_quality_safe_arms` empty | As in EXP-032: on noisy prompts no teacher handover keeps the student alone's quality, which supports routing noisy prompts to the student |
 
+## Results (2026-11-16)
+
+All three stages complete: 60 of 60 quality cases, 20 of 20 variety cases, 10 of 10 timing cases.
+- **Checks:** smoke identities exactly 0, and every arm's counted passes equal the cost table. `STU`, `W8` and `P25` repeat EXP-032 (variety identical; largest UTMOS difference 4.3e-4), and `W8R2` and `W4R2` repeat EXP-026.
+- **Recomputation:** `analyze()` rerun locally gives the same results and a byte-identical report.
+- **Full details:** the [results log](../../../docs/progress/log/2026-11-16-exp033-results.md).
+
+**Frozen labels:**
+
+| Label | Value |
+|---|---|
+| `cheapest_match_point` | **`CPH8`** (12 passes, 60% fewer than `P25`) |
+| `cheapest_match_confirmed` | `none`: no arm, not even `W8R2`, is confirmed at the 90% bar with 20 speakers |
+| `w8r2_matches_paper` | `true` |
+| `noisy_quality_safe_arms` | `[]` |
+
+**Clean prompts:**
+
+| Arm | Passes | CVf0 share | Aligned share | UTMOS − `P25` | Label |
+|---|---:|---|---|---|---|
+| `W8` | 21 | 60% [41%, 80%] | 35% [9%, 53%] | +0.176 | `variety_short` |
+| `W8R2` | 20 | 98% [86%, 111%] | 100% [86%, 119%] | +0.003 | **`matches_paper`** |
+| `W6R2` | 16 | 74% [56%, 88%] | 60% [41%, 87%] | +0.036 | `variety_short` |
+| `W4R2` | 12 | 78% [58%, 115%] | 60% [37%, 131%] | −0.259 | `both_short` |
+| `CPH12` | 16 | 92% [83%, 103%] | 84% [65%, 112%] | +0.010 | `variety_short` |
+| `CPH8` | 12 | 94% [81%, 115%] | 97% [84%, 124%] | −0.022 | **`matches_paper`** |
+| `CPH6` | 10 | 109% [77%, 169%] | 124% [79%, 278%] | −0.291 | `quality_short` |
+| `GI` | 15 | 102% [89%, 119%] | 115% [93%, 183%] | −0.057 | **`matches_paper`** |
+| `SST` | 13 | 23% [12%, 40%] | 35% [19%, 81%] | +0.161 | `both_short` |
+| `CWH4` | 13 | 71% [57%, 82%] | 53% [32%, 68%] | −0.030 | `variety_short` |
+
+**What it shows:**
+- **`W8R2` matches the paper's setting at 20 passes,** now in one preregistered run.
+- **`CPH8` matches it at 12 passes:** four larger teacher steps to the same point, then the same restart. Post hoc, it does not differ from `W8R2` on variety or quality. It is the released sampler with fewer teacher steps, not a new operator.
+- **Reaching the point matters, not the step count:** at 12 passes `CPH8` beats the early stop `W4R2` by 0.24 UTMOS.
+- **There is a limit:** with three steps (`CPH6`) quality breaks.
+- **`GI` also matches,** at 15 passes.
+- **`SST` and `CWH4` do not.** `SST` shows the teacher's first steps decide both the melody and whether the prompt's noise is copied.
+- **noisy15:** no arm keeps the student alone's quality, and the cheaper paths give 7–11 runaway outputs of 30. They need the SNR gate, with the student alone below it.
+- **Cost on the T4:** time follows passes (0.153 s per pass). `CPH8` takes 40% of `P25`'s time.
+- **With the SNR gate** (post hoc, these 60 cases): 8.0 mean passes, against 30 for the paper's setting and 19.2 for Chapter 3's SNR + drift policy.
+
+**Not yet shown:** a confirmation on new speakers (one development run; the cheapest of ten judged arms was picked), a listening test, and noise between 18 and 22 dB, where the gate is known to miss.
+
 ## The local screen
 
 A quick CPU screen of the five candidates was run on this computer the same day (`code/analysis/local_candidate_screen.py`: three development speakers × six seeds, clean prompts).
@@ -111,4 +155,4 @@ A quick CPU screen of the five candidates was run on this computer the same day 
 
 - **Development evidence only.**
 - **Audio** is not committed.
-- **Results** will be stored under `results/` with a SHA-256 manifest.
+- **Results** are stored under `results/`, byte-identical to the run's zip, with a SHA-256 manifest and `diagnostics.json` (the post hoc diagnostics from `code/analysis/exp033_diagnostics.py`).

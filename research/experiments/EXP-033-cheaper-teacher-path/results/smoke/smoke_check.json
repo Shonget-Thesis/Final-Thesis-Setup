@@ -1,0 +1,241 @@
+{
+  "checks": [
+    {
+      "utt_id": "common_voice_en_22461617-common_voice_en_22461638",
+      "finite": true,
+      "prompt_snr": 32.456451416015625,
+      "seq_len": 1069,
+      "kappa_mean": 0.6682929396629333,
+      "est_dist": {
+        "CPH12": 0.4597792625427246,
+        "CPH8": 0.45570108294487,
+        "CPH6": 0.8733989596366882,
+        "GI": 0.2526009678840637,
+        "SST": 0.9125071167945862
+      },
+      "grid_teacher_vs_trajectory": 0.0,
+      "euler_vs_grid_teacher": 0.0,
+      "continued_vs_grid_teacher": 0.0,
+      "gi_all_guided_vs_grid_teacher": 0.0,
+      "split_diff": 0.0,
+      "cwh_kappa_one": 0.0,
+      "standalone_diff": {
+        "STU": 0.0,
+        "W8": 0.0,
+        "W8R2": 0.0,
+        "W6R2": 0.0,
+        "W4R2": 0.0,
+        "P25": 0.0,
+        "CPH12": 0.0,
+        "CPH8": 0.0,
+        "CPH6": 0.0,
+        "GI": 0.0,
+        "SST": 0.0,
+        "CWH4": 0.0
+      },
+      "passes": {
+        "STU": {
+          "teacher": 0,
+          "student": 4
+        },
+        "W8": {
+          "teacher": 18,
+          "student": 3
+        },
+        "W8R2": {
+          "teacher": 18,
+          "student": 2
+        },
+        "W6R2": {
+          "teacher": 14,
+          "student": 2
+        },
+        "W4R2": {
+          "teacher": 10,
+          "student": 2
+        },
+        "P25": {
+          "teacher": 28,
+          "student": 2
+        },
+        "CPH12": {
+          "teacher": 14,
+          "student": 2
+        },
+        "CPH8": {
+          "teacher": 10,
+          "student": 2
+        },
+        "CPH6": {
+          "teacher": 8,
+          "student": 2
+        },
+        "GI": {
+          "teacher": 13,
+          "student": 2
+        },
+        "SST": {
+          "teacher": 10,
+          "student": 3
+        },
+        "CWH4": {
+          "teacher": 10,
+          "student": 3
+        }
+      },
+      "d_wer_W4": 0.0,
+      "d_sim_W4": 0.0
+    },
+    {
+      "utt_id": "common_voice_en_22839883-common_voice_en_22839889",
+      "finite": true,
+      "prompt_snr": 33.49633026123047,
+      "seq_len": 1031,
+      "kappa_mean": 0.6823676824569702,
+      "est_dist": {
+        "CPH12": 0.05524846911430359,
+        "CPH8": 0.1798594743013382,
+        "CPH6": 0.5281342267990112,
+        "GI": 0.3443807363510132,
+        "SST": 0.7215833067893982
+      },
+      "grid_teacher_vs_trajectory": 0.0,
+      "euler_vs_grid_teacher": 0.0,
+      "continued_vs_grid_teacher": 0.0,
+      "gi_all_guided_vs_grid_teacher": 0.0,
+      "split_diff": 0.0,
+      "cwh_kappa_one": 0.0,
+      "standalone_diff": {
+        "STU": 0.0,
+        "W8": 0.0,
+        "W8R2": 0.0,
+        "W6R2": 0.0,
+        "W4R2": 0.0,
+        "P25": 0.0,
+        "CPH12": 0.0,
+        "CPH8": 0.0,
+        "CPH6": 0.0,
+        "GI": 0.0,
+        "SST": 0.0,
+        "CWH4": 0.0
+      },
+      "passes": {
+        "STU": {
+          "teacher": 0,
+          "student": 4
+        },
+        "W8": {
+          "teacher": 18,
+          "student": 3
+        },
+        "W8R2": {
+          "teacher": 18,
+          "student": 2
+        },
+        "W6R2": {
+          "teacher": 14,
+          "student": 2
+        },
+        "W4R2": {
+          "teacher": 10,
+          "student": 2
+        },
+        "P25": {
+          "teacher": 28,
+          "student": 2
+        },
+        "CPH12": {
+          "teacher": 14,
+          "student": 2
+        },
+        "CPH8": {
+          "teacher": 10,
+          "student": 2
+        },
+        "CPH6": {
+          "teacher": 8,
+          "student": 2
+        },
+        "GI": {
+          "teacher": 13,
+          "student": 2
+        },
+        "SST": {
+          "teacher": 10,
+          "student": 3
+        },
+        "CWH4": {
+          "teacher": 10,
+          "student": 3
+        }
+      },
+      "d_wer_W4": 0.0,
+      "d_sim_W4": 0.0
+    }
+  ],
+  "exp032_quality_reproduction": {
+    "clean": {
+      "cases": 1,
+      "max_abs_prompt_snr": 0.0,
+      "max_abs_wer_STU": 0.0,
+      "median_abs_wer_STU": 0.0,
+      "max_abs_similarity_STU": 0.0,
+      "median_abs_similarity_STU": 0.0,
+      "max_abs_utmos_STU": 0.0,
+      "median_abs_utmos_STU": 0.0,
+      "max_abs_wer_W8": 0.0,
+      "median_abs_wer_W8": 0.0,
+      "max_abs_similarity_W8": 0.0,
+      "median_abs_similarity_W8": 0.0,
+      "max_abs_utmos_W8": 0.0,
+      "median_abs_utmos_W8": 0.0,
+      "max_abs_wer_P25": 0.0,
+      "median_abs_wer_P25": 0.0,
+      "max_abs_similarity_P25": 0.0,
+      "median_abs_similarity_P25": 0.0,
+      "max_abs_utmos_P25": 0.0,
+      "median_abs_utmos_P25": 0.0
+    },
+    "noisy15": {
+      "cases": 1,
+      "max_abs_prompt_snr": 0.0,
+      "max_abs_wer_STU": 0.0,
+      "median_abs_wer_STU": 0.0,
+      "max_abs_similarity_STU": 0.0,
+      "median_abs_similarity_STU": 0.0,
+      "max_abs_utmos_STU": 0.0,
+      "median_abs_utmos_STU": 0.0,
+      "max_abs_wer_W8": 0.0,
+      "median_abs_wer_W8": 0.0,
+      "max_abs_similarity_W8": 0.0,
+      "median_abs_similarity_W8": 0.0,
+      "max_abs_utmos_W8": 0.0,
+      "median_abs_utmos_W8": 0.0,
+      "max_abs_wer_P25": 0.0,
+      "median_abs_wer_P25": 0.0,
+      "max_abs_similarity_P25": 5.960464477539063e-08,
+      "median_abs_similarity_P25": 5.960464477539063e-08,
+      "max_abs_utmos_P25": 0.0,
+      "median_abs_utmos_P25": 0.0
+    }
+  },
+  "exp026_quality_comparison": {
+    "clean": {
+      "cases": 1,
+      "max_abs_prompt_snr": 0.0,
+      "max_abs_wer_W8R2": 0.0,
+      "median_abs_wer_W8R2": 0.0,
+      "max_abs_similarity_W8R2": 0.0,
+      "median_abs_similarity_W8R2": 0.0,
+      "max_abs_utmos_W8R2": 0.0,
+      "median_abs_utmos_W8R2": 0.0,
+      "max_abs_wer_W4R2": 0.0,
+      "median_abs_wer_W4R2": 0.0,
+      "max_abs_similarity_W4R2": 0.0,
+      "median_abs_similarity_W4R2": 0.0,
+      "max_abs_utmos_W4R2": 0.0,
+      "median_abs_utmos_W4R2": 0.0
+    }
+  },
+  "utc": "2026-11-16T05:49:43.108980+00:00"
+}
