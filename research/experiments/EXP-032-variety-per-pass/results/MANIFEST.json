@@ -1,0 +1,30 @@
+{
+  "experiment": "EXP-032",
+  "utc": "2026-11-15T22:34:32.655404+00:00",
+  "files": {
+    "preregistration": {
+      "path": "/content/Final-Thesis-Setup/research/experiments/EXP-032-variety-per-pass/preregistration.json",
+      "sha256": "ce5d97b4a6ddc58cc2deda79fcf996179d6478a4d4963738199e41a9f3f11926"
+    },
+    "quality.csv": {
+      "sha256": "c1957bc1f49162fced47fa8435b59ab5beebce3b81ae7883608e34a8c9c43335",
+      "bytes": 87972
+    },
+    "diversity.csv": {
+      "sha256": "cee3abf621cdd96c40b2375ebe9fe038df981f67fbfb924a81e991eefc5bf991",
+      "bytes": 33833
+    },
+    "variety_per_pass_results.json": {
+      "sha256": "a9d01325917ce84b6cfc7e34e9d79634bed45971e1aa374b3fa6d397b5e447b5",
+      "bytes": 60580
+    },
+    "VARIETY_PER_PASS_REPORT.md": {
+      "sha256": "ae63973a4a7f670ba5dd9e312ed75c10eee7ed7bafe822b616ecd82943e8ceb8",
+      "bytes": 12513
+    },
+    "bank_index.json": {
+      "sha256": "b9ffce9aa9510266821037836adbf993ab8edce45835312f8225c821010f857b",
+      "bytes": 24683
+    }
+  }
+}

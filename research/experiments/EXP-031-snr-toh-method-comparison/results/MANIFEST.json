@@ -1,0 +1,30 @@
+{
+  "experiment": "EXP-031",
+  "utc": "2026-11-15T16:45:58.235850+00:00",
+  "files": {
+    "preregistration": {
+      "path": "/content/Final-Thesis-Setup/research/experiments/EXP-031-snr-toh-method-comparison/preregistration.json",
+      "sha256": "69950853f8165c4272922968f652e0276d4e41e7856c4f2597b8e79b094b409c"
+    },
+    "quality.csv": {
+      "sha256": "d0438e982b4f9378ae8637b0ccaed68a465469a94e188c87524afb64291e5ebb",
+      "bytes": 254039
+    },
+    "diversity.csv": {
+      "sha256": "c2d586b0fefab5e82479456ef01ddcdcc0fa0c25680baa5e57d85281118a96e2",
+      "bytes": 20491
+    },
+    "method_comparison_results.json": {
+      "sha256": "7c74c8ef4b2d1269a74fdd11f43ada9f2fb58f3b812e5ef52c544b0c65f26cc8",
+      "bytes": 165032
+    },
+    "METHOD_COMPARISON_REPORT.md": {
+      "sha256": "e7e62e9c7d7a33ad088e2adefd37da44ebeb16b3e7f3fb3b4a492f8ba90dc68f",
+      "bytes": 26904
+    },
+    "demand_sha256.txt": {
+      "sha256": "cdaa526dffb16a16a9877620ddfc1e8fc7184d80c4598a22c7c41e216062dc09",
+      "bytes": 83
+    }
+  }
+}

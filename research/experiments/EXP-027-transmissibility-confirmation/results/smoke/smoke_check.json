@@ -1,0 +1,32 @@
+{
+  "repro": [
+    {
+      "utt_id": "common_voice_en_21762342-common_voice_en_21762343",
+      "arm": "W4",
+      "d_wer": 0.0,
+      "d_sim": 0.0
+    },
+    {
+      "utt_id": "common_voice_en_21762342-common_voice_en_21762343",
+      "arm": "W8",
+      "d_wer": 0.0,
+      "d_sim": 0.0
+    },
+    {
+      "utt_id": "common_voice_en_21851751-common_voice_en_21851745",
+      "arm": "W4",
+      "d_wer": 0.0,
+      "d_sim": 0.0
+    },
+    {
+      "utt_id": "common_voice_en_21851751-common_voice_en_21851745",
+      "arm": "W8",
+      "d_wer": 0.0,
+      "d_sim": 0.0
+    }
+  ],
+  "n_smoke_items": 2,
+  "max_d_wer": 0.0,
+  "max_d_sim": 0.0,
+  "utc": "2026-11-14T07:55:41.005803+00:00"
+}

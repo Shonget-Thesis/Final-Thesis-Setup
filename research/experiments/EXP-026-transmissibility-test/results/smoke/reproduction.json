@@ -1,0 +1,41 @@
+{
+  "rows": [
+    {
+      "utt_id": "common_voice_en_21762342-common_voice_en_21762343",
+      "condition": "clean",
+      "output": "W4",
+      "wer": 0.07142857142857142,
+      "wer_stored": 0.07142857142857142,
+      "similarity": 0.9567962884902954,
+      "similarity_stored": 0.9567962884902954
+    },
+    {
+      "utt_id": "common_voice_en_21762342-common_voice_en_21762343",
+      "condition": "clean",
+      "output": "W8",
+      "wer": 0.07142857142857142,
+      "wer_stored": 0.07142857142857142,
+      "similarity": 0.9588998556137085,
+      "similarity_stored": 0.9588998556137085
+    },
+    {
+      "utt_id": "common_voice_en_21851751-common_voice_en_21851745",
+      "condition": "clean",
+      "output": "W4",
+      "wer": 0.0,
+      "wer_stored": 0.0,
+      "similarity": 0.9490059614181519,
+      "similarity_stored": 0.9490059614181519
+    },
+    {
+      "utt_id": "common_voice_en_21851751-common_voice_en_21851745",
+      "condition": "clean",
+      "output": "W8",
+      "wer": 0.0,
+      "wer_stored": 0.0,
+      "similarity": 0.9372388124465942,
+      "similarity_stored": 0.9372388124465942
+    }
+  ],
+  "teacher_loop_max_abs_diff": 0.0
+}

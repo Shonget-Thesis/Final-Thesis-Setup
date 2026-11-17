@@ -1,0 +1,77 @@
+{
+  "experiment": "EXP-022",
+  "purpose": "Development test of Slow-Part Handover: can the teacher hand over before Step 4 by passing only the part of its estimate the student uses, and stopping when that part has settled",
+  "algorithm": {
+    "split": "on generated frames: voice = per-band mean over time; slow = centred 9-frame moving average of the remainder, edge padded; fine = the rest (sh.decompose, as in EXP-020)",
+    "signal": "d_slow_k = ||slow(T_k) - slow(T_k-1)|| / ||slow(T_k)||, no extra passes",
+    "stop_rule": "the first k in [2, 3, 4, 5, 6, 7] with d_slow_k <= lambda hands over x = voice(S) + slow(T_k) + fine(S) (code STS); otherwise Step 8 whole, as the 0.25 reference",
+    "draft": "S = eps + g(eps, 0), one student pass from independent noise (seed + 1009), made only at handover",
+    "student": "the released student loop at j = 1 from x"
+  },
+  "passes": {
+    "plain_8": 21,
+    "STT_4": 14,
+    "student4": 4,
+    "STS_2": 10,
+    "STS_3": 12,
+    "STS_4": 14,
+    "STS_5": 16,
+    "STS_6": 18,
+    "STS_7": 20
+  },
+  "data": {
+    "quality": "the EXP-012 Quick set: first 60 development speakers x ['clean', 'noisy15', 'gauss18', 'gauss20', 'gauss22', 'gauss25'] (360 cases)",
+    "diversity": "the first 20 development speakers x ['clean', 'noisy15'], 20 seeds (input_seed + 1000 + m), outputs ['STS_2', 'STS_3', 'STS_4', 'plain_8']",
+    "reused": "plain Steps 1-8 (EXP-018), student only (EXP-017) and Voice-Swap STT_4 (EXP-020), same seeds and T4"
+  },
+  "hardware": "Colab Tesla T4 only; Shonget-DMOSpeech2 at the pinned commit",
+  "dmo_commit": "8a7868fc3345702a586173447f4869205b501f26",
+  "calibration": {
+    "folds": 5,
+    "seed": 2026,
+    "grid": "lambda 0 then the 1/40 ... 39/40 quantiles of the training folds' signal values over the candidate steps, ascending",
+    "constraint": "training-fold mean of (output minus Step 8): capped WER at most +0.01 and similarity at least -0.01",
+    "procedure": "fixed sequence from conservative to aggressive; the last lambda before the first violation"
+  },
+  "candidate_steps": "Steps 4-7 always; Step 2 or 3 only if its CVf0 minus Step 8 has lower bound >= -0.02 on both ['clean', 'noisy15']; decided before the stop rules are calibrated",
+  "criteria": {
+    "C1_cheaper_than_voice_swap": "out-of-fold mean passes of the slow-part rule below 14 (fixed Voice-Swap)",
+    "C2_quality": "out-of-fold slow-part rule minus Step 8, speaker bootstrap: capped WER upper bound <= +0.025 and similarity lower bound >= -0.01, pooled over all 360 cases",
+    "C3_pitch_variety_at_step_3": "CVf0 of the handover at Step 3 minus Step 8: lower bound >= -0.02 on clean and noisy15",
+    "C4_slow_part_beats_whole_estimate": "out-of-fold mean passes of the slow-part rule below those of the same rule on the whole estimate's change (the thesis's drift), calibrated identically"
+  },
+  "decision_rule": "Slow-Part Handover advances to a frozen test on new speakers only if C1 to C4 all pass; otherwise it is reported as a negative result with no retuning on these data",
+  "descriptive": [
+    "the voice-part rule",
+    "fixed handovers at every Step 2..7",
+    "stop-step distributions per condition",
+    "mean part changes per step and condition",
+    "Definition 3.1 failures against Step 8"
+  ],
+  "bootstrap": {
+    "B": 2000,
+    "seed": 2026,
+    "unit": "speaker"
+  },
+  "evidence_status": "development evidence on the speakers that designed EXP-020; not the thesis's frozen held-out evaluation",
+  "novelty": "to our knowledge no published handover passes only part of the teacher's estimate or stops on the change of that part (targeted searches); not a full literature review",
+  "adoption": "not adopted; changing the thesis method needs a dated decision record and adviser review",
+  "code_hashes": {
+    "code/colab/run_slow_part_handover_prelim.py": "692e2345bf2653d6a11e6cf83a9be43716ad1a1f2a088c998bf2596ad0616e06",
+    "code/colab/run_selective_handover_prelim.py": "b61ef06b9ed0a7411d532d277e2525c436c08aab6a4ca541454672a9ea9be603",
+    "code/colab/run_grid32_prelim.py": "c7b4152da3449264ef2d7aefcea3492e04f9d45399e373ba2b6d448912bf0b84",
+    "code/colab/run_noise_guidance_prelim.py": "48150a13101d1ecd5ed6da1085e6fd914381f8e22288f5bda7c48f2625dc064b",
+    "code/colab/run_followup_tests.py": "6bce906980ff4c6c4b1209b086cab4fcbe11f7a2955a27badd698c2906af1801",
+    "code/colab/run_consistency_gate_prelim.py": "5d83b1acdf668e7b13981a5df0f6e24e24602fe31e051d00190fd5273a2ce6e3",
+    "code/colab/run_endpoint_extrapolation_prelim.py": "90aec6467ed881602b1e62e4938b1d3c845f5337e98b82b340b5d3d54631cafe"
+  },
+  "input_hashes": {
+    "research/experiments/EXP-018-swsr-handover-prelim/results/steps1to8.csv": "f904376d4ea784c5bf80e4f5284b5fe7a2bc4a8d8a0e9c9065b4dbfd13bd2600",
+    "research/experiments/EXP-017-grid32-prelim/results/grid32.csv": "9b9d02833a9b0bc7898a3d760f4fe33e18b43da12fa65aeb912ebbe6f664ddb1",
+    "research/experiments/EXP-020-selective-handover-prelim/results/selective.csv": "23519fee77de033dcd2d3d480481bb3a5c7801d820898680870a9f0536942b5d",
+    "code/scheduling/failure_config.json": "13a8fbfdbc11048c2b68f7c5b865369c622f4ec601a6ff7e6a3fa3409ce97b53"
+  },
+  "thesis_commit": "07fe593daf88170183bb8e97185fce51d1d17b7a",
+  "sha256": "c311aeb52d42434490d411f774c26d6cb215d62a894b8e972cf7a5f547376c47",
+  "created_utc": "2026-11-13T00:17:10.419481+00:00"
+}

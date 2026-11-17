@@ -1,0 +1,606 @@
+{
+  "files": 120,
+  "bytes": 97720820,
+  "entries": [
+    {
+      "path": "bank/clean/common_voice_en_10933823-common_voice_en_10933825__s00.npz",
+      "bytes": 788954,
+      "sha256": "6403b188e480d33c3f1c76bd9915fda9e94e98d69e16d03ec8c8f669df51f7c6"
+    },
+    {
+      "path": "bank/clean/common_voice_en_10933823-common_voice_en_10933825__s01.npz",
+      "bytes": 788097,
+      "sha256": "425ed4c58d06abf5645aaf141a11b166fd362df541a78d8ba257111bc57979c7"
+    },
+    {
+      "path": "bank/clean/common_voice_en_10933823-common_voice_en_10933825__s02.npz",
+      "bytes": 789672,
+      "sha256": "89531912b6c6bef896d7546a8fc37d82659c097199eef709f81e09a44778e09d"
+    },
+    {
+      "path": "bank/clean/common_voice_en_10933823-common_voice_en_10933825__s03.npz",
+      "bytes": 787978,
+      "sha256": "575dbfc87dd84fe68e0be43503dc53b06de4989cc899bc1df3ab912264bafb63"
+    },
+    {
+      "path": "bank/clean/common_voice_en_10933823-common_voice_en_10933825__s04.npz",
+      "bytes": 788607,
+      "sha256": "6174d3b526539d17bbea1b0c5ec897f7fbb90f36f63335639dafb78eb46c9091"
+    },
+    {
+      "path": "bank/clean/common_voice_en_10933823-common_voice_en_10933825__s05.npz",
+      "bytes": 790310,
+      "sha256": "2136726c7876dcd39652e04d3f4b820b0a0d41d1f22d2301028d2b0dfaeedd15"
+    },
+    {
+      "path": "bank/clean/common_voice_en_10933823-common_voice_en_10933825__s06.npz",
+      "bytes": 791698,
+      "sha256": "e87eb927caebd5df6313edcafd4d7fb0091cadc163e8c004864ee1de02ca0886"
+    },
+    {
+      "path": "bank/clean/common_voice_en_10933823-common_voice_en_10933825__s07.npz",
+      "bytes": 788907,
+      "sha256": "00460f9c8b6eff93401330685bdeeaa811404a18fef96d7e60ca9ca755b95b13"
+    },
+    {
+      "path": "bank/clean/common_voice_en_10933823-common_voice_en_10933825__s08.npz",
+      "bytes": 790810,
+      "sha256": "8c7c54995172819a24425ade5c87bae5d91cf956cd5780c98345e7c305cda35f"
+    },
+    {
+      "path": "bank/clean/common_voice_en_10933823-common_voice_en_10933825__s09.npz",
+      "bytes": 787135,
+      "sha256": "c0ba3c46ea330fc07f85aa479d442d820b9a0aca01aa0210761995a42f191cc0"
+    },
+    {
+      "path": "bank/clean/common_voice_en_10933823-common_voice_en_10933825__s10.npz",
+      "bytes": 791394,
+      "sha256": "05528fd78a4930c9cfc988b2c381ae2f6278665eb756553a92725a9297d36aeb"
+    },
+    {
+      "path": "bank/clean/common_voice_en_10933823-common_voice_en_10933825__s11.npz",
+      "bytes": 793149,
+      "sha256": "d92f0b90549426c7882e60fc608da20f1ce2119099bd507d4a5ea0ebed6760de"
+    },
+    {
+      "path": "bank/clean/common_voice_en_13900-common_voice_en_13901__s00.npz",
+      "bytes": 913407,
+      "sha256": "dd7f155d678c51e90250a386585829083c69ec42cee683ecefb5cf5828f63a6a"
+    },
+    {
+      "path": "bank/clean/common_voice_en_13900-common_voice_en_13901__s01.npz",
+      "bytes": 915211,
+      "sha256": "028d3fca1a30604cc665c147f6bda5f32030eec2e0a45648c852b5e054909484"
+    },
+    {
+      "path": "bank/clean/common_voice_en_13900-common_voice_en_13901__s02.npz",
+      "bytes": 913904,
+      "sha256": "7a042030b921ade9c839891e26b16631c85c5e77728f2a0da80bb212ac4ffd3f"
+    },
+    {
+      "path": "bank/clean/common_voice_en_13900-common_voice_en_13901__s03.npz",
+      "bytes": 916751,
+      "sha256": "7273c64c1cbc756f4ce14debde7fca35883019c237ad7aa84185401d54bc4732"
+    },
+    {
+      "path": "bank/clean/common_voice_en_13900-common_voice_en_13901__s04.npz",
+      "bytes": 916925,
+      "sha256": "7e49ff12aeef4ec6809d17bf9193e477fbc87b91629f270d010319368ffefd1d"
+    },
+    {
+      "path": "bank/clean/common_voice_en_13900-common_voice_en_13901__s05.npz",
+      "bytes": 913890,
+      "sha256": "383a126308ad51dac7401616302ef16191f99735a7765690e9ac2d892fe00f1c"
+    },
+    {
+      "path": "bank/clean/common_voice_en_13900-common_voice_en_13901__s06.npz",
+      "bytes": 915223,
+      "sha256": "28c4d6078fdf6d57c04014012f93d5563614a887d64791f1655dd1130a0465b2"
+    },
+    {
+      "path": "bank/clean/common_voice_en_13900-common_voice_en_13901__s07.npz",
+      "bytes": 915015,
+      "sha256": "251019f2411e3d977022f70419a10754ea1d003055e3d980ca0f057dfab5b4a7"
+    },
+    {
+      "path": "bank/clean/common_voice_en_13900-common_voice_en_13901__s08.npz",
+      "bytes": 915225,
+      "sha256": "9a3d7059f9c481c111ea832f91fcb4cf10ca21c6d93f9e7d9b3560090eaf68e3"
+    },
+    {
+      "path": "bank/clean/common_voice_en_13900-common_voice_en_13901__s09.npz",
+      "bytes": 915303,
+      "sha256": "2e7e4dfb0af0a84c45d45182265aebe765febe1448df7193f87ee98277926f32"
+    },
+    {
+      "path": "bank/clean/common_voice_en_13900-common_voice_en_13901__s10.npz",
+      "bytes": 916634,
+      "sha256": "a8252e3c2dd7f714a013cae3e0811133a92afa83390dcaaeed27805c2373d3f7"
+    },
+    {
+      "path": "bank/clean/common_voice_en_13900-common_voice_en_13901__s11.npz",
+      "bytes": 914305,
+      "sha256": "1c30bf9921ba598b29e127e0e5282bcf3e4e7d103ce877f1131dd51b2bf889e4"
+    },
+    {
+      "path": "bank/clean/common_voice_en_155313-common_voice_en_155315__s00.npz",
+      "bytes": 1380881,
+      "sha256": "13595113bbbc9af51f6be8cda56736dacdc2d900167d9c445fda582e33a6db69"
+    },
+    {
+      "path": "bank/clean/common_voice_en_155313-common_voice_en_155315__s01.npz",
+      "bytes": 1380693,
+      "sha256": "d8e6b59276862dfdc63c96e1bd2ef04f647dfc6910b43fb33417edfb407f5966"
+    },
+    {
+      "path": "bank/clean/common_voice_en_155313-common_voice_en_155315__s02.npz",
+      "bytes": 1377012,
+      "sha256": "effe8f84ff4b9d53a2929e3c0c4403d45437f5aa65ee9977fad99488e7056523"
+    },
+    {
+      "path": "bank/clean/common_voice_en_155313-common_voice_en_155315__s03.npz",
+      "bytes": 1383102,
+      "sha256": "97332512bf2c95e7ad8a206cbed9765c9b8087fae683224fcd41cf5018e9ed07"
+    },
+    {
+      "path": "bank/clean/common_voice_en_155313-common_voice_en_155315__s04.npz",
+      "bytes": 1377934,
+      "sha256": "505cb1a345375e5ff2e14870e0d03231267e219a27c075de9bbf14da86516f9c"
+    },
+    {
+      "path": "bank/clean/common_voice_en_155313-common_voice_en_155315__s05.npz",
+      "bytes": 1376907,
+      "sha256": "bb0be5821cbe1da6ffa9911a0757f3dfe8ef2e0a590f5336eb8d1f6298f6ff6c"
+    },
+    {
+      "path": "bank/clean/common_voice_en_155313-common_voice_en_155315__s06.npz",
+      "bytes": 1377383,
+      "sha256": "d735966cce2068291e9eb8ff99e8cefd15ab2d9979cf769e70dc9ce1ac900997"
+    },
+    {
+      "path": "bank/clean/common_voice_en_155313-common_voice_en_155315__s07.npz",
+      "bytes": 1378938,
+      "sha256": "3974768102518f58ba51ab35e054be9e3c15e9dc112f4e54aeb3ccd05260ace3"
+    },
+    {
+      "path": "bank/clean/common_voice_en_155313-common_voice_en_155315__s08.npz",
+      "bytes": 1376738,
+      "sha256": "ec689e65836fe735dcd6e5cb89629f3a5594005675bb139d74057b758fc9a1c0"
+    },
+    {
+      "path": "bank/clean/common_voice_en_155313-common_voice_en_155315__s09.npz",
+      "bytes": 1380174,
+      "sha256": "e0b6e19c12568bdda2c2d910baa67f45406993476a3c36fc0091ac942a550e9d"
+    },
+    {
+      "path": "bank/clean/common_voice_en_155313-common_voice_en_155315__s10.npz",
+      "bytes": 1382320,
+      "sha256": "75a53b97b92e368857bd85724586289474af884543938107c0a81fba58765037"
+    },
+    {
+      "path": "bank/clean/common_voice_en_155313-common_voice_en_155315__s11.npz",
+      "bytes": 1380063,
+      "sha256": "ee4ac6d91d01f25274d52b3ce663f48ff4ab878d548363e131b927573c5c108e"
+    },
+    {
+      "path": "bank/clean/common_voice_en_15734837-common_voice_en_15734838__s00.npz",
+      "bytes": 736969,
+      "sha256": "1aa19e8727be611e64aaf7f3ac9f57909bc4f67a26e28c66849b2a7ad3693b73"
+    },
+    {
+      "path": "bank/clean/common_voice_en_15734837-common_voice_en_15734838__s01.npz",
+      "bytes": 730778,
+      "sha256": "35769d264c7e69005fc2d8e17ac0beadb657716b95fddefc18fd1fb131a5693a"
+    },
+    {
+      "path": "bank/clean/common_voice_en_15734837-common_voice_en_15734838__s02.npz",
+      "bytes": 717757,
+      "sha256": "ac99ecade6ca4757aed1ef183b57a5a2968c41e16eb08cb4f50b672a05259ce9"
+    },
+    {
+      "path": "bank/clean/common_voice_en_15734837-common_voice_en_15734838__s03.npz",
+      "bytes": 737626,
+      "sha256": "fafde03a942e8d8403a3d5e0fc7964ae5eb0588ba10fd852c64c468b86030f98"
+    },
+    {
+      "path": "bank/clean/common_voice_en_15734837-common_voice_en_15734838__s04.npz",
+      "bytes": 734432,
+      "sha256": "f784784a3c0b52570f28e40c747a437eeb66f89d3d31bcff008ff72f5edb9f4a"
+    },
+    {
+      "path": "bank/clean/common_voice_en_15734837-common_voice_en_15734838__s05.npz",
+      "bytes": 729236,
+      "sha256": "dcfaec255763426d97196e424bddfb5b8b4236622091550eb06e3be8603d2737"
+    },
+    {
+      "path": "bank/clean/common_voice_en_15734837-common_voice_en_15734838__s06.npz",
+      "bytes": 732145,
+      "sha256": "aa43fefade16c2430100bc62c692f65f6b8dfccc8946f153e02b6793f56d6cdc"
+    },
+    {
+      "path": "bank/clean/common_voice_en_15734837-common_voice_en_15734838__s07.npz",
+      "bytes": 731067,
+      "sha256": "2e36e9f1dd2e3da4a96e9daea1a5770e063cb405016a1ca45f7dec1b6e9b52d2"
+    },
+    {
+      "path": "bank/clean/common_voice_en_15734837-common_voice_en_15734838__s08.npz",
+      "bytes": 720081,
+      "sha256": "87c804854f03ab9865659a42be6ab8de4c6b22ede2c2b1bc1adf493ee8fd71a3"
+    },
+    {
+      "path": "bank/clean/common_voice_en_15734837-common_voice_en_15734838__s09.npz",
+      "bytes": 725442,
+      "sha256": "e39cc01cf2e37fdb2e570b56c47cdc368e981930ef96911326430ac86e1c5873"
+    },
+    {
+      "path": "bank/clean/common_voice_en_15734837-common_voice_en_15734838__s10.npz",
+      "bytes": 729538,
+      "sha256": "7475e915889a94dddd445392ea10860add5d341e136fa671b430da626b059cf0"
+    },
+    {
+      "path": "bank/clean/common_voice_en_15734837-common_voice_en_15734838__s11.npz",
+      "bytes": 731436,
+      "sha256": "aedb441b06c71bf8b60ba2bd5bb023c942210aa0e94a9649233dbb527417de11"
+    },
+    {
+      "path": "bank/clean/common_voice_en_15735839-common_voice_en_15735837__s00.npz",
+      "bytes": 341782,
+      "sha256": "72dae2bad2e5f4ef2949aa51d84479e617df3a21c5ec7ea07afb2ac5866e90a9"
+    },
+    {
+      "path": "bank/clean/common_voice_en_15735839-common_voice_en_15735837__s01.npz",
+      "bytes": 342998,
+      "sha256": "d73b50977d00e71a8d8ccfe89de11e195c2a60fcbb4f24b8e349c868c547eb5e"
+    },
+    {
+      "path": "bank/clean/common_voice_en_15735839-common_voice_en_15735837__s02.npz",
+      "bytes": 342385,
+      "sha256": "ca4b8f5470ca28f14c5516f957852ea30ea99b47efcdf2864d6a09c302192e22"
+    },
+    {
+      "path": "bank/clean/common_voice_en_15735839-common_voice_en_15735837__s03.npz",
+      "bytes": 343689,
+      "sha256": "e33d2d175db75180d186f6ee80a8ab5fe93d9771f46624117c70793b593b06a5"
+    },
+    {
+      "path": "bank/clean/common_voice_en_15735839-common_voice_en_15735837__s04.npz",
+      "bytes": 340229,
+      "sha256": "28dc5c9927c550cd31cd0fdc8cbe425c4a4b5bc8853620dc206b03c97452cba1"
+    },
+    {
+      "path": "bank/clean/common_voice_en_15735839-common_voice_en_15735837__s05.npz",
+      "bytes": 339869,
+      "sha256": "eacc1a9bf97f6be169f5037a4a93a0a4462195f9b092a28afffd631e26abf741"
+    },
+    {
+      "path": "bank/clean/common_voice_en_15735839-common_voice_en_15735837__s06.npz",
+      "bytes": 341491,
+      "sha256": "1514f59b110a25e32219f78a6c29b866bff960c0258735cf35fee4247fa6b021"
+    },
+    {
+      "path": "bank/clean/common_voice_en_15735839-common_voice_en_15735837__s07.npz",
+      "bytes": 338678,
+      "sha256": "34e3137609968283def8c57facb70a0dab1e5d91295bd1475d91481c5eb0bfc6"
+    },
+    {
+      "path": "bank/clean/common_voice_en_15735839-common_voice_en_15735837__s08.npz",
+      "bytes": 342021,
+      "sha256": "38e013270d52ea525dc603b2cbcb9474065394a071c4ba85ca35bb83590428c7"
+    },
+    {
+      "path": "bank/clean/common_voice_en_15735839-common_voice_en_15735837__s09.npz",
+      "bytes": 337898,
+      "sha256": "8fc5b6be4f9baa55ee28bd7438076b54f77708d9c5cdc01ce17555143e6fbabf"
+    },
+    {
+      "path": "bank/clean/common_voice_en_15735839-common_voice_en_15735837__s10.npz",
+      "bytes": 344585,
+      "sha256": "164b289cc86f1b1e20d3da9f89d5560d238b921aba91955b180c3725efa34e47"
+    },
+    {
+      "path": "bank/clean/common_voice_en_15735839-common_voice_en_15735837__s11.npz",
+      "bytes": 341718,
+      "sha256": "51c90d2daa18c11907cac6ce6a9149d8f6cff14c2cb937ad0b803d35d2d223d2"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_10933823-common_voice_en_10933825__s00.npz",
+      "bytes": 769496,
+      "sha256": "6df9dd4c6142f04f84722c94cae00a82f795e44e4d9e8dab7d6011032183b0da"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_10933823-common_voice_en_10933825__s01.npz",
+      "bytes": 763321,
+      "sha256": "73297a0c9b76d0bbad60692360321cd2a0e22ac2e595520c087d510e06934df1"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_10933823-common_voice_en_10933825__s02.npz",
+      "bytes": 770353,
+      "sha256": "caee7c693ef7b0e09cba20b8dccb686744e1729f1074ceab50f827269b344248"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_10933823-common_voice_en_10933825__s03.npz",
+      "bytes": 766852,
+      "sha256": "f413f06511cc853154c416870eecb12c8d2edcdbceb25a6c21e27a3b105b9d92"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_10933823-common_voice_en_10933825__s04.npz",
+      "bytes": 770735,
+      "sha256": "fbbd73582f6f2f2d7b2b46e77b92f1cb6721309d7347859e23a4561c54428f46"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_10933823-common_voice_en_10933825__s05.npz",
+      "bytes": 769252,
+      "sha256": "5d62f2e42ac674ce32ced25cbe4db9812f6916ebe1122f877cfacd0d24b9c201"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_10933823-common_voice_en_10933825__s06.npz",
+      "bytes": 769052,
+      "sha256": "fbb6e1dee26545dd2295a0fa6e67cf52becde7d917c15b6cd656a318301a7902"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_10933823-common_voice_en_10933825__s07.npz",
+      "bytes": 765651,
+      "sha256": "74928f1dbc349c40080afb809b1967604cacce1d658e4c7ba3b601104f4e6e80"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_10933823-common_voice_en_10933825__s08.npz",
+      "bytes": 759532,
+      "sha256": "4b0af9d44402623f3f2cd33af64fba746da57f721f6617828a0a1ac10174086a"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_10933823-common_voice_en_10933825__s09.npz",
+      "bytes": 768961,
+      "sha256": "34302ef5cbbf28f9245af92245622d2ca3e00039347591595c2fa15b55c2fe21"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_10933823-common_voice_en_10933825__s10.npz",
+      "bytes": 765207,
+      "sha256": "5f367346f13f84c4a1ec9d9185572aa5b56204f9480572b1de80cc7a75c588e4"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_10933823-common_voice_en_10933825__s11.npz",
+      "bytes": 772273,
+      "sha256": "da23b39d1e4061b344340390dce58544740d4c8291a7c4e3dcc3f175277c1dfa"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_13900-common_voice_en_13901__s00.npz",
+      "bytes": 821035,
+      "sha256": "557daf1b48f4c8854c6997a09e9ec3b31ced2582b8208ca709e24a7f1af17069"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_13900-common_voice_en_13901__s01.npz",
+      "bytes": 822988,
+      "sha256": "7a15ffd3e0fc4ef72377b703d45cdba3028082500662748be3b2808d7c716e94"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_13900-common_voice_en_13901__s02.npz",
+      "bytes": 819333,
+      "sha256": "7c894a988fa9d2135a811f5063e867be28fef9a0ac4270c68a4fb14b4abd7223"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_13900-common_voice_en_13901__s03.npz",
+      "bytes": 823516,
+      "sha256": "cbcc6440c8483b4d6e45d70f0bc848e947851c6aa3012925d9c56fc1ea131511"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_13900-common_voice_en_13901__s04.npz",
+      "bytes": 817851,
+      "sha256": "9fb55e3da18f894eb0e9c1d1da98da8ad551314e8fa33448019527043f9e3aa6"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_13900-common_voice_en_13901__s05.npz",
+      "bytes": 813130,
+      "sha256": "86ee0bc1c70a4d32229e3ac7e56a66e0c1827fbd9f0d0dba7506cb59dd9c00f0"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_13900-common_voice_en_13901__s06.npz",
+      "bytes": 817386,
+      "sha256": "3fcbafad3caf19183a4f05f66463c53ba86df0d7e4600f826496c001b7cd62f8"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_13900-common_voice_en_13901__s07.npz",
+      "bytes": 822894,
+      "sha256": "451f2e29bc596d3e77aa0378b46b7f31dae7e2189c1d1621a52b3fda6ef30c76"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_13900-common_voice_en_13901__s08.npz",
+      "bytes": 821540,
+      "sha256": "c4dc396520fb499aeb89d172c4300942eeed1437b46df4faf738abb733903835"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_13900-common_voice_en_13901__s09.npz",
+      "bytes": 825691,
+      "sha256": "35802923fd875315d0bdccdd9bcbee30d60c265a3a323ffafbb44c4aba91a1ea"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_13900-common_voice_en_13901__s10.npz",
+      "bytes": 817599,
+      "sha256": "9541e66cf1fd8e1d802269fb4c923421c5055d7246444e63f0eee835aa1ef954"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_13900-common_voice_en_13901__s11.npz",
+      "bytes": 818893,
+      "sha256": "2dbff0f0dc8115d899b51723e1c8865e550f282705918cbe21be536a546b86fa"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_155313-common_voice_en_155315__s00.npz",
+      "bytes": 1320603,
+      "sha256": "1e3eba4a2d205cebee4a9f670cb31a1bc4fe06828f9d4ad932fee665fed60d52"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_155313-common_voice_en_155315__s01.npz",
+      "bytes": 1332339,
+      "sha256": "9376ab6dbf57f95529298c6f99717a7a80266fddfc71e5118081fe349bb5995e"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_155313-common_voice_en_155315__s02.npz",
+      "bytes": 1327920,
+      "sha256": "ad2dbccce0fc7c5c5f50e8f76e91852a01e4a20c4ccb8b45a2486d55733c90ca"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_155313-common_voice_en_155315__s03.npz",
+      "bytes": 1317752,
+      "sha256": "3c2669056c3402b439494a17e5ae0eb7f6655d5308ca3c230c4a9e25714ab294"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_155313-common_voice_en_155315__s04.npz",
+      "bytes": 1316769,
+      "sha256": "3792c29ae5b15d58e36a683d076772ec2184fca45304ef5e7d1f3959079804a8"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_155313-common_voice_en_155315__s05.npz",
+      "bytes": 1338057,
+      "sha256": "f1f964fb559931f9c32d5f2d23d32fe0e3a2296b2dc2669c85cc2ed5712fbf18"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_155313-common_voice_en_155315__s06.npz",
+      "bytes": 1317463,
+      "sha256": "6416cdd2871b7ac765a27f90979a2bf3de0e3e844d26d85887064c894eecb911"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_155313-common_voice_en_155315__s07.npz",
+      "bytes": 1328416,
+      "sha256": "ad7cb6a7052cf03581489c58eefd5a07f73cb0eedc4431c382369546902da8ca"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_155313-common_voice_en_155315__s08.npz",
+      "bytes": 1317844,
+      "sha256": "12e2d9edfc312da51365ecc82215b9d87a18f999b9d7d0cc1c7155b7c3cc0c30"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_155313-common_voice_en_155315__s09.npz",
+      "bytes": 1337186,
+      "sha256": "3acf71a60cba3220cdab6f77920d6c5d790f5ad3b2ddcdb1becd8b94e674bbc0"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_155313-common_voice_en_155315__s10.npz",
+      "bytes": 1330203,
+      "sha256": "d6456fdd9d14c60920a0b0a9bb0b08f158fa98b3f7bb89f51b674b57b04fadfb"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_155313-common_voice_en_155315__s11.npz",
+      "bytes": 1331023,
+      "sha256": "6aea31c244e21533c3baf758006491b06f7122934643a8e86e9b532a5cfc874e"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_15734837-common_voice_en_15734838__s00.npz",
+      "bytes": 715639,
+      "sha256": "cd1992549b0d64892270acf8a784a12b3101aeebaa2fc36c01633783903f1aa9"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_15734837-common_voice_en_15734838__s01.npz",
+      "bytes": 712262,
+      "sha256": "0deeccf18e2f4fc924dacbf25362b73e9229fd66a106f5bccb6c8f94750ddddf"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_15734837-common_voice_en_15734838__s02.npz",
+      "bytes": 711013,
+      "sha256": "e437b0a2a72a540e917c9bbe537cd8d6e61aeed4cf4dbfe88fcdf309312c0485"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_15734837-common_voice_en_15734838__s03.npz",
+      "bytes": 714943,
+      "sha256": "0de401c2244d9523c28450b9ea36972b8f81afa6517b8109b77ab0504bca447b"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_15734837-common_voice_en_15734838__s04.npz",
+      "bytes": 714645,
+      "sha256": "3b4e48ab1c15b3ec793cc49511c2ee099cf8a0457d64254ec9593309438dfa49"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_15734837-common_voice_en_15734838__s05.npz",
+      "bytes": 709538,
+      "sha256": "8794c8436fe808de0b3fffcf1a8cf3c8deb467015e01c55f75ce1a031fd89b99"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_15734837-common_voice_en_15734838__s06.npz",
+      "bytes": 719301,
+      "sha256": "5a6912cff6a905de39c9991d401c9fbf9811d2b6fb3d2d23cb3c63c0c92a7d29"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_15734837-common_voice_en_15734838__s07.npz",
+      "bytes": 714672,
+      "sha256": "a0783113886ad3dc703ee0d81289c6793163e41161f4e0da6bcd3dad5e845007"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_15734837-common_voice_en_15734838__s08.npz",
+      "bytes": 704402,
+      "sha256": "1040abe2ae8bd9cd7734f42b1631789ee5b5748fcdd4810aa081b02b9aeafa58"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_15734837-common_voice_en_15734838__s09.npz",
+      "bytes": 709993,
+      "sha256": "1b658cf104898c00a3bf50b7cfdbca0ea2735eab6c48e208f9f58671b97aa517"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_15734837-common_voice_en_15734838__s10.npz",
+      "bytes": 711609,
+      "sha256": "3fef0070918bf08cf5b4a8b342b59b13944b616526871333849f4a075ce6d725"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_15734837-common_voice_en_15734838__s11.npz",
+      "bytes": 712318,
+      "sha256": "ae5251c0c8e4ebfc7889bdb7bbecae8b099c72557b343d42de833a6be17c8e12"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_15735839-common_voice_en_15735837__s00.npz",
+      "bytes": 361398,
+      "sha256": "cb90035f90132983e88c0d5296ca9a92d6f3a1f5f633fc22c0c1c300a15d8e6f"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_15735839-common_voice_en_15735837__s01.npz",
+      "bytes": 361252,
+      "sha256": "506dd560c62e3cf67faabd9536c958ae71ffb872a86d996ab6ed93e7fad98c52"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_15735839-common_voice_en_15735837__s02.npz",
+      "bytes": 362601,
+      "sha256": "9cf4f856098a8b70262d28258f1c04e763c746e2d289f7bbdb43454caae48fb8"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_15735839-common_voice_en_15735837__s03.npz",
+      "bytes": 361853,
+      "sha256": "34f82658ce53be108f7c69f41fb354050c09302c8e84c2984268357aae46742c"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_15735839-common_voice_en_15735837__s04.npz",
+      "bytes": 360398,
+      "sha256": "d5b0872f1999d69239da7c557537019d1e4a0454298e68aa412fb5e134ef126f"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_15735839-common_voice_en_15735837__s05.npz",
+      "bytes": 361465,
+      "sha256": "9231757f9fba9dbec0e7037fadedb493199de8ec5a80b57561ac85cffa0c8c7d"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_15735839-common_voice_en_15735837__s06.npz",
+      "bytes": 359334,
+      "sha256": "4296f60c9b2e2900148b595a6176b483f40358322b9d87dfd4cb770683fc67cc"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_15735839-common_voice_en_15735837__s07.npz",
+      "bytes": 360782,
+      "sha256": "7f456cfa6419de6fb7d3de34ab416f55e0b4b482dbbc7a4a343a7179c1dc1c56"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_15735839-common_voice_en_15735837__s08.npz",
+      "bytes": 359312,
+      "sha256": "a2599f1284963b0f2e3374cee8f3efee54315eeec29f5567e6abaa9f41f9dba3"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_15735839-common_voice_en_15735837__s09.npz",
+      "bytes": 363304,
+      "sha256": "ea9399495f60ba423d05551a43b41f8ad07442b170fb1dcd4da4176c8277b53c"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_15735839-common_voice_en_15735837__s10.npz",
+      "bytes": 363377,
+      "sha256": "390df2805772e93eb39242933b363a131656eef21d37ecfb75f7d9c02df2ec18"
+    },
+    {
+      "path": "bank/noisy15/common_voice_en_15735839-common_voice_en_15735837__s11.npz",
+      "bytes": 362794,
+      "sha256": "947b853b4b5cd61440886d4ab121119930a27c0e16fbacc816e81d737d7297e7"
+    }
+  ]
+}

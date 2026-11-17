@@ -1,0 +1,161 @@
+{
+  "experiment": "EXP-019",
+  "purpose": "Mechanism (exact guidance decomposition of the endpoint drift) and confirmation of a guidance-aware, risk-controlled handover rule on development speakers not used by EXP-012..EXP-018",
+  "lemma1": "x1hat(t_j) - x1hat(t_{j-1}) = (1 - t_j)(v_j - v_{j-1}); v = c + w g; g = c - u; d_j^2 = p^c_j + p^g_j + p^x_j (generated frames)",
+  "data": {
+    "dev": "first 60 development speakers by utterance ID x ['clean', 'noisy15', 'gauss18', 'gauss20', 'gauss22', 'gauss25']; labels: EXP-018 steps1to8.csv",
+    "fresh": "development speakers 61..100 by utterance ID x ['clean', 'noisy15', 'gauss18', 'gauss20', 'gauss22', 'gauss25']; used before only in EXP-001 (all1000, Steps 4/5/6/8, clean and noisy15)",
+    "ood": "the fresh speakers x ['reverb03', 'reverb09', 'telephone'] (+ ['babble15', 'babble20'] when a DEMAND track is given)",
+    "fresh_utt_ids": [
+      "common_voice_en_22461617-common_voice_en_22461638",
+      "common_voice_en_22839883-common_voice_en_22839889",
+      "common_voice_en_22941073-common_voice_en_22941074",
+      "common_voice_en_23252329-common_voice_en_23252333",
+      "common_voice_en_23750957-common_voice_en_23774578",
+      "common_voice_en_23998981-common_voice_en_23998980",
+      "common_voice_en_24518104-common_voice_en_24518109",
+      "common_voice_en_24819370-common_voice_en_24819368",
+      "common_voice_en_25127181-common_voice_en_25127184",
+      "common_voice_en_25200065-common_voice_en_25200064",
+      "common_voice_en_25216968-common_voice_en_25216966",
+      "common_voice_en_25568854-common_voice_en_25568855",
+      "common_voice_en_25662916-common_voice_en_25663069",
+      "common_voice_en_25693607-common_voice_en_25693608",
+      "common_voice_en_25880669-common_voice_en_25880691",
+      "common_voice_en_26453369-common_voice_en_26453364",
+      "common_voice_en_26933529-common_voice_en_26933532",
+      "common_voice_en_27434681-common_voice_en_27434683",
+      "common_voice_en_28003405-common_voice_en_28003408",
+      "common_voice_en_28065832-common_voice_en_28065833",
+      "common_voice_en_28917649-common_voice_en_28917648",
+      "common_voice_en_30232728-common_voice_en_30232726",
+      "common_voice_en_30757408-common_voice_en_30757409",
+      "common_voice_en_31005683-common_voice_en_31005688",
+      "common_voice_en_31499885-common_voice_en_31499889",
+      "common_voice_en_31959919-common_voice_en_31959922",
+      "common_voice_en_32125519-common_voice_en_32125526",
+      "common_voice_en_34054471-common_voice_en_34054473",
+      "common_voice_en_34184701-common_voice_en_34184697",
+      "common_voice_en_35734335-common_voice_en_35734342",
+      "common_voice_en_36705534-common_voice_en_36705545",
+      "common_voice_en_37237245-common_voice_en_37237243",
+      "common_voice_en_490614-common_voice_en_490613",
+      "common_voice_en_56141-common_voice_en_56142",
+      "common_voice_en_564578-common_voice_en_564576",
+      "common_voice_en_591530-common_voice_en_591529",
+      "common_voice_en_597578-common_voice_en_597577",
+      "common_voice_en_650392-common_voice_en_650390",
+      "common_voice_en_673471-common_voice_en_673472",
+      "common_voice_en_86172-common_voice_en_86173"
+    ]
+  },
+  "grids": {
+    "primary": "g16_floor",
+    "secondary": [
+      "g16_all8",
+      "g32_floor14"
+    ],
+    "t_floor": 0.019,
+    "cands": {
+      "g16_floor": [
+        "g16_2",
+        "g16_3",
+        "g16_4",
+        "g16_5",
+        "g16_6",
+        "g16_7"
+      ],
+      "g16_all8": [
+        "g16_1",
+        "g16_2",
+        "g16_3",
+        "g16_4",
+        "g16_5",
+        "g16_6",
+        "g16_7"
+      ],
+      "g32_floor14": [
+        "g32_4",
+        "g32_5",
+        "g32_6",
+        "g32_7",
+        "g32_8",
+        "g32_9",
+        "g32_10",
+        "g32_11",
+        "g32_12",
+        "g32_13"
+      ]
+    },
+    "refs": {
+      "g16_floor": "g16_8",
+      "g16_all8": "g16_8",
+      "g32_floor14": "g32_14"
+    }
+  },
+  "loss": {
+    "m_wer": 0.01,
+    "b_wer": 0.1,
+    "m_sim": 0.015,
+    "b_sim": 0.025,
+    "m_utmos": 0.15,
+    "b_utmos": 0.5,
+    "definition": "L = min(1, max(dWER_hinge, dSIM_hinge, dUTMOS_hinge [clean prompts only])) vs the grid reference, hinge(x) = max(0, (x - m) / b)"
+  },
+  "safe_label": {
+    "wer": 0.01,
+    "sim": 0.015,
+    "utmos_clean": 0.15,
+    "definition": "dWER <= 0.01, dSIM >= -0.015 and (clean) dUTMOS >= -0.15 vs the reference"
+  },
+  "signal_family": {
+    "A_over_gc0": "guidance-normalized action: A_k / gc_0, with gc_0 = ||g_0||_M / ||c_0||_M at t_0 = 0",
+    "guid_action": "guidance action: sum_{j<=k} sqrt(p^g_j) (cumulative guidance-induced endpoint change)",
+    "cond_action": "conditional action: sum_{j<=k} sqrt(p^c_j) (cumulative conditional-velocity endpoint change)",
+    "net_disp": "net endpoint displacement: D_k = ||x1hat(t_k) - x1hat(t_0)||_M / ||x1hat(t_k)||_M"
+  },
+  "baseline_signals": {
+    "A": "STAC action A_k = sum_{j<=k} d_j",
+    "snr": "prompt SNR (dB), the SNR-only signal"
+  },
+  "selection_rule": "on dev only: the family member with the highest mean AUC over 16-grid steps [1, 2, 3, 4] for the safe label (ties: family order)",
+  "policies": {
+    "gpc": "selected signal; candidate thresholds ordered by the Pareto marginal-efficiency path (each move lowers mean NFE, chosen by NFE drop / (loss increase + eps)), built on 1/3 of the calibration speakers; the stopping index chosen on the other 2/3 by conformal risk control on the speaker-level monotone envelope loss: largest t with (1 + sum_s max_{t'<=t} L_s(t')) / (n + 1) <= alpha = 0.05",
+    "gpc_A": "signal ablation: A_k instead of the selected signal",
+    "gpc_greedy": "path ablation: stage-by-stage greedy path instead of the Pareto marginal-efficiency path",
+    "gpc_nocrc": "calibration ablation: path built and stopped on all calibration data at mean loss <= alpha, no split",
+    "baselines": {
+      "stac": "STAC: Stage-Wise Trajectory Action Cascade (A_k = sum_{j=1}^k d_j >= lambda_k, NO SNR!)",
+      "crc_stac": "CRC-STAC: Conformal Risk-Controlled Trajectory Action Cascade (alpha=0.05, NO SNR!)",
+      "snr_casc": "Control: Stage-Wise SNR Cascade (S_hat >= theta_k, matched DOF!)",
+      "snr_cal": "SNR-only (calibrated SNR gate)"
+    },
+    "fixed": "Step 7 and the reference"
+  },
+  "path": {
+    "n_q": 40,
+    "r_max": 0.25,
+    "eps": 0.001,
+    "path_share": 0.3333333333333333
+  },
+  "hypotheses": {
+    "H1": "max Lemma-1 residual <= 1e-3 over every telemetry row and step (pass/fail)",
+    "H2": "guidance share S_g = sum(dp^g + dp^x / 2) / sum(d(d^2)) of the noisy-minus-clean change at steps [2, 3, 4] (paired by utterance), speaker bootstrap 95% CI: 'guidance-driven' if the lower bound > 0.5, 'conditional-driven' if the upper bound < 0.5, else 'mixed' (descriptive, reported for dev and fresh)",
+    "H3": "on fresh: mean AUC over steps [1, 2, 3, 4] of the selected signal minus that of A_k, speaker bootstrap (1000) 95% CI lower bound > 0 (pass/fail); the same against prompt SNR is secondary",
+    "H4": "on fresh, g16_floor, gpc calibrated once on dev: (a) TOST p < 0.05 on WER (1 pp) and SIM (0.02) vs the reference; (b) mean clean-prompt UTMOS drop <= 0.1; (c) test risk (mean speaker-level loss) <= alpha; (d) NFE saving >= STAC's saving - 1% or STAC fails (a) or (b). Necessity (descriptive): each ablation either saves at least 1 pp less or fails (a)-(c)",
+    "H5": "on OOD fresh cases: gpc's mean dWER vs the reference has a speaker-bootstrap 95% upper bound <= +0.01 and gpc saves at least as much as the Stage-Wise SNR Cascade (pass/fail)"
+  },
+  "bootstrap": {
+    "B": 1000,
+    "seed": 2026,
+    "unit": "speaker"
+  },
+  "evidence_status": "development evidence; not the thesis's frozen held-out evaluation (EVAL-001/EVAL-002)",
+  "runner_sha256": "9c08837005f4e82d2cae511af6c0134a3ad65b8f76bc0a3452108f6d39ca3450",
+  "input_hashes": {
+    "research/experiments/EXP-018-swsr-handover-prelim/results/steps1to8.csv": "7bf547d82f5881b88c99d66eb7118366454079ff58fa82f772f5af17929f1be8"
+  },
+  "thesis_commit": "946c5f14251e4d111aea14be9d47a5502183e562",
+  "sha256": "e907af77e5cd6a341fa11076c0a308d315cb3ff9b240842a9aa93e298e93f2b8",
+  "created_utc": "2026-11-07T13:44:39.769688+00:00"
+}

@@ -1,51 +1,46 @@
 <!-- 17 APPENDIX D: PRELIMINARY EXPERIMENTS -->
-        <section class="scene" data-ch="4" data-sec="App. D.1–D.3" data-dur="75" data-title="Appendix: Preliminary Experiments">
-          <p class="eyebrow b fade" data-t="100">Appendix D.1–D.3 · Preliminary Experiments</p>
-          <h2 class="b up" data-t="250">What the Earlier Runs Showed</h2>
-          <div class="ap two" style="grid-template-columns:1.05fr .95fr;gap:44px">
+        <section class="scene" data-ch="4" data-sec="App. D.1–D.3" data-dur="75" data-title="Appendix: Preliminary & Rehearsal Experiments">
+          <p class="eyebrow b fade" data-t="100">Appendix D.1–D.3 &amp; EXP-017 · Preliminary &amp; Rehearsal Runs (Tesla T4)</p>
+          <h2 class="b up" data-t="250">Fixed-Schedule Trade-Off &amp; Baseline Checks</h2>
+          <div class="ap two" style="grid-template-columns:1.04fr .96fr;gap:42px">
             <div class="stack" style="gap:14px">
-              <p class="aph b fade" data-t="600">D.1 · Fixed switching times · 500 speakers × clean and 15 dB noisy · Tesla T4</p>
+              <p class="aph b fade" data-t="600">D.1 · Fixed switching times · 500 speakers × clean &amp; 15 dB noisy · Tesla T4</p>
               <table class="tbl apt b fade" data-t="800">
                 <thead>
                   <tr><th>Switch</th><th>Passes</th><th>Clean (500)</th><th>Noisy (500)</th><th>All (1,000)</th></tr>
                 </thead>
                 <tbody>
-                  <tr><td>s = 0.07</td><td>13</td><td>12 (2.4%)</td><td class="hi">322 (64.4%)</td><td>334 (33.4%)</td></tr>
-                  <tr><td>s = 0.10</td><td>15</td><td>9 (1.8%)</td><td class="hi">269 (53.8%)</td><td>278 (27.8%)</td></tr>
-                  <tr><td>s = 0.15</td><td>17</td><td>5 (1.0%)</td><td class="hi">247 (49.4%)</td><td>252 (25.2%)</td></tr>
-                  <tr><td>s = 0.25 · ref.</td><td>21</td><td>0</td><td>0</td><td>0</td></tr>
+                  <tr><td>s = 0.07 (Step 4)</td><td>13</td><td>12 (2.4%)</td><td class="hi">322 (64.4%)</td><td>334 (33.4%)</td></tr>
+                  <tr><td>s = 0.10 (Step 5)</td><td>15</td><td>9 (1.8%)</td><td class="hi">269 (53.8%)</td><td>278 (27.8%)</td></tr>
+                  <tr><td>s = 0.15 (Step 6)</td><td>17</td><td>5 (1.0%)</td><td class="hi">247 (49.4%)</td><td>252 (25.2%)</td></tr>
+                  <tr><td>s = 0.25 · ref (Step 8)</td><td>21</td><td>0</td><td>0</td><td>0</td></tr>
                 </tbody>
               </table>
-              <p class="txt b up" data-t="1600" style="font-size:19px">A per-input choice in hindsight needs
-                <strong>14.85 of 21 passes (−29%)</strong>; the 179 instances that needed the reference were all noisy.</p>
+              <p class="txt b up" data-t="1600" style="font-size:17.5px;line-height:1.4">Hindsight per-input selection needs
+                <strong>14.85 of 21 passes (−29.3%)</strong> on 1,000 instances (confirmed in <strong>EXP-017</strong>: <strong>29.7%</strong> 16-grid &amp; <strong>33.7%</strong> 32-grid). Across all <strong>Fixed Steps 1–8 (EXP-018, n = 360)</strong>, clean speech already converges at <strong>Step 2 (9 NFE, 1.44 s, 2.64% WER)</strong> while noisy speech collapses across Steps 1–4 (<strong>280.2%–24.7% WER</strong>) until <strong>Step 7 (19 NFE</strong>, TOST <i>p</i> = 0.0047), expanding oracle headroom to <strong>39.3%–43.5%</strong>.</p>
             </div>
-            <div class="stack" style="gap:16px">
-              <div class="panel b up" data-t="2300">
-                <div class="ph">D.2 · Student restart level</div>
-                <p>Restarting at j = 2 departs from the j = 1 reference more often (26 vs 11 of 48 at s = 0.07; 14 vs 0
-                  at s = 0.25, zero by construction). Small CPU run, not a test of absolute quality. <b>j = 1 is kept as
-                  a controlled setting.</b></p>
+            <div class="stack" style="gap:14px">
+              <div class="panel b up" data-t="2300" style="padding:20px 26px">
+                <div class="ph">D.2 · Student restart level &amp; paper 14 + 2 baselines</div>
+                <p>In EXP-017 on the Tesla T4 (n = 360), the paper’s <b>14 + 2 (j = 2, 32 passes)</b> added <b class="s17-warn">140/360 failures</b> (noisy WER 0.342 vs 0.076) and <b>Algorithm 2</b> (no re-noising) added <b class="s17-warn">172/360</b>; 32-grid s = 0.25 (33 passes) matched 16-grid Step 8 at <b>+57% cost</b>. Keeping <b>j = 1 (τ = 0.0761, 3 passes)</b> is empirically justified.</p>
               </div>
-              <div class="panel b up" data-t="3000">
-                <div class="ph">D.3 · Stabilization policy, cross-validated</div>
-                <p>100 development speakers, four folds: <b>18.88 passes (−10.1%)</b> with 1 added failure in 200,
-                  against 50 for a fixed s = 0.15. Chosen with zero training failures, so <b>no risk certificate</b>;
-                  Learn-Then-Test replaces this selection.</p>
+              <div class="panel b up" data-t="3000" style="padding:20px 26px">
+                <div class="ph">D.3 · Audited stabilization rule &amp; binary noise floor</div>
+                <p>Post-proposal T4 audits (<b>AUDIT-001, EXP-012, EXP-017</b>) showed Definition 3.4’s low-drift rule (<i>d<sub>i</sub></i> ≤ λ) certifies <b>0.0% saving on the 16-grid</b> (1.8% on 32-grid) under LTT. Moreover, comparing two equal-quality references still flagged <b>81/360 (22.5%) binary “failures”</b> from student seed noise, motivating paired TOST evaluation.</p>
               </div>
             </div>
           </div>
-          <footer class="cite b fade" data-t="1200"><span class="k">From</span><span>Proposal Appendix D.1–D.3 and
-              Table D.1 · development evidence, not independent held-out validation</span></footer>
+          <footer class="cite b fade" data-t="1200"><span class="k">From</span><span>Proposal Appendix D.1–D.3 · AUDIT-001 &amp; EXP-017 (Tesla T4, n = 1,000 &amp; n = 360) · development evidence, not unseen held-out validation</span></footer>
         </section>
 
 <script type="text/slide-script">
-This appendix slide holds our preliminary results; all of them are development evidence. The table on the left is the fixed-switching study on the Tesla T4, 500 speakers each with a clean and a noisy prompt. Read across each row: switching at step 4 fails on only 2.4 percent of clean prompts but 64 percent of noisy ones, and the pattern holds for steps 5 and 6; the reference never fails by definition. Choosing per input in hindsight would need 14.85 passes instead of 21, and every input that needed the reference was noisy. The top card on the right is the student restart level: restarting one level later departs from the j-equals-1 reference more often, but this small CPU run measures difference from the reference, not absolute quality, so we keep the default as a controlled setting. The bottom card is a cross-validated stabilization policy: it saved about ten percent with one added failure in 200, but its threshold was chosen with zero training failures, which is not a certificate. That is why Objective Three uses Learn-Then-Test.
+This appendix slide summarizes our foundational and rehearsal experiments on the Tesla T4; all are development evidence. On the left, the 500-speaker fixed-switching study shows that switching early at Step 4 fails on just 2.4 percent of clean prompts, compared with 64.4 percent of 15-decibel noisy prompts. Hindsight per-input selection saves 29.3 percent of passes, and EXP-017 confirmed the exact same pattern across both 16-interval and 32-interval grids, with 29.7 to 33.7 percent oracle headroom. On the right, the top card updates student restart and baseline checks with EXP-017 on the T4: the paper's 14-plus-2 j-equals-2 setting added 140 failures out of 360 with 0.342 noisy WER, Algorithm 2 without re-noising added 172 failures, and the 32-grid reference matched 16-grid Step 8 at 57 percent more compute—justifying our controlled j-equals-1 setting on the 16-grid. The bottom card reports two critical audit discoveries: Definition 3.4's original low-drift inequality certified zero savings on the 16-grid under Learn-Then-Test, and the binary per-utterance failure rule flagged 22.5 percent false failures even between two equal-quality references due to stochastic student noise, motivating continuous paired TOST equivalence in EXP-018.
 </script>
 
 <style>
 /* S17 appendix: preliminary experiments */
     .ap {
-      margin-top: 22px
+      margin-top: 20px
     }
 
     .aph {
@@ -58,23 +53,28 @@ This appendix slide holds our preliminary results; all of them are development e
     }
 
     .tbl.apt {
-      font-size: 18px;
+      font-size: 17.5px;
       margin-top: 4px
     }
 
     .tbl.apt td {
-      padding: 12px 16px;
+      padding: 11px 14px;
       line-height: 1.3
     }
 
-    .apt td.hi {
+    .tbl.apt td:first-child {
+      white-space: nowrap
+    }
+
+    .apt td.hi,
+    .s17-warn {
       color: var(--orange-dark);
       font-weight: 700
     }
 
     .ap .panel p {
-      font-size: 18px;
-      line-height: 1.45;
+      font-size: 17.5px;
+      line-height: 1.44;
       color: var(--muted)
     }
 
