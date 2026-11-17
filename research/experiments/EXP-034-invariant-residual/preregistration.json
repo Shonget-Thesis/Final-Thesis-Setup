@@ -387,8 +387,16 @@
     "verdict": "'snr_r_better' if H1-H5 all hold; 'snr_r_better_quality' if H1 holds and any of H2-H5 fails; 'snr_only_not_beaten' otherwise; 'partial' if the quality or variety stage is incomplete."
   },
   "local_screen": "The thresholds come from local CPU screens on development positions 1-30 (the 12 shortest clean EXP-033 quality sentences): lambda_r and lambda_d from code/analysis/invariant_residual_screen.py (its calibration half; output hashed below). Those screens are development screening, not evidence; this run uses positions 31-60, and 41-60 have not been used in any earlier T4 quality run.",
+  "amendments": [
+    "2026-11-17, Amendment 1 (before any main synthesis): the runner loads DEMAND's cafeteria track (--demand_dir, PCAFETER/ch01.wav) for babble15 and records its SHA-256, as EXP-031 did. The first smoke test passed every identity and pass count, ran 7 of the 8 conditions on development speaker 1, and stopped at babble15 because no track was loaded. No arm, threshold, cohort, estimand or hypothesis changed; the earlier freeze was 7c2ec8fca37b."
+  ],
+  "babble": {
+    "file": "PCAFETER/ch01.wav",
+    "source": "https://zenodo.org/records/1227121/files/PCAFETER_16k.zip",
+    "hash": "recorded at run time in demand_sha256.txt next to the results"
+  },
   "code_hashes": {
-    "run_invariant_residual.py": "9b6faa7d64285a2735769749ccc35fdea6a0824627e34b43c74f49835cc7d480",
+    "run_invariant_residual.py": "fb4b2c9d07f81b1abe5d3fbae27383341bc23217754904041ada3ba2c00da6b7",
     "run_cheaper_teacher_path.py": "de5c33267e92140866231beadd34992e5e4a5b8ce7be623919adb683990e1339",
     "run_variety_per_pass.py": "fcc3808694da1f21f12d50bbea566ee48019c7af1ce2fbe94b8abe9559909c07",
     "run_endpoint_extrapolation_prelim.py": "90aec6467ed881602b1e62e4938b1d3c845f5337e98b82b340b5d3d54631cafe",
@@ -411,6 +419,6 @@
   },
   "seed": 2026,
   "boot_b": 2000,
-  "sha256": "7c2ec8fca37b4bf8b9598508f47c00a9a1a5883d16987d7cd6fd219757eeff74",
-  "created_utc": "2026-11-17T09:55:10.463999+00:00"
+  "sha256": "eb1a38d3225afc76a5a08bfb9b0fc6d3a931d813c2537158bd0488d2c42e3524",
+  "created_utc": "2026-11-17T11:26:50.216563+00:00"
 }

@@ -498,6 +498,11 @@ LABEL_RULES = {
     "verdict": "'snr_r_better' if H1-H5 all hold; 'snr_r_better_quality' if H1 holds and any of H2-H5 fails; "
                "'snr_only_not_beaten' otherwise; 'partial' if the quality or variety stage is incomplete.",
 }
+AMENDMENTS = ["2026-11-17, Amendment 1 (before any main synthesis): the runner loads DEMAND's cafeteria track "
+              "(--demand_dir, PCAFETER/ch01.wav) for babble15 and records its SHA-256, as EXP-031 did. The first smoke "
+              "test passed every identity and pass count, ran 7 of the 8 conditions on development speaker 1, and "
+              "stopped at babble15 because no track was loaded. No arm, threshold, cohort, estimand or hypothesis "
+              "changed; the earlier freeze was 7c2ec8fca37b."]
 LOCAL_SCREEN = ("The thresholds come from local CPU screens on development positions 1-30 (the 12 shortest clean "
                 "EXP-033 quality sentences): lambda_r and lambda_d from code/analysis/invariant_residual_screen.py "
                 "(its calibration half; output hashed below). Those screens are development screening, not evidence; "
@@ -534,7 +539,9 @@ def build_prereg():
         "n_time_cases": len(t), "time_utts": t,
         "bars": {"wer": WER_BAR, "sim": SIM_BAR, "auc_all": AUC_ALL, "auc_gain_over_drift": AUC_GAIN,
                  "max_wrong_clean": MAX_WRONG_CLEAN, "variety_keep": VARIETY_KEEP, "runaway_wer": RUNAWAY_WER},
-        "estimands": ESTIMANDS, "label_rules": LABEL_RULES, "local_screen": LOCAL_SCREEN,
+        "estimands": ESTIMANDS, "label_rules": LABEL_RULES, "local_screen": LOCAL_SCREEN, "amendments": AMENDMENTS,
+        "babble": {"file": rf.DEMAND_FILE, "source": rf.DEMAND_URL,
+                   "hash": "recorded at run time in demand_sha256.txt next to the results"},
         "code_hashes": {name: tb._sha256_file(CODE_DIR / name) for name in DEPENDENCIES},
         "input_hashes": {str(Path(p).relative_to(THESIS_ROOT).as_posix()): tb._sha256_file(p) for p in inputs},
         "seed": SEED, "boot_b": BOOT_B,
@@ -809,7 +816,7 @@ def analyze(out_dir=None, prereg_path=PREREG_PATH, allow_partial=False):
     entries = {}
     if Path(prereg_path).exists():
         entries["preregistration"] = {"path": str(prereg_path), "sha256": tb._sha256_file(prereg_path)}
-    for p in (q_path, d_path, t_path, rjson, rmd):
+    for p in (q_path, d_path, t_path, rjson, rmd, out_dir / "demand_sha256.txt"):
         if p.exists():
             entries[p.name] = {"sha256": tb._sha256_file(p), "bytes": p.stat().st_size}
     with open(out_dir / "MANIFEST.json", "w", encoding="utf-8", newline="\n") as f:
@@ -881,9 +888,18 @@ def report(res):
 
 
 def make_pipe(args):
-    Path(args.out_dir).mkdir(parents=True, exist_ok=True)
+    """The shared pipeline with pink25/hp25 registered and DEMAND's cafeteria track loaded for babble15, as in EXP-031
+    (Amendment 1: the first smoke test stopped at babble15 because no track was loaded)."""
+    if not getattr(args, "demand_dir", None):
+        raise SystemExit("--demand_dir is required: babble15 uses DEMAND PCAFETER/ch01.wav")
+    out = Path(args.out_dir)
+    out.mkdir(parents=True, exist_ok=True)
     install_conditions()
-    return rf.Pipeline(args.dmo_root, args.device)
+    pipe = rf.Pipeline(args.dmo_root, args.device)
+    pipe.load_babble(args.demand_dir)
+    with open(out / "demand_sha256.txt", "w", encoding="utf-8", newline="\n") as f:
+        f.write(f"{rf.DEMAND_FILE} {pipe.babble_sha}\n")
+    return pipe
 
 
 def main():
@@ -894,6 +910,7 @@ def main():
     for name in ("smoke", "run"):
         s = sub.add_parser(name)
         s.add_argument("--dmo_root", required=True)
+        s.add_argument("--demand_dir", required=True, help="folder holding PCAFETER/ch01.wav (DEMAND, 16 kHz)")
         s.add_argument("--out_dir", default=str(EXP_DIR / "results"))
         s.add_argument("--device", default="cuda")
         if name == "run":

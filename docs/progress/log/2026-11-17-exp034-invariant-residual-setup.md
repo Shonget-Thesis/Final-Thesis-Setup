@@ -2,7 +2,7 @@
 
 Task EVAL-029 (new). Follow-up to the [invariant residual log](2026-11-17-invariant-residual.md).
 - **The request:** Rhenel Jhon R. Sajol asked for a notebook that compares the proposed method with the SNR alone, to see which is better.
-- **Status:** prepared and preregistered (freeze `7c2ec8fca37b...`) before any GPU synthesis. Not yet run. The notebook clones branch `rhnl-3`, so the new files must be pushed before it can run.
+- **Status:** prepared and preregistered before any GPU synthesis. The freeze is now `eb1a38d3225a...`, after Amendment 1 below; the first freeze was `7c2ec8fca37b...`. The main run has not started. The notebook clones branch `rhnl-3`, so the amended files must be pushed before it can run again.
 
 ## The design
 
@@ -73,6 +73,35 @@ Both payloads are synthesized and scored for every case, so each rule's outcome 
   - the cohorts are disjoint from the screens';
   - freeze, check and tamper detection;
   - a full analysis on synthetic results.
+
+## Amendment 1 (same day, before any main synthesis)
+
+**What happened:** Rhenel Jhon R. Sajol ran the notebook on a Colab T4. The smoke test stopped at `babble15`:
+
+    Babble condition requested but no DEMAND track loaded (--demand_dir).
+
+**What had already passed** on development speaker 1:
+- every identity check, with a difference of 0.0;
+- every arm and rule run on its own against the shared run;
+- every pass count against the cost table: STU 0 + 4, STUR2 0 + 3, CPH8 10 + 2, CPQH 10 + 3, W8 18 + 3, P25 28 + 2, SNR_ONLY 10 + 2, SNR_R 10 + 3;
+- 7 of the 8 quality conditions.
+
+| Condition | SNR | r | Rule's choice |
+|---|---:|---:|---|
+| Clean | 28.2 dB | 0.369 | CPQH |
+| `noisy15` | 17.5 dB | 0.604 | CPQH |
+| `gauss25` | 25.0 dB | 0.621 | CPQH |
+| `pink25` | 25.2 dB | 0.581 | CPQH |
+| `hp25` | 25.0 dB | 0.405 | CPQH |
+| `reverb09` | 16.6 dB | 0.326 | CPQH, by the SNR |
+| Telephone | 31.3 dB | 0.264 | CPH8 |
+
+**The fix,** following EXP-031:
+- **Runner:** it requires `--demand_dir`, loads `PCAFETER/ch01.wav` when the pipeline is built, and writes `demand_sha256.txt`, which the manifest hashes.
+- **Notebook:** it gains EXP-031's DEMAND download cell, from Zenodo with a Drive cache, and passes the folder to the smoke and run commands.
+- **Preregistration:** it records the amendment and was re-frozen as `eb1a38d3225a...`; it was `7c2ec8fca37b...`.
+
+No arm, threshold, cohort, estimand or hypothesis changed.
 
 ## Checks run
 
