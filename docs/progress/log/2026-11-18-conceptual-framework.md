@@ -9,3 +9,11 @@
 ## Checks Run
 
 - `latexmk -Werror main.tex`: exit 0, zero Overfull boxes, zero undefined references; Figure 1.2 rendered and inspected.
+
+## Addendum (Vincent's request, 22:18)
+
+- Theoretical framework (Section 1.6, claims, Figure 1.1, `fig_theoretical.tex`) removed until the Chapter 1 rewrite; the conceptual framework is now Section 1.6 and Figure 1.1.
+- Figure: INPUT/PROCESS/OUTPUT headers and the legend removed; caption is "Conceptual Framework of the Study".
+- Variables table (Table 1.1) removed.
+- Revision matrix item 15 now points to the conceptual framework and marks the claims and theoretical framework as pending.
+- `latexmk -Werror main.tex` and `revision-matrix.tex`: exit 0, zero Overfull boxes, zero undefined references.

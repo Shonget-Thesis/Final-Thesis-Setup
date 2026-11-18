@@ -13,9 +13,6 @@
   arr/.style={-{Stealth[length=2mm]}, thick},
   lab/.style={font=\figsmall, align=center}
 ]
-\node[head] at (0,3.3)    {INPUT};
-\node[head] at (8.0,3.3)  {PROCESS};
-\node[head] at (16.0,3.3) {OUTPUT};
 
 % inputs
 \node[io] (inp)  at (0,1.0)  {Speaker prompt\\(clean or noisy)\\and target text};
@@ -48,13 +45,8 @@
 \node[lab, anchor=south] (sig) at (8.0,2.0) {signals: prompt noise; teacher--student disagreement};
 \draw[arr, densely dotted] (sig.south) -- (hand.north);
 
-% legend
-\node[frozen, minimum height=0.35cm, text width=0.45cm] (l1) at (2.6,-3.0) {};
-\node[right, lab] at (l1.east) {released system};
-\node[contrib, minimum height=0.35cm, text width=0.45cm] (l2) at (7.0,-3.0) {};
-\node[right, lab] at (l2.east) {contribution of this study};
 \end{tikzpicture}
 \end{adjustbox}
-\caption{Conceptual framework of the study. The released teacher--student system is kept unchanged except at the handover, where the proposed method decides for each utterance what the teacher passes to the student, under a threshold calibrated once with a bound on extra quality failures. Figure~\ref{fig:method} shows the detailed architecture.}
+\caption{Conceptual Framework of the Study}
 \label{fig:conceptual}
 \end{figure}
