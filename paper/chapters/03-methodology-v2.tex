@@ -874,7 +874,7 @@ The calibrated threshold $\hat\lambda_r$ will be reported so that other research
 \subsubsection{Compared Systems}
 \label{sec:compared}
 
-The evaluation covers Steps~12 to~14 of Figure~\ref{fig:workflow}. All systems in Table~\ref{tab:systems} will be run on the test split under all eight prompt conditions and on LibriSpeech-PC with clean prompts. The established systems show what the released models achieve: the released DMOSpeech~2 sampler is the baseline that the router must not fall below, the paper configuration is the configuration whose numbers were published, and the teacher alone and the student alone mark the expensive and the cheap end of the range. The ablations isolate the parts of the router: never and always projecting show what each payload does without a decision; the SNR-only router shows what the residual adds beyond the prompt check; and the student restarted from its own draft shows what the teacher adds at all. The hindsight router (Proposition~\ref{prop:oracle}) will be reported as a limit, not as a competitor. The results will be reported in Chapter~4 as a comparison matrix against the baseline, with one row for every system of Table~\ref{tab:systems} and the columns listed in Table~\ref{tab:matrix-cols}; the matrix will be given overall, for every prompt condition, and for LibriSpeech-PC.
+The evaluation covers Steps~12 to~14 of Figure~\ref{fig:workflow}. All systems in Table~\ref{tab:systems} will be run on the test split under all eight prompt conditions and on LibriSpeech-PC with clean prompts. The established systems show what the released models achieve: the released DMOSpeech~2 sampler is the baseline that the router must not fall below, the paper configuration is the configuration whose numbers were published, and the teacher alone and the student alone mark the expensive and the cheap end of the range. The ablations isolate the parts of the router: never and always projecting show what each payload does without a decision; the SNR-only router shows what the residual adds beyond the prompt check; and the student restarted from its own draft shows what the teacher adds at all. The hindsight router (Proposition~\ref{prop:oracle}) will be reported as a limit, not as a competitor. The results will be reported in Chapter~4 as a comparison matrix against the baseline, which reports every system of Table~\ref{tab:systems} on the measures of Table~\ref{tab:matrix-cols}; the matrix will be given overall, for every prompt condition, and for LibriSpeech-PC.
 
 \begin{table}[!htbp]
 \centering\small
@@ -908,12 +908,12 @@ Hindsight router & Lowest risk of any two-payload rule (descriptive) & --- \\
 
 \begin{table}[!htbp]
 \centering\small
-\caption{Columns of the comparison matrix. Each row of the matrix is one system of Table~\ref{tab:systems}; every column is computed on the same inputs for every system.}
+\caption{Comparison matrix. Every system of Table~\ref{tab:systems} will be reported on each of these measures, computed on the same inputs.}
 \label{tab:matrix}
 \label{tab:matrix-cols}
 \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.0cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{1.5cm} >{\raggedright\arraybackslash}p{2.6cm}@{}}
 \toprule
-\textbf{Column} & \textbf{What it reports} & \textbf{Better when} & \textbf{Defined in} \\
+\textbf{Measure} & \textbf{What it reports} & \textbf{Better when} & \textbf{Defined in} \\
 \midrule
 Forward passes & Mean network passes per utterance & Lower & Prop.~\ref{prop:cost} \\
 Saving & Share of the released sampler's passes saved & Higher & \Cref{eq:saving} \\
