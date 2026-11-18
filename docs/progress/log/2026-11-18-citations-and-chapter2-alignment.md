@@ -23,3 +23,7 @@ Chapter 3: the five `\citationneeded` markers are replaced (DEMAND, pYIN, DTW, b
 ## Checks Run
 
 - `latexmk -Werror main.tex`: exit 0, 108 pages, zero undefined references/citations, zero Overfull boxes. New Section 2.4 and Table 2.2 rows rendered and inspected.
+
+## Addendum: Table 2.1 categorized update
+
+Vincent supplied a categorized Table 2.1 with four new methods. All four were checked online: SRDiffusion (Cheng et al., arXiv 2505.19151, 2025), TRACK (Munir et al., arXiv 2609.30096, 2026), HybridStitch (Sun et al., arXiv 2603.07815, 2026; current v3 title used), Distillation++ (Park, Lee & Ye, ICCV 2025, pp. 4049--4058; guidance applied in the first one or two steps, Sections 3 and 4.1). Fixes applied: SRDiffusion signal is the change in the rate of change of the denoised sample, and its threshold is no longer labelled delta (clash with the LTT confidence parameter); Adaptive Guidance moved to "Adaptive computation within one model"; "This study" row matches the payload router. Section 2.5 text now discusses the four methods (TRACK and HybridStitch use large--small disagreement, like the residual, without a bound; SRDiffusion resembles the earlier scheduler), and Table 2.2's image row lists them. `latexmk -Werror` exit 0, zero Overfull boxes.
