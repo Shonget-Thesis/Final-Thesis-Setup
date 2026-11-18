@@ -1,7 +1,7 @@
 {
-  "experiment": "EXP-035",
+  "experiment": "EXP-035+EXP-036",
   "task_id": "EVAL-030",
-  "title": "Path A: Invariance-Ladder Ablation (FCH, G1, G2, G3) and Disjoint Calibration Confirmation of SNR_R",
+  "title": "Combined All-in-One: Path A Invariance Ladder & Unseen SNR_R + Path B Dual-Space & Closed-Loop Mechanisms",
   "commit_time": 0.2928932188134524,
   "qual_arms": [
     "STU",
@@ -12,7 +12,10 @@
     "G1_VSWAP",
     "G2_AFFINE",
     "CPQH",
-    "W8"
+    "W8",
+    "DSGH_MICRO",
+    "DSGH_DUAL",
+    "CWPS"
   ],
   "div_arms": [
     "STU",
@@ -21,6 +24,9 @@
     "G1_VSWAP",
     "G2_AFFINE",
     "CPQH",
+    "DSGH_MICRO",
+    "DSGH_DUAL",
+    "CWPS",
     "P25"
   ],
   "policies": [
@@ -37,13 +43,18 @@
     "G2_AFFINE",
     "CPQH",
     "SNR_R",
+    "DSGH_MICRO",
+    "DSGH_DUAL",
+    "CWPS",
     "W8",
     "P25"
   ],
   "thresholds": {
     "theta_db": 20.0,
     "lambda_r": 0.34004843191300677,
-    "lambda_d": 0.2251750830960417
+    "lambda_d": 0.2251750830960417,
+    "dsgh_r_clean": 0.23394784403208624,
+    "macro_window": 9
   },
   "costs": {
     "STU": 4,
@@ -55,6 +66,9 @@
     "G2_AFFINE": 13,
     "CPQH": 13,
     "SNR_R": 13,
+    "DSGH_MICRO": 13,
+    "DSGH_DUAL": 13,
+    "CWPS": 13,
     "W8": 21,
     "P25": 30
   },
@@ -68,6 +82,9 @@
     "G2_AFFINE": 10,
     "CPQH": 10,
     "SNR_R": 10,
+    "DSGH_MICRO": 10,
+    "DSGH_DUAL": 10,
+    "CWPS": 10,
     "W8": 18,
     "P25": 28
   },
@@ -81,6 +98,9 @@
     "G2_AFFINE": 3,
     "CPQH": 3,
     "SNR_R": 3,
+    "DSGH_MICRO": 3,
+    "DSGH_DUAL": 3,
+    "CWPS": 3,
     "W8": 3,
     "P25": 2
   },
@@ -363,20 +383,22 @@
     }
   ],
   "estimands": {
-    "ladder_ablation": "Paired differences on the same unseen calibration cohort comparing Base (CPH8 / CPH8_DP), FCH_DP, G1_VSWAP, G2_AFFINE, and G3 (CPQH) across all 8 conditions and on spectral noise.",
-    "unseen_snr_r": "Replication of frozen EXP-034 SNR_R (theta=20 dB, lambda_r=0.340048) vs. SNR_ONLY and SNR_DRIFT on speakers completely disjoint from dev[0:100] and EXP-028 unseen_cal[0:30].",
-    "oof_ltt_check": "5-fold speaker-grouped out-of-fold threshold calibration selecting lambda_r and lambda_d subject to <= 15% clean wrong flags on training speakers and scoring held folds."
+    "path_a_ladder": "Paired contrasts on unseen_cal[30:60] testing CPH8_DP vs CPH8 and CPQH (G3) vs FCH_DP, G1_VSWAP, G2_AFFINE.",
+    "path_a_unseen_snr_r": "Confirmation of frozen SNR_R vs SNR_ONLY and SNR_DRIFT + 5-fold speaker-grouped OOF calibration.",
+    "path_b_novel": "Direct comparison of router-free 13-pass mechanisms (DSGH_MICRO, DSGH_DUAL, CWPS) vs SNR_R, CPQH, STUR2, and SNR_ONLY on the same cohort and seeds."
   },
   "label_rules": {
-    "H1_clean_prompt_control": "Clean CPH8_DP - CPH8 mean UTMOS >= -0.05 with lower 95% CI >= -0.08.",
-    "H2_g3_beats_fch_and_g1": "Over all 240 cases, CPQH beats FCH_DP and G1_VSWAP in UTMOS (lower CI > 0) within WER/SIM bars.",
-    "H3_g3_beats_g2_spectral": "On spectral noise (gauss25, pink25, hp25), CPQH beats G2_AFFINE in UTMOS (lower CI > 0) within WER/SIM bars.",
-    "H4_snr_r_unseen_confirmed": "On unseen_cal[30:60], SNR_R beats SNR_ONLY and SNR_DRIFT (lower CI > 0), AUC(r) >= 0.80, clean FP <= 0.15.",
-    "H5_clean_variety": "On clean prompts, SNR_R keeps >= 90% of CPH8's gain over STU on CVf0 and aligned CVf0.",
-    "verdict": "'ladder_and_snr_r_confirmed' if H1-H5 hold; 'partial' if incomplete; otherwise 'partially_confirmed'."
+    "H1_clean_prompt_control": "Path A: Clean CPH8_DP - CPH8 mean UTMOS >= -0.05 (lo >= -0.08).",
+    "H2_g3_beats_fch_and_g1": "Path A: CPQH beats FCH_DP and G1_VSWAP in UTMOS (lo > 0) within WER/SIM bars.",
+    "H3_g3_beats_g2_spectral": "Path A: CPQH beats G2_AFFINE on spectral noise (gauss25/pink25/hp25) in UTMOS (lo > 0) within bars.",
+    "H4_snr_r_unseen_confirmed": "Path A: SNR_R beats SNR_ONLY and SNR_DRIFT (lo > 0), AUC(r) >= 0.80, clean FP <= 0.15.",
+    "H5_clean_variety": "Path A: SNR_R keeps >= 90% of CPH8 clean gain over STU on CVf0 and aligned CVf0.",
+    "M1_clean_prosody": "Path B: Candidate keeps >= 90% clean gain (CVf0 & aligned) and clean dUTMOS >= -0.05 vs SNR_R.",
+    "M2_noisy15_recovery": "Path B: Candidate improves noisy15 UTMOS over SNR_R (lo > 0) or reduces noisy15 WER without worsening SIM.",
+    "M3_overall_competitiveness": "Path B: Candidate beats SNR_ONLY overall (lo > 0) and is non-inferior/better vs SNR_R (lo >= -0.05)."
   },
   "code_hashes": {
-    "run_invariance_ladder_confirm.py": "f95517ee58dbca44fabbb681ec0ba9afd0486287472cfd076e1f4a791c61ee6a",
+    "run_exp035_036_combined.py": "c43db1c37cab7c34d5d9d429f2a6b359165c34fdb54be6fe8215d4043e57cfea",
     "handover_mechanisms.py": "10333d0d8e2960e80ba8ae675ce4437f1ae1e8d8e039b1d2481b7286a9313d76",
     "run_invariant_residual.py": "fb4b2c9d07f81b1abe5d3fbae27383341bc23217754904041ada3ba2c00da6b7",
     "run_cheaper_teacher_path.py": "de5c33267e92140866231beadd34992e5e4a5b8ce7be623919adb683990e1339",
@@ -400,6 +422,6 @@
   },
   "seed": 2026,
   "boot_b": 2000,
-  "sha256": "0e6bb745fd704e011d0e38a6279b1fe84dad995b6bc868da03404140884ebf33",
-  "created_utc": "2026-11-18T01:58:08.015094+00:00"
+  "sha256": "da34e0e063eeb48ce4ec48126ae44124b5ce9fe4b5623722fc8d88c27103750a",
+  "created_utc": "2026-11-18T02:10:14.738882+00:00"
 }
