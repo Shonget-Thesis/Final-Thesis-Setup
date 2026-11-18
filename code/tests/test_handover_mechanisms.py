@@ -140,6 +140,42 @@ class OperatorMathTests(unittest.TestCase):
         self.assertTrue(bool(torch.all(torch.isfinite(out_cwps))))
         self.assertEqual(float((out_cwps[:, :plen, :] - s_t[:, :plen, :]).abs().max()), 0.0)
 
+    def test_warm_metrics_runs_once_and_restores_threads(self):
+        try:
+            import torch
+        except ImportError:
+            self.skipTest("torch not installed")
+        calls = []
+
+        class _DummyASR:
+            def transcribe(self, audio, sample_rate):
+                calls.append(("asr", len(audio), sample_rate, torch.get_num_threads()))
+                return "ok"
+
+        class _DummyMetrics:
+            asr = _DummyASR()
+
+            def compute_similarity(self, a, b, sample_rate, gt_sr):
+                calls.append(("sim", len(a), sample_rate))
+                return 0.9
+
+            def compute_utmos(self, a, sample_rate):
+                calls.append(("utmos", len(a), sample_rate))
+                return 3.5
+
+        class _WarmPipe:
+            pass
+
+        p = _WarmPipe()
+        p.torch = torch
+        p.metrics = _DummyMetrics()
+        orig_threads = torch.get_num_threads()
+        comb._warm_metrics(p)
+        comb._warm_metrics(p)  # second call must be a no-op
+        self.assertEqual(len(calls), 3)
+        self.assertEqual(calls[0][3], 1)
+        self.assertEqual(torch.get_num_threads(), orig_threads)
+
 
 class CohortAndNotebookTests(unittest.TestCase):
     def test_strict_speaker_disjointness_and_pass_counts(self):
