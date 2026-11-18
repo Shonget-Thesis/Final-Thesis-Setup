@@ -47,20 +47,7 @@
 \date{19 November 2026}
 
 \begin{document}
-\maketitle
-
-\noindent\textit{Basis:} the manuscript on the group's GitHub \texttt{main} branch as of 19 November 2026. Section, table and figure numbers refer to that version. Boxed text is copied from the manuscript (shortened where marked [\dots]); the orange note below each box says what changed. Nothing here has been reviewed by the panel yet.
-
-\section*{Summary}
-\begin{itemize}
-\item Experiments after the concept defense showed that choosing \emph{when} the teacher stops, per utterance, could not be done safely. They also showed where the real per-input problem lies: on noisy prompts, the teacher copies the prompt's noise into what it hands to the student.
-\item The method was therefore changed. The teacher now stops at one fixed, cheaper point for every utterance (13 instead of 21 network runs, 38\% fewer), and the method decides per utterance \emph{what} the teacher hands over: its own estimate, or a version corrected for prompt noise. The threshold of that decision is still calibrated with Learn-Then-Test, so the title and the risk-calibration idea stay.
-\item As the panel asked, DMOSpeech~2 is now reproduced and judged by the same failure rule as every other system; it is no longer assumed to have zero failures.
-\item Chapters~2 and~3 are rewritten for the new method. In Chapter~1, the scope and the conceptual framework are updated; the problem statement, research questions, objectives, theoretical framework and definitions still describe the old method and will be rewritten next.
-\end{itemize}
-
-% =====================================================================
-\section{Why the Method Changed: Results after the Concept Defense}
+\section{Further Preliminary Testing Results}
 
 At the concept defense, the proposed method chose a different \emph{switching time} for each utterance: the teacher would stop as soon as its estimate of the final speech had stopped changing (the ``stabilization'' signal), provided the prompt was not noisy (a prompt signal-to-noise check, the ``SNR gate'' at 20~dB). The team then tested this rule in more detail. Table~\ref{tab:findings} lists what the tests showed; the details are in Appendix~D of the manuscript.
 
@@ -167,9 +154,52 @@ Calibrator (Learn-Then-Test) & Sets the residual threshold once, on separate spe
 \end{enumerate}
 
 % =====================================================================
+\section{Novelty of the Proposed Method}
+\label{sec:novelty}
+
+The panel asked us to establish where the method comes from (item 9) and how it differs from flow-matching work in image generation (item 22). The answer below separates what we take from earlier work from what is new.
+
+\subsection*{What is not new}
+\begin{itemize}
+\item \st{Teacher-guided sampling} (teacher first, student finishes) is DMOSpeech~2's.
+\item \st{The correction itself}, mapping values onto another set of values while keeping their order, is histogram matching from image processing (Hall, 1974), used since 2000 to remove noise from the inputs of speech recognizers (Dharanipragada \& Padmanabhan, 2000; de la Torre et al., 2005; Hilger \& Ney, 2006).
+\item \st{Using disagreement between a large and a small model as a signal} also appears in recent image and video methods (TRACK, HybridStitch, 2026).
+\item \st{Learn-Then-Test} is an existing calibration procedure (Angelopoulos et al.), already used for early exit in language models and for speech recognition.
+\end{itemize}
+
+\subsection*{What is new}
+\begin{enumerate}
+\item \st{What is adapted.} Every method we reviewed adapts \emph{how much} computation an input gets: how many steps, which layer to exit at, or when to switch between models. This method keeps the computation fixed and adapts \emph{what} one generative model hands to another. We found no earlier method that does this.
+\item \st{A training-free fix for copied prompt noise inside generation.} Recent noise-robust zero-shot TTS methods (Wang et al., 2024; Fujita et al., 2024; Lu et al., 2025) retrain the model or add a trained denoiser. Histogram equalization normalized the input of a recognizer. Here the correction is applied, without any training, to the content passed from teacher to student, and only to the utterances that need it.
+\item \st{A disagreement signal that ignores timing.} The invariant residual compares the teacher with the student's draft for each utterance. We prove that it is zero exactly when the two differ only in timing, so it reacts to changed values such as copied noise, not to different but valid timing. TRACK averages disagreement offline into one fixed schedule, and HybridStitch uses hand-set thresholds.
+\item \st{A failure bound against the released system.} The calibrated threshold comes with a guarantee that the method fails on at most 5\% more utterances than DMOSpeech~2 itself, with 90\% confidence, and it falls back to DMOSpeech~2 when no threshold passes. Calibrated methods in other fields bound errors of early exit (CALM, thought calibration) or reject samples (FlowGuard); none bounds a teacher-to-student handover in TTS.
+\item \st{Proven properties.} The paper proves why the correction removes steady noise and channel effects, what the residual measures, that the cost is fixed at 13 runs, and that the fallback can never be worse than the released system.
+\end{enumerate}
+
+\begin{table}[H]
+\centering\small
+\caption{How the proposed method differs from the closest related work (details in Tables~2.1--2.3 of the manuscript).}
+\label{tab:novelty}
+\begin{tabularx}{\textwidth}{@{}P{3.6cm} P{2.6cm} P{1.6cm} L P{1.7cm}@{}}
+\toprule
+\textbf{Approach} & \textbf{What it adapts} & \textbf{Training} & \textbf{Decision signal} & \textbf{Failure bound} \\
+\midrule
+DMOSpeech~2 & Nothing (fixed) & --- & --- & No \\
+Noise-robust zero-shot TTS (2024--2025) & Nothing per input & Retraining or added model & --- & No \\
+Histogram equalization in speech recognition & Nothing per input & None & --- & No \\
+Large--small switching in image and video (SRDiffusion, TRACK, HybridStitch) & When or where to switch models & None & Change between steps; model disagreement & No \\
+Calibrated early exit (CALM, thought calibration, FlowGuard) & When to stop, or whether to reject & None & Confidence; convergence & Yes \\
+\textbf{This study} & \textbf{What the teacher hands over} & \textbf{None} & \textbf{Prompt SNR; invariant residual} & \textbf{Yes, against DMOSpeech~2} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The novelty therefore lies in the combination and its use: an existing correction and an existing calibration procedure, joined by a new signal, applied for the first time to the content of a teacher-to-student handover in TTS, with a bound stated against the released system. This claim covers the sources we reviewed; Art is continuing the search, especially for training-free fixes of noisy prompts in TTS.
+
+% =====================================================================
 \section{Changes in Chapter 1}
 
-Only the parts below have changed so far. The background, problem statement, research questions, objectives, significance and definitions still describe the old method and will be rewritten next.
+Boxed text below and in Sections~5 and~6 is copied from the manuscript on the group's GitHub \texttt{main} branch as of 19 November 2026 (shortened where marked [\dots]); the orange note under each box says what changed. Only the parts below have changed so far. The background, problem statement, research questions, objectives, significance and definitions still describe the old method and will be rewritten next.
 
 \begin{snap}{Section 1.5, Scope and Limitations (first paragraph)}
 This study will focus on developing and evaluating a training-free, risk-calibrated method for choosing, for each utterance, what the teacher hands to the student in teacher-guided flow-matching text-to-speech (TTS), using DMOSpeech~2 and its F5-TTS teacher. In this study, the handover is \emph{adaptive} in its content, not in its amount of computation: every utterance will cost the same number of forward passes, and the method will decide per utterance whether to pass the teacher's own estimate of the output or a corrected version of it. [\dots]
@@ -318,7 +348,7 @@ Status: \textbf{Done} = addressed in the manuscript; \textbf{Partly} = addressed
 6 & Ms.~Pagal & Metrics and statistical method & Wilcoxon, McNemar, Holm, equivalence tests and bootstrap intervals; significance level separated from $\alpha$ and $\delta$ (Table~3.12) & Done \\
 7 & Ms.~Pagal & Basis for a failure & One fixed rule for every system (WER above 12.5\%, or SIM or UTMOS below floors taken from DMOSpeech~2); counted as a rate, never removed (Definition~3.1) & Done \\
 8 & Ms.~Pagal & How the two signals are compared & SNR check only, always correct, never correct and the full router compared (Table~3.10) & Done \\
-9 & Dr.~Landicho & Where does the method come from? & New Section~2.4 and Table~2.3 trace each component to its sources & Done \\
+9 & Dr.~Landicho & Where does the method come from? & New Section~2.4 and Table~2.3 trace each component to its sources (summary in Section~\ref{sec:novelty}) & Done \\
 10 & Dr.~Landicho & Justify LTT for TTS; $\alpha$ and $\delta$ & LTT needs only pass/fail outcomes, independent inputs and fixed candidates (Section~2.6); $\alpha$, $\delta$ given as design choices with reasons (Section~3.7.3) & Done \\
 11 & Dr.~Landicho & Lead with the problem; gap from the RRL & Gap stated in Section~2.9; Chapter~1 problem statement to be rewritten with the reframing above & Partly \\
 12 & Dr.~Landicho & Categorize the related studies & Tables~2.1 and~2.2 grouped by category, with a Domain column & Done \\
@@ -331,7 +361,7 @@ Status: \textbf{Done} = addressed in the manuscript; \textbf{Partly} = addressed
 19 & Dr.~Landicho & Keep the lightweight goal consistent & Fixed lower cost on the Tesla T4; low-end devices as future work (Section~1.5) & Done \\
 20 & Dr.~Landicho & Threshold future researchers can use & Calibrated threshold reported with its conditions and the procedure to recalibrate (Section~3.7.4) & Done \\
 21 & Dr.~Landicho & Define the metrics and comparison in the RRL & Section~2.7, now including pitch variety and its limits & Done \\
-22 & Dr.~Landicho & Novelty against image flow-matching work & Table~2.1 and Section~2.5, with four new large--small methods & Done \\
+22 & Dr.~Landicho & Novelty against image flow-matching work & Table~2.1 and Section~2.5, with four new large--small methods; novelty summarized in Section~\ref{sec:novelty} of this report & Done \\
 23 & Dr.~Landicho & Moderate noise; unseen dataset & Three moderate conditions at 25~dB and LibriSpeech-PC in the design; runs pending (R13) & Partly \\
 24 & Ms.~Eder & Working prototype & Prototype updated by Rhenel to the new method (13 runs, live calibration certificate); Appendix~C to be updated (R25) & Partly \\
 25 & Ms.~Eder & Comparison matrix against the baseline & Tables~3.10 (systems) and~3.11 (measures); values to come from the runs & Done \\
