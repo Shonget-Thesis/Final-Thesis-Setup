@@ -1,49 +1,55 @@
-% Figure: proposed calibrated adaptive handover (Algorithm 1)
+% Figure (Chapter 3 v2): architecture of the risk-calibrated payload router.
+% Grey boxes: released DMOSpeech 2 / F5-TTS networks (frozen). Dashed blue
+% boxes: components added by the method. Every inference-time box shows its
+% forward-pass cost; the total is 13 passes for every utterance.
 \begin{figure}[!htbp]
 \centering
 \begin{adjustbox}{max width=\linewidth}
 \begin{tikzpicture}[
   font=\figfont,
-  base/.style={draw, rounded corners=2pt, fill=gray!8, text width=2.15cm, align=center, minimum height=1.3cm, inner sep=3pt},
-  prop/.style={draw=blue!60!black, thick, dashed, rounded corners=2pt, fill=blue!5, text width=2.15cm, align=center, minimum height=1.3cm, inner sep=3pt},
-  dec/.style={diamond, draw=blue!60!black, thick, dashed, fill=blue!5, aspect=1.5, inner sep=0pt, align=center, text width=1.35cm},
+  base/.style={draw, rounded corners=2pt, fill=gray!8, text width=2.35cm, align=center, minimum height=1.3cm, inner sep=3pt},
+  prop/.style={draw=blue!60!black, thick, dashed, rounded corners=2pt, fill=blue!5, text width=2.35cm, align=center, minimum height=1.3cm, inner sep=3pt},
+  dec/.style={diamond, draw=blue!60!black, thick, dashed, fill=blue!5, aspect=1.6, inner sep=0pt, align=center, text width=1.55cm},
   arr/.style={-{Stealth[length=2mm]}, thick}
 ]
-% main row
-\node[base] (in) at (0,0) {Prompt audio,\\prompt text,\\target text};
-\node[base] (teach) at (3.2,0) {Teacher guided\\step at $t_i$\\(2 passes)};
-\node[prop] (score) at (6.4,0) {Endpoint estimate\\$\hat x_1(t_i)$, score $d_i$\\(no extra pass)};
-\node[dec] (stop) at (9.75,0) {Stop the\\teacher\\here?};
-\node[base] (stud) at (13.6,0) {Student from $T$:\\fixed restart,\\3 steps (3 passes)};
-\node[base] (voc) at (13.6,-2.3) {Vocos vocoder\\$\rightarrow$ waveform};
-
-% side inputs to the decision
-\node[prop] (snr) at (3.2,2.2) {Prompt SNR\\estimate $\hat S$\\(no pass)};
-\node[prop] (cal) at (13.6,2.2) {Calibrated $\hat\lambda$\\(Objective~2),\\SNR gate $\theta$};
+% inputs and frozen front end
+\node[base] (in)    at (0,0)       {Prompt audio,\\prompt text,\\target text};
+\node[base] (dur)   at (0,-2.6)    {Duration\\predictor\\(as released)};
+\node[base] (teach) at (3.6,0)     {Teacher: 4 guided\\Euler steps to\\$t_4=0.2929$,\\endpoint $\hat x_1$\\(10 passes)};
+\node[base] (draft) at (3.6,-2.6)  {Student draft\\$s_0$ from noise\\(1 pass)};
+% added inference-time components
+\node[prop] (snr)   at (3.6,2.5)   {Prompt SNR\\estimate $\hat S$\\(no pass)};
+\node[prop, text width=2.9cm] (qr) at (7.7,-1.7) {Quantile projection\\$Q(\hat x_1,s_0)$ and\\invariant residual $r$\\(no pass)};
+\node[dec]  (route) at (11.0,0)    {$\hat S<\theta$\\or\\$r>\hat\lambda_r$?};
+% frozen back end
+\node[base] (stud)  at (15.4,0)    {Student: 2 steps\\from the payload,\\$j=2$ (2 passes)};
+\node[base] (voc)   at (15.4,-2.6) {Vocos vocoder\\$\rightarrow$ waveform};
+% offline calibrator
+\node[prop] (cal)   at (15.4,2.5)  {Offline calibrator\\(Learn-Then-Test)\\$\rightarrow\hat\lambda_r$};
 
 \draw[arr] (in) -- (teach);
-\draw[arr] (teach) -- (score);
-\draw[arr] (score) -- (stop);
-\draw[arr] (stop) -- node[above, font=\figsmall] {yes: pass} node[below, font=\figsmall] {$T$} (stud);
-\draw[arr] (stud) -- (voc);
+\draw[arr] (in) -- (dur);
+\draw[arr] (dur) -- (draft);
 \draw[arr] (in.north) |- (snr.west);
-\draw[arr] (snr.east) -| ($(stop.north)+(-0.2,0)$);
-\draw[arr] (cal.west) -| ($(stop.north)+(0.2,0)$);
-\draw[arr] (stop.south) -- ++(0,-1.0) coordinate (lp) -| (teach.south);
-\node[right, font=\figsmall] at ($(stop.south)+(0,-0.45)$) {no};
-\node[above, font=\figsmall] at ($(lp)!0.5!(lp-|teach.south)$) {Euler update to $t_{i+1}$, next step};
+\draw[arr] (teach.east) -- node[above, font=\figsmall, pos=0.55] {$\hat x_1$} (route.west);
+\draw[arr] ($(teach.east)+(0.4,0)$) |- ($(qr.west)+(0,0.3)$);
+\draw[arr] (draft.east) -- ++(0.75,0) |- ($(qr.west)+(0,-0.3)$);
+\draw[arr] (qr.east) -| node[pos=0.3, below, font=\figsmall] {$Q$, $r$} (route.south);
+\draw[arr] (snr.east) -| node[pos=0.3, above, font=\figsmall] {$\hat S$} ($(route.north)+(-0.3,0)$);
+\draw[arr] (cal.west) -| node[pos=0.3, above, font=\figsmall] {$\hat\lambda_r$} ($(route.north)+(0.3,0)$);
+\draw[arr] (route.east) -- (stud.west);
+\node[font=\figsmall, align=center] at ($(route.east)!0.5!(stud.west)+(0,0.42)$) {yes: $Q$};
+\node[font=\figsmall, align=center] at ($(route.east)!0.5!(stud.west)+(0,-0.42)$) {no: $\hat x_1$};
+\draw[arr] (stud) -- (voc);
 
-% stop rule
-\node[font=\figsmall, align=left, anchor=north west, text width=9.6cm] at (-1.1,-1.95)
-  {\textbf{Stop rule:} stop if $i=i_m$ (the reference step), or if $i$ is a candidate step with $d_i\le\hat\lambda$ and $\hat S\ge\theta$.};
-
-% legend
-\node[base, minimum height=0.35cm, text width=0.45cm] (l1) at (-0.85,-3.05) {};
-\node[right, font=\figsmall] at (l1.east) {published DMOSpeech~2 sampler};
-\node[prop, minimum height=0.35cm, text width=0.45cm] (l2) at (4.4,-3.05) {};
+% legend and cost line
+\node[base, minimum height=0.35cm, text width=0.45cm] (l1) at (-0.75,-4.3) {};
+\node[right, font=\figsmall] at (l1.east) {released network, weights frozen};
+\node[prop, minimum height=0.35cm, text width=0.45cm] (l2) at (5.0,-4.3) {};
 \node[right, font=\figsmall] at (l2.east) {added by the proposed method};
+\node[right, font=\figsmall] at (10.6,-4.3) {Cost: $10+1+2=13$ passes for every input};
 \end{tikzpicture}
 \end{adjustbox}
-\caption{Proposed calibrated adaptive handover. The added components (dashed) reuse quantities the sampler already computes, so the per-utterance stopping decision costs no extra forward pass; the student and vocoder run as published.}
+\caption{Architecture of the proposed risk-calibrated payload router. The teacher always stops at the same coarse commit point; the router decides only \emph{what} the teacher hands to the student: its own endpoint estimate $\hat x_1$, or the quantile projection $Q(\hat x_1,s_0)$, which keeps the teacher's timing and uses the student draft's spectral values. The single threshold $\hat\lambda_r$ is set offline by Learn-Then-Test.}
 \label{fig:method}
 \end{figure}

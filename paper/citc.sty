@@ -20,6 +20,11 @@
 % URW Palladio for text and math. 12 pt comes from the class option.
 \RequirePackage[T1]{fontenc}
 \RequirePackage{mathpazo}
+% mathpazo sets only the roman family. Without these, \texttt and \textsf fall
+% back to T1 Computer Modern, which is embedded as bitmap (Type 3) fonts unless
+% cm-super is installed. Latin Modern is the vector version of the same design.
+\renewcommand{\ttdefault}{lmtt}
+\renewcommand{\sfdefault}{lmss}
 
 % 1.4: font color black -- overrides the draft's colored links.
 \@ifpackageloaded{hyperref}{\hypersetup{colorlinks=true,allcolors=black}}{}
