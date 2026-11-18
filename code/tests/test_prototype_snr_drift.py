@@ -162,7 +162,7 @@ class InterfaceTests(unittest.TestCase):
     def test_page_uses_the_presentation_design_and_the_api(self):
         html = (ROOT / "code/prototype/web/index.html").read_text(encoding="utf-8")
         for token in ("--blue-grad", "--orange-grad", "--dark-grad", "Google+Sans+Flex", "/api/jobs", "/api/status",
-                      "/api/examples", "SNR + Drift Handover"):
+                      "/api/examples", "SNR + Invariant Residual"):
             self.assertIn(token, html)
         pres = (ROOT / "presentation/index.html").read_text(encoding="utf-8")
         for token in ("#0284C7", "#EA580C", "#F8FAFC"):

@@ -1,12 +1,11 @@
-"""Local web server for the SNR + drift prototype.
+"""Local web server for the SNR + Invariant Residual (SNR_R) prototype.
 
     .venv\\Scripts\\python code\\prototype\\server.py            (then open http://127.0.0.1:8765)
 
 The page (web/index.html) opens at once; the model loads in the background. Jobs run one at a time on the CPU, and each
-teacher step is reported to the page as it is computed.
+step (student draft, 8-interval teacher steps, invariant residual decision, student completion) is streamed live.
 """
 import argparse
-import base64
 import io
 import threading
 import time
@@ -21,10 +20,10 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse, Response
 
 import engine as eng
-import snr_drift as sd
+import snr_invariant as si
 
 WEB = Path(__file__).resolve().parent / "web"
-app = FastAPI(title="SNR + drift handover prototype")
+app = FastAPI(title="SNR + Invariant Residual prototype")
 STATE = {"engine": None, "error": None, "loading": False, "started": time.time()}
 JOBS = {}
 LOCK = threading.Lock()          # one synthesis at a time: the model is not shared between threads
@@ -43,20 +42,47 @@ def _load_engine(threads):
 
 
 RECORDED = {}
-EXP031_QUALITY = eng.ROOT / "research/experiments/EXP-031-snr-toh-method-comparison/results/quality.csv"
+RISK_CAL = None
+EXP034_QUALITY = eng.ROOT / "research/experiments/EXP-034-invariant-residual/results/quality.csv"
+
+
+def _exp034_rows():
+    if not EXP034_QUALITY.exists():
+        return []
+    import csv
+    with open(EXP034_QUALITY, encoding="utf-8", newline="") as f:
+        return list(csv.DictReader(f))
 
 
 def _recorded():
-    """EXP-031's T4 records for development speakers 1-30 (prompt SNR, drifts and the rule's step at both presets), so
-    the page can show the recorded decision beside the local one."""
-    if not RECORDED and EXP031_QUALITY.exists():
-        import csv
-        with open(EXP031_QUALITY, encoding="utf-8", newline="") as f:
-            for r in csv.DictReader(f):
-                RECORDED.setdefault(r["utt_id"], {})[r["condition"]] = {
-                    "prompt_snr": float(r["prompt_snr"]), "drifts": {str(j): float(r[f"d_{j}"]) for j in range(1, 9)},
-                    "step": {"0.35": int(float(r["ch3_step"])), "1.20": int(float(r["ch3_ltt_step"]))}}
+    """EXP-034's T4 records for development speakers 31-60 (prompt SNR, invariant residual r, SNR_R choice, UTMOS),
+    so the page can show the recorded decision beside the local CPU run."""
+    if not RECORDED:
+        for r in _exp034_rows():
+            RECORDED.setdefault(r["utt_id"], {})[r["condition"]] = {
+                "prompt_snr": float(r["prompt_snr"]),
+                "r": float(r["r"]),
+                "choice": r["choice_SNR_R"],
+                "utmos": {"CPH8": float(r["utmos_CPH8"]), "CPQH": float(r["utmos_CPQH"])},
+            }
     return RECORDED
+
+
+def _risk_calibration():
+    """Run fixed-sequence binomial Learn-Then-Test calibration on EXP-034 dev rows for status reporting."""
+    global RISK_CAL
+    if RISK_CAL is None:
+        rows = _exp034_rows()
+        RISK_CAL = (
+            {
+                "source": "EXP-034 dev speakers 31-60 (n=240, clean=30)",
+                "ltt_15": si.calibrate_ltt(rows, alpha=0.15, delta=0.10),
+                "ltt_10": si.calibrate_ltt(rows, alpha=0.10, delta=0.10),
+            }
+            if rows
+            else {}
+        )
+    return RISK_CAL
 
 
 def _examples():
@@ -78,12 +104,31 @@ def index():
 @app.get("/api/status")
 def status():
     e = STATE["engine"]
-    return {"ready": e is not None, "loading": STATE["loading"], "error": STATE["error"],
-            "threads": getattr(e, "threads", None), "load_seconds": getattr(e, "load_seconds", None),
-            "missing": eng.missing_files(), "examples": len(_examples()), "conditions": list(eng.OFFLINE_CONDITIONS),
-            "lambda_presets": sd.LAMBDA_PRESETS, "gate_db": sd.SNR_GATE_DB, "candidates": list(sd.CANDIDATE_STEPS),
-            "reference_step": sd.REFERENCE_STEP, "reference_passes": sd.REFERENCE_PASSES,
-            "teacher_grid": sd.TEACHER_GRID, "student_taus": sd.STUDENT_TAUS}
+    return {
+        "method": "snr_invariant",
+        "ready": e is not None,
+        "loading": STATE["loading"],
+        "error": STATE["error"],
+        "threads": getattr(e, "threads", None),
+        "load_seconds": getattr(e, "load_seconds", None),
+        "missing": eng.missing_files(),
+        "examples": len(_examples()),
+        "conditions": list(eng.OFFLINE_CONDITIONS),
+        "lambda_presets": si.LAMBDA_R_PRESETS,
+        "default_lambda_r": si.DEFAULT_LAMBDA_R,
+        "risk_calibration": _risk_calibration(),
+        "gate_db": si.SNR_GATE_DB,
+        "commit_step": si.COMMIT_STEP,
+        "passes": si.METHOD_PASSES,
+        "teacher_passes": si.TEACHER_PASSES,
+        "draft_passes": si.DRAFT_PASSES,
+        "student_passes": si.STUDENT_PASSES,
+        "reference_passes": si.W8_REFERENCE_PASSES,
+        "paper_passes": si.P25_PAPER_PASSES,
+        "teacher_grid": si.TEACHER_GRID[:si.COMMIT_STEP + 1],
+        "draft_tau": si.DRAFT_TAU,
+        "student_taus": si.STUDENT_RESTART_TAUS,
+    }
 
 
 @app.get("/api/examples")
@@ -124,13 +169,16 @@ def _run(job_id, args):
         with LOCK:
             job["status"] = "running"
             job["started"] = time.time()
-            res = STATE["engine"].synthesize(args["prompt"], args["sr"], args["prompt_text"], args["text"],
-                                             seed=args["seed"], lam=args["lam"], compare_reference=args["compare"],
-                                             progress=lambda e: job["events"].append(e))
+            res = STATE["engine"].synthesize(
+                args["prompt"], args["sr"], args["prompt_text"], args["text"],
+                seed=args["seed"], lam_r=args["lam_r"], compare_reference=args["compare"],
+                progress=lambda e: job["events"].append(e),
+            )
         audio = {"output": eng.wav_bytes(res.pop("audio"))}
-        ref = res.get("reference")
-        if ref and "audio" in ref:
-            audio["reference"] = eng.wav_bytes(ref.pop("audio"))
+        for key in ("unstabilized", "reference"):
+            branch = res.get(key)
+            if branch and "audio" in branch:
+                audio[key] = eng.wav_bytes(branch.pop("audio"))
         audio["prompt"] = eng.wav_bytes(args["prompt"], args["sr"])
         job["audio"] = audio
         job["result"] = res
@@ -143,7 +191,7 @@ def _run(job_id, args):
 
 @app.post("/api/jobs")
 async def create_job(source: str = Form("example"), utt_id: str = Form(""), condition: str = Form("clean"),
-                     prompt_text: str = Form(""), text: str = Form(...), lam: float = Form(sd.DEFAULT_LAMBDA),
+                     prompt_text: str = Form(""), text: str = Form(...), lam_r: float = Form(si.DEFAULT_LAMBDA_R),
                      seed: int = Form(-1), compare: bool = Form(False), file: UploadFile = File(None)):
     if STATE["engine"] is None:
         raise HTTPException(503, STATE["error"] or "The model is still loading.")
@@ -170,10 +218,12 @@ async def create_job(source: str = Form("example"), utt_id: str = Form(""), cond
         seed = 42 if seed < 0 else seed
         label = file.filename or "uploaded prompt"
     job_id = uuid.uuid4().hex[:12]
-    JOBS[job_id] = {"status": "queued", "events": [], "label": label, "created": time.time(),
-                    "inputs": {"prompt_text": prompt_text, "text": text, "lambda": lam, "seed": seed,
-                               "compare": compare, "source": source, "condition": condition if source == "example" else None}}
-    args = {"prompt": prompt, "sr": sr, "prompt_text": prompt_text, "text": text, "lam": lam, "seed": seed,
+    JOBS[job_id] = {
+        "status": "queued", "events": [], "label": label, "created": time.time(),
+        "inputs": {"prompt_text": prompt_text, "text": text, "lambda_r": lam_r, "seed": seed,
+                   "compare": compare, "source": source, "condition": condition if source == "example" else None},
+    }
+    args = {"prompt": prompt, "sr": sr, "prompt_text": prompt_text, "text": text, "lam_r": lam_r, "seed": seed,
             "compare": compare}
     threading.Thread(target=_run, args=(job_id, args), daemon=True).start()
     return {"job": job_id}
@@ -203,11 +253,11 @@ def job_download(job_id: str):
     if j is None or "output" not in j.get("audio", {}):
         raise HTTPException(404, "no output yet")
     return Response(j["audio"]["output"], media_type="audio/wav",
-                    headers={"Content-Disposition": f'attachment; filename="snr_drift_{job_id}.wav"'})
+                    headers={"Content-Disposition": f'attachment; filename="snr_invariant_{job_id}.wav"'})
 
 
 def main():
-    p = argparse.ArgumentParser(description="SNR + drift handover prototype (local web interface)")
+    p = argparse.ArgumentParser(description="SNR + Invariant Residual handover prototype (local web interface)")
     p.add_argument("--host", default="127.0.0.1")
     p.add_argument("--port", type=int, default=8765)
     p.add_argument("--threads", type=int, default=None, help="CPU threads for PyTorch (default: all but one)")
