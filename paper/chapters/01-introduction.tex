@@ -126,15 +126,11 @@ Taken together, these theories form the reasoning of the study. Flow matching ma
 \subsection{Conceptual Framework}
 \label{sec:conceptual}
 
-The conceptual framework, shown in Figure~\ref{fig:conceptual}, applies the theories of Section~\ref{sec:theoretical} to the teacher-guided sampler of DMOSpeech~2 \parencite{li2025dmospeech2}. It is drawn as the architecture of the proposed method, so that its components, the process each utterance goes through, and the outputs of the study can be read from one figure.
-
-The components fall into three groups. The frozen backbone, made up of the duration predictor, the F5-TTS teacher, the DMOSpeech~2 student and the Vocos vocoder, generates speech exactly as released, and its weights are never changed. The stopping controller is added between the teacher and the student, and the offline calibrator runs once before use. For each utterance, the input is a recorded speech prompt with its transcript and the text to be spoken. The duration predictor sets the length of the output, and the teacher takes guided steps from noise toward speech. At each candidate step, the controller reads two values the sampler already has: how much the teacher's estimate of the final mel-spectrogram has changed since the previous step, and the signal-to-noise ratio of the prompt. If both pass the controller's threshold, the teacher stops and hands its estimate to the student; otherwise it takes another step, at most up to the reference step of the released sampler. The student completes the mel-spectrogram in three steps, and the vocoder turns it into a waveform. Before any of this, the calibrator sets the controller's threshold $\hat\lambda$ on a held-out calibration set with Learn-Then-Test, using a tolerated risk $\alpha$ and a confidence parameter $\delta$ fixed in advance.
-
-The outputs are the speech for each utterance, the switching time chosen for it together with its cost in forward passes, and the calibrated threshold with a stated bound on the rate of added quality failures. The study produces these outputs on clean and moderately noisy prompts from the Seed-TTS test set and compares them with the released sampler and the other methods of Objective~3. Section~\ref{sec:architecture} describes each component in full, and Section~\ref{sec:workflow} gives the steps by which the objectives produce these outputs.
+Figure~\ref{fig:conceptual} shows the conceptual framework as input, process and output. The inputs are a speaker prompt, clean or noisy, with the text to be spoken, and a separate group of speakers used only for calibration. The process is the released teacher--student system of DMOSpeech~2 \parencite{li2025dmospeech2}, kept unchanged except at the handover. There, the proposed method decides for each utterance whether the teacher passes its own estimate of the speech or a version corrected for prompt noise, guided by two signals and a threshold that is calibrated once. The outputs are speech produced at a fixed, lower cost; a stated limit on how often the method fails where the released system does not; and a threshold, with its procedure, that others can reuse. Chapter~3 describes each component (Section~\ref{sec:architecture}).
 
 \input{figures/fig_conceptual}
 
-Table~\ref{tab:variables} lists the variables of the study. The switching time is the only part of the generation process that the method changes; everything else is held fixed, so that any difference in quality or cost between two runs of the same input can be traced to where the teacher stopped.
+Table~\ref{tab:variables} lists the variables of the study. The handover decision is the only part of generation that the method changes; everything else is held fixed, so that a difference between two systems on the same input can be traced to how they run.
 
 \begin{table}[!htbp]
 \centering\small
@@ -144,12 +140,12 @@ Table~\ref{tab:variables} lists the variables of the study. The switching time i
 \toprule
 \textbf{Type} & \textbf{Variable} & \textbf{How it is set or measured} \\
 \midrule
-Independent & Switching time & Chosen for each utterance among the candidate teacher steps at or before the reference step, the latest being the reference \\
-Independent & Prompt condition & Clean, or with added noise at 15~dB SNR \\
-Independent & Calibration sample size & 50, 100, or 200 speakers (Objective~3) \\
-Decision signals & Prompt SNR; endpoint-stabilization score & Computed during generation with no extra network evaluation \\
-Controlled & Model weights; student restart level; random seeds; hardware & Kept as released; default restart level; same seeds for every candidate of an input; Tesla T4 GPU \\
-Dependent (quality) & WER, SIM, UTMOS, added-failure rate & Measured on every generated utterance; WER and SIM decide an added failure \\
+Independent & System & The proposed router, the released and published DMOSpeech~2 configurations, the teacher and student alone, and ablations \\
+Independent & Prompt condition & Clean, or one of seven kinds of added noise, echo or band limitation \\
+Independent & Calibration sample size; tolerance & 50, 100 or 200 speakers; $\alpha=0.05$ or $0.10$ \\
+Decision signals & Prompt SNR; invariant residual & Computed during generation without running any extra network beyond the student draft \\
+Controlled & Model weights; teacher stopping point; student restart; random seeds; hardware & Kept as released; fixed for every input (varied only as an ablation); same seeds for every system; Tesla T4 GPU \\
+Dependent (quality) & WER, SIM, UTMOS, pitch variety, failure and excess-failure rates & Measured on every generated utterance \\
 Dependent (cost) & Forward passes; runtime and real-time factor (RTF) & Counted exactly per utterance; timed on the Tesla T4 GPU \\
 \bottomrule
 \end{tabularx}
