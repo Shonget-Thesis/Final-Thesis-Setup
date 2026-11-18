@@ -398,7 +398,7 @@
     "M3_overall_competitiveness": "Path B: Candidate beats SNR_ONLY overall (lo > 0) and is non-inferior/better vs SNR_R (lo >= -0.05)."
   },
   "code_hashes": {
-    "run_exp035_036_combined.py": "c43db1c37cab7c34d5d9d429f2a6b359165c34fdb54be6fe8215d4043e57cfea",
+    "run_exp035_036_combined.py": "6bd3ad0a16ecef59fe40b231f865855127c38e9aea4a46b747b3c293904bff31",
     "handover_mechanisms.py": "10333d0d8e2960e80ba8ae675ce4437f1ae1e8d8e039b1d2481b7286a9313d76",
     "run_invariant_residual.py": "fb4b2c9d07f81b1abe5d3fbae27383341bc23217754904041ada3ba2c00da6b7",
     "run_cheaper_teacher_path.py": "de5c33267e92140866231beadd34992e5e4a5b8ce7be623919adb683990e1339",
@@ -422,6 +422,6 @@
   },
   "seed": 2026,
   "boot_b": 2000,
-  "sha256": "da34e0e063eeb48ce4ec48126ae44124b5ce9fe4b5623722fc8d88c27103750a",
-  "created_utc": "2026-11-18T02:10:14.738882+00:00"
+  "sha256": "492e3731998db6561e3188208fc1fc527f7b73e51b94fea21f06584049465450",
+  "created_utc": "2026-11-18T02:35:01.985171+00:00"
 }

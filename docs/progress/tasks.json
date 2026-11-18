@@ -1109,7 +1109,7 @@
       "owner": "unassigned",
       "status": "todo",
       "updated": "2026-11-18",
-      "acceptance": "Colab T4 notebook DMOSpeech2_EXP035_EXP036_AllInOne.ipynb runs both Path A (CPH8, CPH8_DP, FCH_DP, G1_VSWAP, G2_AFFINE, CPQH, SNR_R, 5-fold OOF LTT) and Path B (DSGH_MICRO, DSGH_DUAL, CWPS at fixed 13 passes without a binary 20 dB / 0.340 router) together on unseen_cal[30:60] (strictly disjoint from dev[0:100] and EXP-028 unseen_cal[0:30]); smoke checks verify G1/G2/FCH/DSGH identities and exact pass counts across all 12 TIME_ARMS; preregistration (da34e0e063ee...) predates synthesis; quality (240 cases), diversity (40 blocks), timing (10 cases), reports, and MANIFEST.json hashes are imported and checked.",
+      "acceptance": "Colab T4 notebook DMOSpeech2_EXP035_EXP036_AllInOne.ipynb runs both Path A (CPH8, CPH8_DP, FCH_DP, G1_VSWAP, G2_AFFINE, CPQH, SNR_R, 5-fold OOF LTT) and Path B (DSGH_MICRO, DSGH_DUAL, CWPS at fixed 13 passes without a binary 20 dB / 0.340 router) together on unseen_cal[30:60] (strictly disjoint from dev[0:100] and EXP-028 unseen_cal[0:30]); smoke checks verify G1/G2/FCH/DSGH identities and exact pass counts across all 12 TIME_ARMS; preregistration (492e3731998d...) predates synthesis; quality (240 cases), diversity (40 blocks), timing (10 cases), reports, and MANIFEST.json hashes are imported and checked.",
       "evidence": [
         "research/experiments/EXP-035-036-all-in-one/README.md",
         "research/experiments/EXP-035-036-all-in-one/preregistration.json",
@@ -1119,7 +1119,7 @@
         "code/tests/test_handover_mechanisms.py",
         "docs/progress/log/2026-11-18-exp035-exp036-setup.md"
       ],
-      "validation": "Prepared and preregistered combined all-in-one runner and Colab T4 notebook on branch rhnl-3 on 2026-11-18 (preregistration sha256 da34e0e063ee...); NumPy/PyTorch parity tests, mock CWPS loop check in .venv, cohort disjointness, notebook schema, and synthetic Path A + Path B analyze() checks pass locally; awaiting T4 execution."
+      "validation": "Prepared and preregistered combined all-in-one runner and Colab T4 notebook on branch rhnl-3 on 2026-11-18 (preregistration sha256 492e3731998d...; Colab 12.7 GB Whisper-load OOM guard added); NumPy/PyTorch parity tests, mock CWPS loop check in .venv, cohort disjointness, notebook schema, and synthetic Path A + Path B analyze() checks pass locally; awaiting T4 execution."
     }
   ]
 }

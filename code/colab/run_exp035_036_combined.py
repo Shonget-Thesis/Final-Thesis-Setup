@@ -17,6 +17,7 @@ Runs both research paths in ONE shared Colab Tesla T4 sweep on `unseen_cal[30:60
 Subcommands: freeze, smoke, run, analyze.
 """
 import argparse
+import gc
 import json
 import sys
 import time
@@ -189,6 +190,48 @@ def standalone(pipe, ctx, arm):
 
 
 # --------------------------------------------------------------------------- Stages
+def _release_memory(pipe):
+    gc.collect()
+    if hasattr(pipe, "torch") and pipe.torch.cuda.is_available():
+        pipe.torch.cuda.empty_cache()
+
+
+def _ram_avail_gb():
+    p = Path("/proc/meminfo")
+    if not p.exists():
+        return None
+    for line in p.read_text(encoding="utf-8").splitlines():
+        if line.startswith("MemAvailable:"):
+            return int(line.split()[1]) / (2 ** 20)
+    return None
+
+
+def _warm_metrics(pipe):
+    """Load Whisper large-v3, WavLM, and UTMOS once cleanly before allocating synthesis tensors."""
+    if getattr(pipe, "_metrics_warmed", False):
+        return
+    _release_memory(pipe)
+    avail = _ram_avail_gb()
+    if avail is not None:
+        print(f"[mem] warming metric models (Whisper/WavLM/UTMOS), free host RAM={avail:.2f} GB", flush=True)
+    t = np.arange(24000, dtype=np.float32) / 24000.0
+    dummy = (0.01 * np.sin(2.0 * np.pi * 220.0 * t)).astype(np.float32)
+    old_threads = pipe.torch.get_num_threads()
+    pipe.torch.set_num_threads(1)
+    try:
+        pipe.metrics.asr.transcribe(dummy, sample_rate=24000)
+        pipe.metrics.compute_similarity(dummy, dummy, sample_rate=24000, gt_sr=24000)
+        pipe.metrics.compute_utmos(dummy, sample_rate=24000)
+    finally:
+        pipe.torch.set_num_threads(old_threads)
+    del dummy, t
+    pipe._metrics_warmed = True
+    _release_memory(pipe)
+    avail_after = _ram_avail_gb()
+    if avail_after is not None:
+        print(f"[mem] metric models warm, free host RAM={avail_after:.2f} GB", flush=True)
+
+
 def run_quality(pipe, items, conds=CONDS, out_dir=None, csv_name="quality.csv"):
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -196,6 +239,8 @@ def run_quality(pipe, items, conds=CONDS, out_dir=None, csv_name="quality.csv"):
     done = rf.done_keys(path, 1)
     todo = [(it, c) for c in conds for it in items if (it["utt_id"], c) not in done]
     print(f"[quality] {len(todo)} cases to run ({len(done)} already in {path.name})", flush=True)
+    if todo:
+        _warm_metrics(pipe)
     for n_run, (item, cond) in enumerate(todo, 1):
         t0 = time.perf_counter()
         ctx = pipe.prepare(item, cond, int(item["input_seed"]), out_dir)
@@ -217,13 +262,20 @@ def run_quality(pipe, items, conds=CONDS, out_dir=None, csv_name="quality.csv"):
             **{f"choice_{p}": ir.choose(p, snr, parts["r"], parts["drift8"]) for p in POLICIES},
         }
         for arm in QUAL_ARMS:
-            m = pipe.score(ng.decode(pipe, ctx, outs[arm]), item, gt)
+            mel = outs.pop(arm)
+            audio = ng.decode(pipe, ctx, mel)
+            del mel
+            m = pipe.score(audio, item, gt)
+            del audio
             row.update({f"{k}_{arm}": m[k] for k in ir.METRICS + ("hypothesis",)})
         row.update({"case_seconds": round(time.perf_counter() - t0, 2), "utc": tb._utc()})
         tb._append(path, QUAL_FIELDS, row)
         print(f"[{n_run}/{len(todo)}] quality: {item['utt_id']} {cond} SNR {snr:.1f} r {parts['r']:.3f} | "
               f"G2 {row['utmos_G2_AFFINE']:.2f} CPQH {row['utmos_CPQH']:.2f} DSGH {row['utmos_DSGH_DUAL']:.2f} "
               f"CWPS {row['utmos_CWPS']:.2f} ({row['case_seconds']:.1f}s)", flush=True)
+        del outs, parts, ctx, gt
+        if n_run % 10 == 0 or n_run == len(todo):
+            _release_memory(pipe)
     print(f"[OK] quality complete: {path}", flush=True)
     return path
 
@@ -285,6 +337,7 @@ def run_diversity(pipe, items, out_dir, seeds=DIV_SEEDS, conds=DIV_CONDS, csv_na
 def smoke(pipe, out_dir, prereg_path=PREREG_PATH):
     """Verify Path A & Path B identities, exact pass counts across all 12 TIME_ARMS, and micro runs."""
     check_prereg(prereg_path)
+    _warm_metrics(pipe)
     sdir = Path(out_dir) / "smoke"
     sdir.mkdir(parents=True, exist_ok=True)
     item = qual_items()[0]
@@ -323,6 +376,8 @@ def smoke(pipe, out_dir, prereg_path=PREREG_PATH):
     bad = {a: c for a, c in counts.items() if (c["teacher"], c["student"]) != expected_passes(a)}
     if bad:
         raise RuntimeError(f"Pass count mismatch: {bad}")
+    del outs, parts, t4, s0, g1_self, g2_self, t4_floor, fch_inv, dsgh_self, out, ref, ctx
+    _release_memory(pipe)
     run_quality(pipe, qual_items()[:1], conds=("clean", "noisy15"), out_dir=sdir, csv_name="quality.csv")
     run_diversity(pipe, div_items()[:1], sdir, seeds=2, csv_name="diversity.csv")
     hm.run_timing_arms(pipe, time_items()[:1], sdir, TIME_ARMS, standalone, TIME_FIELDS, csv_name="timing.csv")
