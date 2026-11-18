@@ -1106,10 +1106,10 @@
     {
       "id": "PAPER-020",
       "title": "Rewrite Chapter 3 around the risk-calibrated payload router (SNR_R) with an absolute failure rule and LTT bound against reproduced DMOSpeech 2",
-      "owner": "Mark Vincent D. Limpahan",
+      "owner": "Claude (drafting), for Mark Vincent D. Limpahan",
       "status": "review",
       "updated": "2026-11-18",
-      "acceptance": "paper/chapters/03-methodology.tex describes the payload router; future tense; no result values; every display equation defined; objectives only in headings and workflow table; plain-language explanations for unfamiliar readers; latexmk -Werror passes.",
+      "acceptance": "paper/chapters/03-methodology.tex describes the payload router; future tense; no result values; every display equation defined; objectives only in headings and workflow table; plain-language explanations for unfamiliar readers; latexmk -Werror passes. Not adviser-approved; EXP-034 remains development evidence.",
       "evidence": [
         "paper/chapters/03-methodology.tex",
         "paper/figures/fig_method.tex",
@@ -1118,7 +1118,8 @@
         "docs/progress/log/2026-11-18-chapter3-router-replaces-scheduler.md",
         "paper/chapters/02-related-work.tex",
         "paper/references.bib",
-        "docs/progress/log/2026-11-18-citations-and-chapter2-alignment.md"
+        "docs/progress/log/2026-11-18-citations-and-chapter2-alignment.md",
+        "docs/progress/log/2026-11-18-build-fixes-and-chapter3-rewrite.md"
       ],
       "validation": "2026-11-18: latexmk -Werror main.tex exit 0 (108 pages), zero undefined references/citations, zero Overfull boxes; Chapter 3 citations filled from records checked online; Chapter 2 aligned. Pending team and adviser review."
     }
