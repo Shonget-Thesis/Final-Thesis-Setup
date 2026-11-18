@@ -93,6 +93,14 @@ class SignalTests(unittest.TestCase):
         self.assertEqual(ir.expected_passes("SNR_ONLY", 30.0), (10, 2))
         self.assertEqual(ir.expected_passes("SNR_ONLY", 10.0), (10, 3))
 
+    def test_babble_track_is_required(self):
+        """Amendment 1: the pipeline is never built without DEMAND's cafeteria track (babble15)."""
+        import argparse
+        with self.assertRaises(SystemExit):
+            ir.make_pipe(argparse.Namespace(out_dir=str(ROOT / "nonexistent"), dmo_root="x", device="cpu",
+                                            demand_dir=None))
+        self.assertTrue(any("Amendment 1" in a for a in ir.AMENDMENTS))
+
     def test_cohorts_are_disjoint_from_the_screens(self):
         screened = {r["utt_id"] for r in ncs.pick_cases(12)}
         self.assertFalse(screened & {it["utt_id"] for it in ir.qual_items()})

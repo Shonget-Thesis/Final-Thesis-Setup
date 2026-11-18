@@ -942,17 +942,30 @@
       "id": "EVAL-029",
       "title": "EXP-034: the invariant residual against SNR only and Chapter 3's drift on the T4 (which decision rule is better)",
       "owner": "Rhenel Jhon R. Sajol",
-      "status": "in_progress",
-      "updated": "2026-11-17",
-      "acceptance": "Preregistration is frozen before GPU synthesis (7c2ec8fca37b...) with locked code, the CPU screen's thresholds and EXP-031/EXP-033 input hashes; the Colab T4 smoke test passes the identities, every arm and rule run on its own with its counted passes equal to the cost table, and the EXP-033 (CPH8, STU, W8) and EXP-031 (STU, W8) reproductions on development speaker 1 (<= 0.01); the run covers development positions 31-60 x 8 prompt conditions (240 quality cases), 41-60 x 12 seeds x clean and gauss25 for variety, and 31-40 for passes and time; the analysis applies the frozen hypotheses H1-H5 and verdict labels, reports every rule's quality by condition, detection AUCs, wrong clean flags, variety and cost, and writes MANIFEST.json; the result, whichever way it goes, is imported with hashes and reported.",
+      "status": "review",
+      "updated": "2026-11-18",
+      "acceptance": "Preregistration is frozen before GPU synthesis (eb1a38d3225a... after Amendment 1, which loads the DEMAND babble track) with locked code, the CPU screen's thresholds and EXP-031/EXP-033 input hashes; the Colab T4 smoke test passes the identities, every arm and rule run on its own with its counted passes equal to the cost table, and the EXP-033 (CPH8, STU, W8) and EXP-031 (STU, W8) reproductions on development speaker 1 (<= 0.01); the run covers development positions 31-60 x 8 prompt conditions (240 quality cases), 41-60 x 12 seeds x clean and gauss25 for variety, and 31-40 for passes and time; the analysis applies the frozen hypotheses H1-H5 and verdict labels, reports every rule's quality by condition, detection AUCs, wrong clean flags, variety and cost, and writes MANIFEST.json; the result, whichever way it goes, is imported with hashes and reported.",
       "evidence": [
         "research/experiments/EXP-034-invariant-residual/README.md",
         "research/experiments/EXP-034-invariant-residual/preregistration.json",
         "code/colab/run_invariant_residual.py",
         "code/colab/DMOSpeech2_EXP034_Invariant_Residual.ipynb",
         "code/tests/test_invariant_residual_run.py",
-        "docs/progress/log/2026-11-17-exp034-invariant-residual-setup.md"
-      ]
+        "docs/progress/log/2026-11-17-exp034-invariant-residual-setup.md",
+        "research/experiments/EXP-034-invariant-residual/results/MANIFEST.json",
+        "research/experiments/EXP-034-invariant-residual/results/INVARIANT_RESIDUAL_REPORT.md",
+        "research/experiments/EXP-034-invariant-residual/results/invariant_residual_results.json",
+        "research/experiments/EXP-034-invariant-residual/results/quality.csv",
+        "research/experiments/EXP-034-invariant-residual/results/diversity.csv",
+        "research/experiments/EXP-034-invariant-residual/results/timing.csv",
+        "research/experiments/EXP-034-invariant-residual/results/demand_sha256.txt",
+        "research/experiments/EXP-034-invariant-residual/results/smoke/smoke_check.json",
+        "research/experiments/EXP-034-invariant-residual/results/diagnostics.json",
+        "code/analysis/exp034_diagnostics.py",
+        "code/tests/test_exp034_diagnostics.py",
+        "docs/progress/log/2026-11-18-exp034-results.md"
+      ],
+      "validation": "2026-11-18: Completed all stages on a Colab Tesla T4 (quality 240/240, diversity 40/40, timing 10/10; zip c7774cb465bc...); smoke identities, standalone pass counts, and EXP-031/033 reproductions exact (0.0); preregistration and DEMAND hashes match; local analyze() recomputation gives byte-identical report. Frozen verdict: snr_r_better (H1-H5 all yes: SNR_R - SNR_ONLY +0.574 [+0.468, +0.677] UTMOS, +0.0156 SIM; SNR_R - SNR_DRIFT +0.431 [+0.340, +0.524] UTMOS, +0.0091 SIM; AUC(r) 0.864 vs drift8 0.697; wrong clean flags 0.067 <= 0.15; clean variety 105% CVf0 and 96% aligned vs CPH8). Also holds on unseen positions 41-60; post-hoc, R_ONLY matches SNR_R, while teacher-free STUR2 (3 passes) leads on UTMOS/WER/SIM if clean pitch variety is not required. Pending team/adviser review."
     },
     {
       "id": "PROTO-001",
@@ -1052,6 +1065,25 @@
         "docs/progress/log/2026-11-17-appendices-colab-alignment.md"
       ],
       "validation": "2026-11-17: Updated paper/chapters/appendices.tex (Chapters 1-3 untouched on origin/main PR #19); latexmk -interaction=nonstopmode -halt-on-error -Werror main.tex exited 0 (93 pages, 1,213,460 bytes, zero undefined refs/citations, zero Float too large warnings); Figure C.1 and Tables D.9-D.10 visually inspected via pdftoppm; pending team and adviser review."
+    },
+    {
+      "id": "PAPER-018",
+      "title": "Add Appendix E (SNR + Invariant Residual Handover) with architecture figure and full EXP-034 quality/diversity comparisons",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "review",
+      "updated": "2026-11-18",
+      "acceptance": "Chapters 1-3 remain unchanged; paper/figures/fig_snr_r.tex includes updated paper/figures/exp034_architecture.png showing the SNR_R handover architecture and completed Colab T4 outcome; new Appendix E (app:snr-r) in paper/chapters/appendices.tex documents the invariant residual formulation, frozen EXP-034 verdict (snr_r_better, H1-H5), all-policy/arm overall and per-condition quality and runtime (Tables E.1-E.3), all-arm clean and gauss25 multi-seed prosodic diversity (Table E.4), and post-hoc limits (R_ONLY, CPQH, STUR2, reverb09, telephone) as unapproved Colab T4 development evidence; latexmk -Werror, check_workspace.py, and unittest pass.",
+      "evidence": [
+        "paper/main.tex",
+        "paper/chapters/appendices.tex",
+        "paper/figures/fig_snr_r.tex",
+        "paper/figures/exp034_architecture.png",
+        "research/experiments/EXP-034-invariant-residual/results/INVARIANT_RESIDUAL_REPORT.md",
+        "research/experiments/EXP-034-invariant-residual/results/invariant_residual_results.json",
+        "research/experiments/EXP-034-invariant-residual/results/diagnostics.json",
+        "docs/progress/log/2026-11-18-appendix-e-snr-invariant-residual.md"
+      ],
+      "validation": "2026-11-18: Built paper/build/main.pdf via latexmk -interaction=nonstopmode -halt-on-error -Werror main.tex (exit 0, 100 pages, 2,154,767 bytes, zero undefined refs/citations, zero overfull boxes in Appendix E/fig_snr_r); rendered Appendix E page 97 (Figure E.1 and Table E.1) via pdftoppm and visually verified; workspace check and unit test suite verified after edits. Pending team and adviser review."
     }
   ]
 }

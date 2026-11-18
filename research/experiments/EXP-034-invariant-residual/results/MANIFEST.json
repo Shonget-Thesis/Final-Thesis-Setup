@@ -1,0 +1,34 @@
+{
+  "experiment": "EXP-034",
+  "utc": "2026-11-17T15:53:04.663238+00:00",
+  "files": {
+    "preregistration": {
+      "path": "/content/Final-Thesis-Setup/research/experiments/EXP-034-invariant-residual/preregistration.json",
+      "sha256": "93ed41cee6e81ccbe1123757d5ee6a46747769a01abfd9a14da72b61fdbd17b0"
+    },
+    "quality.csv": {
+      "sha256": "d7c1ad7c6bb081c24c352f68ae6faad3e3494aee5912d8a5d031550f90117bb9",
+      "bytes": 224717
+    },
+    "diversity.csv": {
+      "sha256": "4606353cab5935963bca94e4629e3344bd92c4208bca07d9a4b2decfea75d7f9",
+      "bytes": 46959
+    },
+    "timing.csv": {
+      "sha256": "14003a227dd5a5caf23f8b45deeeef8a979836932c95ef388bf6a915fa6c7582",
+      "bytes": 2931
+    },
+    "invariant_residual_results.json": {
+      "sha256": "6a66d1b2734f19e9c1b9417fe29bc009a30d7e3bebb4eb31472db3a97b36988a",
+      "bytes": 40455
+    },
+    "INVARIANT_RESIDUAL_REPORT.md": {
+      "sha256": "24b88d5fac0dce0be8e580e5327db6d2ab85f6ba609f7e3f549888d145013e8c",
+      "bytes": 6827
+    },
+    "demand_sha256.txt": {
+      "sha256": "cdaa526dffb16a16a9877620ddfc1e8fc7184d80c4598a22c7c41e216062dc09",
+      "bytes": 83
+    }
+  }
+}
