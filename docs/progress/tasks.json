@@ -1120,6 +1120,27 @@
         "docs/progress/log/2026-11-18-exp035-exp036-setup.md"
       ],
       "validation": "Prepared and preregistered combined all-in-one runner and Colab T4 notebook on branch rhnl-3 on 2026-11-18 (preregistration sha256 492e3731998d...; Colab 12.7 GB Whisper-load OOM guard added); NumPy/PyTorch parity tests, mock CWPS loop check in .venv, cohort disjointness, notebook schema, and synthetic Path A + Path B analyze() checks pass locally; awaiting T4 execution."
+    },
+    {
+      "id": "PROTO-002",
+      "title": "Update local CPU prototype to risk-calibrated SNR + Invariant Residual (SNR_R with LTT)",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "review",
+      "updated": "2026-11-18",
+      "acceptance": "Risk-calibrated SNR + Invariant Residual (SNR_R) with fixed-sequence binomial Learn-Then-Test (LTT) calibration is implemented in model-free code/prototype/snr_invariant.py and verified against run_invariant_residual.py and run_method_comparison.py (NumPy + PyTorch); engine.py, server.py, cli.py, and web/index.html run the 1-pass s_0 draft + 5-step 8-grid teacher + LTT-calibrated r > lambda_r / SNR < 20 dB CPQH-vs-CPH8 router (default ltt_15 0.3416 and strict ltt_10 0.3816, plus empirical/snr_only) + 2-pass student completion (13 passes vs 21 W8 / 30 P25), expose live LTT calibration + EXP-034 T4 outcomes and pink25/hp25 conditions on development examples only, preserve code/prototype/snr_drift.py, and pass prototype + full unittest + workspace checks without altering code/vendor or manuscript.",
+      "evidence": [
+        "code/prototype/snr_invariant.py",
+        "code/prototype/engine.py",
+        "code/prototype/server.py",
+        "code/prototype/cli.py",
+        "code/prototype/web/index.html",
+        "code/prototype/README.md",
+        "code/prototype/start_prototype.bat",
+        "code/tests/test_prototype_snr_drift.py",
+        "code/tests/test_prototype_snr_invariant.py",
+        "docs/progress/log/2026-11-18-snr-invariant-prototype.md"
+      ],
+      "validation": "2026-11-18: node --check passed on web/index.html script; prototype tests pass in .venv (with LTT calibration checks against synthetic data and EXP-034 CSV + server status risk_calibration) and full unittest + check_workspace.py pass; real CPU DMOSpeech 2 CLI runs verified on dev example common_voice_en_203357-common_voice_en_203358 (clean -> CPH8 at r=0.247 in 21.9s; gauss25 --compare -> CPQH at r=0.715 in 63.9s with CPH8 and W8 WAVs). Pending team/adviser review."
     }
   ]
 }

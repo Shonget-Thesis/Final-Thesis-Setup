@@ -1,10 +1,10 @@
-"""Local DMOSpeech 2 engine for the SNR + drift prototype (CPU by default; a demonstration, not an evaluation tool).
+"""Local DMOSpeech 2 engine for the SNR + Invariant Residual (SNR_R) prototype (CPU demo, not an evaluation tool).
 
-It reproduces the thesis pipeline (code/colab/run_followup_tests.Pipeline.prepare and code/scheduling/sampler.py):
-prompt SNR on the prompt as given, RMS normalisation to 0.3, duration predictor, guided Euler teacher on the 16-interval
-sway grid with CFG strength 2 and no stochastic term, endpoint estimates and drift over generated frames, and the
-student's three restart levels with per-level seeds. The only difference is that the teacher stops as soon as the rule
-in snr_drift.py says so, so the saved passes are really not computed.
+It reproduces the EXP-034 / EXP-035 T4 pipeline: prompt SNR on the prompt as given, RMS normalization to 0.3, duration
+predictor, one-pass student draft s_0 at tau = 0.0, guided Euler teacher on the 8-interval sway grid (Steps 0..4,
+ending at t = 0.2929), invariant residual r between teacher endpoint x_hat_1 and student draft s_0 over generated
+frames, SNR + r routing between CPH8 (teacher endpoint) and CPQH (quantile handover with draft prompt frames), and the
+two-step student restart completion at tau in {0.2929, 0.6173}.
 
 The vendored DMOSpeech 2 code (code/vendor/dmospeech2/src) is imported read-only. Checkpoints are read from ckpts/
 (model_85000.pt and model_1500.pt) and Seed-TTS examples from research/data/seed-tts-eval/en.
@@ -28,7 +28,7 @@ DATA_DIR = Path(os.environ.get("SEED_TTS_EN_DIR", ROOT / "research/data/seed-tts
 VOCAB_FILE = VENDOR_SRC / "f5_tts/infer/examples/vocab.txt"   # the 2545-entry Emilia ZH-EN pinyin vocabulary
 CHECKPOINTS = {"model_85000.pt": "e143188f7c46b69abb60786937d79b89dac9777d3c4c1e91a97634bcd39ebf2c",
                "model_1500.pt": "6bd50428f3b5f0f25c1a60a0053f40ee47c817bda03c8ee120100f22680ae4c2"}
-OFFLINE_CONDITIONS = ("clean", "gauss25", "noisy15", "reverb03", "reverb09", "telephone")   # babble needs DEMAND
+OFFLINE_CONDITIONS = ("clean", "gauss25", "pink25", "hp25", "noisy15", "reverb03", "reverb09", "telephone")   # babble needs DEMAND
 SAMPLE_RATE = 24000
 
 for p in (HERE, VENDOR_SRC, COLAB_DIR):
@@ -36,6 +36,7 @@ for p in (HERE, VENDOR_SRC, COLAB_DIR):
         sys.path.insert(0, str(p))
 
 import snr_drift as sd  # noqa: E402
+import snr_invariant as si  # noqa: E402
 
 
 def ensure_sentence_end(ref_text):
@@ -53,13 +54,12 @@ def development_examples():
 
 
 def degrade_prompt(prompt, sr, condition, seed):
-    """The experiments' prompt degradations (identical arithmetic; the noise seed is the utterance's input seed)."""
-    import run_followup_tests as rf
+    """The experiments' prompt degradations (identical arithmetic including pink25/hp25 from EXP-034)."""
+    import run_invariant_residual as ir
     if condition not in OFFLINE_CONDITIONS:
         raise ValueError(f"Unknown or unavailable condition {condition!r}; choose one of {OFFLINE_CONDITIONS}")
-    # The dtype is kept as rf.degrade returns it (white noise gives float64), as in the experiments, where the prompt
-    # SNR is measured on that array and the model receives it as float32.
-    return rf.degrade(np.asarray(prompt, dtype=np.float32), sr, condition, seed)
+    # Kept in the exact dtype returned by ir.degrade, matching the T4 experiments.
+    return ir.degrade(np.asarray(prompt, dtype=np.float32), sr, condition, seed)
 
 
 def wav_bytes(audio, sr=SAMPLE_RATE, peak=0.99):
@@ -173,19 +173,19 @@ class Engine:
                 "frames": int(y0.shape[1] - prompt_len)}   # generated frames, as the experiments' CSVs report them
 
     # ------------------------------------------------------------------ teacher, student, vocoder
-    def _teacher_step(self, ctx, state, i):
+    def _teacher_step(self, ctx, state, t_val):
         torch = self.torch
-        t = torch.tensor(sd.TEACHER_GRID[i], dtype=torch.float32)
+        t = torch.tensor(float(t_val), dtype=torch.float32)
         kw = dict(x=state, cond=ctx["step_cond"], text=ctx["text_ids"], time=t, mask=None)
         pred = self.tts.teacher(drop_audio_cond=False, drop_text=False, **kw)
         null = self.tts.teacher(drop_audio_cond=True, drop_text=True, **kw)
         v = pred + (pred - null) * 2.0
-        return v, state + (1.0 - sd.TEACHER_GRID[i]) * v
+        return v, state + (1.0 - float(t_val)) * v
 
-    def _student(self, ctx, endpoint):
+    def _student(self, ctx, endpoint, taus=sd.STUDENT_TAUS):
         torch = self.torch
         x = endpoint.clone()
-        for tau in sd.STUDENT_TAUS:
+        for tau in taus:
             gen = torch.Generator(device="cpu")
             gen.manual_seed((int(ctx["seed"]) + int(tau * 100)) % (2 ** 31 - 1))
             eps = torch.randn(x.shape, dtype=torch.float32, generator=gen)
@@ -201,11 +201,44 @@ class Engine:
         mel = x.permute(0, 2, 1) * self.tts.scale
         return self.tts.vocos.decode(mel[..., ctx["prompt_len"]:]).cpu().numpy().squeeze()
 
-    def synthesize(self, prompt, sr, prompt_text, text, seed=42, lam=sd.DEFAULT_LAMBDA, gate_db=sd.SNR_GATE_DB,
-                   compare_reference=False, progress=None):
-        """Run SNR + drift on one prompt and text. Returns the decision trace, timings and the audio. With
-        compare_reference, the teacher also continues to Step 8 and the fixed reference is synthesized from the same
-        trajectory and seeds, for listening side by side (its extra passes are reported separately)."""
+    def _run_teacher_8(self, ctx, s0_gen, emit):
+        """Run Steps 0..4 of the 8-interval sway grid (t = 0 -> 0.2929) while tracking r against s_0."""
+        state, r_trace, ep = ctx["y0"].clone(), {}, None
+        plen = ctx["prompt_len"]
+        t_teacher = 0.0
+        for i in si.TEACHER_STEPS:
+            t0 = time.perf_counter()
+            v, ep = self._teacher_step(ctx, state, si.TEACHER_GRID[i])
+            r_val = si.invariant_residual(ep[0, plen:, :], s0_gen)
+            dt = time.perf_counter() - t0
+            t_teacher += dt
+            r_trace[i] = r_val
+            emit({"phase": "teacher", "step": i, "t": si.TEACHER_GRID[i], "r": r_val,
+                  "seconds": dt, "commit": i == si.COMMIT_STEP})
+            if i < si.COMMIT_STEP:
+                state = state + (si.TEACHER_GRID[i + 1] - si.TEACHER_GRID[i]) * v
+        return ep, r_trace, t_teacher
+
+    def _run_w8_reference(self, ctx):
+        """Run the 21-pass Chapter 3 reference (16-interval Step 8 + 3 student steps) for comparison."""
+        t0 = time.perf_counter()
+        state, ep = ctx["y0"].clone(), None
+        for i in range(si.W8_REFERENCE_STEP + 1):
+            v, ep = self._teacher_step(ctx, state, sd.TEACHER_GRID[i])
+            if i < si.W8_REFERENCE_STEP:
+                state = state + (sd.TEACHER_GRID[i + 1] - sd.TEACHER_GRID[i]) * v
+        ref_audio = self._decode(ctx, self._student(ctx, ep, sd.STUDENT_TAUS))
+        return ref_audio, time.perf_counter() - t0
+
+    def synthesize(self, prompt, sr, prompt_text, text, seed=42, lam_r=si.DEFAULT_LAMBDA_R,
+                   gate_db=si.SNR_GATE_DB, compare_reference=False, progress=None):
+        """Run SNR + Invariant Residual (SNR_R) on one prompt and text.
+
+        Computes the 1-pass student draft s_0, 5 guided 8-interval teacher steps (10 passes), routes between
+        teacher endpoint CPH8 and quantile handover CPQH using prompt_snr < gate_db or r > lam_r, and finishes with
+        2 student restart steps (13 passes total). When compare_reference=True, also synthesizes unstabilized CPH8
+        (when flagged to CPQH) and the 21-pass 16-interval Step-8 reference W8 on the same trajectory and seeds.
+        """
         torch = self.torch
         emit = progress or (lambda e: None)
         t_all = time.perf_counter()
@@ -213,51 +246,65 @@ class Engine:
             t0 = time.perf_counter()
             ctx = self.prepare(prompt, sr, prompt_text, text, seed)
             t_prep = time.perf_counter() - t0
-            mon = sd.HandoverMonitor(ctx["prompt_snr"], lam=lam, gate_db=gate_db)
-            emit({"phase": "prepared", "prompt_snr_db": ctx["prompt_snr"], "gate_open": mon.gate_open,
-                  "gate_db": gate_db, "lambda": lam, "frames": ctx["frames"], "prompt_frames": ctx["prompt_len"],
-                  "seconds": t_prep})
-            state, prev, handover, ref_endpoint = ctx["y0"].clone(), None, None, None
-            t_teacher = t_extra = 0.0
-            last = sd.REFERENCE_STEP if compare_reference else None
-            for i in range(sd.REFERENCE_STEP + 1):
-                t0 = time.perf_counter()
-                v, ep = self._teacher_step(ctx, state, i)
-                d = sd.stabilization_drift(ep, prev, ctx["prompt_len"]) if prev is not None else None
-                dt = time.perf_counter() - t0
-                if handover is None:
-                    t_teacher += dt
-                else:
-                    t_extra += dt
-                stop = handover is None and mon.observe(i, d)
-                emit({"phase": "teacher", "step": i, "t": sd.TEACHER_GRID[i], "drift": d, "seconds": dt,
-                      "after_handover": handover is not None,
-                      "candidate": i in sd.CANDIDATE_STEPS and mon.gate_open, "stop": bool(stop)})
-                if stop:
-                    handover = (i, ep)
-                    emit({"phase": "handover", **mon.summary()})
-                if i == sd.REFERENCE_STEP:
-                    ref_endpoint = ep
-                if handover is not None and last is None:
-                    break
-                state, prev = state + (sd.TEACHER_GRID[i + 1] - sd.TEACHER_GRID[i]) * v, ep
+            gate_open = float(ctx["prompt_snr"]) >= float(gate_db)
+            emit({"phase": "prepared", "prompt_snr_db": ctx["prompt_snr"], "gate_open": gate_open,
+                  "gate_db": float(gate_db), "lambda_r": float(lam_r), "frames": ctx["frames"],
+                  "prompt_frames": ctx["prompt_len"], "seconds": t_prep})
+
             t0 = time.perf_counter()
-            x = self._student(ctx, handover[1])
+            s0 = self._student(ctx, ctx["step_cond"], [si.DRAFT_TAU])
+            t_draft = time.perf_counter() - t0
+            emit({"phase": "draft", "tau": si.DRAFT_TAU, "seconds": t_draft})
+
+            plen = ctx["prompt_len"]
+            s0_gen = s0[0, plen:, :]
+            ep, r_trace, t_teacher = self._run_teacher_8(ctx, s0_gen, emit)
+
+            final_r = r_trace[si.COMMIT_STEP]
+            band_r = si.band_residuals(ep[0, plen:, :], s0_gen)
+            summary = si.evaluate(ctx["prompt_snr"], final_r, lam_r=lam_r, gate_db=gate_db,
+                                  r_trace=r_trace, band_r=band_r)
+            payload = si.quantile_payload(s0, ep, plen) if summary["choice"] == "CPQH" else ep
+            emit({"phase": "handover", **summary})
+
+            t0 = time.perf_counter()
+            x = self._student(ctx, payload, si.STUDENT_RESTART_TAUS)
             t_student = time.perf_counter() - t0
             emit({"phase": "student", "seconds": t_student})
+
             t0 = time.perf_counter()
             audio = self._decode(ctx, x)
             t_vocoder = time.perf_counter() - t0
-            result = {**mon.summary(), "seed": ctx["seed"], "frames": ctx["frames"], "prompt_frames": ctx["prompt_len"],
-                      "audio": audio, "sample_rate": SAMPLE_RATE, "audio_seconds": len(audio) / SAMPLE_RATE,
-                      "timings": {"prepare": t_prep, "teacher": t_teacher, "student": t_student, "vocoder": t_vocoder}}
-            if compare_reference and handover[0] != sd.REFERENCE_STEP:
-                t0 = time.perf_counter()
-                ref_audio = self._decode(ctx, self._student(ctx, ref_endpoint))
-                result["reference"] = {"step": sd.REFERENCE_STEP, "passes": sd.REFERENCE_PASSES, "audio": ref_audio,
-                                       "seconds": t_extra + time.perf_counter() - t0}
-            elif compare_reference:
-                result["reference"] = {"step": sd.REFERENCE_STEP, "passes": sd.REFERENCE_PASSES, "same_as_output": True}
+
+            result = {
+                **summary,
+                "seed": ctx["seed"],
+                "frames": ctx["frames"],
+                "prompt_frames": plen,
+                "audio": audio,
+                "sample_rate": SAMPLE_RATE,
+                "audio_seconds": len(audio) / SAMPLE_RATE,
+                "timings": {
+                    "prepare": t_prep,
+                    "draft": t_draft,
+                    "teacher": t_teacher,
+                    "student": t_student,
+                    "vocoder": t_vocoder,
+                },
+            }
+            if compare_reference:
+                if summary["choice"] == "CPQH":
+                    t0 = time.perf_counter()
+                    unstab_audio = self._decode(ctx, self._student(ctx, ep, si.STUDENT_RESTART_TAUS))
+                    result["unstabilized"] = {
+                        "arm": "CPH8", "passes": si.CPH8_PASSES, "audio": unstab_audio,
+                        "seconds": time.perf_counter() - t0,
+                    }
+                ref_audio, ref_sec = self._run_w8_reference(ctx)
+                result["reference"] = {
+                    "arm": "W8", "step": si.W8_REFERENCE_STEP, "passes": si.W8_REFERENCE_PASSES,
+                    "audio": ref_audio, "seconds": ref_sec,
+                }
         result["timings"]["total"] = time.perf_counter() - t_all
         emit({"phase": "done", "seconds": result["timings"]["total"]})
         return result
