@@ -190,7 +190,24 @@ The simulation assumes independent inputs from one distribution, exactly the con
 
 The study's prototype is an inference method rather than a user-facing application: the released DMOSpeech~2 sampler with the stopping controller of Section~\ref{sec:architecture} added. Figure~\ref{fig:glance} shows what the prototype changes for a user. The same networks produce the speech; only the point where the teacher hands over to the student moves, separately for each input, and that point never moves later than in the baseline.
 
-The prototype will be packaged as one module shared by all experiment scripts (Section~\ref{sec:setup}). It takes the prompt audio, the prompt text, the target text, the calibrated threshold $\hat\lambda$ and the SNR gate $\theta$, and returns the waveform together with the chosen stopping step, the number of forward passes used, the prompt SNR estimate and the trace of stabilization scores. Before any experiment the module will pass the three checks of Section~\ref{sec:setup}: identical outputs for repeated runs with the same seed, exact reproduction of the reference when the controller falls back, and forward-pass counts equal to \Cref{eq:cost}.
+A working demonstration already exists: a local prototype (\texttt{code/\allowbreak prototype}) runs the released DMOSpeech~2 on a central processing unit with the SNR gate and the stabilization rule of \Cref{eq:policy}. For one input it shows the prompt SNR against the gate, each teacher step with its stabilization score as it is computed, the step at which the rule hands over, the student's steps, and the forward passes used against the 21 of the reference, and it can also synthesize the reference output from the same trajectory and seeds for listening. Table~\ref{tab:samples} gives sample inputs. The prototype is a demonstration, not an evaluation tool: its thresholds are development values, not the calibrated $\hat\lambda$.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Sample inputs: one development speaker under three prompt conditions, with the decision of the prototype ($\theta=20$~dB, $\lambda=0.35$). The decisions match those recorded on the Tesla T4 in \texttt{EXP-031}; they illustrate the rule and are not evaluation results.}
+\label{tab:samples}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{4.2cm} >{\raggedright\arraybackslash}p{2.2cm} >{\raggedright\arraybackslash}X r@{}}
+\toprule
+\textbf{Prompt condition} & \textbf{Estimated SNR $\hat S$} & \textbf{Decision} & \textbf{Passes} \\
+\midrule
+Clean (as recorded) & 44.3~dB & gate open; $d_4=0.26\le\lambda$, hand over at Step~4 & 13 \\
+Moderately noisy (white noise at 25~dB) & 27.8~dB & gate open; hand over at Step~5 & 15 \\
+Very noisy (white noise at 15~dB) & 18.0~dB & gate closed; reference (Step~8) & 21 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+For the experiments, the same controller will be packaged as one module shared by all experiment scripts (Section~\ref{sec:setup}). It takes the prompt audio, the prompt text, the target text, the calibrated threshold $\hat\lambda$ and the SNR gate $\theta$, and returns the waveform together with the chosen stopping step, the number of forward passes used, the prompt SNR estimate and the trace of stabilization scores. Before any experiment the module will pass the three checks of Section~\ref{sec:setup}: identical outputs for repeated runs with the same seed, exact reproduction of the reference when the controller falls back, and forward-pass counts equal to \Cref{eq:cost}.
 
 The three boxes at the bottom of Figure~\ref{fig:glance} correspond to what the study must establish about the handover point: how it is decided (Objectives~1 and~2), how safe the decision is (Objectives~2 and~3, Proposition~\ref{prop:ltt}), and that it never costs more than the baseline (Proposition~\ref{prop:fallback}).
 
