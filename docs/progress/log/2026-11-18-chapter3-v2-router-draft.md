@@ -1,7 +1,7 @@
 # 2026-11-18: Draft Chapter 3 v2 (risk-calibrated payload router)
 
 **Task:** `PAPER-020` (`review`)  
-**Target:** [paper/chapters/03-methodology-v2.tex](../../../paper/chapters/03-methodology-v2.tex), new figures [fig_method_v2.tex](../../../paper/figures/fig_method_v2.tex) and [fig_workflow_v2.tex](../../../paper/figures/fig_workflow_v2.tex), preview root [main-ch3v2.tex](../../../paper/main-ch3v2.tex). The current `chapters/03-methodology.tex` and `main.tex` are untouched.
+**Target:** `paper/chapters/03-methodology-v2.tex` with figures `fig_method_v2.tex` and `fig_workflow_v2.tex` and preview root `main-ch3v2.tex` (since merged into `03-methodology.tex`, `fig_method.tex` and `fig_workflow.tex`). The current `chapters/03-methodology.tex` and `main.tex` are untouched.
 
 ## Decisions taken with Vincent before drafting
 

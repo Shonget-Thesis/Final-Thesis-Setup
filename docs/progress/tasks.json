@@ -1105,19 +1105,19 @@
     },
     {
       "id": "PAPER-020",
-      "title": "Draft Chapter 3 v2 around the risk-calibrated payload router (SNR_R) with an absolute failure rule and LTT bound against reproduced DMOSpeech 2",
+      "title": "Rewrite Chapter 3 around the risk-calibrated payload router (SNR_R) with an absolute failure rule and LTT bound against reproduced DMOSpeech 2",
       "owner": "Mark Vincent D. Limpahan",
       "status": "review",
       "updated": "2026-11-18",
-      "acceptance": "New file paper/chapters/03-methodology-v2.tex beside the unchanged current chapter; future tense; no result values; every display equation defined; objectives only in headings and workflow table; compiles via paper/main-ch3v2.tex.",
+      "acceptance": "paper/chapters/03-methodology.tex describes the payload router; future tense; no result values; every display equation defined; objectives only in headings and workflow table; plain-language explanations for unfamiliar readers; latexmk -Werror passes.",
       "evidence": [
-        "paper/chapters/03-methodology-v2.tex",
-        "paper/figures/fig_method_v2.tex",
-        "paper/figures/fig_workflow_v2.tex",
-        "paper/main-ch3v2.tex",
-        "docs/progress/log/2026-11-18-chapter3-v2-router-draft.md"
+        "paper/chapters/03-methodology.tex",
+        "paper/figures/fig_method.tex",
+        "paper/figures/fig_workflow.tex",
+        "docs/progress/log/2026-11-18-chapter3-v2-router-draft.md",
+        "docs/progress/log/2026-11-18-chapter3-router-replaces-scheduler.md"
       ],
-      "validation": "2026-11-18: latexmk main-ch3v2.tex exit 0; undefined refs only eq:stab and sec:drift-plan (appendices); zero Overfull boxes in Chapter 3 v2. Pending team and adviser review."
+      "validation": "2026-11-18: latexmk -Werror main.tex exit 0 (106 pages), zero undefined references/citations, zero Overfull boxes in Chapter 3. Pending team and adviser review."
     }
   ]
 }
