@@ -20,3 +20,8 @@
 ## Still open
 
 - Team and adviser review of the rewritten Chapter 1; Google Doc draft must be synced with this text.
+
+## Addendum (2026-11-19)
+
+- Problem statement, research questions and objectives shortened at Roxanne's request (same content and stage order as Chapter 3); Chapter 1 is now pages 1-10.
+- `latexmk -Werror main.tex`: exit 0, no undefined references, no Overfull boxes.
