@@ -13,11 +13,16 @@
 % result values (outputs are symbols or "will be reported"); every
 % display equation has a "where:" list and a List of Equations entry;
 % objectives appear only in headings and in the workflow (Table 3.2).
+% Change indicators: [New], [Reworked], [Carried over] under each
+% heading; delete \chg lines before submission.
 % =====================================================================
+
+\providecommand{\chg}[1]{\par\noindent{\footnotesize\textsf{\textcolor{newLine}{[#1]}}}\par\nobreak\smallskip}
 
 % =====================================================================
 \subsection{Research Design}
 \label{sec:design}
+\chg{Reworked}
 
 This study will use a quantitative experimental design combined with algorithm development and statistical calibration. A released distilled text-to-speech system, DMOSpeech~2 \parencite{li2025dmospeech2}, and its F5-TTS teacher \parencite{chen2024f5} will first be reproduced on a fixed set of prompts, together with two ways of handing the teacher's work to the student. A method that chooses between these two hand-over payloads for each utterance will then be formulated, its single threshold will be calibrated on one group of speakers with a statistical guarantee, and the calibrated method will be evaluated on other speakers against the established systems. The design follows the three specific objectives in order (Section~\ref{sec:workflow}).
 
@@ -32,6 +37,7 @@ The unit of analysis will be the speaker. Calibration and test splits will conta
 % =====================================================================
 \subsection{System Architecture}
 \label{sec:architecture}
+\chg{New}
 
 The proposed method adds a routing layer to the teacher-guided sampler of DMOSpeech~2 without changing any network. Figure~\ref{fig:method} shows the architecture, and Table~\ref{tab:components} lists its components, which fall into three groups: the frozen backbone, which generates speech with the released weights; the inference-time router, which decides for each utterance what the teacher hands to the student; and the offline calibrator, which sets the router's single threshold before deployment.
 
@@ -70,6 +76,7 @@ Several choices in this architecture rest on the team's earlier experiments. App
 % =====================================================================
 \subsection{Research Workflow}
 \label{sec:workflow}
+\chg{Reworked}
 
 Figure~\ref{fig:workflow} shows the design of Section~\ref{sec:design} as fifteen steps, from preparing the data to reporting the results. Each row of the figure is one stage: the common setup, followed by one stage per specific objective; the development of the method takes two rows, one for formulating it, which uses no data, and one for calibrating it on its own group of speakers. Table~\ref{tab:steps} describes what will be done in every step and gives the section where the step is explained.
 
@@ -130,10 +137,11 @@ Each stage can produce a negative result, and each such result will be reported.
 
 \subsubsection{Baseline Sampler and Cost}
 \label{sec:baseline}
+\chg{Reworked}
 
 The study will use the DMOSpeech~2 checkpoints and inference code released with \textcite{li2025dmospeech2}. For a prompt and target text, the total duration comes from the fixed duration predictor. The mel-spectrogram tensor $x\in\R^{F\times 100}$ covers the prompt frames followed by the frames to be generated, and a mask $M$ marks the generated frames. This section describes the released sampler, which is the baseline, and then the shorter teacher path that the router will use.
 
-\phead{Released sampler} The backbone is used exactly as released, so it is described here only as far as the method depends on it; Algorithm~\ref{alg:baseline} gives the complete procedure. The teacher integrates the flow on the sway grid of F5-TTS \parencite{chen2024f5} with $N$ intervals,
+\phead{Released sampler} The teacher integrates the flow on the sway grid of F5-TTS \parencite{chen2024f5} with $N$ intervals,
 \begin{equation}
 t_i = 1-\cos\!\Big(\frac{\pi}{2}\cdot\frac{i}{N}\Big), \qquad i = 0,1,\dots,N.
 \label{eq:grid}
@@ -141,21 +149,68 @@ t_i = 1-\cos\!\Big(\frac{\pi}{2}\cdot\frac{i}{N}\Big), \qquad i = 0,1,\dots,N.
 \eqentry{Teacher time grid}
 \begin{whereterms}[2.6cm]
 $t_i$ & time of teacher grid point $i$ on the flow axis, from $t_0=0$ (noise) to $t_N=1$ (data) \\
-$N$ & number of grid intervals: $N=16$ in the released sampler, $N=8$ for the router
+$i$ & index of the grid point \\
+$N$ & number of grid intervals: $N=16$ in the released teacher-guided sampler, $N=8$ for the router
 \end{whereterms}
-At each grid point it evaluates a guided velocity $v$, which takes two forward passes (one with and one without the text and prompt condition, guidance strength $\gamma=2$), and moves the state $x_{t_i}$ to the next grid point with an Euler step. The stochastic term of the released code (argument \texttt{eta}) will be set to zero, so the teacher trajectory of an input is deterministic. The same velocity also gives, at no extra cost, the teacher's estimate of the final mel-spectrogram,
+At each grid point the teacher evaluates the guided velocity
 \begin{equation}
-\hat x_1(t_i) = x_{t_i} + (1-t_i)\,v(x_{t_i},t_i),
+v(x_{t_i},t_i) = v_c(x_{t_i},t_i) + \gamma\,\big(v_c(x_{t_i},t_i) - v_u(x_{t_i},t_i)\big), \qquad \gamma = 2.
+\label{eq:guided}
+\end{equation}
+\eqentry{Guided teacher velocity}
+\begin{whereterms}[2.6cm]
+$v(x_{t_i},t_i)$ & guided velocity used for the teacher's update \\
+$x_{t_i}$ & mel-spectrogram state at time $t_i$ \\
+$v_c$ & teacher output conditioned on the text and the prompt (one forward pass) \\
+$v_u$ & teacher output without the condition (one forward pass) \\
+$\gamma$ & guidance strength (code argument \texttt{cfg\_strength})
+\end{whereterms}
+Each guided evaluation therefore costs two forward passes. The released sampler can add a stochastic term to $v$ (argument \texttt{eta}); the study will set it to zero, so the teacher trajectory of an input is deterministic. Between grid points the teacher takes an explicit Euler step,
+\begin{equation}
+x_{t_{i+1}} = x_{t_i} + (t_{i+1}-t_i)\,v(x_{t_i},t_i),
+\label{eq:euler}
+\end{equation}
+\eqentry{Teacher Euler step}
+\begin{whereterms}[2.6cm]
+$x_{t_{i+1}}$ & state at the next grid point \\
+$t_{i+1}-t_i$ & step size on the flow axis \\
+$v(x_{t_i},t_i)$ & guided velocity of \Cref{eq:guided}
+\end{whereterms}
+and at any grid point the same velocity gives an estimate of the final output,
+\begin{equation}
+\hat x_1(t_i) = x_{t_i} + (1-t_i)\,v(x_{t_i},t_i).
 \label{eq:endpoint}
 \end{equation}
 \eqentry{Endpoint estimate at a teacher step}
 \begin{whereterms}[2.6cm]
 $\hat x_1(t_i)$ & endpoint estimate at grid point $i$: the teacher's current prediction of the final mel-spectrogram \\
-$x_{t_i}$ & teacher state at time $t_i$ \\
-$v(x_{t_i},t_i)$ & guided velocity at that state \\
 $1-t_i$ & remaining distance to the data end of the flow axis
 \end{whereterms}
-which is what the teacher hands to the student. The released sampler stops at the first grid point after its stopping argument $s=0.25$ on the 16-interval grid ($t_8\approx0.293$, eight Euler steps) and hands over $\hat x_1(t_8)$. The student then re-noises the handed-over estimate to a level $\tau$ and predicts the output again, once per step of its grid $\tau\in\{0,\allowbreak0.0761,\allowbreak0.2929,\allowbreak0.6173\}$ from the start index $j$, drawing fresh seeded noise at every step (one forward pass each); the released code uses $j=1$, three steps. Finally the prompt frames are removed and Vocos converts the mel-spectrogram into a waveform \parencite{siuzdak2024vocos}.
+For the stopping argument $s=0.25$, the released sampler runs Euler steps on the 16-interval grid up to $t_k$, the first grid point with $t_k>s$ ($k=8$, $t_8\approx0.293$), and hands the endpoint estimate
+\begin{equation}
+T = \hat x_1(t_k) = x_{t_k} + (1-t_k)\,v(x_{t_k},t_k)
+\label{eq:handover}
+\end{equation}
+\eqentry{Endpoint estimate handed to the student}
+\begin{whereterms}[2.6cm]
+$T$ & teacher payload handed to the student \\
+$k$ & teacher stop index, the first grid point with $t_k>s$ \\
+$s$ & stopping argument (code argument \texttt{t\_switch})
+\end{whereterms}
+to the student. The student completes generation on its own grid $\tau \in \{0,\allowbreak 0.0761,\allowbreak 0.2929,\allowbreak 0.6173\}$, starting at index $j$ (code argument \texttt{student\_start\_step}). At each step it draws fresh noise and updates
+\begin{equation}
+\phi = (1-\tau)\,\varepsilon + \tau\,x, \qquad x \leftarrow \phi + (1-\tau)\,g(\phi,\tau).
+\label{eq:student}
+\end{equation}
+\eqentry{Student re-noising step}
+\begin{whereterms}[2.6cm]
+$\tau$ & current point of the student grid (restart level at the first step) \\
+$\varepsilon$ & fresh Gaussian noise, $\varepsilon\sim\mathcal N(0,I)$, seeded per input and per step \\
+$x$ & current estimate of the output; $x=T$ (or the router's payload) before the first student step \\
+$\phi$ & re-noised input to the student \\
+$g(\phi,\tau)$ & student network output (one forward pass)
+\end{whereterms}
+The released sampler uses $j=1$, so the student restarts at $\tau=0.0761$ and runs three steps. Finally, the prompt frames are removed and Vocos converts the mel-spectrogram into a waveform \parencite{siuzdak2024vocos}. Algorithm~\ref{alg:baseline} summarizes the released sampler.
 
 \begin{algorithm}[!htbp]
 \caption{Released teacher-guided sampler of DMOSpeech~2 (baseline)}
@@ -167,9 +222,10 @@ which is what the teacher hands to the student. The released sampler stops at th
 \State $k \gets \min\{i : t_i > s\}$ \Comment{16-interval sway grid}
 \For{$i = 0,\dots,k-1$}
   \State $v \gets v_c(x_{t_i},t_i) + \gamma\,\big(v_c(x_{t_i},t_i) - v_u(x_{t_i},t_i)\big)$ \Comment{2 forward passes}
-  \State $x_{t_{i+1}} \gets x_{t_i} + (t_{i+1}-t_i)\,v$ \Comment{Euler step}
+  \State $x_{t_{i+1}} \gets x_{t_i} + (t_{i+1}-t_i)\,v$
 \EndFor
-\State $x \gets x_{t_k} + (1-t_k)\,v(x_{t_k},t_k)$ \Comment{endpoint estimate, 2 forward passes}
+\State $T \gets x_{t_k} + (1-t_k)\,v(x_{t_k},t_k)$ \Comment{endpoint estimate, 2 forward passes}
+\State $x \gets T$
 \For{$\tau \in \{0.0761,\,0.2929,\,0.6173\}$} \Comment{student, $j=1$}
   \State draw $\varepsilon\sim\mathcal{N}(0,I)$ with a seed fixed per input and step
   \State $\phi \gets (1-\tau)\,\varepsilon + \tau\,x$; \quad $x \gets \phi + (1-\tau)\,g(\phi,\tau)$ \Comment{1 forward pass}
@@ -189,7 +245,7 @@ $s_0$ & student draft: the student's one-step prediction of the output from nois
 $\varepsilon_0$ & Gaussian noise drawn with the input's seed, $\varepsilon_0\sim\mathcal N(0,I)$ \\
 $g(\varepsilon_0,0)$ & student network output at $\tau=0$ (one forward pass)
 \end{whereterms}
-which is the student step of Algorithm~\ref{alg:baseline} at $\tau=0$. After routing, the student finishes from the selected payload with $j=2$, that is, two steps at $\tau\in\{0.2929, 0.6173\}$. The restart at $\tau=0.2929$ matches the commit point, so the student re-noises the payload to the noise level at which the teacher stopped. This two-step finish is also the configuration of the DMOSpeech~2 paper \parencite{li2025dmospeech2}.
+which is \Cref{eq:student} at $\tau=0$. After routing, the student finishes from the selected payload with $j=2$, that is, two steps at $\tau\in\{0.2929, 0.6173\}$. The restart at $\tau=0.2929$ matches the commit point, so the student re-noises the payload to the noise level at which the teacher stopped. This two-step finish is also the configuration of the DMOSpeech~2 paper \parencite{li2025dmospeech2}.
 
 \phead{Cost} Counting forward passes gives the exact cost of every system in the study, which the rest of the chapter uses as the unit of computation.
 
@@ -210,7 +266,7 @@ $n_s$ & student steps after the handover, $4-j$ for start index $j$
 forward passes. In particular, the released sampler costs $2\cdot9+0+3=21$ passes and the router costs $2\cdot5+1+2=13$ passes for every input, whichever payload it selects.
 \end{proposition}
 \begin{proof}
-Each guided evaluation runs the teacher once with and once without the condition; each student step and the draft run the student once (Algorithm~\ref{alg:baseline}, \Cref{eq:draft}). The released sampler makes $k=8$ Euler steps and one endpoint evaluation, $e=9$, with $j=1$. The router makes four Euler steps and one endpoint evaluation, $e=5$, computes the draft, $u=1$, and finishes with $j=2$. The quantile projection, the residual and the SNR estimate (Section~\ref{sec:obj2}) involve no network.
+Each guided evaluation runs the teacher once with and once without the condition (\Cref{eq:guided}); each student step and the draft run the student once (\Cref{eq:student,eq:draft}). The released sampler makes $k=8$ Euler steps and one endpoint evaluation, $e=9$, with $j=1$. The router makes four Euler steps and one endpoint evaluation, $e=5$, computes the draft, $u=1$, and finishes with $j=2$. The quantile projection, the residual and the SNR estimate (Section~\ref{sec:obj2}) involve no network.
 \end{proof}
 
 Table~\ref{tab:cost} applies \Cref{eq:cost} to every system that will be compared. Cost is counted in forward passes because the count follows exactly from the sampler and does not depend on the hardware; wall-clock time and real-time factor on the Tesla T4 GPU will be reported second, because they also include the duration predictor, the vocoder and data movement (Section~\ref{sec:measures}).
@@ -273,6 +329,7 @@ $C$ & forward passes per utterance (Prop.~\ref{prop:cost}) \\
 
 \subsubsection{Data and Splits}
 \label{sec:data}
+\chg{Reworked}
 
 The corpus will be Seed-TTS test-en, whose prompts come from Common Voice \parencite{anastassiou2024seedtts,ardila2020commonvoice}; it is the English test set used by DMOSpeech~2 \parencite{li2025dmospeech2}, so the reproduced baseline can be compared with published numbers. It contains 1,088 utterances from 666 prompt speakers. The speakers will be divided into three disjoint splits with a fixed random seed (Table~\ref{tab:splits}), using 500 of the 666 speakers and one utterance per speaker in every split; speaker identity is taken from the prompt recording. The development split will serve the characterization stage and the fixing of the quality floors; the calibration split will serve only the calibration of $\lambda_r$; and the test split will serve the bound check and the comparisons. Keeping speakers disjoint prevents the threshold from being tuned to voices it is later tested on, and one utterance per speaker makes the inputs close to independent, which the guarantee of Proposition~\ref{prop:ltt} requires. The development runs of Appendix~\ref{app:snr-r} used development speakers only, so the calibration and test speakers will be new to the method.
 
@@ -322,6 +379,7 @@ LibriSpeech-PC test-clean & Transfer to a new source & Test only; one utterance 
 
 \subsubsection{Quality, Variety, and Cost Measures}
 \label{sec:measures}
+\chg{Reworked}
 
 Each generated utterance will be scored on intelligibility, speaker similarity and predicted naturalness (Table~\ref{tab:measures}). Word error rate will be computed from a Whisper-large-v3 transcript, as in the DMOSpeech~2 evaluation \parencite{radford2023whisper,li2025dmospeech2}, after normalizing both texts as in the Seed-TTS English evaluation: punctuation is replaced by spaces, whitespace is collapsed and text is lowercased. Speaker similarity will be the cosine similarity between the embeddings of a WavLM-Base+ speaker-verification model (\texttt{microsoft/wavlm-base-plus-sv}) for the generated speech and for the ground-truth target recording \parencite{chen2022wavlm}. DMOSpeech~2 uses a WavLM-large-based verifier, so absolute SIM values of this study are not directly comparable with its published numbers; every comparison within the study uses the same verifier. Naturalness will be predicted with UTMOS \parencite{saeki2022utmos}. Word error rate counts the word-level edits needed to turn the recognized transcript into the target text:
 \begin{equation}
@@ -432,12 +490,14 @@ A failed output is not removed from the data. The failure rate of a system is th
 
 \subsubsection{Tools, Hardware, and Reproducibility}
 \label{sec:tools}
+\chg{Carried over, checks updated}
 
 The implementation will use Python and PyTorch with the released DMOSpeech~2 code (Section~\ref{sec:baseline}), Vocos \parencite{siuzdak2024vocos} and the evaluation models above on an NVIDIA Tesla T4 GPU (15.6~GB of memory) through Google Colab, in 32-bit floating point with seeded random generators. Timing will cover the full synthesis pipeline (prompt SNR estimate, teacher steps, student draft, routing, student steps and vocoder), with GPU synchronization before the start and stop timestamps, five warm-up utterances before logging, and the order of the compared systems balanced across utterances; preprocessing, duration prediction, model loading, file writing and the offline quality evaluation will be reported separately. The GPU model and software versions of every Colab session will be recorded. Every script will import one shared sampler module, so all systems run the same code. Before any experiment, five checks will be run on that module: two runs of the same input with the same seed must give identical outputs; the quantile projection of a tensor onto itself must return the tensor, $Q(x,x)=x$, and its residual must be zero, $r(x,x)=0$; the router's payload must keep the draft's prompt frames; a counter wrapped around the teacher and student networks must record exactly the passes of Table~\ref{tab:cost}; and the fallback must reproduce the released sampler's output exactly. Raw per-utterance results and configuration files will be archived, and every table will be regenerated by a committed script from those raw results.
 
 % =====================================================================
 \subsection{Characterizing the Baseline and the Handover Payloads}
 \label{sec:obj1}
+\chg{New}
 
 This stage covers Steps~4 to~6 of Figure~\ref{fig:workflow} and uses the development split only. Its purpose is to measure, before the method is calibrated, what the established systems achieve on the study's prompts and what each of the two payloads does to quality.
 
@@ -470,6 +530,7 @@ Algorithm~\ref{alg:grid} gives the procedure that records, for one input, the ou
 % =====================================================================
 \subsection{Formulation and Analysis of the Payload Router}
 \label{sec:obj2}
+\chg{New}
 
 This section covers Step~7 of Figure~\ref{fig:workflow}. It states the problem the router solves, defines its parts, and proves the properties on which the design rests. It uses no data.
 
@@ -641,6 +702,7 @@ Together, the three propositions describe what the residual detects. It ignores 
 
 \subsubsection{Prompt SNR Estimate}
 \label{sec:snr}
+\chg{Carried over}
 
 \begin{definition}[Prompt SNR estimate]\label{def:snr}
 The prompt waveform is split into 25~ms frames with a 10~ms hop, and
@@ -742,6 +804,7 @@ The hindsight router needs the outputs of both payloads, so it cannot be deploye
 
 \subsubsection{Calibration Procedure}
 \label{sec:calibration}
+\chg{Reworked}
 
 This section covers Steps~8 to~10 of Figure~\ref{fig:workflow}. It will choose the threshold so that the constraint of \Cref{eq:objective} holds with stated confidence on new inputs. Before calibration, the failure rule (Definition~\ref{def:failure}, including the floors from the development split), the tolerance $\alpha=0.05$, the confidence parameter $\delta=0.10$ and the grid
 \[
@@ -824,6 +887,7 @@ The proof needs no monotonicity of the risk in $\lambda$; monotone routing (Prop
 
 \subsubsection{Tolerance, Confidence, and Calibration Size}
 \label{sec:calsize}
+\chg{Reworked}
 
 The size of the calibration split determines how small a risk can be certified at all. With no excess failures among $n$ calibration inputs, the p-value of \Cref{eq:pvalue} is $(1-\alpha)^n$ \parencite{clopper1934}, so a threshold can be certified only if
 \begin{equation}
@@ -861,6 +925,7 @@ Calibration size $n$ & $\alpha$ & $\delta$ & Max.\ excess failures \\
 
 \subsubsection{Verifying the Guarantee and Reporting the Threshold}
 \label{sec:verify}
+\chg{Reworked}
 
 This check begins the evaluation (Step~11). The guarantee is a statement about repeated calibration, so it will be checked in two ways. The single held-out check will apply $\hat\lambda_r$ to the test split, each speaker with its assigned condition, and report the realized excess-failure rate with a Clopper--Pearson interval \parencite{clopper1934}; it will also report the failure rates of the router and of the released sampler on the same inputs, so that \Cref{eq:rate} can be seen directly. A rate well above $\alpha$ would indicate that an assumption, most likely the independence or the shared distribution of calibration and test inputs, does not hold. The repeated-split check will pool the calibration and test inputs, re-split them at random into speaker-disjoint halves 100 times, recalibrate on each calibration half and measure the risk on the matching test half. The fraction of splits with test risk at most $\alpha$ should be at least $1-\delta$. Because all outcomes will already be recorded, both checks need no new synthesis.
 
@@ -873,14 +938,16 @@ The calibrated threshold $\hat\lambda_r$ will be reported so that other research
 
 \subsubsection{Compared Systems}
 \label{sec:compared}
+\chg{Reworked}
 
-The evaluation covers Steps~12 to~14 of Figure~\ref{fig:workflow}. All systems in Table~\ref{tab:systems} will be run on the test split under all eight prompt conditions and on LibriSpeech-PC with clean prompts. The established systems show what the released models achieve: the released DMOSpeech~2 sampler is the baseline that the router must not fall below, the paper configuration is the configuration whose numbers were published, and the teacher alone and the student alone mark the expensive and the cheap end of the range. The ablations isolate the parts of the router: never and always projecting show what each payload does without a decision; the SNR-only router shows what the residual adds beyond the prompt check; and the student restarted from its own draft shows what the teacher adds at all. The hindsight router (Proposition~\ref{prop:oracle}) will be reported as a limit, not as a competitor.
+The evaluation covers Steps~12 to~14 of Figure~\ref{fig:workflow}. All systems in Table~\ref{tab:systems} will be run on the test split under all eight prompt conditions and on LibriSpeech-PC with clean prompts. The established systems show what the released models achieve: the released DMOSpeech~2 sampler is the baseline that the router must not fall below, the paper configuration is the configuration whose numbers were published, and the teacher alone and the student alone mark the expensive and the cheap end of the range. The ablations isolate the parts of the router: never and always projecting show what each payload does without a decision; the SNR-only router shows what the residual adds beyond the prompt check; and the student restarted from its own draft shows what the teacher adds at all. The hindsight router (Proposition~\ref{prop:oracle}) will be reported as a limit, not as a competitor. The results will be reported in Chapter~4 as a comparison matrix against the baseline, with one row for every system of Table~\ref{tab:systems} and columns for forward passes, saving relative to the released sampler (\Cref{eq:saving}), mean synthesis time on the Tesla T4, WER, SIM, UTMOS, $\mathrm{CV}_{f_0}$, failure rate and excess-failure rate; the matrix will be given overall, for every prompt condition, and for LibriSpeech-PC.
 
 \begin{table}[!htbp]
 \centering\small
 \caption{Compared systems. Costs follow from \Cref{eq:cost} (Table~\ref{tab:cost}).}
 \label{tab:systems}
 \label{tab:methods}
+\label{tab:matrix}
 \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{4.6cm} >{\raggedright\arraybackslash}X >{\centering\arraybackslash}p{1.4cm}@{}}
 \toprule
 \textbf{System} & \textbf{What it tests} & \textbf{Passes} \\
@@ -905,29 +972,6 @@ Hindsight router & Lowest risk of any two-payload rule (descriptive) & --- \\
 \end{tabularx}
 \end{table}
 
-Table~\ref{tab:matrix} is the comparison matrix that will be filled in from the test split; it will be reported overall and for every prompt condition, and again for LibriSpeech-PC.
-
-\begin{table}[!htbp]
-\centering\small
-\caption{Comparison matrix to be completed on the test split (one copy overall, one per prompt condition, one for LibriSpeech-PC). Saving is relative to the released sampler (\Cref{eq:saving}); time is the mean synthesis time per utterance on the Tesla T4, in seconds.}
-\label{tab:matrix}
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.2cm} c c c c c c c c@{}}
-\toprule
-\textbf{System} & \textbf{Passes} & \textbf{Saving} & \textbf{Time} & \textbf{WER} & \textbf{SIM} & \textbf{UTMOS} & $\mathbf{CV}_{f_0}$ & \textbf{Fail./exc.} \\
-\midrule
-DMOSpeech~2, released & 21 & --- & & & & & & \ \ /\,--- \\
-DMOSpeech~2, paper & 30 & & & & & & & \\
-F5-TTS teacher & 64 & & & & & & & \\
-DMOSpeech~2 student & 4 & & & & & & & \\
-Router \texttt{SNR\_R} & 13 & & & & & & & \\
-Always project & 13 & & & & & & & \\
-Never project & 12 & & & & & & & \\
-SNR-only router & 12--13 & & & & & & & \\
-\texttt{STUR2} & 3 & & & & & & & \\
-\bottomrule
-\end{tabular}
-\end{table}
 
 \subsubsection{Measures of Comparison}
 The saving of a system is stated relative to the released sampler:
@@ -945,11 +989,13 @@ The same ratio will be reported for measured synthesis time on the Tesla T4. For
 
 \subsubsection{Robustness}
 \label{sec:robust}
+\chg{Reworked}
 
 Three robustness questions follow from the assumptions of Proposition~\ref{prop:ltt}. The first concerns prompt conditions: the excess-failure rate and the quality measures will be reported for each of the eight conditions, and the threshold will also be calibrated on clean prompts only and tested on each degraded condition, to see how the guarantee and the residual behave when the deployment conditions differ from the calibration conditions. The second concerns the calibration size: the calibration will be repeated on random subsets of the calibration split of size $n=50$, $100$ and $200$, 100 times each, and the study will report how often a threshold is certified, the resulting routing rate and the realized risk, which shows how much data a practitioner needs. The third concerns the tolerance: the calibration will be repeated at $\alpha=0.10$, as stated in Section~\ref{sec:calsize}. Transfer to a new source will be checked on LibriSpeech-PC with the threshold calibrated on Seed-TTS.
 
 \subsubsection{Statistical Analysis}
 \label{sec:stats}
+\chg{Reworked}
 
 Comparisons will be paired, since every system is applied to the same inputs with the same noise draws. Differences in synthesis time, WER, SIM, UTMOS and $\mathrm{CV}_{f_0}$ between the router and each other system will be tested with the Wilcoxon signed-rank test on speaker-level values \parencite{wilcoxon1945}, which does not assume normally distributed differences, with Holm correction across the compared systems \parencite{holm1979}. Paired failure indicators of two systems will be compared with the exact McNemar test \parencite{mcnemar1947}. Mean differences will be reported with 95\% speaker-level percentile bootstrap intervals with 2,000 resamples \citationneeded{bootstrap confidence intervals}.
 
@@ -977,5 +1023,13 @@ Interval level & 95\% & Width of the Clopper--Pearson and bootstrap intervals & 
 % =====================================================================
 \subsection{Ethical Considerations}
 \label{sec:ethics}
+\chg{Carried over}
 
 Voice cloning can be used to imitate real people without their consent. The study will therefore use only public research corpora under their licenses \parencite{ardila2020commonvoice,panayotov2015librispeech}, will not release cloned voices beyond what those licenses permit, and will report aggregate results rather than distribute synthesized speech of identifiable speakers. It will not involve end users and will make no claims about effects on autistic users or other vulnerable groups; any small listening check will be limited to the research team.
+
+% =====================================================================
+\subsection{Summary of the Methodology}
+\label{sec:method-summary}
+\chg{Reworked}
+
+The methodology follows the three specific objectives in order. First, the released DMOSpeech~2 sampler, its paper configuration, its teacher and its student will be reproduced on the development speakers under clean and degraded prompts, together with two ways of handing the teacher's work to the student, and the floors of an absolute quality-failure rule will be fixed from the reproduced baseline. Second, a payload router will be formulated: the teacher stops at one fixed commit point for every input, at 13 instead of 21 forward passes, and for each utterance the router passes either the teacher's endpoint estimate or its quantile projection onto a one-step student draft, choosing by the prompt SNR and an invariant residual whose properties will be proved; its single threshold will be calibrated with Learn-Then-Test so that its rate of failures in excess of the released sampler's is at most $\alpha=0.05$ with probability at least 90\%. Third, the bound will be checked on held-out speakers, and the router will be compared with the established systems and with ablations of its own parts on cost, quality and prosodic variety, per prompt condition, on a second dataset, and with different calibration sizes and tolerances. Throughout, all networks keep their released weights.
