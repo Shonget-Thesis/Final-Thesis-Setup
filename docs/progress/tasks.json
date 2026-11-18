@@ -1141,6 +1141,8 @@
         "docs/progress/log/2026-11-18-snr-invariant-prototype.md"
       ],
       "validation": "2026-11-18: node --check passed on web/index.html script; prototype tests pass in .venv (with LTT calibration checks against synthetic data and EXP-034 CSV + server status risk_calibration) and full unittest + check_workspace.py pass; real CPU DMOSpeech 2 CLI runs verified on dev example common_voice_en_203357-common_voice_en_203358 (clean -> CPH8 at r=0.247 in 21.9s; gauss25 --compare -> CPQH at r=0.715 in 63.9s with CPH8 and W8 WAVs). Pending team/adviser review."
+    },
+    {
       "id": "PAPER-020",
       "title": "Rewrite Chapter 3 around the risk-calibrated payload router (SNR_R) with an absolute failure rule and LTT bound against reproduced DMOSpeech 2",
       "owner": "Claude (drafting), for Mark Vincent D. Limpahan",
@@ -1161,6 +1163,34 @@
         "docs/progress/log/2026-11-18-fixed-cost-clarifications.md"
       ],
       "validation": "2026-11-18: latexmk -Werror main.tex exit 0 (111 pages), zero undefined references/citations, zero Overfull boxes. Chapter 1 beyond Scope still describes the old scheduler. Pending team and adviser review."
+    },
+    {
+      "id": "PAPER-021",
+      "title": "Update SNR_R architecture figure and fig_snr_r caption with Learn-Then-Test (LTT) calibration",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "review",
+      "updated": "2026-11-19",
+      "acceptance": "paper/figures/exp034_architecture.png and presentation/exp034_architecture.png stay byte-identical (3200x1800 PNG) showing the offline LTT calibration node feeding lambda_r* into the SNR_R router gate, Risk-Calibrated 'What' adaptation card, and verified EXP-034 + EXP-035 T4 outcomes; paper/figures/fig_snr_r.tex caption matches; latexmk -Werror, check_workspace.py, and unittest pass.",
+      "evidence": [
+        "paper/figures/exp034_architecture.png",
+        "presentation/exp034_architecture.png",
+        "paper/figures/fig_snr_r.tex",
+        "docs/progress/log/2026-11-19-snr-r-ltt-diagram.md"
+      ],
+      "validation": "2026-11-19: Visually inspected 3200x1800 PNG and verified identical SHA-256 across paper/figures/exp034_architecture.png and presentation/exp034_architecture.png; latexmk -interaction=nonstopmode -halt-on-error -Werror main.tex built cleanly against upstream rhnl-3; check_workspace.py and unittest pass after final edits."
+    },
+    {
+      "id": "PRES-003",
+      "title": "Create existing DMOSpeech 2 baseline handover architecture diagram",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "review",
+      "updated": "2026-11-19",
+      "acceptance": "presentation/baseline_handover_architectures.png (3200x1800 RGB PNG) depicts strictly the existing DMOSpeech 2 baseline handover pipeline from Li et al. (2025) and code/vendor/dmospeech2/src/infer.py (no thesis-proposed rules and no variant-strip clutter, pure architecture flowchart + summary cards) with zero clipped/overlapping text; progress trackers and checks pass.",
+      "evidence": [
+        "presentation/baseline_handover_architectures.png",
+        "docs/progress/log/2026-11-19-baseline-handover-diagram.md"
+      ],
+      "validation": "2026-11-19: Rendered 3200x1800 PNG (904,612 bytes) via headless Chrome and visually verified zero clipping/overlap; render_progress.py, check_workspace.py, and unittest pass after final edits. Pending teacher/adviser review."
     }
   ]
 }
