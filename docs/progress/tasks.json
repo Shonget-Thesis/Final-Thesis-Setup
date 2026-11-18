@@ -1104,6 +1104,43 @@
       "validation": "2026-11-18: Built paper/build/main.pdf via latexmk -interaction=nonstopmode -halt-on-error -Werror main.tex (exit 0, 104 pages, 2,178,976 bytes, zero undefined refs/citations, zero Overfull hbox warnings in Appendices D-E and List of Tables); rendered updated Appendix D/E pages and List of Tables via pdftoppm and visually inspected; workspace check and full unittest suite verified after edits. Pending team and adviser review."
     },
     {
+      "id": "EVAL-030",
+      "title": "EXP-035 + EXP-036 All-in-One (Path A + Path B): Condition-invariance ladder & unseen confirmation + DSGH & CWPS novel mechanisms",
+      "owner": "unassigned",
+      "status": "todo",
+      "updated": "2026-11-18",
+      "acceptance": "Colab T4 notebook DMOSpeech2_EXP035_EXP036_AllInOne.ipynb runs both Path A (CPH8, CPH8_DP, FCH_DP, G1_VSWAP, G2_AFFINE, CPQH, SNR_R, 5-fold OOF LTT) and Path B (DSGH_MICRO, DSGH_DUAL, CWPS at fixed 13 passes without a binary 20 dB / 0.340 router) together on unseen_cal[30:60] (strictly disjoint from dev[0:100] and EXP-028 unseen_cal[0:30]); smoke checks verify G1/G2/FCH/DSGH identities and exact pass counts across all 12 TIME_ARMS; preregistration (492e3731998d...) predates synthesis; quality (240 cases), diversity (40 blocks), timing (10 cases), reports, and MANIFEST.json hashes are imported and checked.",
+      "evidence": [
+        "research/experiments/EXP-035-036-all-in-one/README.md",
+        "research/experiments/EXP-035-036-all-in-one/preregistration.json",
+        "code/colab/handover_mechanisms.py",
+        "code/colab/run_exp035_036_combined.py",
+        "code/colab/DMOSpeech2_EXP035_EXP036_AllInOne.ipynb",
+        "code/tests/test_handover_mechanisms.py",
+        "docs/progress/log/2026-11-18-exp035-exp036-setup.md"
+      ],
+      "validation": "Prepared and preregistered combined all-in-one runner and Colab T4 notebook on branch rhnl-3 on 2026-11-18 (preregistration sha256 492e3731998d...; Colab 12.7 GB Whisper-load OOM guard added); NumPy/PyTorch parity tests, mock CWPS loop check in .venv, cohort disjointness, notebook schema, and synthetic Path A + Path B analyze() checks pass locally; awaiting T4 execution."
+    },
+    {
+      "id": "PROTO-002",
+      "title": "Update local CPU prototype to risk-calibrated SNR + Invariant Residual (SNR_R with LTT)",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "review",
+      "updated": "2026-11-18",
+      "acceptance": "Risk-calibrated SNR + Invariant Residual (SNR_R) with fixed-sequence binomial Learn-Then-Test (LTT) calibration is implemented in model-free code/prototype/snr_invariant.py and verified against run_invariant_residual.py and run_method_comparison.py (NumPy + PyTorch); engine.py, server.py, cli.py, and web/index.html run the 1-pass s_0 draft + 5-step 8-grid teacher + LTT-calibrated r > lambda_r / SNR < 20 dB CPQH-vs-CPH8 router (default ltt_15 0.3416 and strict ltt_10 0.3816, plus empirical/snr_only) + 2-pass student completion (13 passes vs 21 W8 / 30 P25), expose live LTT calibration + EXP-034 T4 outcomes and pink25/hp25 conditions on development examples only, preserve code/prototype/snr_drift.py, and pass prototype + full unittest + workspace checks without altering code/vendor or manuscript.",
+      "evidence": [
+        "code/prototype/snr_invariant.py",
+        "code/prototype/engine.py",
+        "code/prototype/server.py",
+        "code/prototype/cli.py",
+        "code/prototype/web/index.html",
+        "code/prototype/README.md",
+        "code/prototype/start_prototype.bat",
+        "code/tests/test_prototype_snr_drift.py",
+        "code/tests/test_prototype_snr_invariant.py",
+        "docs/progress/log/2026-11-18-snr-invariant-prototype.md"
+      ],
+      "validation": "2026-11-18: node --check passed on web/index.html script; prototype tests pass in .venv (with LTT calibration checks against synthetic data and EXP-034 CSV + server status risk_calibration) and full unittest + check_workspace.py pass; real CPU DMOSpeech 2 CLI runs verified on dev example common_voice_en_203357-common_voice_en_203358 (clean -> CPH8 at r=0.247 in 21.9s; gauss25 --compare -> CPQH at r=0.715 in 63.9s with CPH8 and W8 WAVs). Pending team/adviser review."
       "id": "PAPER-020",
       "title": "Rewrite Chapter 3 around the risk-calibrated payload router (SNR_R) with an absolute failure rule and LTT bound against reproduced DMOSpeech 2",
       "owner": "Claude (drafting), for Mark Vincent D. Limpahan",
