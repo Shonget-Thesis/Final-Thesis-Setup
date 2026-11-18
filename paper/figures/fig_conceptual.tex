@@ -1,72 +1,52 @@
-% Figure: conceptual framework drawn as the architecture of the proposed
-% method (Chapter 1). Replaced the input-process-output version, 14 Nov 2026.
+% Figure: conceptual framework (Chapter 1), input-process-output view.
+% 18 Nov 2026: redrawn abstractly for the payload router; the detailed
+% architecture is Figure 3.1. Gray = released system, teal = contribution.
 \begin{figure}[!htbp]
 \centering
 \begin{adjustbox}{max width=\linewidth}
 \begin{tikzpicture}[
   font=\figfont,
-  frozen/.style={draw=frozenLine, fill=frozenFill, rounded corners=2pt, align=center, text width=2.25cm, minimum height=1.45cm, inner sep=3pt},
-  added/.style={draw=newLine, thick, fill=newFill, rounded corners=2pt, align=center, text width=2.45cm, minimum height=1.45cm, inner sep=3pt},
-  offl/.style={draw=offLine, thick, fill=offFill, rounded corners=2pt, align=center, text width=2.45cm, minimum height=1.45cm, inner sep=3pt},
-  inbox/.style={draw, rounded corners=2pt, fill=white, align=center, text width=2.1cm, minimum height=1.45cm, inner sep=3pt},
-  outbox/.style={draw, very thick, rounded corners=2pt, fill=white, align=left, text width=2.9cm, minimum height=1.25cm, inner sep=4pt},
+  io/.style={draw, rounded corners=2pt, fill=white, align=center, text width=2.8cm, minimum height=1.25cm, inner sep=3pt},
+  frozen/.style={draw=frozenLine, fill=frozenFill, rounded corners=2pt, align=center, text width=2.2cm, minimum height=1.35cm, inner sep=3pt},
+  contrib/.style={draw=newLine, very thick, fill=newFill, rounded corners=2pt, align=center, text width=3.3cm, minimum height=1.6cm, inner sep=4pt},
   head/.style={font=\figfont\bfseries, align=center},
   arr/.style={-{Stealth[length=2mm]}, thick},
   lab/.style={font=\figsmall, align=center}
 ]
-% ---------------------------------------------------------------- headers
-\node[head] at (0,4.0)    {INPUT};
-\node[head] at (8.0,4.0)  {COMPONENTS AND PROCESS};
-\node[head] at (17.8,4.0) {OUTPUT};
 
-% ------------------------------------------------- offline row (before use)
-\node[frozen, fill=white] (calset) at (5.6,2.7) {Calibration set\\(held-out speakers)};
-\node[offl] (cal) at (9.6,2.7) {\textbf{Offline calibrator}\\Learn-Then-Test\\with $\alpha$, $\delta$};
-\node[lab, anchor=east, text width=2.6cm] at (4.25,2.7) {\textit{Once, before use}};
+% inputs
+\node[io] (inp)  at (0,1.0)  {Speaker prompt\\(clean or noisy)\\and target text};
+\node[io] (ical) at (0,-1.6) {Held-out\\calibration speakers};
 
-% --------------------------------------------- generation row (per utterance)
-\node[inbox] (in) at (0,0) {Prompt audio,\\prompt text,\\target text};
-\node[frozen] (dur) at (2.9,0) {Duration\\predictor};
-\node[frozen] (teach) at (5.8,0) {Teacher\\(F5-TTS)\\guided step};
-\node[added] (ctrl) at (9.6,0) {\textbf{Stopping controller}\\endpoint change $d_i$\\and prompt SNR};
-\node[frozen] (stud) at (14.0,0) {Student\\(DMOSpeech~2)\\3 steps};
-\node[frozen] (voc) at (14.0,-2.4) {Vocoder\\(Vocos)};
+% process: released system band
+\node[frozen] (teach) at (4.4,1.0) {Teacher\\(shortened, same\\for every input)};
+\node[contrib] (hand) at (8.0,1.0) {\textbf{Handover decision}\\what the teacher passes:\\its estimate, or a\\noise-corrected version};
+\node[frozen] (stud)  at (11.6,1.0) {Student\\finishes the speech};
+\node[contrib, text width=3.3cm, minimum height=1.2cm] (cal) at (8.0,-1.6) {\textbf{Calibration}\\threshold set once\\with a failure bound};
 
-% ----------------------------------------------------------------- outputs
-\node[outbox] (othr) at (17.8,2.7) {\textbf{Calibrated threshold} $\hat\lambda$, with a bound on added quality failures};
-\node[outbox] (osw)  at (17.8,0)   {\textbf{Switching time} chosen for the utterance, and its cost in forward passes};
-\node[outbox] (osp)  at (17.8,-2.4) {\textbf{Speech} for the utterance (waveform)};
+\begin{scope}[on background layer]
+\draw[draw=frozenLine, dashed, rounded corners=4pt] (2.9,-0.2) rectangle (13.1,2.5);
+\end{scope}
+\node[lab, anchor=south west] at (2.9,2.5) {released teacher--student TTS, weights unchanged};
 
-% ------------------------------------------------------------------ arrows
-\draw[arr] (in) -- (dur);
-\draw[arr] (dur) -- (teach);
-\draw[arr] (teach) -- node[lab, above] {state,} node[lab, below] {velocity} (ctrl);
-\draw[arr] (ctrl) -- node[lab, above] {stop: hand} node[lab, below, align=center] {over endpoint\\estimate} (stud);
-\draw[arr] (stud) -- node[lab, right] {mel-spectrogram} (voc);
-\draw[arr] (voc) -- (osp);
-% teacher loop
-\draw[arr] (ctrl.south) -- ++(0,-1.2) coordinate (lp) -| (teach.south);
-\node[lab, below] at ($(lp)!0.5!(lp-|teach.south)$) {continue: next teacher step (at most to the reference step)};
-% prompt audio to the controller (SNR)
-\draw[arr] (in.north) |- ($(ctrl.north)+(-0.75,0.75)$) -- ($(ctrl.north)+(-0.75,0)$);
-\coordinate (pl) at ($(ctrl.north)+(-0.75,0.75)$);
-\node[lab, anchor=south, inner sep=1.5pt] at (pl -| dur) {prompt audio (for SNR)};
-% calibration
-\draw[arr] (calset) -- (cal);
-\draw[arr] (cal) -- node[lab, right, pos=0.3] {threshold $\hat\lambda$} (ctrl);
-\draw[arr] (cal) -- (othr);
-% switching time and cost
-\draw[arr] ($(ctrl.north)+(0.75,0)$) -- ++(0,0.32) -| ($(osw.north)+(-0.9,0)$);
+% outputs
+\node[io, text width=3.2cm] (o1) at (16.0,1.6)  {Speech at a fixed,\\lower cost};
+\node[io, text width=3.2cm] (o2) at (16.0,0.0)  {Rate of extra quality\\failures kept within a\\stated limit};
+\node[io, text width=3.2cm] (o3) at (16.0,-1.6) {Reusable threshold\\and procedure};
 
-% ------------------------------------------------------------------ legend
-\node[frozen, minimum height=0.35cm, text width=0.45cm] (l1) at (0.2,-3.9) {};
-\node[right, lab] at (l1.east) {released model, weights unchanged};
-\node[added, minimum height=0.35cm, text width=0.45cm] (l2) at (5.4,-3.9) {};
-\node[right, lab] at (l2.east) {added, during generation (no extra pass)};
-\node[offl, minimum height=0.35cm, text width=0.45cm] (l3) at (11.1,-3.9) {};
-\node[right, lab] at (l3.east) {added, offline};
+\draw[arr] (inp) -- (teach);
+\draw[arr] (teach) -- (hand);
+\draw[arr] (hand) -- (stud);
+\draw[arr] (stud.east) -- ++(0.5,0) |- (o1.west);
+\draw[arr] (ical) -- (cal);
+\draw[arr] (cal) -- node[lab, right] {threshold} (hand);
+\draw[arr] (cal.east) -- ++(1.6,0) |- (o2.west);
+\draw[arr] (cal) -- (o3);
+\node[lab, anchor=south] (sig) at (8.0,2.0) {signals: prompt noise; teacher--student disagreement};
+\draw[arr, densely dotted] (sig.south) -- (hand.north);
+
 \end{tikzpicture}
 \end{adjustbox}
-\caption{Conceptual framework of the study, drawn as the architecture of the proposed method. Gray components are the released DMOSpeech~2 sampler with unchanged weights; the stopping controller (teal) decides for each utterance where the teacher stops, and the offline calibrator (orange) sets its threshold before use.}
+\caption{Conceptual Framework of the Study}
 \label{fig:conceptual}
 \end{figure}

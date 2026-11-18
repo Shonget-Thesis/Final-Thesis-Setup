@@ -1141,6 +1141,26 @@
         "docs/progress/log/2026-11-18-snr-invariant-prototype.md"
       ],
       "validation": "2026-11-18: node --check passed on web/index.html script; prototype tests pass in .venv (with LTT calibration checks against synthetic data and EXP-034 CSV + server status risk_calibration) and full unittest + check_workspace.py pass; real CPU DMOSpeech 2 CLI runs verified on dev example common_voice_en_203357-common_voice_en_203358 (clean -> CPH8 at r=0.247 in 21.9s; gauss25 --compare -> CPQH at r=0.715 in 63.9s with CPH8 and W8 WAVs). Pending team/adviser review."
+      "id": "PAPER-020",
+      "title": "Rewrite Chapter 3 around the risk-calibrated payload router (SNR_R) with an absolute failure rule and LTT bound against reproduced DMOSpeech 2",
+      "owner": "Claude (drafting), for Mark Vincent D. Limpahan",
+      "status": "review",
+      "updated": "2026-11-18",
+      "acceptance": "paper/chapters/03-methodology.tex describes the payload router; future tense; no result values; every display equation defined; objectives only in headings and workflow table; plain-language explanations for unfamiliar readers; latexmk -Werror passes. Not adviser-approved; EXP-034 remains development evidence.",
+      "evidence": [
+        "paper/chapters/03-methodology.tex",
+        "paper/figures/fig_method.tex",
+        "paper/figures/fig_workflow.tex",
+        "docs/progress/log/2026-11-18-chapter3-v2-router-draft.md",
+        "docs/progress/log/2026-11-18-chapter3-router-replaces-scheduler.md",
+        "paper/chapters/02-related-work.tex",
+        "paper/references.bib",
+        "docs/progress/log/2026-11-18-citations-and-chapter2-alignment.md",
+        "docs/progress/log/2026-11-18-build-fixes-and-chapter3-rewrite.md",
+        "paper/chapters/01-introduction.tex",
+        "docs/progress/log/2026-11-18-fixed-cost-clarifications.md"
+      ],
+      "validation": "2026-11-18: latexmk -Werror main.tex exit 0 (111 pages), zero undefined references/citations, zero Overfull boxes. Chapter 1 beyond Scope still describes the old scheduler. Pending team and adviser review."
     }
   ]
 }
