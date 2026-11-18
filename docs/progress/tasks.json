@@ -1102,6 +1102,22 @@
         "docs/progress/log/2026-11-18-appendices-theory.md"
       ],
       "validation": "2026-11-18: Built paper/build/main.pdf via latexmk -interaction=nonstopmode -halt-on-error -Werror main.tex (exit 0, 104 pages, 2,178,976 bytes, zero undefined refs/citations, zero Overfull hbox warnings in Appendices D-E and List of Tables); rendered updated Appendix D/E pages and List of Tables via pdftoppm and visually inspected; workspace check and full unittest suite verified after edits. Pending team and adviser review."
+    },
+    {
+      "id": "PAPER-020",
+      "title": "Draft Chapter 3 v2 around the risk-calibrated payload router (SNR_R) with an absolute failure rule and LTT bound against reproduced DMOSpeech 2",
+      "owner": "Mark Vincent D. Limpahan",
+      "status": "review",
+      "updated": "2026-11-18",
+      "acceptance": "New file paper/chapters/03-methodology-v2.tex beside the unchanged current chapter; future tense; no result values; every display equation defined; objectives only in headings and workflow table; compiles via paper/main-ch3v2.tex.",
+      "evidence": [
+        "paper/chapters/03-methodology-v2.tex",
+        "paper/figures/fig_method_v2.tex",
+        "paper/figures/fig_workflow_v2.tex",
+        "paper/main-ch3v2.tex",
+        "docs/progress/log/2026-11-18-chapter3-v2-router-draft.md"
+      ],
+      "validation": "2026-11-18: latexmk main-ch3v2.tex exit 0; undefined refs only eq:stab and sec:drift-plan (appendices); zero Overfull boxes in Chapter 3 v2. Pending team and adviser review."
     }
   ]
 }
