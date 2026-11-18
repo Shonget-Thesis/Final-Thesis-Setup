@@ -1102,6 +1102,23 @@
         "docs/progress/log/2026-11-18-appendices-theory.md"
       ],
       "validation": "2026-11-18: Built paper/build/main.pdf via latexmk -interaction=nonstopmode -halt-on-error -Werror main.tex (exit 0, 104 pages, 2,178,976 bytes, zero undefined refs/citations, zero Overfull hbox warnings in Appendices D-E and List of Tables); rendered updated Appendix D/E pages and List of Tables via pdftoppm and visually inspected; workspace check and full unittest suite verified after edits. Pending team and adviser review."
+    },
+    {
+      "id": "PAPER-020",
+      "title": "Replace Chapter 3 with the risk-calibrated SNR + invariant residual payload router (Appendix E, EXP-034) and move the stopping-time scheduler to Appendix D",
+      "owner": "Claude (drafting), for Mark Vincent D. Limpahan",
+      "status": "review",
+      "updated": "2026-11-18",
+      "acceptance": "Chapter 3 states the payload-router method (condition model, quantile payload, invariant residual, excess-failure risk bounded by Learn-Then-Test, comparison set and evaluation plan) in future tense without result values; fig_method and fig_workflow show the router; references outside Chapter 3 resolve; latexmk -Werror builds with no undefined references. Not adviser-approved; EXP-034 remains development evidence.",
+      "evidence": [
+        "paper/chapters/03-methodology.tex",
+        "paper/figures/fig_method.tex",
+        "paper/figures/fig_workflow.tex",
+        "docs/progress/log/2026-11-18-chapter3-v2-router-draft.md",
+        "docs/progress/log/2026-11-18-chapter3-router-replaces-scheduler.md",
+        "docs/progress/log/2026-11-18-build-fixes-and-chapter3-rewrite.md"
+      ],
+      "validation": "2026-11-18: latexmk -g -Werror -interaction=nonstopmode main.tex exit 0, 106 pages, 0 overfull boxes, 0 undefined references or citations; check_workspace.py passed. Open: Chapter 1 objectives/scope, Chapter 2 additions, Appendix D/E wording that still calls the scheduler the Chapter 3 method, Appendix C prototype table, revision-matrix wording, five \\citationneeded markers. Pending team and adviser review."
     }
   ]
 }
