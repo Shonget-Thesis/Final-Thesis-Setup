@@ -1,8 +1,8 @@
 # EXP-034: the invariant residual against SNR only and Chapter 3's drift
 
-**Status:** prepared and preregistered on 2026-11-17 (Asia/Manila), before any GPU synthesis; freeze `eb1a38d3225a...` after Amendment 1 (first freeze `7c2ec8fca37b...`). Not yet run.
+**Status:** completed on Colab Tesla T4 (`2026-11-17`, frozen Amendment 1 `eb1a38d3225a...`; verdict `snr_r_better`, `H1–H5` all hold; see [report](results/INVARIANT_RESIDUAL_REPORT.md) and [results log](../../../docs/progress/log/2026-11-18-exp034-results.md)). Development evidence; not held-out or adviser-reviewed.
 
-Task EVAL-029 (in progress). Files: [notebook](../../../code/colab/DMOSpeech2_EXP034_Invariant_Residual.ipynb), [runner](../../../code/colab/run_invariant_residual.py), [tests](../../../code/tests/test_invariant_residual_run.py), [preregistration](preregistration.json), [design log](../../../docs/progress/log/2026-11-17-exp034-invariant-residual-setup.md).
+Task EVAL-029 (`review`). Files: [notebook](../../../code/colab/DMOSpeech2_EXP034_Invariant_Residual.ipynb), [runner](../../../code/colab/run_invariant_residual.py), [tests](../../../code/tests/test_invariant_residual_run.py), [preregistration](preregistration.json), [design log](../../../docs/progress/log/2026-11-17-exp034-invariant-residual-setup.md), [results log](../../../docs/progress/log/2026-11-18-exp034-results.md), [diagnostics](../../../code/analysis/exp034_diagnostics.py).
 
 - **A development test:** the speakers are development speakers. It is not held-out evidence.
 - **Nothing is adopted:** the thesis method is unchanged. Adopting the residual is a team decision.
