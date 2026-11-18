@@ -25,3 +25,4 @@
 
 - Problem statement, research questions and objectives shortened at Roxanne's request (same content and stage order as Chapter 3); Chapter 1 is now pages 1-10.
 - `latexmk -Werror main.tex`: exit 0, no undefined references, no Overfull boxes.
+- Tense pass: statements about what this study will do (objectives, problem, significance, scope, conceptual-framework paragraph, definitions) put in future tense; facts about published work, released code and past team experiments left in present/past. `latexmk -Werror`: exit 0, no undefined references, no Overfull boxes.
