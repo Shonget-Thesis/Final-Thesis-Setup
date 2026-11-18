@@ -1119,9 +1119,11 @@
         "paper/chapters/02-related-work.tex",
         "paper/references.bib",
         "docs/progress/log/2026-11-18-citations-and-chapter2-alignment.md",
-        "docs/progress/log/2026-11-18-build-fixes-and-chapter3-rewrite.md"
+        "docs/progress/log/2026-11-18-build-fixes-and-chapter3-rewrite.md",
+        "paper/chapters/01-introduction.tex",
+        "docs/progress/log/2026-11-18-fixed-cost-clarifications.md"
       ],
-      "validation": "2026-11-18: latexmk -Werror main.tex exit 0 (108 pages), zero undefined references/citations, zero Overfull boxes; Chapter 3 citations filled from records checked online; Chapter 2 aligned. Pending team and adviser review."
+      "validation": "2026-11-18: latexmk -Werror main.tex exit 0 (111 pages), zero undefined references/citations, zero Overfull boxes. Chapter 1 beyond Scope still describes the old scheduler. Pending team and adviser review."
     }
   ]
 }
