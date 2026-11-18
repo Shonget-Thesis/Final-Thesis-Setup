@@ -1115,9 +1115,12 @@
         "paper/figures/fig_method.tex",
         "paper/figures/fig_workflow.tex",
         "docs/progress/log/2026-11-18-chapter3-v2-router-draft.md",
-        "docs/progress/log/2026-11-18-chapter3-router-replaces-scheduler.md"
+        "docs/progress/log/2026-11-18-chapter3-router-replaces-scheduler.md",
+        "paper/chapters/02-related-work.tex",
+        "paper/references.bib",
+        "docs/progress/log/2026-11-18-citations-and-chapter2-alignment.md"
       ],
-      "validation": "2026-11-18: latexmk -Werror main.tex exit 0 (106 pages), zero undefined references/citations, zero Overfull boxes in Chapter 3. Pending team and adviser review."
+      "validation": "2026-11-18: latexmk -Werror main.tex exit 0 (108 pages), zero undefined references/citations, zero Overfull boxes; Chapter 3 citations filled from records checked online; Chapter 2 aligned. Pending team and adviser review."
     }
   ]
 }

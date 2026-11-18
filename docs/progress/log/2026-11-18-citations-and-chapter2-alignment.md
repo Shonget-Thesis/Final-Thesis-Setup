@@ -1,0 +1,25 @@
+# 2026-11-18: Chapter 3 citations filled; Chapter 2 aligned with the router chapter
+
+**Task:** `PAPER-020` (`review`)
+
+## Citations (all records checked online on 2026-11-18)
+
+Added to `paper/references.bib`: `thiemann2013demand`, `mauch2014pyin`, `morrison2023pitch` (arXiv, first posted 28 Jan 2023), `yang2025prosody` (arXiv), `sakoe1978dtw`, `efron1979bootstrap`, `liu2020blockwise`, `hall1974histogram` (volume number not shown in the record checked, so omitted), `dharanipragada2000nonlinear` (ICSLP 2000; pages not shown, omitted), `delatorre2005histogram`, `hilger2006quantile`, `peyre2019computational`, `fujita2024noiserobust` (arXiv; ICASSP publication not confirmed), `lu2025noise` (arXiv). `wang2024noise` already existed.
+
+Chapter 3: the five `\citationneeded` markers are replaced (DEMAND, pYIN, DTW, bootstrap, histogram/quantile matching); CVf0 limits stated with `yang2025prosody` and `morrison2023pitch`; the 1-D optimal-transport step of the residual-as-distance proposition cites `peyre2019computational`; speaker-level bootstrap justified with `liu2020blockwise`.
+
+## Chapter 2 alignment
+
+- Switching time is now fixed background; the variable is the payload (2.1, 2.3, Figures 2.1--2.2 captions, 2.5 framing, Table 2.1 "This study" row, synthesis and gap paragraphs).
+- Diversity is now measured (2.2); restart at tau = 0.2929 justified (2.3); UTMOS now in the failure rule with a floor (2.7); absolute failure rule applied to DMOSpeech 2 too (2.7); "added failures" replaced by excess failures against the released system.
+- New Section 2.4 "Noisy Prompts and Robustness to Recording Conditions": noise-robust zero-shot TTS (Wang et al. 2024; Fujita et al. 2024; Lu et al. 2025) and histogram/quantile equalization (Hall 1974; Dharanipragada & Padmanabhan 2000; de la Torre et al. 2005; Hilger & Ney 2006; Peyré & Cuturi 2019); two new rows in Table 2.2 (now 17 rows: 8 TTS, 3 other speech, 5 other domains, 1 AAC).
+- Old stabilization-signal comparisons (Adaptive Guidance, CALM) now refer to the earlier proposal (Appendix D).
+
+## Open
+
+- Team decision: add "DMOSpeech 2 + prompt speech enhancement" as a compared system (suggested by Wang et al. 2024).
+- Chapter 1, Appendices D--E wording and the revision matrix still describe the old method.
+
+## Checks Run
+
+- `latexmk -Werror main.tex`: exit 0, 108 pages, zero undefined references/citations, zero Overfull boxes. New Section 2.4 and Table 2.2 rows rendered and inspected.
