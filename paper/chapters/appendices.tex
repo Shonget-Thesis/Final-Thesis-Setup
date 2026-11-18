@@ -5,6 +5,7 @@
 %   B  Sample Simulation
 %   C  Prototype
 %   D  Preliminary Experiments
+%   E  SNR and Invariant Residual Handover
 % Appendix chapters are lettered; their equations are unnumbered so they
 % do not enter the List of Equations.
 % =====================================================================
@@ -561,7 +562,7 @@ Executing Steps~1--4 across subsequent Colab Tesla T4 development cohorts yielde
 \item \textbf{Timing- and distribution-based handover controls (\texttt{EXP-030}, \texttt{EXP-031}):} Timing-only handover (\texttt{TOH3}, 12 passes) avoided copied white noise on the Tesla T4 ($+0.885$~UTMOS vs.\ \texttt{W4} pooled over \texttt{gauss25} and \texttt{noisy15} in \texttt{EXP-030}), but in \texttt{EXP-031} ($n=180$ across clean, white noise, reverberation, and DEMAND cafeteria babble; $20\times 12$ aligned pitch variety), both student-only (\texttt{STU}, 4 passes) and random per-seed re-timing (\texttt{RND}, 4 passes) matched \texttt{TOH3} on raw $\mathrm{CV}_{f_0}$ and clean UTMOS (\texttt{teacher\_not\_shown\_needed}), while Chapter~3's policy (\texttt{CH3} $\lambda=0.35$ at $18.28$ passes; \texttt{CH3\_LTT} $\lambda=1.20$ at $16.33$ passes) still scored $1.250$ \texttt{noisy15} UTMOS vs.\ $1.970$ for \texttt{STU}. Post hoc, after sequence alignment, per-band quantile transfer (\texttt{QH3}) retained $64\%$ of \texttt{W4}'s aligned pitch-variety gain without copied white noise.
 \item \textbf{Coarse-grid commit-point teacher path (\texttt{EXP-033}):} On the Tesla T4 ($n=60$ quality, $20\times 12$ clean variety, $10$ timed cases), walking to $t_8=0.2929$ in half the teacher steps and restarting the student at $j=2$ (\texttt{CPH8}, 12 passes, $1.842$~s) retained $94\%$ ($\mathrm{CV}_{f_0}$) and $97\%$ (aligned) of \texttt{P25}'s clean variety gain at $-0.022$ UTMOS (\texttt{P25}: $30$ passes, $4.589$~s), though not confirmed at the 90\% bar with $n=20$ speakers; on \texttt{noisy15} prompts, all coarse teacher paths produced $7$--$11$ of $30$ runaway outputs unless gated to \texttt{STU} ($8.0$ mean passes post hoc vs.\ $19.2$ for Chapter~3's policy at $\lambda=0.35$).
 \end{itemize}
-All \texttt{EXP-030}--\texttt{EXP-033} findings remain unapproved Colab T4 development evidence pending fresh-speaker confirmation, listening checks, literature audits, and adviser review; Chapter~\ref{sec:method} is unchanged. If the stabilization score adds no measurable value in subsequent held-out tests, the SNR-gated variant of the policy will be recommended and the stabilization score reported as a tested negative result; the contribution remains a per-utterance handover framework with a certified bound on added quality failures.
+All \texttt{EXP-030}--\texttt{EXP-033} findings remain unapproved Colab T4 development evidence pending fresh-speaker confirmation, listening checks, literature audits, and adviser review; Chapter~\ref{sec:method} is unchanged. Appendix~\ref{app:snr-r} evaluates the follow-up two-signal invariant residual policy (\texttt{SNR\_R}, \texttt{EXP-034}) designed directly from these findings at the \texttt{CPH8} commit point. If the stabilization score adds no measurable value in subsequent held-out tests, the SNR-gated variant of the policy will be recommended and the stabilization score reported as a tested negative result; the contribution remains a per-utterance handover framework with a certified bound on added quality failures.
 
 \begin{table}[!htbp]
 \centering\footnotesize
@@ -577,9 +578,202 @@ Student restart \& paper baselines (\texttt{EXP-017}) & Paper $14+2$ ($j=2$) add
 Prosodic variety \& restart sensitivity (\texttt{EXP-020}, \texttt{EXP-022}, \texttt{EXP-026}--\texttt{EXP-029}, \texttt{EXP-032}) & Under $j=1$, clean $\mathrm{CV}_{f_0}$ plateaus from Step~3 to Step~8 (\texttt{W8} keeps $35\%$ of \texttt{P25}'s aligned gain); $j=2$ (\texttt{W8R2}) recovers \texttt{T16}/\texttt{P25} variety at $-0.11$ to $-0.17$ UTMOS and more \texttt{noisy15} runaways; noisy pYIN pitch tracking is undefined on teacher outputs & Shows Chapter~3's candidates (\texttt{4--6}) keep \texttt{W8}'s variety, documents the $j=1$ vs.\ \texttt{P25} trade-off (\texttt{EVAL-009}), and keeps diversity outside Chapter~3's primary scope \\
 Cross-validation, T4 LTT audit \& binary floor (\texttt{EXP-009}, \texttt{EXP-010}, \texttt{AUDIT-001}, \texttt{EXP-017}, \texttt{EXP-018}) & T4 4-fold CV saves $10.1\%$ ($1/200$ failure) and live timing saves $27\%$ on clean prompts ($\lambda=0.50$); under LTT on T4, 2 conditions certify $\hat\lambda=1.20$ (\texttt{SNR-only}, $17.04$ NFE), whereas 6 noise conditions leave $d_i\le\lambda$ uncertified ($0.0\%$ saving, $21.00$ NFE across Steps~1--8); equal references disagree on $22.5\%$ of binary labels & Distinguishes pre-LTT CV / test timing from real T4 LTT and supplements binary failure counts with continuous TOST equivalence (Table~\ref{tab:t4-steps1to8-policies}) \\
 Signal diagnostic (\texttt{EXP-011}, \texttt{EXP-012}) & $\theta=20$~dB SNR fails on 18--22~dB noise ($23.9\%$) and telephone OOD ($44.2$~dB); noise lowers median $d_4$ ($0.61\to 0.17$, premature stabilization) & Confirms the 20~dB gate handles 15~dB noise while intermediate noise (18--22~dB) and bandwidth OOD prompts require tighter gate bounds or future zero-cost signals \\
-Post-proposal timing \& coarse-grid handovers (\texttt{EXP-030}, \texttt{EXP-031}, \texttt{EXP-033}) & On 180 multi-condition T4 cases, \texttt{STU}/\texttt{RND} match \texttt{TOH3} on raw $\mathrm{CV}_{f_0}$ and clean UTMOS while Chapter~3 ($\lambda=0.35, 1.20$) copies noise ($1.25$ UTMOS); coarse 4-step \texttt{CPH8} (12 passes, $1.84$~s) keeps $94\%$--$97\%$ of \texttt{P25}'s clean variety gain ($4.59$~s) but needs clean-prompt routing & Recorded as exploratory T4 development evidence (pending confirmation, listening tests, and adviser review); Chapter~3 remains unchanged \\
+Post-proposal timing \& coarse-grid handovers (\texttt{EXP-030}, \texttt{EXP-031}, \texttt{EXP-033}) & On 180 multi-condition T4 cases, \texttt{STU}/\texttt{RND} match \texttt{TOH3} on raw $\mathrm{CV}_{f_0}$ and clean UTMOS while Chapter~3 ($\lambda=0.35, 1.20$) copies noise ($1.25$ UTMOS); coarse 4-step \texttt{CPH8} (12 passes, $1.84$~s) keeps $94\%$--$97\%$ of \texttt{P25}'s clean variety gain ($4.59$~s) but needs clean-prompt routing & Recorded as exploratory T4 development evidence (pending confirmation, listening tests, and adviser review); see Appendix~\ref{app:snr-r} for the follow-up invariant residual router (\texttt{EXP-034}); Chapter~3 remains unchanged \\
 \bottomrule
 \end{tabularx}
 \end{table}
+
+\FloatBarrier
+
+% =====================================================================
+\section[APPENDIX E.\ SNR AND INVARIANT RESIDUAL HANDOVER]{SNR and Invariant Residual Handover}
+\label{app:snr-r}
+
+This appendix presents the Colab Tesla T4 preregistered evaluation of a two-signal payload router (\texttt{SNR\_R}, \texttt{EXP-034} / \texttt{EVAL-029}; \nolinkurl{research/experiments/EXP-034-invariant-residual/}) that keeps Chapter~\ref{sec:method}'s prompt SNR gate (\Cref{eq:snr}) and replaces its endpoint-stabilization drift (\Cref{eq:stab}) with an \emph{invariant residual} $r$ at the coarse commit point of Appendix~\ref{app:drift-plan}. Everything reported here is post-proposal development evidence on $30$ Seed-TTS development speakers (\texttt{positions 31--60}), frozen under Amendment~1 (\texttt{eb1a38d3225a...}) before main synthesis; Chapter~\ref{sec:method} remains unchanged, and adopting this architecture remains a team and adviser decision pending held-out confirmation and listening tests.
+
+\subsection{Architecture and Invariant Residual Formulation}
+\label{app:snr-r-arch}
+
+Appendix~\ref{app:prelim-dev} and \texttt{EXP-033} established why Chapter~\ref{sec:method}'s two signals struggle together when intermediate noise enters: the frame-energy estimator $\hat S$ (\Cref{eq:snr}, $\theta=20$~dB) rates $25$~dB white, pink, and high-pass noise above $20$~dB and lets it pass, while teacher drift $d_i$ (\Cref{eq:stab}) falls under acoustic noise (\emph{premature stabilization}) and tracks solver step error rather than teacher--student condition leakage. At the same time, \texttt{EXP-033} found that four coarse Euler steps on an 8-interval sway grid ($10$ teacher evaluations to the same $t_4=0.2929$ endpoint time as Step~8 on the 16-interval grid), handed over with a $j=2$ student restart ($\tau\in\{0.2929,0.6173\}$, $2$ student passes = $12$ passes total, \texttt{CPH8}), preserves clean pitch variety while failing on degraded prompts unless replaced by its per-band quantile projection \texttt{CPQH}.
+
+\phead{Quantile handover projection and invariant residual} Let $\hat x_1$ be the 8-interval teacher's endpoint estimate at commit point $t_4=0.2929$, and let $s_0$ be the one-pass draft produced by the frozen student starting from $\tau=0$ ($1$ student pass). Both tensors cover prompt and generated mel frames, with $M$ masking the generated frames as in Chapter~\ref{sec:method}. The condition-safe quantile handover payload $Q(\hat x_1, s_0)$ (\texttt{CPQH}, $13$ total passes) replaces each generated mel band of $\hat x_1$ with the empirical quantile values of $s_0$ sorted into $\hat x_1$'s per-band temporal rank order, while retaining the draft's prompt frames. Chapter~\ref{sec:method}'s stabilization drift formula (\Cref{eq:stab}) is then modified by replacing the previous-step teacher estimate $\hat x_1(t_{i-1})$ with this condition-safe projection $Q(\hat x_1, s_0)$:
+\[
+r = \frac{\|\hat x_1 - Q(\hat x_1, s_0)\|_M}{\|\hat x_1\|_M + \epsilon},
+\]
+where $\|\cdot\|_M$ is the Euclidean/Frobenius norm over the generated frames marked by $M$ (\nolinkurl{code/colab/run_invariant_residual.py}, $\epsilon=10^{-12}$). Equivalently, $r^2\|\hat x_1\|_M^2$ equals the sum over mel bands of squared one-dimensional Wasserstein-2 distances between teacher and draft frame distributions. Because $Q$ preserves exact temporal rank order, any pure melody or timing rearrangement leaves $r=0$; global shifts copied by both teacher and draft (such as reverberation) cancel; and teacher-copied broadband or high-frequency noise that the student drops directly inflates $r$.
+
+\phead{Compared two-signal policies and architectural changes} Figure~\ref{fig:snr-r} shows how \texttt{SNR\_R} modifies the Chapter~\ref{sec:method} architecture (cf.\ Figure~\ref{fig:method} and Table~\ref{tab:components}). Rather than looping over candidate stopping times $k\in\{4..8\}$ with a $j=1$ restart ($13$--$21$ passes), the backbone stops the teacher deterministically on the 8-interval grid at $t_4=0.2929$ ($10$ passes), computes the $1$-pass student draft $s_0$, evaluates $\hat S$ and $r$ at zero additional neural forward-pass cost beyond $s_0$, routes the handover \emph{payload} between \texttt{CPH8} ($\hat x_1$) and \texttt{CPQH} ($Q(\hat x_1, s_0)$ plus draft prompt frames), and completes inference with $2$ student passes at $j=2$ ($13$ passes total). Using thresholds fixed prior to the T4 run from a $12$-sentence CPU screen (\nolinkurl{code/analysis/invariant_residual_screen.py}; excluded \texttt{positions 1--30}, calibration half $\theta=20$~dB, $\lambda_r=0.340048$, $\lambda_d=0.225175$), \texttt{EXP-034} compares four routing rules plus two descriptive references on identical seeds:
+\begin{itemize}[leftmargin=1.4em]
+\item \texttt{SNR\_ONLY} (12 passes unflagged, 13 flagged): choose \texttt{CPQH} when $\hat S < 20$~dB, else \texttt{CPH8}.
+\item \texttt{SNR\_DRIFT} (12 passes unflagged, 13 flagged): choose \texttt{CPQH} when $\hat S < 20$~dB or $d_4^{(8)} < 0.2252$ (calibrated in the empirical low-drift noise direction).
+\item \texttt{SNR\_R} (proposed; 13 passes fixed): choose \texttt{CPQH} when $\hat S < 20$~dB or $r > 0.3400$, else \texttt{CPH8}.
+\item \texttt{R\_ONLY} (13 passes fixed): choose \texttt{CPQH} when $r > 0.3400$, without the prompt SNR gate.
+\item \texttt{SW\_SNR} and \texttt{ORACLE} (descriptive): spread-weighted SNR gate ($<40$~dB, \texttt{EVAL-027}) and hindsight per-case UTMOS-best of $\{\texttt{CPH8},\texttt{CPQH}\}$.
+\end{itemize}
+For full context across teacher and student designs, every case is scored alongside released student-only synthesis (\texttt{STU}, $4$ passes), student-draft $j=2$ restart (\texttt{STUR2}, $3$ passes), unrouted \texttt{CPH8} ($12$ passes), unconditional \texttt{CPQH} ($13$ passes), Chapter~\ref{sec:method}'s reference \texttt{W8} ($21$ passes), and (in diversity and timing stages) the DMOSpeech~2 paper anchor \texttt{P25} ($30$ passes).
+
+\input{figures/fig_snr_r}
+
+\subsection{Protocol, Pre-Run Checks, and Preregistered Verdict}
+\label{app:snr-r-verdict}
+
+\texttt{EXP-034} executed three complete Colab Tesla T4 stages (\nolinkurl{2026-11-17T15:53Z} manifest): (1)~quality on \texttt{positions 31--60} across $8$ conditions (\texttt{clean}, white noise \texttt{noisy15} and \texttt{gauss25}, $25$~dB spectral noise \texttt{pink25} and $2$~kHz high-pass \texttt{hp25}, heavy reverberation \texttt{reverb09}, bandpass \texttt{telephone}, and \texttt{DEMAND PCAFETER/ch01.wav} babble \texttt{babble15}; $240/240$ rows, where \texttt{41--60} are fresh to every T4 quality run); (2)~multi-seed prosodic diversity on \texttt{positions 41--60} $\times 12$ seeds under \texttt{clean} and \texttt{gauss25} ($40/40$ blocks); and (3)~isolated wall-clock timing on \texttt{positions 31--40} \texttt{clean} ($10/10$ rows). Pre-synthesis T4 smoke checks on development speaker~1 passed with $0.0$ max discrepancy across all five identities (Euler vs.\ grid teacher, $Q(t,t)=t$, $r(t,t)=0$, draft prompt frames in $Q$, and split student pass), $0.0$ standalone-vs.-shared error with exact forward-pass hooks ($0+4$, $0+3$, $10+2$, $10+3$, $18+3$, $28+2$, $10+2$, $10+3$), and $0.0$ reproduction diff against stored \texttt{EXP-031} and \texttt{EXP-033} scores, with matching \texttt{DEMAND} SHA-256 and deterministic zero-mismatch verification across all $240$ policy choices (\nolinkurl{code/analysis/exp034_diagnostics.py}).
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Preregistered paired policy contrasts ($95\%$ speaker-level bootstrap intervals, $B=2{,}000$), detection AUC for ``\texttt{CPQH} needed'' ($\Delta\mathrm{UTMOS}>0.30$, $117/240$ cases), clean safety, and clean pitch variety in \texttt{EXP-034} ($240$ quality cases across $30$ dev speakers \texttt{31--60}, plus $160$ fresh-cohort cases \texttt{41--60}). Frozen hypotheses \texttt{H1}--\texttt{H5} all pass (verdict: \texttt{snr\_r\_better}).}
+\label{tab:snr-r-verdict}
+\setlength{\tabcolsep}{4pt}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}l r l l l c@{}}
+\toprule
+\multicolumn{6}{@{}l}{\textbf{Panel A: Paired quality differences (per-speaker average across 8 conditions)}} \\
+\midrule
+\textbf{Contrast} & \textbf{Cohort ($n_{\text{cases}}$ / spk)} & \textbf{$\Delta$UTMOS [95\% CI]} & \textbf{$\Delta$WER [95\% CI]} & \textbf{$\Delta$SIM [95\% CI]} & \textbf{Better?} \\
+\midrule
+\texttt{SNR\_R} $-$ \texttt{SNR\_ONLY} (\texttt{H1}) & All ($240$ / $30$) & $+0.574$ [$+0.468$, $+0.677$] & $-0.0017$ [$-0.0047$, $+0.0013$] & $+0.0156$ [$+0.0096$, $+0.0223$] & \textbf{yes} \\
+\texttt{SNR\_R} $-$ \texttt{SNR\_DRIFT} (\texttt{H2}) & All ($240$ / $30$) & $+0.431$ [$+0.340$, $+0.524$] & $-0.0022$ [$-0.0055$, $+0.0008$] & $+0.0091$ [$+0.0047$, $+0.0139$] & \textbf{yes} \\
+\texttt{R\_ONLY} $-$ \texttt{SNR\_ONLY} & All ($240$ / $30$) & $+0.573$ [$+0.469$, $+0.673$] & $-0.0017$ [$-0.0047$, $+0.0013$] & $+0.0152$ [$+0.0090$, $+0.0219$] & yes \\
+\texttt{SNR\_DRIFT} $-$ \texttt{SNR\_ONLY} & All ($240$ / $30$) & $+0.143$ [$+0.056$, $+0.247$] & $+0.0005$ [$+0.0000$, $+0.0016$] & $+0.0065$ [$+0.0024$, $+0.0118$] & yes \\
+\texttt{SNR\_R} $-$ \texttt{W8} (Ch.~3 ref.) & All ($240$ / $30$) & $+0.582$ [$+0.484$, $+0.687$] & $-0.0072$ [$-0.0202$, $+0.0080$] & $+0.0242$ [$+0.0154$, $+0.0327$] & yes \\
+\texttt{SNR\_R} $-$ \texttt{SNR\_ONLY} (fresh) & \texttt{41--60} ($160$ / $20$) & $+0.668$ [$+0.548$, $+0.783$] & $-0.0002$ [$-0.0032$, $+0.0034$] & $+0.0165$ [$+0.0083$, $+0.0260$] & yes \\
+\texttt{SNR\_R} $-$ \texttt{SNR\_DRIFT} (fresh) & \texttt{41--60} ($160$ / $20$) & $+0.501$ [$+0.390$, $+0.604$] & $-0.0002$ [$-0.0032$, $+0.0034$] & $+0.0098$ [$+0.0036$, $+0.0159$] & yes \\
+\midrule
+\multicolumn{6}{@{}l}{\textbf{Panel B: Detection AUC, clean flag safety (\texttt{H4}), clean variety (\texttt{H5}), and split re-calibration}} \\
+\midrule
+\textbf{Signal / Hypothesis} & \textbf{Metric / Scope} & \textbf{Result} & \textbf{Comparison / Bar} & \textbf{Clean flags / Recal.} & \textbf{Holds?} \\
+\midrule
+Invariant residual $r$ (\texttt{H3}) & AUC all / $\hat S\ge 20$ & \textbf{$0.864$ / $0.897$} & $\ge 0.80$ & Wrong clean \texttt{SNR\_R}: $0.067$ ($\le 0.15$) & \textbf{yes} \\
+Chapter~3 drift $d_4^{(8)}$ & AUC all / $\hat S\ge 20$ & $0.697$ / $0.645$ & $r$ gain $+0.167$ ($\ge +0.10$) & Wrong clean \texttt{SNR\_DRIFT}: $0.000$ & --- \\
+Chapter~3 SNR ($\hat S$ low) & AUC all / $\hat S\ge 20$ & $0.538$ / $0.751$ & blind on $25$~dB noises & Wrong clean \texttt{SNR\_ONLY}: $0.000$ & --- \\
+Roughness share / $\mathrm{SNR}_{\text{SW}}$ & AUC all / $\hat S\ge 20$ & $0.706$ / $0.700$ & $0.866$ / $0.907$ ($\mathrm{SNR}_{\text{SW}}$) & \texttt{H5} clean $\mathrm{CV}_{f_0}$: $105\%$, aligned $96\%$ & \textbf{yes} \\
+Re-cal.\ \texttt{31--45} $\to$ \texttt{46--60} & Test UTMOS ($n=120$) & \texttt{SNR\_R} \textbf{$2.947$} & \texttt{SNR\_DRIFT} $2.723$ ($\lambda_d=0.277$) & \texttt{SNR\_ONLY} $2.290$ (\texttt{ORACLE} $2.971$) & --- \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+Table~\ref{tab:snr-r-verdict} shows that all five frozen hypotheses hold (\texttt{verdict = snr\_r\_better}). Both \texttt{H1} and \texttt{H2} pass by wide margins across all $30$ speakers and strengthen on the completely unseen \texttt{41--60} subset ($+0.668$ and $+0.501$~UTMOS). For detection (\texttt{H3}), $r$ achieves $0.864$ AUC overall and $0.897$ on cases where the $20$~dB SNR gate stays open, outperforming $d_4^{(8)}$ by $+0.167$ overall ($+0.252$ gate-open). Clean wrong flags sit at $2/30 = 6.7\%$ (\texttt{H4}, $\le 15\%$), and inspection of those two flagged clean utterances (\texttt{pos 36}, $r=0.3416$; \texttt{pos 53}, $r=0.3816$) shows that both actually scored slightly higher on \texttt{CPQH} than \texttt{CPH8} ($3.832$ vs.\ $3.714$, SIM $0.953$ vs.\ $0.947$; $4.141$ vs.\ $4.057$, SIM $0.830$ vs.\ $0.793$), failing only the $+0.30$~UTMOS ``needed'' threshold. Even after re-calibrating $\lambda_r=0.2709$ and low-direction $\lambda_d=0.2771$ on \texttt{positions 31--45}, \texttt{SNR\_R} maintains a $+0.224$ and $+0.657$~UTMOS lead on \texttt{positions 46--60} ($2.947$ vs.\ $2.723$ and $2.290$).
+
+\subsection{Complete Quality and Cost Comparison}
+\label{app:snr-r-quality}
+
+Tables~\ref{tab:snr-r-overall} and~\ref{tab:snr-r-conds} compare quality, ASR runaways ($\mathrm{WER}>1.0$), routing frequency, pass count, and Tesla T4 runtime across all policies and baseline/reference arms.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Overall quality, fresh-cohort (\texttt{41--60}) quality, \texttt{noisy15} runaways ($\mathrm{WER}>1.0$), counted forward passes, and clean Tesla T4 latency ($n=10$, \texttt{positions 31--40}) across all policies and reference arms in \texttt{EXP-034}.}
+\label{tab:snr-r-overall}
+\setlength{\tabcolsep}{3.5pt}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}l r r r r r r r r r r r@{}}
+\toprule
+& & & & \multicolumn{4}{c}{\textbf{All ($n=240$, \texttt{31--60})}} & \multicolumn{3}{c}{\textbf{Fresh ($n=160$, \texttt{41--60})}} & \textbf{Runaways} \\
+\cmidrule(lr){5-8}\cmidrule(lr){9-11}
+\textbf{Policy / Arm} & \textbf{Passes} & \textbf{Time (s)} & \textbf{Ratio} & \textbf{Flag\%} & \textbf{UTMOS} & \textbf{WER} & \textbf{SIM} & \textbf{UTMOS} & \textbf{WER} & \textbf{SIM} & \textbf{(\texttt{noisy15})} \\
+\midrule
+\texttt{SNR\_ONLY} & $12.30^{\ast}$ & $1.939$ & $0.40$ & $30.0\%$ & $2.376$ & $0.0483$ & $0.8676$ & $2.276$ & $0.0519$ & $0.8678$ & $1$ \\
+\texttt{SNR\_DRIFT} & $12.41$ & --- & --- & $41.3\%$ & $2.519$ & $0.0489$ & $0.8741$ & $2.444$ & $0.0519$ & $0.8745$ & $1$ \\
+\textbf{\texttt{SNR\_R}} & $\mathbf{13.00}$ & $\mathbf{2.114}$ & $\mathbf{0.44}$ & $\mathbf{72.1\%}$ & $\mathbf{2.950}$ & $\mathbf{0.0467}$ & $\mathbf{0.8832}$ & $\mathbf{2.944}$ & $\mathbf{0.0517}$ & $\mathbf{0.8844}$ & $\mathbf{1}$ \\
+\texttt{R\_ONLY} & $13.00$ & --- & --- & $58.8\%$ & $2.949$ & $0.0467$ & $0.8828$ & $2.938$ & $0.0517$ & $0.8841$ & $1$ \\
+\texttt{SW\_SNR} ($<40$~dB) & --- & --- & --- & --- & $2.898$ & $0.0481$ & $0.8812$ & $2.873$ & $0.0538$ & $0.8819$ & $1$ \\
+\texttt{ORACLE} (hindsight) & --- & --- & --- & --- & $2.987$ & $0.0492$ & $0.8848$ & $2.971$ & $0.0547$ & $0.8846$ & $2$ \\
+\midrule
+\texttt{STU} (student, $j=0$) & $4$ & $0.659$ & $0.14$ & $0\%$ & $2.880$ & $0.0439$ & $0.8806$ & $2.848$ & $0.0515$ & $0.8840$ & $0$ \\
+\texttt{STUR2} (draft, $j=2$) & $3$ & $0.511$ & $0.11$ & $0\%$ & $3.114$ & $0.0310$ & $0.8838$ & $3.107$ & $0.0333$ & $0.8868$ & $0$ \\
+\texttt{CPH8} (teacher, $j=2$) & $12$ & $1.952$ & $0.40$ & $0\%$ & $2.256$ & $0.5231$ & $0.8498$ & $2.168$ & $0.5715$ & $0.8483$ & $6$ \\
+\texttt{CPQH} (quant., $j=2$) & $13$ & $2.115$ & $0.44$ & $100\%$ & $2.963$ & $0.0476$ & $0.8847$ & $2.949$ & $0.0523$ & $0.8852$ & $1$ \\
+\texttt{W8} (Ch.~3 ref., $j=1$) & $21$ & $3.409$ & $0.71$ & --- & $2.368$ & $0.0539$ & $0.8590$ & $2.275$ & $0.0612$ & $0.8604$ & $0$ \\
+\texttt{P25} (paper $14+2$) & $30$ & $4.829$ & $1.00$ & --- & --- & --- & --- & --- & --- & --- & --- \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\par\smallskip{\footnotesize $^{\ast}$\texttt{SNR\_ONLY} uses $12$ passes on clean prompts (timed in the $n=10$ clean timing stage) and $13$ when $\hat S<20$~dB ($12.30$ mean over $240$ cases); similarly \texttt{SNR\_DRIFT} averages $12.41$ passes.\par}
+\end{table}
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Condition-by-condition quality ($n=30$ per condition) comparing \texttt{SNR\_ONLY}, \texttt{SNR\_DRIFT}, \texttt{SNR\_R}, \texttt{R\_ONLY}, unrouted payloads (\texttt{CPH8}, \texttt{CPQH}), Chapter~3's reference (\texttt{W8}), and draft restart (\texttt{STUR2}). ``Need'' counts cases with $\mathrm{UTMOS}(\texttt{CPQH})-\mathrm{UTMOS}(\texttt{CPH8})>0.30$.}
+\label{tab:snr-r-conds}
+\setlength{\tabcolsep}{3.5pt}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}l r r r r r r r r@{}}
+\toprule
+\multicolumn{9}{@{}l}{\textbf{Panel A: Mean UTMOS (and policy share sent to \texttt{CPQH} for the four routing rules)}} \\
+\midrule
+\textbf{Condition (Need)} & \textbf{\texttt{SNR\_ONLY}} & \textbf{\texttt{SNR\_DRIFT}} & \textbf{\texttt{SNR\_R}} & \textbf{\texttt{R\_ONLY}} & \textbf{\texttt{CPH8}} & \textbf{\texttt{CPQH}} & \textbf{\texttt{W8}} & \textbf{\texttt{STUR2}} \\
+\midrule
+\texttt{clean} ($3/30$) & $3.884$ ($0\%$) & $3.884$ ($0\%$) & $3.891$ ($7\%$) & $3.891$ ($7\%$) & $3.884$ & $3.879$ & $3.964$ & $3.958$ \\
+\texttt{noisy15} ($22/30$) & $2.199$ ($100\%$) & $2.199$ ($100\%$) & $2.199$ ($100\%$) & $2.199$ ($100\%$) & $1.277$ & $2.199$ & $1.247$ & $2.876$ \\
+\texttt{gauss25} ($29/30$) & $1.828$ ($0\%$) & $2.260$ ($17\%$) & $\mathbf{3.742}$ ($100\%$) & $3.742$ ($100\%$) & $1.828$ & $3.742$ & $1.916$ & $3.845$ \\
+\texttt{pink25} ($27/30$) & $2.743$ ($0\%$) & $2.907$ ($7\%$) & $\mathbf{3.868}$ ($93\%$) & $3.868$ ($93\%$) & $2.743$ & $3.894$ & $3.059$ & $4.004$ \\
+\texttt{hp25} ($28/30$) & $2.098$ ($0\%$) & $2.593$ ($20\%$) & $\mathbf{3.611}$ ($100\%$) & $3.611$ ($100\%$) & $2.098$ & $3.611$ & $2.304$ & $3.743$ \\
+\texttt{reverb09} ($0/30$) & $1.416$ ($67\%$) & $1.416$ ($67\%$) & $1.422$ ($83\%$) & $1.410$ ($47\%$) & $1.397$ & $1.426$ & $1.401$ & $1.428$ \\
+\texttt{telephone} ($5/30$) & $1.488$ ($0\%$) & $1.539$ ($47\%$) & $1.513$ ($20\%$) & $1.513$ ($20\%$) & $1.488$ & $1.606$ & $1.588$ & $1.567$ \\
+\texttt{babble15} ($3/30$) & $3.355$ ($73\%$) & $3.355$ ($73\%$) & $3.355$ ($73\%$) & $3.360$ ($3\%$) & $3.329$ & $3.349$ & $3.465$ & $3.491$ \\
+\midrule
+\multicolumn{9}{@{}l}{\textbf{Panel B: Mean speaker similarity (SIM) / mean WER}} \\
+\midrule
+\textbf{Condition} & \textbf{\texttt{SNR\_ONLY}} & \textbf{\texttt{SNR\_DRIFT}} & \textbf{\texttt{SNR\_R}} & \textbf{\texttt{R\_ONLY}} & \textbf{\texttt{CPH8}} & \textbf{\texttt{CPQH}} & \textbf{\texttt{W8}} & \textbf{\texttt{STUR2}} \\
+\midrule
+\texttt{clean} & $.919$ / $.0312$ & $.919$ / $.0312$ & $.921$ / $.0312$ & $.921$ / $.0312$ & $.919$ / $.0312$ & $.925$ / $.0312$ & $.927$ / $.0336$ & $.925$ / $.0240$ \\
+\texttt{noisy15} & $.820$ / $.1457$ & $.820$ / $.1457$ & $.820$ / $.1457$ & $.820$ / $.1457$ & $.684$ / $3.936$ & $.820$ / $.1457$ & $.669$ / $.1725$ & $.828$ / $.0352$ \\
+\texttt{gauss25} & $.840$ / $.0423$ & $.856$ / $.0423$ & $\mathbf{.897}$ / $.0386$ & $.897$ / $.0386$ & $.840$ / $.0423$ & $.897$ / $.0386$ & $.866$ / $.0376$ & $.890$ / $.0275$ \\
+\texttt{pink25} & $.889$ / $.0453$ & $.890$ / $.0453$ & $\mathbf{.906}$ / $.0363$ & $.906$ / $.0363$ & $.889$ / $.0453$ & $.907$ / $.0363$ & $.906$ / $.0424$ & $.900$ / $.0247$ \\
+\texttt{hp25} & $.853$ / $.0377$ & $.880$ / $.0377$ & $\mathbf{.901}$ / $.0401$ & $.901$ / $.0401$ & $.853$ / $.0377$ & $.901$ / $.0401$ & $.875$ / $.0363$ & $.890$ / $.0240$ \\
+\texttt{reverb09} & $.869$ / $.0278$ & $.869$ / $.0278$ & $.866$ / $.0248$ & $.864$ / $.0248$ & $.864$ / $.0309$ & $.866$ / $.0248$ & $.862$ / $.0410$ & $.875$ / $.0481$ \\
+\texttt{telephone} & $.835$ / $.0289$ & $.843$ / $.0330$ & $.838$ / $.0289$ & $.838$ / $.0289$ & $.835$ / $.0289$ & $.848$ / $.0330$ & $.852$ / $.0337$ & $.852$ / $.0428$ \\
+\texttt{babble15} & $.915$ / $.0278$ & $.915$ / $.0278$ & $.915$ / $.0278$ & $.915$ / $.0278$ & $.914$ / $.0326$ & $.914$ / $.0309$ & $.914$ / $.0339$ & $.911$ / $.0216$ \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+Across conditions (Table~\ref{tab:snr-r-conds}), the decisive gap arises on the three $25$~dB spectral-hiss and broadband-noise conditions (\texttt{gauss25}, \texttt{pink25}, \texttt{hp25}): \texttt{SNR\_ONLY} sends $0\%$ to \texttt{CPQH} ($1.828$--$2.743$~UTMOS), \texttt{SNR\_DRIFT} sends $7\%$--$20\%$ ($2.260$--$2.907$~UTMOS), and \texttt{SNR\_R} sends $93\%$--$100\%$ ($3.611$--$3.868$~UTMOS, matching \texttt{CPQH}). On \texttt{noisy15} ($100\%$ flagged) and \texttt{babble15} ($73\%$ flagged), all three rules tie because $\hat S < 20$~dB engages; removing the SNR gate (\texttt{R\_ONLY}) reduces \texttt{babble15} flagging from $73\%$ to $3\%$ with virtually identical scores. On \texttt{telephone}, \texttt{SNR\_DRIFT} flagged more prompts ($47\%$ vs.\ $20\%$) and edged \texttt{SNR\_R} by $+0.026$~UTMOS, while all methods remained degraded on \texttt{reverb09} ($1.40$--$1.44$~UTMOS) and \texttt{telephone} ($1.49$--$1.61$~UTMOS). Counted forward passes in the isolated timing stage matched the predicted cost budget on every arm, with \texttt{SNR\_R} taking $2.114$~s on clean prompts ($+0.175$~s above \texttt{SNR\_ONLY}'s $1.939$~s, $38\%$ faster than \texttt{W8}'s $3.409$~s and $56\%$ faster than \texttt{P25}'s $4.829$~s).
+
+\subsection{Multi-Seed Prosodic Diversity Comparison}
+\label{app:snr-r-diversity}
+
+Table~\ref{tab:snr-r-diversity} compares all nine evaluated diversity arms and routing policies across $12$ latent seeds on the $20$ fresh speakers (\texttt{positions 41--60}) under both \texttt{clean} and \texttt{gauss25} prompts.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Multi-seed prosodic diversity across all arms and routing rules in \texttt{EXP-034} ($20$ fresh speakers \texttt{41--60} $\times 12$ seeds under \texttt{clean} and \texttt{gauss25}). Clean gain shares equal $(\text{method}-\texttt{STU})/(\text{anchor}-\texttt{STU})$. On \texttt{gauss25}, high unaligned $\mathrm{CV}_{f_0}$ under \texttt{CPH8}, \texttt{P25}, and \texttt{SNR\_ONLY} reflects pYIN tracking on unvoiced noise static (Voiced $0.11$--$0.12$; only $3/20$ speakers $\ge 0.30$ voiced).}
+\label{tab:snr-r-diversity}
+\setlength{\tabcolsep}{3.2pt}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}l r r r r r r r r r r r@{}}
+\toprule
+& & \multicolumn{6}{c}{\textbf{\texttt{clean} ($n=20\times 12$)}} & \multicolumn{4}{c}{\textbf{\texttt{gauss25} ($n=20\times 12$)}} \\
+\cmidrule(lr){3-8}\cmidrule(lr){9-12}
+\textbf{Arm / Policy} & \textbf{Passes} & $\mathbf{CV}_{f_0}$ & \textbf{Algn.} & \textbf{Voiced} & \textbf{Spread} & \textbf{vs.\ \texttt{CPH8}} & \textbf{vs.\ \texttt{P25}} & \textbf{Flag\%} & \textbf{Algn.} & \textbf{Voiced} & \textbf{$\ge 0.30$ spk} \\
+\midrule
+\texttt{STU} ($j=0$) & $4$ & $0.0514$ & $0.0419$ & $0.57$ & $3.73$ & $0\%$ / $0\%$ & $0\%$ / $0\%$ & --- & $0.0447$ & $0.53$ & $18/20$ \\
+\texttt{STUR2} ($j=2$) & $3$ & $0.0482$ & $0.0390$ & $0.57$ & $3.28$ & $-9\%$ / $-15\%$ & $-8\%$ / $-19\%$ & --- & $0.0441$ & $0.58$ & $20/20$ \\
+\texttt{CPH8} (teacher) & $12$ & $0.0857$ & $0.0611$ & $0.60$ & $12.44$ & $100\%$ / $100\%$ & $92\%$ / $124\%$ & $0\%$ & $0.0858^{\dagger}$ & $0.11^{\dagger}$ & $3/20$ \\
+\texttt{CPQH} (quant.) & $13$ & $0.0852$ & $0.0586$ & $0.62$ & $12.57$ & $99\%$ / $87\%$ & $91\%$ / $108\%$ & $100\%$ & $0.0673$ & $0.63$ & $19/20$ \\
+\texttt{P25} (paper) & $30$ & $0.0887$ & $0.0574$ & $0.62$ & $14.03$ & --- & $100\%$ / $100\%$ & --- & $0.0770^{\dagger}$ & $0.12^{\dagger}$ & $3/20$ \\
+\midrule
+\texttt{SNR\_ONLY} & $12^{\ast}$ & $0.0857$ & $0.0611$ & $0.60$ & $12.44$ & $100\%$ / $100\%$ & $92\%$ / $124\%$ & $0\%$ & $0.0858^{\dagger}$ & $0.11^{\dagger}$ & $3/20$ \\
+\texttt{SNR\_DRIFT} & $12^{\ast}$ & $0.0858$ & $0.0611$ & $0.60$ & $12.44$ & $100\%$ / $100\%$ & $92\%$ / $124\%$ & $22\%$ & $0.0759^{\dagger}$ & $0.20^{\dagger}$ & $6/20$ \\
+\textbf{\texttt{SNR\_R}} & $\mathbf{13}$ & $\mathbf{0.0876}$ & $\mathbf{0.0604}$ & $\mathbf{0.60}$ & $\mathbf{12.51}$ & $\mathbf{105\%}$ / $\mathbf{96\%}$ & $\mathbf{97\%}$ / $\mathbf{119\%}$ & $\mathbf{100\%}$ & $\mathbf{0.0673}$ & $\mathbf{0.63}$ & $\mathbf{19/20}$ \\
+\texttt{R\_ONLY} & $13$ & $0.0876$ & $0.0604$ & $0.60$ & $12.51$ & $105\%$ / $96\%$ & $97\%$ / $119\%$ & $100\%$ & $0.0673$ & $0.63$ & $19/20$ \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\par\smallskip{\footnotesize Gain pairs list raw $\mathrm{CV}_{f_0}$ / aligned $\mathrm{CV}_{f_0}$. $^{\ast}$\texttt{SNR\_ONLY} uses $12$ passes across clean diversity seeds ($0\%$ flagged); \texttt{SNR\_DRIFT} flags $0.4\%$ cleanly and $22\%$ on \texttt{gauss25}. $^{\dagger}$Artifacts from unvoiced noise copying ($r_{\text{mean}}=0.627$ vs.\ $0.232$ clean).\par}
+\end{table}
+
+On clean prompts (Table~\ref{tab:snr-r-diversity}), \texttt{SNR\_R} preserves $105\%$ $[98\%, 119\%]$ of \texttt{CPH8}'s raw $\mathrm{CV}_{f_0}$ gain over \texttt{STU} and $96\%$ $[90\%, 100\%]$ of its aligned gain ($97\%$ and $119\%$ relative to \texttt{P25}, with $0.772$ melody correlation vs.\ \texttt{P25} and $12.51$-frame timing spread), passing the $90\%$ threshold (\texttt{H5}) whereas sending every prompt through \texttt{CPQH} reduces clean aligned gain retention to $87\%$ $[69\%, 105\%]$. On \texttt{gauss25} prompts ($r_{\text{mean}}=0.627$ vs.\ $0.232$ clean), \texttt{CPH8}, \texttt{P25}, and \texttt{SNR\_ONLY} collapse into unvoiced noise copying ($11\%$--$12\%$ voiced frames, only $3/20$ speakers $\ge 0.30$ voiced, inflating raw $\mathrm{CV}_{f_0}$ to $0.1152$, $0.1056$, and $0.1152$), and \texttt{SNR\_DRIFT} recovers only $6/20$ ($20\%$ voiced, $22\%$ flagged, raw $\mathrm{CV}_{f_0}=0.1000$). \texttt{SNR\_R} flags $100\%$ of \texttt{gauss25} cases, restoring $63\%$ voiced frames ($19/20$ speakers $\ge 0.30$ voiced) alongside genuine pitch variation (raw $\mathrm{CV}_{f_0}=0.0882$, aligned $0.0673$).
+
+\subsection{Alternative Baselines, Scope Limits, and Next Steps}
+\label{app:snr-r-limits}
+
+Post-hoc inspection (\nolinkurl{code/analysis/exp034_diagnostics.py}) highlights three design trade-offs alongside the frozen verdict:
+\begin{enumerate}[leftmargin=1.4em]
+\item \textbf{\texttt{SNR\_R} vs.\ \texttt{R\_ONLY} and unconditional \texttt{CPQH}.} \texttt{SNR\_R} and \texttt{R\_ONLY} perform nearly identically overall ($\Delta\mathrm{UTMOS}=+0.0008$ $[-0.0071,+0.0089]$, $\Delta\mathrm{SIM}=+0.0004$), with $\hat S<20$~dB mainly adding conservative routing on \texttt{babble15}. Unconditional \texttt{CPQH} costs the same $13$ passes ($2.115$~s) with marginally higher overall SIM ($+0.0016$ $[+0.0004,+0.0028]$) and tie UTMOS ($-0.013$ $[-0.028,+0.002]$ vs.\ \texttt{SNR\_R}), so \texttt{SNR\_R}'s advantage over always running \texttt{CPQH} lies specifically in retaining $96\%$ vs.\ $87\%$ of \texttt{CPH8}'s clean aligned pitch variety.
+\item \textbf{Teacher-free \texttt{STUR2} vs.\ all teacher paths.} Restarting the one-pass student draft at $j=2$ without any teacher pass (\texttt{STUR2}, $3$ passes, $0.511$~s, $0$ \texttt{noisy15} runaways) achieved the highest overall UTMOS ($3.114$), lowest WER ($0.0310$), and highest SIM ($0.8838$), beating even \texttt{CPQH} by $+0.151$ $[+0.104,+0.195]$ UTMOS and $-0.0166$ $[-0.0310,-0.0033]$ WER. However, \texttt{STUR2} loses clean prosodic diversity ($\mathrm{CV}_{f_0}=0.0482$, aligned $0.0390$, $3.28$-frame spread). Adaptive teacher handover (\texttt{SNR\_R}) is therefore warranted only where multi-seed prosodic variety is required alongside robustness.
+\item \textbf{Remaining blind spots and non-adoption status.} All methods degrade sharply under severe reverberation (\texttt{reverb09}, UTMOS $\approx 1.40$--$1.44$) and bandpass \texttt{telephone} filtering (UTMOS $\approx 1.49$--$1.61$), where both teacher and student absorb prompt channel distortion so $r$ cannot separate them. Because \texttt{EXP-034} uses $30$ development speakers (\texttt{positions 31--60}) rather than held-out evaluation speakers and applies fixed CPU-screen thresholds without held-out Learn-Then-Test risk certification, these results remain development evidence pending independent held-out evaluation, human listening checks, and team/adviser approval before modifying Chapter~\ref{sec:method}.
+\end{enumerate}
 
 \FloatBarrier
