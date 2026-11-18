@@ -1102,6 +1102,42 @@
         "docs/progress/log/2026-11-18-appendices-theory.md"
       ],
       "validation": "2026-11-18: Built paper/build/main.pdf via latexmk -interaction=nonstopmode -halt-on-error -Werror main.tex (exit 0, 104 pages, 2,178,976 bytes, zero undefined refs/citations, zero Overfull hbox warnings in Appendices D-E and List of Tables); rendered updated Appendix D/E pages and List of Tables via pdftoppm and visually inspected; workspace check and full unittest suite verified after edits. Pending team and adviser review."
+    },
+    {
+      "id": "EVAL-030",
+      "title": "EXP-035 (Path A): Condition-invariance ladder ablation (FCH, G1, G2, G3) and disjoint calibration confirmation of SNR_R",
+      "owner": "unassigned",
+      "status": "todo",
+      "updated": "2026-11-18",
+      "acceptance": "Colab T4 notebook DMOSpeech2_EXP035_PathA_Ladder_Unseen.ipynb runs on unseen_cal[30:60] (strictly disjoint from dev[0:100] and EXP-028 unseen_cal[0:30]); smoke tests verify G1/G2/FCH invariances and exact pass counts; preregistration (0e6bb745fd70...) predates GPU synthesis; quality (240 cases across 8 conditions), diversity (40 blocks), timing (10 cases), 5-fold OOF calibration, and MANIFEST.json hashes are imported and checked.",
+      "evidence": [
+        "research/experiments/EXP-035-invariance-ladder-confirm/README.md",
+        "research/experiments/EXP-035-invariance-ladder-confirm/preregistration.json",
+        "code/colab/handover_mechanisms.py",
+        "code/colab/run_invariance_ladder_confirm.py",
+        "code/colab/DMOSpeech2_EXP035_PathA_Ladder_Unseen.ipynb",
+        "code/tests/test_handover_mechanisms.py",
+        "docs/progress/log/2026-11-18-exp035-exp036-setup.md"
+      ],
+      "validation": "Prepared and preregistered on branch rhnl-3 on 2026-11-18 (preregistration sha256 0e6bb745fd70...); NumPy/PyTorch invariance tests, cohort disjointness, notebook schema, and synthetic analyze() checks pass locally; awaiting T4 execution."
+    },
+    {
+      "id": "EVAL-031",
+      "title": "EXP-036 (Path B): Dual-Space Geodesic Handover (DSGH) and Closed-Loop Wasserstein-Proximal Sampling (CWPS) vs. SNR_R",
+      "owner": "unassigned",
+      "status": "todo",
+      "updated": "2026-11-18",
+      "acceptance": "Colab T4 notebook DMOSpeech2_EXP036_PathB_Novel_Mechanisms.ipynb runs on unseen_cal[60:90] (strictly disjoint from dev[0:100], EXP-028 [0:30], and EXP-035 [30:60]); smoke tests verify DSGH identity, CWPS 13-pass instrumentation (1 pre-teacher student pass + 10 coupled teacher passes + 2 student passes), and zero standalone diff; preregistration (dfaca36ff55b...) predates GPU synthesis; results and MANIFEST.json hashes are imported and checked.",
+      "evidence": [
+        "research/experiments/EXP-036-dual-space-mechanisms/README.md",
+        "research/experiments/EXP-036-dual-space-mechanisms/preregistration.json",
+        "code/colab/handover_mechanisms.py",
+        "code/colab/run_dual_space_mechanisms.py",
+        "code/colab/DMOSpeech2_EXP036_PathB_Novel_Mechanisms.ipynb",
+        "code/tests/test_handover_mechanisms.py",
+        "docs/progress/log/2026-11-18-exp035-exp036-setup.md"
+      ],
+      "validation": "Prepared and preregistered on branch rhnl-3 on 2026-11-18 (preregistration sha256 dfaca36ff55b...); NumPy/PyTorch operator tests, mock CWPS loop check in .venv, cohort disjointness, notebook schema, and synthetic analyze() checks pass locally; awaiting T4 execution."
     }
   ]
 }
