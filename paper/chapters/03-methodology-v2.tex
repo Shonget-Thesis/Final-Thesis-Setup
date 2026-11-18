@@ -874,14 +874,13 @@ The calibrated threshold $\hat\lambda_r$ will be reported so that other research
 \subsubsection{Compared Systems}
 \label{sec:compared}
 
-The evaluation covers Steps~12 to~14 of Figure~\ref{fig:workflow}. All systems in Table~\ref{tab:systems} will be run on the test split under all eight prompt conditions and on LibriSpeech-PC with clean prompts. The established systems show what the released models achieve: the released DMOSpeech~2 sampler is the baseline that the router must not fall below, the paper configuration is the configuration whose numbers were published, and the teacher alone and the student alone mark the expensive and the cheap end of the range. The ablations isolate the parts of the router: never and always projecting show what each payload does without a decision; the SNR-only router shows what the residual adds beyond the prompt check; and the student restarted from its own draft shows what the teacher adds at all. The hindsight router (Proposition~\ref{prop:oracle}) will be reported as a limit, not as a competitor. The results will be reported in Chapter~4 as a comparison matrix against the baseline, with one row for every system of Table~\ref{tab:systems} and columns for forward passes, saving relative to the released sampler (\Cref{eq:saving}), mean synthesis time on the Tesla T4, WER, SIM, UTMOS, $\mathrm{CV}_{f_0}$, failure rate and excess-failure rate; the matrix will be given overall, for every prompt condition, and for LibriSpeech-PC.
+The evaluation covers Steps~12 to~14 of Figure~\ref{fig:workflow}. All systems in Table~\ref{tab:systems} will be run on the test split under all eight prompt conditions and on LibriSpeech-PC with clean prompts. The established systems show what the released models achieve: the released DMOSpeech~2 sampler is the baseline that the router must not fall below, the paper configuration is the configuration whose numbers were published, and the teacher alone and the student alone mark the expensive and the cheap end of the range. The ablations isolate the parts of the router: never and always projecting show what each payload does without a decision; the SNR-only router shows what the residual adds beyond the prompt check; and the student restarted from its own draft shows what the teacher adds at all. The hindsight router (Proposition~\ref{prop:oracle}) will be reported as a limit, not as a competitor. The results will be reported in Chapter~4 as a comparison matrix against the baseline, with one row for every system of Table~\ref{tab:systems} and the columns listed in Table~\ref{tab:matrix-cols}; the matrix will be given overall, for every prompt condition, and for LibriSpeech-PC.
 
 \begin{table}[!htbp]
 \centering\small
 \caption{Compared systems. Costs follow from \Cref{eq:cost} (Table~\ref{tab:cost}).}
 \label{tab:systems}
 \label{tab:methods}
-\label{tab:matrix}
 \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{4.6cm} >{\raggedright\arraybackslash}X >{\centering\arraybackslash}p{1.4cm}@{}}
 \toprule
 \textbf{System} & \textbf{What it tests} & \textbf{Passes} \\
@@ -906,6 +905,29 @@ Hindsight router & Lowest risk of any two-payload rule (descriptive) & --- \\
 \end{tabularx}
 \end{table}
 
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Columns of the comparison matrix. Each row of the matrix is one system of Table~\ref{tab:systems}; every column is computed on the same inputs for every system.}
+\label{tab:matrix}
+\label{tab:matrix-cols}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.0cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{1.5cm} >{\raggedright\arraybackslash}p{2.6cm}@{}}
+\toprule
+\textbf{Column} & \textbf{What it reports} & \textbf{Better when} & \textbf{Defined in} \\
+\midrule
+Forward passes & Mean network passes per utterance & Lower & Prop.~\ref{prop:cost} \\
+Saving & Share of the released sampler's passes saved & Higher & \Cref{eq:saving} \\
+Synthesis time, RTF & Mean wall-clock time per utterance on the Tesla T4 and real-time factor & Lower & \Cref{eq:rtf} \\
+WER & Mean word error rate, with the number of run-on outputs & Lower & \Cref{eq:wer} \\
+SIM & Mean speaker similarity & Higher & \Cref{eq:sim} \\
+UTMOS & Mean predicted naturalness & Higher & Section~\ref{sec:measures} \\
+$\mathrm{CV}_{f_0}$ (raw, aligned) & Pitch variety across 12 seeds & Higher & \Cref{eq:cvf0} \\
+Failure rate & Share of inputs that fail the quality rule, with a 95\% exact interval & Lower & Def.~\ref{def:failure} \\
+Excess-failure rate & Share of inputs that fail while the released sampler passes, with a 95\% exact interval & Lower & \Cref{eq:excess} \\
+Routing rate & Share of inputs given the projection (router and SNR-only router only) & --- & Section~\ref{sec:obj2} \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \subsubsection{Measures of Comparison}
 The saving of a system is stated relative to the released sampler:
