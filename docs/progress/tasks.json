@@ -1084,6 +1084,24 @@
         "docs/progress/log/2026-11-18-appendix-e-snr-invariant-residual.md"
       ],
       "validation": "2026-11-18: Built paper/build/main.pdf via latexmk -interaction=nonstopmode -halt-on-error -Werror main.tex (exit 0, 100 pages, 2,154,767 bytes, zero undefined refs/citations, zero overfull boxes in Appendix E/fig_snr_r); rendered Appendix E page 97 (Figure E.1 and Table E.1) via pdftoppm and visually verified; workspace check and unit test suite verified after edits. Pending team and adviser review."
+    },
+    {
+      "id": "PAPER-019",
+      "title": "Add underlying conceptual and mathematical theories (transmissibility, Euler LTE identity, spread principle, and G3 invariance ladder + Propositions E.1-E.3) to Appendices D and E",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "review",
+      "updated": "2026-11-18",
+      "acceptance": "Chapters 1-3 remain unchanged; Appendix D.3 adds handover transmissibility theory (A, B, R_k, R*), Appendix D.5 adds the Euler local truncation error identity for d_i, Appendix D.6 summarizes the spread principle and invariance hierarchy, and Appendix E.1 formalizes the G1 subset G2 subset G3 invariance ladder (Table E.1), Propositions E.1-E.3 with proofs (G3-invariance and rank maximality of Q, time-rearrangement nullity of r, exact 1D Wasserstein-2 decomposition and stationary-floor sensitivity), and non-G3 scope limits (Remark E.1); latexmk -Werror, check_workspace.py, and unittest pass.",
+      "evidence": [
+        "paper/chapters/appendices.tex",
+        "docs/progress/log/2026-11-14-exp026-transmissibility-test.md",
+        "docs/progress/log/2026-11-15-handover-invariance-theory.md",
+        "docs/progress/log/2026-11-16-adaptive-teacher-screen.md",
+        "docs/progress/log/2026-11-17-spread-weighted-snr.md",
+        "docs/progress/log/2026-11-17-invariant-residual.md",
+        "docs/progress/log/2026-11-18-appendices-theory.md"
+      ],
+      "validation": "2026-11-18: Built paper/build/main.pdf via latexmk -interaction=nonstopmode -halt-on-error -Werror main.tex (exit 0, 104 pages, 2,178,976 bytes, zero undefined refs/citations, zero Overfull hbox warnings in Appendices D-E and List of Tables); rendered updated Appendix D/E pages and List of Tables via pdftoppm and visually inspected; workspace check and full unittest suite verified after edits. Pending team and adviser review."
     }
   ]
 }
