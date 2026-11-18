@@ -1,0 +1,427 @@
+{
+  "experiment": "EXP-035+EXP-036",
+  "task_id": "EVAL-030",
+  "title": "Combined All-in-One: Path A Invariance Ladder & Unseen SNR_R + Path B Dual-Space & Closed-Loop Mechanisms",
+  "commit_time": 0.2928932188134524,
+  "qual_arms": [
+    "STU",
+    "STUR2",
+    "CPH8",
+    "CPH8_DP",
+    "FCH_DP",
+    "G1_VSWAP",
+    "G2_AFFINE",
+    "CPQH",
+    "W8",
+    "DSGH_MICRO",
+    "DSGH_DUAL",
+    "CWPS"
+  ],
+  "div_arms": [
+    "STU",
+    "STUR2",
+    "CPH8",
+    "G1_VSWAP",
+    "G2_AFFINE",
+    "CPQH",
+    "DSGH_MICRO",
+    "DSGH_DUAL",
+    "CWPS",
+    "P25"
+  ],
+  "policies": [
+    "SNR_ONLY",
+    "SNR_DRIFT",
+    "SNR_R",
+    "R_ONLY"
+  ],
+  "time_arms": [
+    "STU",
+    "STUR2",
+    "CPH8",
+    "G1_VSWAP",
+    "G2_AFFINE",
+    "CPQH",
+    "SNR_R",
+    "DSGH_MICRO",
+    "DSGH_DUAL",
+    "CWPS",
+    "W8",
+    "P25"
+  ],
+  "thresholds": {
+    "theta_db": 20.0,
+    "lambda_r": 0.34004843191300677,
+    "lambda_d": 0.2251750830960417,
+    "dsgh_r_clean": 0.23394784403208624,
+    "macro_window": 9
+  },
+  "costs": {
+    "STU": 4,
+    "STUR2": 3,
+    "CPH8": 12,
+    "CPH8_DP": 13,
+    "FCH_DP": 13,
+    "G1_VSWAP": 13,
+    "G2_AFFINE": 13,
+    "CPQH": 13,
+    "SNR_R": 13,
+    "DSGH_MICRO": 13,
+    "DSGH_DUAL": 13,
+    "CWPS": 13,
+    "W8": 21,
+    "P25": 30
+  },
+  "teacher_passes": {
+    "STU": 0,
+    "STUR2": 0,
+    "CPH8": 10,
+    "CPH8_DP": 10,
+    "FCH_DP": 10,
+    "G1_VSWAP": 10,
+    "G2_AFFINE": 10,
+    "CPQH": 10,
+    "SNR_R": 10,
+    "DSGH_MICRO": 10,
+    "DSGH_DUAL": 10,
+    "CWPS": 10,
+    "W8": 18,
+    "P25": 28
+  },
+  "student_passes": {
+    "STU": 4,
+    "STUR2": 3,
+    "CPH8": 2,
+    "CPH8_DP": 3,
+    "FCH_DP": 3,
+    "G1_VSWAP": 3,
+    "G2_AFFINE": 3,
+    "CPQH": 3,
+    "SNR_R": 3,
+    "DSGH_MICRO": 3,
+    "DSGH_DUAL": 3,
+    "CWPS": 3,
+    "W8": 3,
+    "P25": 2
+  },
+  "conditions": [
+    "clean",
+    "noisy15",
+    "gauss25",
+    "pink25",
+    "hp25",
+    "reverb09",
+    "telephone",
+    "babble15"
+  ],
+  "div_conditions": [
+    "clean",
+    "gauss25"
+  ],
+  "cohort_slices": {
+    "calibration_unseen_qual": [
+      30,
+      60
+    ],
+    "calibration_unseen_div": [
+      40,
+      60
+    ],
+    "calibration_unseen_time": [
+      30,
+      40
+    ]
+  },
+  "n_qual_cases": 240,
+  "qual_utts": [
+    {
+      "utt_id": "common_voice_en_18436934-common_voice_en_18436935",
+      "speaker_id": "common_voice_en_18436934"
+    },
+    {
+      "utt_id": "common_voice_en_18557077-common_voice_en_18557192",
+      "speaker_id": "common_voice_en_18557077"
+    },
+    {
+      "utt_id": "common_voice_en_18647546-common_voice_en_18647545",
+      "speaker_id": "common_voice_en_18647546"
+    },
+    {
+      "utt_id": "common_voice_en_18693241-common_voice_en_18693240",
+      "speaker_id": "common_voice_en_18693241"
+    },
+    {
+      "utt_id": "common_voice_en_18710640-common_voice_en_18710642",
+      "speaker_id": "common_voice_en_18710640"
+    },
+    {
+      "utt_id": "common_voice_en_18781918-common_voice_en_18781919",
+      "speaker_id": "common_voice_en_18781918"
+    },
+    {
+      "utt_id": "common_voice_en_18944281-common_voice_en_18944280",
+      "speaker_id": "common_voice_en_18944281"
+    },
+    {
+      "utt_id": "common_voice_en_18962809-common_voice_en_18962814",
+      "speaker_id": "common_voice_en_18962809"
+    },
+    {
+      "utt_id": "common_voice_en_18993020-common_voice_en_18993021",
+      "speaker_id": "common_voice_en_18993020"
+    },
+    {
+      "utt_id": "common_voice_en_19002369-common_voice_en_19002367",
+      "speaker_id": "common_voice_en_19002369"
+    },
+    {
+      "utt_id": "common_voice_en_19043111-common_voice_en_19043109",
+      "speaker_id": "common_voice_en_19043111"
+    },
+    {
+      "utt_id": "common_voice_en_19049396-common_voice_en_19049393",
+      "speaker_id": "common_voice_en_19049396"
+    },
+    {
+      "utt_id": "common_voice_en_19083094-common_voice_en_19083093",
+      "speaker_id": "common_voice_en_19083094"
+    },
+    {
+      "utt_id": "common_voice_en_19113286-common_voice_en_19113288",
+      "speaker_id": "common_voice_en_19113286"
+    },
+    {
+      "utt_id": "common_voice_en_19152197-common_voice_en_19152198",
+      "speaker_id": "common_voice_en_19152197"
+    },
+    {
+      "utt_id": "common_voice_en_19176854-common_voice_en_19176853",
+      "speaker_id": "common_voice_en_19176854"
+    },
+    {
+      "utt_id": "common_voice_en_19277026-common_voice_en_19277029",
+      "speaker_id": "common_voice_en_19277026"
+    },
+    {
+      "utt_id": "common_voice_en_19284142-common_voice_en_19284144",
+      "speaker_id": "common_voice_en_19284142"
+    },
+    {
+      "utt_id": "common_voice_en_19345360-common_voice_en_19345359",
+      "speaker_id": "common_voice_en_19345360"
+    },
+    {
+      "utt_id": "common_voice_en_19397397-common_voice_en_19397399",
+      "speaker_id": "common_voice_en_19397397"
+    },
+    {
+      "utt_id": "common_voice_en_19428391-common_voice_en_19428396",
+      "speaker_id": "common_voice_en_19428391"
+    },
+    {
+      "utt_id": "common_voice_en_19449066-common_voice_en_19449076",
+      "speaker_id": "common_voice_en_19449066"
+    },
+    {
+      "utt_id": "common_voice_en_19531363-common_voice_en_19531364",
+      "speaker_id": "common_voice_en_19531363"
+    },
+    {
+      "utt_id": "common_voice_en_19599129-common_voice_en_19599130",
+      "speaker_id": "common_voice_en_19599129"
+    },
+    {
+      "utt_id": "common_voice_en_19608801-common_voice_en_19608806",
+      "speaker_id": "common_voice_en_19608801"
+    },
+    {
+      "utt_id": "common_voice_en_19619551-common_voice_en_19619550",
+      "speaker_id": "common_voice_en_19619551"
+    },
+    {
+      "utt_id": "common_voice_en_19619855-common_voice_en_19619858",
+      "speaker_id": "common_voice_en_19619855"
+    },
+    {
+      "utt_id": "common_voice_en_19629167-common_voice_en_19629165",
+      "speaker_id": "common_voice_en_19629167"
+    },
+    {
+      "utt_id": "common_voice_en_19635046-common_voice_en_19635048",
+      "speaker_id": "common_voice_en_19635046"
+    },
+    {
+      "utt_id": "common_voice_en_19636954-common_voice_en_19636955",
+      "speaker_id": "common_voice_en_19636954"
+    }
+  ],
+  "n_div_speakers": 20,
+  "div_seeds": 12,
+  "div_utts": [
+    {
+      "utt_id": "common_voice_en_19043111-common_voice_en_19043109",
+      "speaker_id": "common_voice_en_19043111"
+    },
+    {
+      "utt_id": "common_voice_en_19049396-common_voice_en_19049393",
+      "speaker_id": "common_voice_en_19049396"
+    },
+    {
+      "utt_id": "common_voice_en_19083094-common_voice_en_19083093",
+      "speaker_id": "common_voice_en_19083094"
+    },
+    {
+      "utt_id": "common_voice_en_19113286-common_voice_en_19113288",
+      "speaker_id": "common_voice_en_19113286"
+    },
+    {
+      "utt_id": "common_voice_en_19152197-common_voice_en_19152198",
+      "speaker_id": "common_voice_en_19152197"
+    },
+    {
+      "utt_id": "common_voice_en_19176854-common_voice_en_19176853",
+      "speaker_id": "common_voice_en_19176854"
+    },
+    {
+      "utt_id": "common_voice_en_19277026-common_voice_en_19277029",
+      "speaker_id": "common_voice_en_19277026"
+    },
+    {
+      "utt_id": "common_voice_en_19284142-common_voice_en_19284144",
+      "speaker_id": "common_voice_en_19284142"
+    },
+    {
+      "utt_id": "common_voice_en_19345360-common_voice_en_19345359",
+      "speaker_id": "common_voice_en_19345360"
+    },
+    {
+      "utt_id": "common_voice_en_19397397-common_voice_en_19397399",
+      "speaker_id": "common_voice_en_19397397"
+    },
+    {
+      "utt_id": "common_voice_en_19428391-common_voice_en_19428396",
+      "speaker_id": "common_voice_en_19428391"
+    },
+    {
+      "utt_id": "common_voice_en_19449066-common_voice_en_19449076",
+      "speaker_id": "common_voice_en_19449066"
+    },
+    {
+      "utt_id": "common_voice_en_19531363-common_voice_en_19531364",
+      "speaker_id": "common_voice_en_19531363"
+    },
+    {
+      "utt_id": "common_voice_en_19599129-common_voice_en_19599130",
+      "speaker_id": "common_voice_en_19599129"
+    },
+    {
+      "utt_id": "common_voice_en_19608801-common_voice_en_19608806",
+      "speaker_id": "common_voice_en_19608801"
+    },
+    {
+      "utt_id": "common_voice_en_19619551-common_voice_en_19619550",
+      "speaker_id": "common_voice_en_19619551"
+    },
+    {
+      "utt_id": "common_voice_en_19619855-common_voice_en_19619858",
+      "speaker_id": "common_voice_en_19619855"
+    },
+    {
+      "utt_id": "common_voice_en_19629167-common_voice_en_19629165",
+      "speaker_id": "common_voice_en_19629167"
+    },
+    {
+      "utt_id": "common_voice_en_19635046-common_voice_en_19635048",
+      "speaker_id": "common_voice_en_19635046"
+    },
+    {
+      "utt_id": "common_voice_en_19636954-common_voice_en_19636955",
+      "speaker_id": "common_voice_en_19636954"
+    }
+  ],
+  "n_time_cases": 10,
+  "time_utts": [
+    {
+      "utt_id": "common_voice_en_18436934-common_voice_en_18436935",
+      "speaker_id": "common_voice_en_18436934"
+    },
+    {
+      "utt_id": "common_voice_en_18557077-common_voice_en_18557192",
+      "speaker_id": "common_voice_en_18557077"
+    },
+    {
+      "utt_id": "common_voice_en_18647546-common_voice_en_18647545",
+      "speaker_id": "common_voice_en_18647546"
+    },
+    {
+      "utt_id": "common_voice_en_18693241-common_voice_en_18693240",
+      "speaker_id": "common_voice_en_18693241"
+    },
+    {
+      "utt_id": "common_voice_en_18710640-common_voice_en_18710642",
+      "speaker_id": "common_voice_en_18710640"
+    },
+    {
+      "utt_id": "common_voice_en_18781918-common_voice_en_18781919",
+      "speaker_id": "common_voice_en_18781918"
+    },
+    {
+      "utt_id": "common_voice_en_18944281-common_voice_en_18944280",
+      "speaker_id": "common_voice_en_18944281"
+    },
+    {
+      "utt_id": "common_voice_en_18962809-common_voice_en_18962814",
+      "speaker_id": "common_voice_en_18962809"
+    },
+    {
+      "utt_id": "common_voice_en_18993020-common_voice_en_18993021",
+      "speaker_id": "common_voice_en_18993020"
+    },
+    {
+      "utt_id": "common_voice_en_19002369-common_voice_en_19002367",
+      "speaker_id": "common_voice_en_19002369"
+    }
+  ],
+  "estimands": {
+    "path_a_ladder": "Paired contrasts on unseen_cal[30:60] testing CPH8_DP vs CPH8 and CPQH (G3) vs FCH_DP, G1_VSWAP, G2_AFFINE.",
+    "path_a_unseen_snr_r": "Confirmation of frozen SNR_R vs SNR_ONLY and SNR_DRIFT + 5-fold speaker-grouped OOF calibration.",
+    "path_b_novel": "Direct comparison of router-free 13-pass mechanisms (DSGH_MICRO, DSGH_DUAL, CWPS) vs SNR_R, CPQH, STUR2, and SNR_ONLY on the same cohort and seeds."
+  },
+  "label_rules": {
+    "H1_clean_prompt_control": "Path A: Clean CPH8_DP - CPH8 mean UTMOS >= -0.05 (lo >= -0.08).",
+    "H2_g3_beats_fch_and_g1": "Path A: CPQH beats FCH_DP and G1_VSWAP in UTMOS (lo > 0) within WER/SIM bars.",
+    "H3_g3_beats_g2_spectral": "Path A: CPQH beats G2_AFFINE on spectral noise (gauss25/pink25/hp25) in UTMOS (lo > 0) within bars.",
+    "H4_snr_r_unseen_confirmed": "Path A: SNR_R beats SNR_ONLY and SNR_DRIFT (lo > 0), AUC(r) >= 0.80, clean FP <= 0.15.",
+    "H5_clean_variety": "Path A: SNR_R keeps >= 90% of CPH8 clean gain over STU on CVf0 and aligned CVf0.",
+    "M1_clean_prosody": "Path B: Candidate keeps >= 90% clean gain (CVf0 & aligned) and clean dUTMOS >= -0.05 vs SNR_R.",
+    "M2_noisy15_recovery": "Path B: Candidate improves noisy15 UTMOS over SNR_R (lo > 0) or reduces noisy15 WER without worsening SIM.",
+    "M3_overall_competitiveness": "Path B: Candidate beats SNR_ONLY overall (lo > 0) and is non-inferior/better vs SNR_R (lo >= -0.05)."
+  },
+  "code_hashes": {
+    "run_exp035_036_combined.py": "6bd3ad0a16ecef59fe40b231f865855127c38e9aea4a46b747b3c293904bff31",
+    "handover_mechanisms.py": "10333d0d8e2960e80ba8ae675ce4437f1ae1e8d8e039b1d2481b7286a9313d76",
+    "run_invariant_residual.py": "fb4b2c9d07f81b1abe5d3fbae27383341bc23217754904041ada3ba2c00da6b7",
+    "run_cheaper_teacher_path.py": "de5c33267e92140866231beadd34992e5e4a5b8ce7be623919adb683990e1339",
+    "run_variety_per_pass.py": "fcc3808694da1f21f12d50bbea566ee48019c7af1ce2fbe94b8abe9559909c07",
+    "run_endpoint_extrapolation_prelim.py": "90aec6467ed881602b1e62e4938b1d3c845f5337e98b82b340b5d3d54631cafe",
+    "run_method_comparison.py": "6998df7169938debf50eac3c96a79ea6932f45210bbc1d8bb9ac91659d52aa11",
+    "run_timing_only_handover.py": "d04f27fc0bef25bbc96a9e282faebde6ac0680c4106880dd73a9ae996bed5436",
+    "run_damped_transmissibility_stac.py": "d569118c21c2990b0521b0713d2c538d38d2065672a406a878d4a21f9217738a",
+    "run_transmissibility_bridge.py": "e0939d83ff93544d02cfb5b75662d90c285cb4f3f700bff91c10381612b103fd",
+    "run_transmissibility_confirm.py": "f1e160797fc5e6970f1667481ea78f5f6cff9743571b6bf4584c028a6fd134bc",
+    "run_transmissibility_test.py": "be6b7dfe74b38399ce3b2f0c5ce3942abf7a4fe90e680f5e473591aab22701e1",
+    "run_selective_handover_prelim.py": "b61ef06b9ed0a7411d532d277e2525c436c08aab6a4ca541454672a9ea9be603",
+    "run_consistency_gate_prelim.py": "5d83b1acdf668e7b13981a5df0f6e24e24602fe31e051d00190fd5273a2ce6e3",
+    "run_grid32_prelim.py": "c7b4152da3449264ef2d7aefcea3492e04f9d45399e373ba2b6d448912bf0b84",
+    "run_noise_guidance_prelim.py": "48150a13101d1ecd5ed6da1085e6fd914381f8e22288f5bda7c48f2625dc064b",
+    "run_followup_tests.py": "6bce906980ff4c6c4b1209b086cab4fcbe11f7a2955a27badd698c2906af1801"
+  },
+  "input_hashes": {
+    "research/experiments/EXP-034-invariant-residual/preregistration.json": "93ed41cee6e81ccbe1123757d5ee6a46747769a01abfd9a14da72b61fdbd17b0",
+    "research/experiments/EXP-033-cheaper-teacher-path/offline/invariant_residual_screen.json": "944ee7d3eeab417ad9fe52eda12cfb8353bb02836d93885046fea68e93338e56"
+  },
+  "seed": 2026,
+  "boot_b": 2000,
+  "sha256": "492e3731998db6561e3188208fc1fc527f7b73e51b94fea21f06584049465450",
+  "created_utc": "2026-11-18T02:35:01.985171+00:00"
+}

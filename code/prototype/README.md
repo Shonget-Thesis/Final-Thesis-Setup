@@ -1,126 +1,82 @@
-# SNR + drift handover: local prototype
+# SNR + Invariant Residual (SNR_R) handover: local prototype
 
-A demonstration of the thesis's input-adaptive handover (Chapter 3) running DMOSpeech 2 on this computer's CPU, with a web
-page in the style of the proposal presentation. It is a demo, not an evaluation tool.
+A local CPU demonstration of **risk-calibrated SNR + Invariant Residual (`SNR_R`)** from `EXP-034` and `EXP-035` running DMOSpeech 2 on CPU, with a web page in the style of the proposal presentation. It is a demo, not an evaluation tool.
 
 **What it shows:**
-1. **The prompt's SNR:** the gate at 20 dB.
-2. **Each teacher step as the CPU computes it:** with its drift d_k.
-3. **The handover:** the step the rule chooses.
-4. **The student's three steps.**
-5. **The passes used:** against the 21 of the fixed reference, and the audio.
+1. **The 1-pass student draft $s_0$ ($\tau = 0.0$):** keeps clean prompt acoustics anchored (`1` pass).
+2. **Five guided 8-interval teacher steps ($t_0 \dots t_4 = 0.2929$, `10` CFG passes):** computed step by step on CPU while tracking the invariant residual $r = \|\hat{x}_1 - Q(\hat{x}_1, s_0)\| / (\|\hat{x}_1\| + \varepsilon)$.
+3. **Learn-Then-Test (LTT) risk-calibrated hybrid router (`SNR_R`):** if `prompt_snr < 20 dB` or $r > \hat{\lambda}_r$ (`0.3416` default at $\alpha = 0.15, \delta = 0.10$, `p = 0.048` on `EXP-034`), hands over the condition-safe **Quantile Handover (`CPQH`)**; otherwise hands over **`CPH8`** to preserve full clean prosodic variety.
+4. **Student restart completion ($\tau \in \{0.2929, 0.6173\}$, `2` passes):** `13` total passes (`38%` saved vs `21`-pass `W8`, `57%` saved vs `30`-pass paper `P25`).
 
-**Optional:** it also synthesizes the fixed reference (Step 8) from the same trajectory and seeds, for listening side by side.
+**Optional side-by-side comparison:** also synthesizes unstabilized **`CPH8`** (`12` passes, when flagged to `CPQH`) and the **`21`-pass `W8`** fixed reference from the same latent and student seeds.
 
 ## Files
 
 | File | What it is |
-|---|---|
-| `snr_drift.py` | **The method only:** the prompt SNR estimator, the drift d_k, and the rule. The rule: below 20 dB go to Step 8; otherwise hand over at the first k in {4, 5, 6} with d_k ≤ λ, else Step 8. It has no model and no interface, and NumPy is its only dependency. Tests check it against `code/scheduling/sampler.py` and the experiments' Chapter 3 policy |
-| `engine.py` | Loads DMOSpeech 2 from `code/vendor/dmospeech2/src` (read-only) and runs the thesis pipeline, stopping the teacher when `snr_drift.py` says so |
-| `server.py` | The local web server: the page, the examples, and jobs with live progress |
-| `web/index.html` | The interface. Its design tokens, fonts, panels, tags and buttons come from `presentation/index.html` |
-| `cli.py` | Terminal mode: one sentence, the decision printed step by step |
-| `start_prototype.bat` | Double-click to start the server and open the page |
+| --- | --- |
+| `snr_invariant.py` | **The `SNR_R` method only:** `quantile_handover`, `quantile_payload`, `invariant_residual` ($r$), `decide`/`evaluate`, and constants (`theta = 20 dB`, `lambda_r = 0.340`). Model-free and UI-free; tested against `code/colab/run_invariant_residual.py` and `code/colab/run_method_comparison.py` |
+| `snr_drift.py` | Shared prompt SNR estimator (`estimate_prompt_snr`), grid constants, and preserved Chapter 3 `SNR + drift` helper |
+| `engine.py` | Loads DMOSpeech 2 from vendored `code/vendor/dmospeech2/src` (read-only) and runs `SNR_R` (`draft s_0` -> 8-grid Steps `0..4` -> `CPH8`/`CPQH` -> student completion) |
+| `server.py` | Local FastAPI web server: live step streaming, development speaker examples with `EXP-034` T4 records, and audio endpoints |
+| `web/index.html` | Interactive UI reusing `presentation/index.html` design tokens |
+| `cli.py` | Terminal mode (`--example 38 --condition gauss25 --compare` or `--prompt`) |
+| `start_prototype.bat` | Double-click launcher (CRLF preserved) |
 
 ## Run it
 
 **Option 1:** double-click `code\prototype\start_prototype.bat`.
 
-**Option 2:** from the repository folder:
+**Option 2:** from the repository root:
 
-```
+```powershell
 .venv\Scripts\python code\prototype\server.py
 ```
 
-The page opens at http://127.0.0.1:8765. The model loads in the background, and the status in the top-right corner turns to "Ready".
+The page opens at http://127.0.0.1:8765.
 
-**Terminal only:**
+**Terminal mode:**
 
-```
-.venv\Scripts\python code\prototype\cli.py --example 1 --condition noisy15
+```powershell
+.venv\Scripts\python code\prototype\cli.py --example 38 --condition gauss25 --compare
 .venv\Scripts\python code\prototype\cli.py --prompt my_voice.wav --prompt-text "What the prompt says." --text "What to say." --out out.wav
 ```
 
-**Times on this computer (CPU, 11 threads, 2026-11-16):**
-- **Model load:** about 40 s after the first start. The first start took 73 s because it also downloads the vocoder.
-- **One teacher step:** about 1.4 s for a short sentence and about 3.8 s for a longer one.
-- **One sentence:** about 15–40 s in total.
+## Suggested demo (`EXP-034` recorded development examples)
 
-## Suggested demo
+Development examples `#31–#60` carry recorded Colab T4 `EXP-034` metrics in the UI. Example `#38` (`common_voice_en_203357-common_voice_en_203358`, `339` frames) clearly contrasts `SNR_R` against `SNR + drift`:
 
-Development examples whose decisions EXP-031 recorded on the T4 (the page marks them "T4 record"). The local runs on 2026-11-16 gave the same decisions.
+| Condition | Recorded `SNR` / `r` | `SNR_R` choice (`lambda_r = 0.340`) | `EXP-034` T4 UTMOS (`CPH8 -> CPQH`) |
+| --- | --- | --- | --- |
+| `clean` | `>= 20 dB`, `r = 0.253 <= 0.340` | **`CPH8`** (keeps full prosody) | `3.85` (stays `CPH8`) |
+| `gauss25` | `>= 20 dB`, `r = 0.727 > 0.340` | **`CPQH`** (caught by `r`) | `1.25 -> 4.20` |
+| `pink25` | `>= 20 dB`, `r > 0.340` | **`CPQH`** (caught by `r`) | `1.86 -> 3.76` |
+| `hp25` | `>= 20 dB`, `r > 0.340` | **`CPQH`** (caught by `r`) | `1.25 -> 4.07` |
+| `noisy15` | `< 20 dB` (gate closed) | **`CPQH`** (caught by SNR gate) | Stabilized |
 
-| Example | Condition | What it shows |
-|---|---|---|
-| **#5** (default; short, fast) | `clean` | SNR 44.3 dB, d₄ = 0.26 ≤ 0.35: hand over at **Step 4**, 13 of 21 passes (38% saved) |
-| #5 | `noisy15` | SNR 18.0 dB: **gate closed → Step 8**. Its drift is already low (d₄ = 0.16), so drift alone would have handed over a noisy start; the gate prevents that |
-| #5 | `gauss25` | Recorded: SNR 27.8 dB passes the gate → Step 5. The white noise is not caught (a known limit) |
-| #4 | `clean` | Recorded: Step 5 (15 passes) |
-| #2 | `clean` | Recorded: Step 6 (17 passes) |
-| #1 | `clean` | SNR 28.2 dB, drift stays above 0.35 → Step 8 (no saving). At λ = 1.20 it would be Step 4 |
+Switching the preset chip to **`Off · SNR only`** (`lambda_r = 10.00`) disables the residual check so `gauss25`, `pink25`, and `hp25` fall through to un-stabilized `CPH8`, reproducing the `EXP-034` failure mode side by side.
+
+## Learn-Then-Test (LTT) Risk Calibration Presets
+
+`snr_invariant.calibrate_ltt()` runs fixed-sequence binomial p-value testing ($\text{BinomCDF}(k_{\text{wrong}}, n_{\text{clean}}, \alpha) \le \delta = 0.10$) on `EXP-034` development speakers `31–60` (`n = 30` clean) and transfers the certified cutoff out-of-sample to `EXP-035` (`30` disjoint unseen speakers):
+
+| Preset (`--preset`) | $\lambda_r$ | Calibration (`EXP-034`, `n=30`) | Held-out (`EXP-035`, `30` unseen) |
+| --- | --- | --- | --- |
+| `ltt_15` *(default)* | `0.3416` | $\alpha = 0.15, \delta = 0.10$: `1/30` (`p = 0.048`) | `3/30` (`10.0%`) clean flags, **`90/90`** spectral caught, `2.8885` UTMOS |
+| `ltt_10` *(strict)* | `0.3816` | $\alpha = 0.10, \delta = 0.10$: `0/30` (`p = 0.042`) | `1/30` (`3.3%`) clean flags, `89/90` (`98.9%`) spectral caught, `2.8850` UTMOS |
+| `empirical` | `0.3400` | `EXP-033` empirical `<= 15%` rule | `3/30` (`10.0%`) clean flags, `90/90` spectral caught, `2.8885` UTMOS |
+| `snr_only` | `10.00` | Residual disabled (`< 20 dB` gate only) | `0/90` spectral caught, `2.2014` UTMOS |
 
 ## Inputs
 
-**Seed-TTS example:**
-- **Speakers:** the 100 development speakers only (never calibration or test), with the experiments' per-utterance seeds.
-- **Prompt conditions,** generated with the experiments' own functions: `clean`, `gauss25`, `noisy15`, `reverb03`, `reverb09`, `telephone`. Babble needs the DEMAND recording and is not offered.
+- **Seed-TTS examples:** `100` development speakers only (never calibration or test), with experiment seeds.
+- **Conditions offered:** `clean`, `gauss25`, `pink25`, `hp25`, `noisy15`, `reverb03`, `reverb09`, `telephone` (`babble15` needs DEMAND and is excluded).
+- **Upload WAV/FLAC:** 3–12 s voice prompt plus its transcript.
 
-**Upload WAV:**
-- **Your prompt:** your own 3–12 s prompt as WAV or FLAC.
-- **Its transcript:** required. Automatic transcription is not used.
+## Setup (checkpoints & environment)
 
-**λ presets** (Appendix D):
-
-| λ | Where it comes from | Effect |
-|---|---|---|
-| 0.35 | Chosen by cross-validation in the development pilot | The drift check is active |
-| 1.20 | Certified by Learn-Then-Test on the 200 calibration speakers | The rule acts as SNR only |
-
-Neither is the final calibrated threshold.
-
-**The reference:** Step 8 of the 16-interval grid, the thesis's version of the paper's t_switch = 0.25 (21 passes).
-
-## Set up once (already done on this computer, 2026-11-16)
-
-**1. The environment** (Python 3.12):
-
-```
-python -m venv .venv
-.venv\Scripts\python -m pip install torch==2.5.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cpu
-.venv\Scripts\python -m pip install -r code\prototype\requirements.txt
-```
-
-**2. The checkpoints** into `ckpts/`. Both were verified against these SHA-256 hashes on 2026-11-16 with `sha256sum`, the same hashes the Colab notebooks check. The engine does not re-hash them on start.
-
-| File | Size | SHA-256 |
-|---|---|---|
-| `model_85000.pt` | 4.0 GB | `e143188f7c46...` |
-| `model_1500.pt` | 270 MB | `6bd50428f3b5...` |
-
-```
-curl -L -C - -o ckpts\model_85000.pt https://huggingface.co/yl4579/DMOSpeech2/resolve/main/model_85000.pt
-curl -L -C - -o ckpts\model_1500.pt  https://huggingface.co/yl4579/DMOSpeech2/resolve/main/model_1500.pt
-```
-
-**3. The Seed-TTS English test set** into `research/data/seed-tts-eval/en` (about 440 MB):
-
-```
-.venv\Scripts\python -c "from huggingface_hub import snapshot_download as s; s('zhaochenyang20/seed-tts-eval', repo_type='dataset', local_dir='research/data/seed-tts-eval', allow_patterns=['en/*'])"
-```
-
-**4. The vocoder:** Vocos (`charactr/vocos-mel-24khz`, about 50 MB) downloads from Hugging Face on the first start.
-
-**Not committed:** `.venv/`, `ckpts/*.pt` and `research/data/` are all ignored by git.
+Uses `.venv`, `ckpts/model_85000.pt`, `ckpts/model_1500.pt`, and `research/data/seed-tts-eval/en` (see `code/prototype/requirements.txt`). `.venv/`, `ckpts/`, and `research/data/` are git-ignored.
 
 ## Notes
 
-- **CPU only.** This computer has AMD integrated graphics and no CUDA, so every pass runs on the processor. The wall-clock times are this computer's, not the T4 times reported in the experiments. The pass counts are the same.
-- **The vocabulary.** The vendored snapshot lacks `data/Emilia_ZH_EN_pinyin/vocab.txt`. The engine loads the identical 2,545-entry vocabulary bundled at `f5_tts/infer/examples/vocab.txt` in memory, and no vendored file is changed.
-- **The pipeline.** It matches `code/colab/run_followup_tests.Pipeline.prepare` and `code/scheduling/sampler.py`:
-  - prompt SNR on the prompt as given;
-  - RMS normalized to 0.3;
-  - the duration predictor with the seed;
-  - the guided teacher (CFG 2, no stochastic term);
-  - the student's restart levels with per-level seeds.
-- **Development prototype.** It is not adviser-reviewed.
+- **CPU only.** Wall-clock times reflect local CPU execution; forward-pass counts (`13` vs `21` `W8` / `30` `P25`) match the T4 runs identically.
+- **Development demonstration.** Not adviser-reviewed.

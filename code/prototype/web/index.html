@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SNR + Drift Handover</title>
+  <title>SNR + Invariant Residual Handover</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@100..1000&family=Google+Sans:ital,wght@0,300..900;1,300..900&display=swap">
   <style>
-    /* Design tokens from presentation/index.html: white field, blue = teacher, orange = what this study adds. */
+    /* Design tokens from presentation/index.html: white field, blue = teacher, orange = invariant residual / saving. */
     :root {
       --void: #F8FAFC;
       --line: rgba(15, 23, 42, 0.08);
@@ -71,17 +71,17 @@
       margin: 0; text-transform: uppercase; line-height: 1.06;
       background: var(--dark-grad); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
     }
-    h1 { font-size: 54px; font-weight: 850; letter-spacing: -.02em; }
-    .lead { margin-top: 14px; font-size: 20px; line-height: 1.45; color: var(--muted); max-width: 62ch; }
+    h1 { font-size: 52px; font-weight: 850; letter-spacing: -.02em; }
+    .lead { margin-top: 14px; font-size: 19px; line-height: 1.48; color: var(--muted); max-width: 66ch; }
     .lead strong { font-weight: 700; color: var(--fg); }
-    .hl { background: var(--orange-grad); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .hl { background: var(--orange-grad); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; }
     .eq {
       font-family: var(--math); font-size: 21px; color: var(--fg); padding: 12px 20px; white-space: nowrap;
       border-left: 4px solid var(--blue); border-radius: 0 6px 6px 0;
       background: linear-gradient(90deg, rgba(2, 132, 199, 0.10) 0%, rgba(2, 132, 199, 0.02) 70%, transparent);
     }
     .eq i { font-style: italic; }
-    .eq small { display: block; margin-top: 4px; font-family: var(--font); font-size: 12px; font-weight: 400; letter-spacing: .08em; color: var(--dim); }
+    .eq small { display: block; margin-top: 4px; font-family: var(--font); font-size: 12px; font-weight: 400; letter-spacing: .06em; color: var(--dim); }
 
     .grid { display: grid; grid-template-columns: minmax(360px, 440px) 1fr; gap: 22px; align-items: start; }
     .stack { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
@@ -124,7 +124,7 @@
     .seg2 .btn:last-child { border-radius: 0 3px 3px 0; margin-left: -1px; }
     .check { display: flex; gap: 10px; align-items: flex-start; margin-top: 16px; font-size: 14px; color: var(--muted); line-height: 1.4; cursor: pointer; }
     .check input { margin-top: 3px; accent-color: var(--orange); }
-    .inline { display: grid; grid-template-columns: 1fr 120px; gap: 12px; align-items: end; }
+    .inline { display: grid; grid-template-columns: 1fr 112px; gap: 12px; align-items: end; }
     .note { font-size: 13px; color: var(--dim); line-height: 1.5; margin-top: 8px; }
     .msg { margin-top: 12px; font-size: 13.5px; line-height: 1.5; color: var(--muted); min-height: 20px; }
     .msg.err { color: #B91C1C; }
@@ -148,38 +148,37 @@
     .gauge .mark span { position: absolute; top: 24px; left: 50%; transform: translateX(-50%); font-size: 11.5px; font-weight: 600; letter-spacing: .1em; color: var(--muted); white-space: nowrap; }
     .scale { display: flex; justify-content: space-between; font-size: 11px; letter-spacing: .08em; color: var(--dim); margin-top: 22px; }
 
-    /* teacher -> student timeline */
-    .tl { display: flex; align-items: stretch; gap: 6px; margin-top: 4px; }
-    .tl .grp { display: flex; gap: 6px; flex: 9; min-width: 0; position: relative; }
-    .tl .grp.s { flex: 3; }
+    /* pipeline timeline: draft s0 -> teacher 0..4 (8-grid) -> router gate -> student S2..S3 */
+    .tl { display: flex; align-items: stretch; gap: 8px; margin-top: 4px; }
+    .tl .grp { display: flex; gap: 6px; min-width: 0; position: relative; }
+    .tl .grp.d { flex: 1.1; }
+    .tl .grp.t { flex: 5.5; }
+    .tl .grp.s { flex: 2.2; }
     .tl .arrow { display: flex; align-items: center; color: var(--dim); font-size: 18px; padding: 22px 2px 0; }
     .step { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-    .step .lab { font-size: 11.5px; font-weight: 600; letter-spacing: .1em; color: var(--dim); }
+    .step .lab { font-size: 11.5px; font-weight: 600; letter-spacing: .1em; color: var(--dim); white-space: nowrap; }
     .step .blk {
       width: 100%; height: 46px; border-radius: 4px; border: 1px dashed var(--line-2); background: rgba(15, 23, 42, .02);
       transition: background .35s ease, border-color .35s ease, transform .35s ease, box-shadow .35s ease; position: relative;
+      display: grid; place-items: center; font-size: 11px; font-weight: 700; letter-spacing: .06em; color: var(--dim);
     }
-    .step.cand .blk { border-style: solid; border-color: rgba(2, 132, 199, .35); }
-    .step.done .blk { border: 1px solid transparent; background: var(--blue-grad); box-shadow: 0 4px 12px -4px rgba(2, 132, 199, .45); }
-    .step.extra .blk { border: 1px solid rgba(2, 132, 199, .3); background: repeating-linear-gradient(135deg, rgba(2, 132, 199, .16) 0 6px, rgba(2, 132, 199, .05) 6px 12px); box-shadow: none; }
-    .step.hand .blk { background: var(--orange-grad); box-shadow: 0 6px 16px -4px rgba(234, 88, 12, .55); transform: translateY(-3px); }
-    .step.saved .blk { border: 1px dashed rgba(234, 88, 12, .45); background: rgba(234, 88, 12, .04); }
-    .step.saved .blk::after { content: "saved"; position: absolute; inset: 0; display: grid; place-items: center; font-size: 10.5px;
-                              font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--orange); }
+    .step.done .blk { border: 1px solid transparent; background: var(--blue-grad); color: #FFFFFF; box-shadow: 0 4px 12px -4px rgba(2, 132, 199, .45); }
+    .step.hand .blk { border: 1px solid transparent; background: var(--orange-grad); color: #FFFFFF; box-shadow: 0 6px 16px -4px rgba(234, 88, 12, .55); transform: translateY(-2px); }
+    .step.cph .blk { border: 1px solid transparent; background: var(--blue-grad); color: #FFFFFF; box-shadow: 0 6px 16px -4px rgba(2, 132, 199, .55); transform: translateY(-2px); }
     .step.stu .blk { border-color: rgba(100, 116, 139, .4); }
-    .step.stu.done .blk { background: linear-gradient(135deg, #94A3B8 0%, #64748B 100%); box-shadow: 0 4px 12px -4px rgba(100, 116, 139, .45); }
+    .step.stu.done .blk { background: linear-gradient(135deg, #94A3B8 0%, #64748B 100%); color: #FFFFFF; box-shadow: 0 4px 12px -4px rgba(100, 116, 139, .45); }
     .step.running .blk { animation: pulse 1s ease-in-out infinite; border-style: solid; border-color: var(--blue); }
     .step .d { font-size: 13px; font-variant-numeric: tabular-nums; color: var(--muted); height: 18px; }
     .step.hand .d { color: var(--orange-dark); font-weight: 700; }
+    .step.cph .d { color: var(--blue-dark); font-weight: 700; }
     .step .t { font-size: 10.5px; color: var(--dim); font-variant-numeric: tabular-nums; }
-    .brace { position: absolute; top: -4px; height: 3px; border-radius: 2px; background: rgba(2, 132, 199, .35); }
     .legend { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 16px; font-size: 12.5px; color: var(--dim); }
     .legend i { display: inline-block; width: 14px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
-    .reason { margin-top: 16px; font-size: 17px; line-height: 1.5; color: var(--muted); min-height: 26px; }
+    .reason { margin-top: 16px; font-size: 16.5px; line-height: 1.5; color: var(--muted); min-height: 26px; }
     .reason strong { color: var(--fg); }
 
-    /* drift chart */
-    svg.chart { width: 100%; height: auto; display: block; }
+    /* residual chart */
+    svg.chart { width: 100%; height: auto; display: block; margin-top: 8px; }
     svg.chart text { font-family: var(--font); font-size: 11px; fill: var(--dim); }
 
     /* cost */
@@ -216,21 +215,19 @@
 <body>
 <div class="wrap">
   <div class="chrome">
-    <span><span class="sec">Shonget · DMOSpeech 2</span> · <b>Prototype</b></span>
+    <span><span class="sec">Shonget · DMOSpeech 2</span> · <b>SNR_R Prototype</b></span>
     <span id="status"><span class="dot busy"></span>Starting…</span>
   </div>
 
   <header class="hero">
     <div>
-      <span class="eyebrow">Input-adaptive handover</span>
-      <h1>SNR + Drift Handover</h1>
-      <p class="lead">The teacher runs only until its trajectory <strong>stabilizes</strong>, then the student finishes.
-        A noisy prompt keeps the full reference, so the student is never handed a noisy start.
-        <span class="hl">Every pass the teacher skips is saved.</span></p>
+      <span class="eyebrow">Risk-calibrated condition-invariant handover · EXP-034 / EXP-035</span>
+      <h1>SNR + Invariant Residual</h1>
+      <p class="lead">Runs a 1-pass student draft <strong>s₀</strong> and 5 coarse 8-grid teacher steps to <strong>t = 0.2929</strong>, then routes via the <strong>Learn-Then-Test (LTT)</strong> risk-calibrated residual threshold <strong>λ<sub>r</sub></strong>. Clean prompts keep the teacher endpoint (<strong>CPH8</strong>); low SNR or high <strong>r</strong> switches to condition-safe quantile handover (<strong>CPQH</strong>). <span class="hl">13 passes vs 21 W8 or 30 P25.</span></p>
     </div>
     <div class="eq">
-      <i>d<sub>k</sub></i> = ‖<i>x̂</i><sub>1</sub>(<i>t<sub>k</sub></i>) − <i>x̂</i><sub>1</sub>(<i>t<sub>k−1</sub></i>)‖ / ‖<i>x̂</i><sub>1</sub>(<i>t<sub>k</sub></i>)‖
-      <small>SNR ≥ 20 dB and d<sub>k</sub> ≤ λ at k ∈ {4, 5, 6} → hand over at k · otherwise Step 8 (reference, 21 passes)</small>
+      <i>r</i> = ‖<i>x̂</i><sub>1</sub> − <i>Q</i>(<i>x̂</i><sub>1</sub>, <i>s</i><sub>0</sub>)‖ / (‖<i>x̂</i><sub>1</sub>‖ + ε)
+      <small>SNR &lt; 20 dB or r &gt; λ<sub>r</sub> → CPQH (quantile handover) · else CPH8 · 13 passes total</small>
     </div>
   </header>
 
@@ -261,16 +258,16 @@
       <label class="f" for="text">Text to speak</label>
       <textarea id="text" rows="3" placeholder="Type a sentence"></textarea>
 
-      <label class="f">Drift threshold λ</label>
+      <label class="f">Risk threshold λ<sub>r</sub> (Learn-Then-Test)</label>
       <div class="inline">
-        <div class="chips" id="lamChips" role="group" aria-label="Drift threshold"></div>
-        <input type="number" id="lamVal" step="0.05" min="0" max="5" aria-label="Lambda value">
+        <div class="chips" id="lamChips" role="group" aria-label="Risk threshold"></div>
+        <input type="number" id="lamVal" step="0.001" min="0" max="10" aria-label="Lambda r value">
       </div>
       <p class="note" id="lamNote"></p>
       <label class="f" for="seed">Seed</label>
       <input type="number" id="seed" placeholder="auto (the experiments' seed for an example)">
       <label class="check"><input type="checkbox" id="compare">
-        <span>Also synthesize the fixed reference (Step 8, the thesis's version of t<sub>switch</sub> = 0.25) for side-by-side listening. Takes longer.</span></label>
+        <span>Also synthesize unstabilized CPH8 (when flagged to CPQH) and the 21-pass W8 reference for side-by-side listening. Takes longer.</span></label>
 
       <button class="btn pri" id="go" disabled>Generate</button>
       <div class="msg" id="msg" role="status" aria-live="polite"></div>
@@ -284,15 +281,16 @@
           <div class="big" id="snrBig">— <small>dB</small></div>
           <div class="gauge"><div class="fill" id="snrFill"></div><div class="mark" id="gateMark"><span>20 dB gate</span></div></div>
           <div class="scale"><span>0 dB</span><span>50 dB</span></div>
-          <p class="note" id="gateNote">Prompt energy: loudest half of 25 ms frames against the quietest 10%.</p>
+          <p class="note" id="gateNote">Catches heavy low-SNR noise (&lt; 20 dB). High-SNR spectral noise (gauss25/pink25/hp25) opens the gate and is caught by r &gt; λ<sub>r</sub>.</p>
         </section>
         <section class="panel" aria-labelledby="c-h">
           <div class="ph" id="c-h"><span><span class="n">04</span>Cost</span><span id="saveTag" class="tag">—</span></div>
-          <div class="big" id="passBig">— <small>/ 21 passes</small></div>
+          <div class="big" id="passBig">— <small>/ 21 W8 passes</small></div>
           <div class="pbar" aria-hidden="true"><span class="t" id="pT"></span><span class="s" id="pS"></span><span class="v" id="pV"></span></div>
           <div class="kv" id="kv">
-            <span>Teacher (2 passes per step)</span><b id="kvT">—</b>
-            <span>Student (3 steps)</span><b id="kvS">—</b>
+            <span>Draft s₀ (τ = 0.0)</span><b id="kvD">—</b>
+            <span>Teacher 8-grid (5 steps · 10 passes)</span><b id="kvT">—</b>
+            <span>Student restart (2 steps · 2 passes)</span><b id="kvS">—</b>
             <span>Vocoder</span><b id="kvV">—</b>
             <span>Total on this CPU</span><b id="kvA">—</b>
           </div>
@@ -300,17 +298,15 @@
       </div>
 
       <section class="panel" aria-labelledby="t-h">
-        <div class="ph" id="t-h"><span><span class="n">03</span>Teacher → student</span><span class="tag b" id="lamTag">λ = 0.35</span></div>
+        <div class="ph" id="t-h"><span><span class="n">03</span>Draft + Teacher → Router (CPH8 vs CPQH) → Student</span><span class="tag b" id="lamTag">λr = 0.340</span></div>
         <div class="tl" id="tl" aria-live="polite"></div>
         <div class="legend">
-          <span><i style="background:var(--blue-grad)"></i>Teacher step computed</span>
-          <span><i style="background:var(--orange-grad)"></i>Handover</span>
-          <span><i style="border:1px dashed var(--orange);background:rgba(234,88,12,.06)"></i>Saved</span>
-          <span><i style="background:linear-gradient(135deg,#94A3B8,#64748B)"></i>Student</span>
-          <span><i style="border:1px solid rgba(2,132,199,.35)"></i>Candidate (Steps 4–6)</span>
+          <span><i style="background:linear-gradient(135deg,#94A3B8,#64748B)"></i>Student draft s₀ &amp; completion</span>
+          <span><i style="background:var(--blue-grad)"></i>8-grid teacher / CPH8</span>
+          <span><i style="background:var(--orange-grad)"></i>Flagged → CPQH (Quantile Handover)</span>
         </div>
-        <p class="reason" id="reason">Choose a prompt and press <strong>Generate</strong>. Each teacher step appears as the CPU computes it.</p>
-        <svg class="chart" id="chart" viewBox="0 0 640 170" role="img" aria-label="Drift by teacher step"></svg>
+        <p class="reason" id="reason">Choose a prompt and press <strong>Generate</strong>. Steps appear live as the CPU computes them.</p>
+        <svg class="chart" id="chart" viewBox="0 0 640 175" role="img" aria-label="Invariant residual across teacher steps"></svg>
       </section>
 
       <section class="panel" aria-labelledby="l-h">
@@ -321,23 +317,24 @@
     </div>
   </div>
 
-  <p class="cite">Development prototype on CPU. λ presets from Appendix D: 0.35 chosen by cross-validation in the development pilot;
-    1.20 certified by Learn-Then-Test on the 200 calibration speakers (at that value the rule acts as SNR only). Neither is the final calibrated
-    threshold. Examples are development speakers only, with the experiments' seeds and noise. The reference is Step 8 of the 16-interval grid,
-    the thesis's version of the paper's t<sub>switch</sub> = 0.25. Not adviser-reviewed.</p>
+  <p class="cite">Development prototype on CPU running risk-calibrated SNR + Invariant Residual (SNR_R). Default λ<sub>r</sub> = 0.342 is calibrated by fixed-sequence Learn-Then-Test on EXP-034 dev speakers 31–60 (clean false-flag risk ≤ 15% at 90% confidence, p = 0.048) and verified on 30 disjoint unseen speakers in EXP-035 (10.0% clean flags, 90/90 spectral catch; strict λ<sub>r</sub> = 0.382 gives ≤ 10% risk, p = 0.042, 3.3% unseen clean flags). Examples are development speakers only; positions 31–60 display recorded Colab T4 EXP-034 outcomes. Not adviser-reviewed.</p>
 </div>
 
 <script>
 (() => {
   const $ = (s) => document.querySelector(s);
   const CONDS = {
-    clean: "As recorded.", gauss25: "White noise at 25 dB: passes the gate, yet the teacher copies the hiss.",
-    noisy15: "White noise at 15 dB: below the gate, so the full reference runs.",
-    reverb03: "Room echo, RT60 0.3 s: reads as clean to the SNR gate.", reverb09: "Room echo, RT60 0.9 s: near the gate.",
+    clean: "As recorded clean prompt (SNR_R keeps CPH8 for full prosodic variety).",
+    gauss25: "White noise at 25 dB: passes the 20 dB SNR gate, caught by r > λr → CPQH.",
+    pink25: "Pink noise at 25 dB: passes the 20 dB SNR gate, caught by r > λr → CPQH.",
+    hp25: "High-pass hiss at 25 dB: passes the 20 dB SNR gate, caught by r > λr → CPQH.",
+    noisy15: "White noise at 15 dB: below 20 dB gate → CPQH.",
+    reverb03: "Light room echo (RT60 0.3 s).",
+    reverb09: "Strong room echo (RT60 0.9 s).",
     telephone: "Telephone band (300–3400 Hz)."
   };
-  const S = { status: null, examples: [], src: "example", cond: "clean", lamKey: "cv", job: null, since: 0, timer: null,
-              drifts: {}, handover: null, gateOpen: null, lam: 0.35, uploadURL: null };
+  const S = { status: null, examples: [], src: "example", cond: "clean", lamKey: "ltt_15", job: null, since: 0, timer: null,
+              rTrace: {}, choice: null, gateOpen: null, lamR: 0.34161274793996665, uploadURL: null };
 
   const fmt = (v, d = 3) => (v === null || v === undefined || Number.isNaN(v)) ? "—" : Number(v).toFixed(d);
   const secs = (v) => v === undefined || v === null ? "—" : (v < 10 ? v.toFixed(1) : Math.round(v)) + " s";
@@ -346,78 +343,91 @@
   function log(line) { const l = $("#log"); l.insertAdjacentHTML("beforeend", `<div>${esc(line)}</div>`); l.scrollTop = l.scrollHeight; }
   function setStatus(cls, text) { $("#status").innerHTML = `<span class="dot ${cls}"></span>${esc(text)}`; }
 
-  // ---------- static parts
   function buildChips() {
     $("#condChips").innerHTML = (S.status?.conditions || Object.keys(CONDS)).map((c) =>
       `<button class="btn" data-c="${c}" aria-pressed="${c === S.cond}">${c}</button>`).join("");
     updateNote();
-    const presets = S.status?.lambda_presets || { cv: { value: 0.35, label: "" }, ltt: { value: 1.2, label: "" } };
+    const presets = S.status?.lambda_presets || {
+      ltt_15: { value: 0.34161274793996665, short: "0.342 · LTT (15%)", label: "" },
+      ltt_10: { value: 0.3816179751252351, short: "0.382 · LTT (10%)", label: "" },
+      empirical: { value: 0.34004843191300677, short: "0.340 · Dev Emp", label: "" },
+      snr_only: { value: 10.0, short: "Off · SNR only", label: "" }
+    };
     $("#lamChips").innerHTML = Object.entries(presets).map(([k, p]) =>
-      `<button class="btn" data-l="${k}" aria-pressed="${k === S.lamKey}">${p.value.toFixed(2)} · ${k.toUpperCase()}</button>`).join("");
-    if (S.lamKey !== "custom") $("#lamVal").value = presets[S.lamKey].value.toFixed(2);
-    $("#lamNote").textContent = S.lamKey === "custom" ? "Custom value: not a calibrated threshold." : (presets[S.lamKey]?.label || "");
-    S.lam = parseFloat($("#lamVal").value);
-    $("#lamTag").textContent = `λ = ${fmt(S.lam, 2)}`;
+      `<button class="btn" data-l="${k}" aria-pressed="${k === S.lamKey}">${esc(p.short || p.value.toFixed(3))}</button>`).join("");
+    if (S.lamKey !== "custom" && presets[S.lamKey]) {
+      const val = presets[S.lamKey].value;
+      S.lamR = val;
+      $("#lamVal").value = val < 2 ? val.toFixed(4) : val.toFixed(2);
+    } else {
+      const v = parseFloat($("#lamVal").value);
+      if (!Number.isNaN(v)) S.lamR = v;
+    }
+    $("#lamNote").textContent = S.lamKey === "custom" ? "Custom λr threshold: unverified (not LTT-certified)." : (presets[S.lamKey]?.label || "");
+    $("#lamTag").textContent = S.lamR >= 5 ? "r off (SNR only)" : `λr = ${fmt(S.lamR, 3)}${S.lamKey.startsWith("ltt") ? " · LTT" : ""}`;
   }
 
   function buildTimeline() {
-    const grid = S.status?.teacher_grid || [];
-    const cands = S.status?.candidates || [4, 5, 6];
-    let t = '<div class="grp" id="tg">';
-    for (let i = 0; i <= 8; i++) {
-      t += `<div class="step${cands.includes(i) ? " cand" : ""}" id="st${i}"><span class="lab">${i === 8 ? "8 · ref" : i}</span>
-        <div class="blk"></div><span class="d" id="d${i}">${i === 0 ? "" : "—"}</span><span class="t">t ${grid[i] !== undefined ? grid[i].toFixed(3) : ""}</span></div>`;
+    const grid = S.status?.teacher_grid || [0, 0.0192, 0.0761, 0.1685, 0.2929];
+    const taus = S.status?.student_taus || [0.2929, 0.6173];
+    let h = '<div class="grp d"><div class="step stu" id="sd0"><span class="lab">Draft</span><div class="blk">s₀</div><span class="d" id="ds0">—</span><span class="t">τ 0.000</span></div></div>';
+    h += '<div class="arrow" aria-hidden="true">→</div><div class="grp t">';
+    for (let i = 0; i <= 4; i++) {
+      h += `<div class="step" id="st${i}"><span class="lab">${i === 4 ? "4 · commit" : `Step ${i}`}</span>
+        <div class="blk">${i === 4 ? "x̂₁" : ""}</div><span class="d" id="r${i}">—</span><span class="t">t ${grid[i] !== undefined ? grid[i].toFixed(3) : ""}</span></div>`;
     }
-    t += '</div><div class="arrow" aria-hidden="true">→</div><div class="grp s">';
-    (S.status?.student_taus || [0.0761, 0.2929, 0.6173]).forEach((tau, j) => {
-      t += `<div class="step stu" id="su${j}"><span class="lab">S${j + 1}</span><div class="blk"></div><span class="d"></span><span class="t">τ ${tau.toFixed(3)}</span></div>`;
+    h += '</div><div class="arrow" aria-hidden="true">→</div><div class="grp s">';
+    taus.forEach((tau, j) => {
+      h += `<div class="step stu" id="su${j}"><span class="lab">S${j + 2}</span><div class="blk"></div><span class="d"></span><span class="t">τ ${tau.toFixed(3)}</span></div>`;
     });
-    t += "</div>";
-    $("#tl").innerHTML = t;
-    requestAnimationFrame(() => {   // a thin brace over the candidate steps
-      const a = $(`#st${cands[0]}`), b = $(`#st${cands[cands.length - 1]}`), g = $("#tg");
-      if (!a || !b || !g) return;
-      const ga = g.getBoundingClientRect(), ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
-      g.insertAdjacentHTML("beforeend", `<div class="brace" style="left:${ra.left - ga.left}px;width:${rb.right - ra.left}px"></div>`);
-    });
+    h += "</div>";
+    $("#tl").innerHTML = h;
   }
 
   function drawChart() {
-    const W = 640, H = 170, L = 40, R = 12, T = 14, B = 26;
-    const ks = [1, 2, 3, 4, 5, 6, 7, 8];
-    const vals = ks.map((k) => S.drifts[k]).filter((v) => v !== undefined);
-    const ymax = Math.max(S.lam * 1.25, ...(vals.length ? vals : [1])) * 1.08;
-    const x = (k) => L + (k - 0.5) * (W - L - R) / 8, bw = (W - L - R) / 8 * 0.56;
+    const W = 640, H = 175, L = 44, R = 16, T = 18, B = 28;
+    const ks = [0, 1, 2, 3, 4];
+    const vals = ks.map((k) => S.rTrace[k]).filter((v) => v !== undefined);
+    const refLam = S.lamR < 5 ? S.lamR : 0.34;
+    const ymax = Math.max(refLam * 1.35, ...(vals.length ? vals : [0.8])) * 1.10;
+    const x = (k) => L + (k + 0.5) * (W - L - R) / ks.length, bw = (W - L - R) / ks.length * 0.44;
     const y = (v) => T + (H - T - B) * (1 - v / ymax);
-    let s = `<rect x="${x(4) - (W - L - R) / 16}" y="${T}" width="${(W - L - R) * 3 / 8}" height="${H - T - B}" fill="rgba(2,132,199,.06)"/>`;
-    s += `<text x="${x(5)}" y="${T + 11}" text-anchor="middle">candidates</text>`;
-    [0, ymax / 2, ymax].forEach((v) => { s += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="rgba(15,23,42,.07)"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${v.toFixed(2)}</text>`; });
-    ks.forEach((k) => {
-      const v = S.drifts[k];
-      s += `<text x="${x(k)}" y="${H - 8}" text-anchor="middle">d${k}</text>`;
-      if (v === undefined) return;
-      const hand = S.handover === k, fill = hand ? "url(#og)" : "url(#bg)";
-      s += `<rect x="${x(k) - bw / 2}" y="${y(v)}" width="${bw}" height="${H - B - y(v)}" rx="2" fill="${fill}"/>`;
-      s += `<text x="${x(k)}" y="${y(v) - 5}" text-anchor="middle" style="fill:${hand ? "#C2410C" : "#334155"};font-weight:${hand ? 700 : 500}">${v.toFixed(2)}</text>`;
+    let s = "";
+    [0, ymax / 2, ymax].forEach((v) => {
+      s += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="rgba(15,23,42,.07)"/>`;
+      s += `<text x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${v.toFixed(2)}</text>`;
     });
-    s += `<line x1="${L}" x2="${W - R}" y1="${y(S.lam)}" y2="${y(S.lam)}" stroke="#EA580C" stroke-width="1.5" stroke-dasharray="6 5"/>`;
-    s += `<text x="${W - R}" y="${y(S.lam) - 6}" text-anchor="end" style="fill:#C2410C;font-weight:600">λ = ${S.lam.toFixed(2)}</text>`;
+    ks.forEach((k) => {
+      const v = S.rTrace[k];
+      const lbl = k === 4 ? "r₄ (commit)" : `r${k}`;
+      s += `<text x="${x(k)}" y="${H - 8}" text-anchor="middle">${lbl}</text>`;
+      if (v === undefined) return;
+      const isFinal = k === 4;
+      const flagged = isFinal && S.choice === "CPQH";
+      const above = v > S.lamR;
+      const fill = flagged ? "url(#og)" : (above && !isFinal ? "url(#og)" : "url(#bg)");
+      s += `<rect x="${x(k) - bw / 2}" y="${y(v)}" width="${bw}" height="${Math.max(2, H - B - y(v))}" rx="3" fill="${fill}"/>`;
+      s += `<text x="${x(k)}" y="${y(v) - 6}" text-anchor="middle" style="fill:${(flagged || above) ? "#C2410C" : "#334155"};font-weight:${isFinal ? 700 : 500}">${v.toFixed(3)}</text>`;
+    });
+    if (S.lamR < 5) {
+      s += `<line x1="${L}" x2="${W - R}" y1="${y(S.lamR)}" y2="${y(S.lamR)}" stroke="#EA580C" stroke-width="1.5" stroke-dasharray="6 5"/>`;
+      s += `<text x="${W - R}" y="${y(S.lamR) - 6}" text-anchor="end" style="fill:#C2410C;font-weight:600">λr = ${S.lamR.toFixed(3)}</text>`;
+    }
     $("#chart").innerHTML = `<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0284C7"/><stop offset="1" stop-color="#1D4ED8"/></linearGradient>
       <linearGradient id="og" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FB923C"/><stop offset="1" stop-color="#C2410C"/></linearGradient></defs>` + s;
   }
 
   function resetDecision() {
-    S.drifts = {}; S.handover = null; S.gateOpen = null;
+    S.rTrace = {}; S.choice = null; S.gateOpen = null;
     buildTimeline(); drawChart();
     $("#snrBig").innerHTML = "— <small>dB</small>"; $("#snrFill").style.width = "0"; $("#gateTag").className = "tag"; $("#gateTag").textContent = "Waiting";
-    $("#passBig").innerHTML = `— <small>/ ${S.status?.reference_passes || 21} passes</small>`; $("#passBig").className = "big";
+    $("#passBig").innerHTML = `— <small>/ ${S.status?.reference_passes || 21} W8 passes</small>`; $("#passBig").className = "big";
     $("#saveTag").className = "tag"; $("#saveTag").textContent = "—";
     ["#pT", "#pS", "#pV"].forEach((id) => $(id).style.width = "0");
-    ["#kvT", "#kvS", "#kvV", "#kvA"].forEach((id) => $(id).textContent = "—");
+    ["#kvD", "#kvT", "#kvS", "#kvV", "#kvA"].forEach((id) => $(id).textContent = "—");
     $("#players").innerHTML = '<p class="note">Working…</p>'; $("#speechTag").textContent = "—"; $("#log").innerHTML = "";
   }
 
-  // ---------- events from the engine
   function onEvent(e) {
     if (e.phase === "prepared") {
       S.gateOpen = e.gate_open;
@@ -426,65 +436,78 @@
       $("#snrFill").style.width = pct + "%"; $("#snrFill").className = "fill" + (e.gate_open ? "" : " low");
       $("#gateMark").style.left = (e.gate_db / 50 * 100) + "%";
       $("#gateTag").className = "tag " + (e.gate_open ? "b" : "o");
-      $("#gateTag").textContent = e.gate_open ? "Gate open" : "Gate closed → Step 8";
-      $("#gateNote").textContent = e.gate_open ? "Clean enough: the drift test decides the handover step."
-        : "Too noisy: the teacher runs to the reference so the student is not handed a noisy start.";
+      $("#gateTag").textContent = e.gate_open ? "Gate open · check r" : "Gate closed → CPQH";
+      $("#gateNote").textContent = e.gate_open
+        ? "SNR passed (>= 20 dB): checking invariant residual r for spectral noise."
+        : "Low SNR (< 20 dB): switched directly to Quantile Handover (CPQH).";
       log(`prompt SNR ${e.prompt_snr_db.toFixed(1)} dB · ${e.frames} frames to generate · prepared in ${secs(e.seconds)}`);
-      $(`#st0`).classList.add("running");
+      $("#sd0").classList.add("running");
+    } else if (e.phase === "draft") {
+      $("#sd0").classList.remove("running"); $("#sd0").classList.add("done");
+      $("#ds0").textContent = secs(e.seconds);
+      $("#st0").classList.add("running");
+      log(`draft s0 (tau=${e.tau.toFixed(1)}, 1 pass) · ${secs(e.seconds)}`);
     } else if (e.phase === "teacher") {
       const el = $(`#st${e.step}`); if (!el) return;
-      el.classList.remove("running");
-      el.classList.add(e.after_handover ? "extra" : "done");
-      if (e.drift !== null) { $(`#d${e.step}`).textContent = fmt(e.drift, 2); if (!e.after_handover) S.drifts[e.step] = e.drift; }
-      if (e.stop) { el.classList.add("hand"); S.handover = e.step; }
-      const next = $(`#st${e.step + 1}`); if (next && !e.stop) next.classList.add("running");
+      el.classList.remove("running"); el.classList.add("done");
+      $(`#r${e.step}`).textContent = fmt(e.r, 3);
+      S.rTrace[e.step] = e.r;
+      const next = $(`#st${e.step + 1}`); if (next && !e.commit) next.classList.add("running");
       drawChart();
-      log(`teacher step ${e.step}  t=${e.t.toFixed(4)}  d=${e.drift === null ? "–" : e.drift.toFixed(3)}  ${secs(e.seconds)}${e.stop ? "  ← handover" : ""}${e.after_handover ? "  (reference only)" : ""}`);
+      log(`teacher step ${e.step}  t=${e.t.toFixed(4)}  r=${e.r.toFixed(3)}  ${secs(e.seconds)}${e.commit ? "  ← commit" : ""}`);
     } else if (e.phase === "handover") {
-      for (let i = e.handover_step + 1; i <= 8; i++) { const el = $(`#st${i}`); el.classList.remove("running"); if (!el.classList.contains("extra")) el.classList.add("saved"); }
-      $("#reason").innerHTML = `Hand over at <strong>Step ${e.handover_step}</strong>: ${esc(e.reason)}.`;
+      S.choice = e.choice;
+      const commit = $("#st4");
+      commit.classList.add(e.flagged ? "hand" : "cph");
+      commit.querySelector(".blk").textContent = e.choice;
+      drawChart();
+      $("#reason").innerHTML = `Route <strong>${esc(e.choice)}</strong>: ${esc(e.reason)}.`
+        + (e.risk_certificate ? ` <span class="note" style="display:block;margin-top:4px">${esc(e.risk_certificate)}</span>` : "");
       countUp(e.passes, e.reference_passes, e.saving);
     } else if (e.phase === "student") {
-      [0, 1, 2].forEach((j, n) => setTimeout(() => $(`#su${j}`).classList.add("done"), n * 140));
-      log(`student · 3 steps · ${secs(e.seconds)}`);
+      [0, 1].forEach((j, n) => setTimeout(() => $(`#su${j}`).classList.add("done"), n * 140));
+      log(`student restart completion · 2 steps · ${secs(e.seconds)}`);
     } else if (e.phase === "done") {
       log(`done in ${secs(e.seconds)}`);
     }
-    // keep the extra (reference-only) steps visible over the "saved" marks
-    document.querySelectorAll(".step.extra").forEach((el) => el.classList.remove("saved"));
   }
 
   function countUp(passes, ref, saving) {
     const el = $("#passBig"), t0 = performance.now();
-    const tick = (now) => { const p = Math.min(1, (now - t0) / 700); el.innerHTML = `${Math.round(passes * p)} <small>/ ${ref} passes</small>`; if (p < 1) requestAnimationFrame(tick); };
+    const tick = (now) => { const p = Math.min(1, (now - t0) / 700); el.innerHTML = `${Math.round(passes * p)} <small>/ ${ref} W8 passes</small>`; if (p < 1) requestAnimationFrame(tick); };
     requestAnimationFrame(tick);
-    el.className = "big" + (saving > 0 ? " o" : "");
-    $("#saveTag").className = "tag " + (saving > 0 ? "o" : "b");
-    $("#saveTag").textContent = saving > 0 ? `${Math.round(saving * 100)}% saved` : "Full reference";
-    const tp = passes - 3;
-    $("#pT").style.width = (tp / ref * 100) + "%"; $("#pS").style.width = (3 / ref * 100) + "%"; $("#pV").style.width = ((ref - passes) / ref * 100) + "%";
+    el.className = "big o";
+    $("#saveTag").className = "tag o";
+    $("#saveTag").textContent = `${Math.round(saving * 100)}% saved vs W8`;
+    $("#pT").style.width = (10 / ref * 100) + "%";
+    $("#pS").style.width = (3 / ref * 100) + "%";
+    $("#pV").style.width = ((ref - passes) / ref * 100) + "%";
   }
 
   function finish(job) {
     const r = job.result, tm = r.timings;
-    $("#kvT").textContent = `${r.handover_step + 1} steps · ${secs(tm.teacher)}`;
-    $("#kvS").textContent = secs(tm.student); $("#kvV").textContent = secs(tm.vocoder); $("#kvA").textContent = secs(tm.total);
+    $("#kvD").textContent = secs(tm.draft);
+    $("#kvT").textContent = secs(tm.teacher);
+    $("#kvS").textContent = secs(tm.student);
+    $("#kvV").textContent = secs(tm.vocoder);
+    $("#kvA").textContent = secs(tm.total);
     $("#speechTag").textContent = `${r.audio_seconds.toFixed(1)} s of speech`;
     const id = S.job, base = `/api/jobs/${id}/audio/`;
     let h = `<div class="pl"><div class="h"><span>Prompt</span><span>${esc(job.label)}</span></div><audio controls preload="auto" src="${base}prompt"></audio></div>`;
-    h += `<div class="pl"><div class="h"><span class="bl">Output · SNR + drift · Step ${r.handover_step} · ${r.passes} passes</span><a href="/api/jobs/${id}/download">Download</a></div><audio controls autoplay preload="auto" src="${base}output"></audio></div>`;
+    h += `<div class="pl"><div class="h"><span class="bl">Output · SNR_R (${esc(r.choice)}) · ${r.passes} passes</span><a href="/api/jobs/${id}/download">Download</a></div><audio controls autoplay preload="auto" src="${base}output"></audio></div>`;
+    if (r.unstabilized && job.audio.includes("unstabilized")) {
+      h += `<div class="pl"><div class="h"><span>Without stabilization · CPH8 · ${r.unstabilized.passes} passes</span><span>same seed &amp; teacher</span></div><audio controls preload="auto" src="${base}unstabilized"></audio></div>`;
+    }
     if (r.reference && job.audio.includes("reference")) {
-      h += `<div class="pl"><div class="h"><span>Fixed reference · Step 8 · ${r.reference.passes} passes</span><span>same seed</span></div><audio controls preload="auto" src="${base}reference"></audio></div>`;
-    } else if (r.reference && r.reference.same_as_output) {
-      h += `<p class="note">The rule chose the reference itself, so the fixed reference is the same output.</p>`;
+      h += `<div class="pl"><div class="h"><span>Fixed reference · W8 (Step 8) · ${r.reference.passes} passes</span><span>same seed</span></div><audio controls preload="auto" src="${base}reference"></audio></div>`;
     }
     $("#players").innerHTML = h;
-    msg(`Done: Step ${r.handover_step}, ${r.passes} of ${r.reference_passes} passes (${Math.round(r.saving * 100)}% saved) in ${secs(tm.total)}.`);
+    msg(`Done: ${r.choice} (r = ${r.residual_r.toFixed(3)}), ${r.passes} of ${r.reference_passes} W8 passes (${Math.round(r.saving * 100)}% saved) in ${secs(tm.total)}.`);
     const info = S.jobInfo || {}, rec = info.source === "example" ? recordFor(info.utt_id, info.cond) : null;
-    const key = Math.abs(r.lambda - 0.35) < 1e-9 ? "0.35" : (Math.abs(r.lambda - 1.2) < 1e-9 ? "1.20" : null);
-    if (rec && key && info.seedAuto) {
-      const same = rec.step[key] === r.handover_step;
-      $("#reason").insertAdjacentHTML("beforeend", ` <span class="tag ${same ? "b" : "o"}">T4 record (EXP-031): Step ${rec.step[key]} · ${same ? "same decision" : "differs"}</span>`);
+    const isNearExp034 = Math.abs(r.lambda_r - 0.34004843191300677) < 0.005;
+    if (rec && info.seedAuto && isNearExp034) {
+      const same = rec.choice === r.choice;
+      $("#reason").insertAdjacentHTML("beforeend", ` <span class="tag ${same ? "b" : "o"}">T4 record (EXP-034 @ 0.340): ${esc(rec.choice)} (r=${rec.r.toFixed(3)}) · ${same ? "same decision" : "differs"}</span>`);
     }
   }
 
@@ -495,7 +518,7 @@
       if (j.status === "done") { finish(j); return endJob(); }
       if (j.status === "error") { msg(j.error, true); return endJob(); }
       if (j.status === "queued") msg("Queued…");
-      else msg("Running on the CPU… each teacher step appears as it is computed.");
+      else msg("Running on the CPU… draft, teacher steps, and residual appear live.");
     } catch (err) { msg("Lost contact with the server: " + err, true); return endJob(); }
     S.timer = setTimeout(poll, 350);
   }
@@ -504,7 +527,7 @@
   async function generate() {
     const fd = new FormData();
     fd.append("source", S.src); fd.append("text", $("#text").value); fd.append("prompt_text", $("#promptText").value);
-    fd.append("lam", String(S.lam)); fd.append("compare", $("#compare").checked ? "true" : "false");
+    fd.append("lam_r", String(S.lamR)); fd.append("compare", $("#compare").checked ? "true" : "false");
     if ($("#seed").value !== "") fd.append("seed", $("#seed").value);
     if (S.src === "example") { fd.append("utt_id", $("#exSel").value); fd.append("condition", S.cond); }
     else { const f = $("#upFile").files[0]; if (!f) return msg("Choose a WAV prompt first.", true); fd.append("file", f); }
@@ -516,7 +539,6 @@
     S.job = j.job; S.since = 0; poll();
   }
 
-  // ---------- inputs
   function recordFor(utt, cond) {
     const ex = S.examples.find((e) => e.utt_id === utt);
     return ex && ex.recorded ? ex.recorded[cond] : null;
@@ -529,7 +551,9 @@
   }
   function updateNote() {
     const rec = recordFor($("#exSel").value, S.cond);
-    $("#condNote").textContent = (CONDS[S.cond] || "") + (rec ? ` T4 record (EXP-031): ${rec.prompt_snr.toFixed(1)} dB → Step ${rec.step["0.35"]} at λ 0.35, Step ${rec.step["1.20"]} at λ 1.20.` : "");
+    $("#condNote").textContent = (CONDS[S.cond] || "") + (rec
+      ? ` T4 record (EXP-034): SNR ${rec.prompt_snr.toFixed(1)} dB, r=${rec.r.toFixed(3)} → ${rec.choice} (UTMOS CPH8 ${rec.utmos.CPH8.toFixed(2)} vs CPQH ${rec.utmos.CPQH.toFixed(2)}).`
+      : "");
   }
   function setSrc(src) {
     S.src = src; $("#srcEx").setAttribute("aria-pressed", src === "example"); $("#srcUp").setAttribute("aria-pressed", src === "upload");
@@ -542,11 +566,9 @@
   $("#upFile").onchange = () => { const f = $("#upFile").files[0]; if (!f) return; if (S.uploadURL) URL.revokeObjectURL(S.uploadURL); S.uploadURL = URL.createObjectURL(f); $("#promptAudio").src = S.uploadURL; };
   $("#condChips").onclick = (ev) => { const b = ev.target.closest("[data-c]"); if (!b) return; S.cond = b.dataset.c; buildChips(); pickExample(); };
   $("#lamChips").onclick = (ev) => { const b = ev.target.closest("[data-l]"); if (!b) return; S.lamKey = b.dataset.l; buildChips(); drawChart(); };
-  $("#lamVal").oninput = () => { S.lamKey = "custom"; const v = parseFloat($("#lamVal").value); if (!Number.isNaN(v)) S.lam = v; buildChips(); drawChart(); };
+  $("#lamVal").oninput = () => { S.lamKey = "custom"; const v = parseFloat($("#lamVal").value); if (!Number.isNaN(v)) S.lamR = v; buildChips(); drawChart(); };
   $("#go").onclick = generate;
-  window.addEventListener("resize", () => { if (!S.job) buildTimeline(); });
 
-  // ---------- start-up
   async function boot() {
     try {
       S.status = await (await fetch("/api/status")).json();
@@ -561,7 +583,8 @@
     if (!S.examples.length && st.examples) {
       S.examples = await (await fetch("/api/examples")).json();
       $("#exSel").innerHTML = S.examples.map((e, i) => `<option value="${esc(e.utt_id)}">${String(i + 1).padStart(2, "0")} · ${esc(e.prompt_text.slice(0, 56))}${e.prompt_text.length > 56 ? "…" : ""}${Object.keys(e.recorded || {}).length ? " · T4 record" : ""}</option>`).join("");
-      const first = S.examples.find((e) => e.utt_id === "common_voice_en_15735839-common_voice_en_15735837");  // short; Step 4 clean, Step 8 noisy15
+      const first = S.examples.find((e) => e.utt_id === "common_voice_en_203357-common_voice_en_203358")
+        || S.examples.find((e) => Object.keys(e.recorded || {}).length > 0);
       if (first) $("#exSel").value = first.utt_id;
       pickExample();
     }
