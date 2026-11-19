@@ -1,0 +1,210 @@
+% Review of the pasted Chapter 1 draft (Sections 1.1-1.5), 19 Nov 2026.
+% The draft text is kept as pasted; annotations show alignment with the
+% updated Chapters 2-3 (payload router). Compile: latexmk -pdf chapter1-draft-review.tex
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage[normalem]{ulem}
+\usepackage{enumitem}
+\usepackage{booktabs,tabularx,array}
+\usepackage[most]{tcolorbox}
+\usepackage[hidelinks]{hyperref}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\setlist{itemsep=1pt,topsep=2pt}
+
+\definecolor{delcol}{RGB}{185,30,30}
+\definecolor{addcol}{RGB}{0,90,170}
+\definecolor{flagcol}{RGB}{255,236,170}
+\definecolor{notecol}{RGB}{150,70,0}
+
+% \chg{old}{new}: suggested replacement inside the draft text
+\newcommand{\chg}[2]{{\color{delcol}\sout{#1}}\,{\color{addcol}#2}}
+% \add{new}: suggested insertion
+\newcommand{\add}[1]{{\color{addcol}#1}}
+% \flag{n}{text}: passage tied to comment n
+\newcommand{\flag}[2]{\colorbox{flagcol}{\strut\textsuperscript{\bfseries #1}}\,{#2}}
+% comment box after a paragraph
+\newcounter{cmt}
+\newtcolorbox{cmt}[2][]{enhanced, breakable, colback=notecol!6, colframe=notecol!70,
+  boxrule=0.5pt, arc=1.5pt, left=5pt, right=5pt, top=3pt, bottom=3pt,
+  fontupper=\small, title={\small\bfseries Comment #2}, coltitle=white, colbacktitle=notecol!80, #1}
+
+\begin{document}
+
+{\large\bfseries Chapter 1 Draft (Sections 1.1--1.5): Review for Alignment with the Updated Chapters 2 and 3}\\[3pt]
+{\small Reviewed 19 November 2026 against the manuscript on GitHub \texttt{main} (payload router).}
+
+\begin{tcolorbox}[colback=white, colframe=black!40, boxrule=0.4pt, arc=1.5pt, fontupper=\small]
+\textbf{How to read this.} The draft is reproduced as pasted. \chg{Red struck text}{blue text} is a suggested replacement; \add{blue text alone} is a suggested insertion; a yellow number \flag{0}{} marks a passage discussed in the comment box of that number below the paragraph.
+
+\smallskip
+\textbf{Overall.} The draft is well aligned with the new method: the research questions and objectives follow the three stages of Chapter~3, the scope matches it, and the language is clear. The changes needed are few but some are factual. \textbf{Must fix:} comments 3, 5, 9, 14, 17 (accuracy) and 6 (missing reference); comment 11 is an uncited claim. \textbf{Panel items not yet covered:} comments 10 and 12 (items 13 and 17), comment 13 (the shift from the defense). \textbf{Consistency:} comments 1, 2, 4, 7, 8, 15, 16.
+
+\smallskip
+\textbf{Quotes checked against the papers:} Wang et al.\ (2024) ``style of noise'' and ``degradation in both intelligibility and speaker characteristics'' (exact, Section~1); Lu et al.\ (2026) ``tend to preserve the environmental characteristics of the audio prompt'' (exact, but see comment 5); Xie et al.\ (2026) ``the fixed base expert'' (exact, p.~2). Lu et al.\ (2026) and Xie et al.\ (2026) are not yet in \texttt{references.bib}.
+\end{tcolorbox}
+
+% =====================================================================
+\section*{1.1 BACKGROUND OF THE STUDY}
+
+Giving computers a voice is the goal of text-to-speech (TTS) technology, which turns written text into spoken output while aiming to keep the speech clear, true to the speaker's voice, and natural. One approach used in generative TTS systems is flow matching, which describes a smooth change from random noise into a representation of speech. Flow-matching models learn how to move along a path that connects noise to speech, and this path is often fairly simple or close to a straight line. The learned directions are then followed through a series of calculations to produce speech (Lipman et al., 2023; Liu et al., 2023). F5-TTS, developed by Y.\ Chen et al.\ (2025), uses flow matching through a Diffusion Transformer and introduces Sway Sampling, which places more of the solver's steps early in generation, where the overall structure of the speech is decided. These developments form a basis for studying ways to generate speech more efficiently, especially because a model's full computing cost may not be needed for every input.
+
+Despite these advances, generating speech can still require many repeated calculations by the neural network. This increases computing cost and may slow the response, which matters in interactive applications such as communication aids. Knowledge distillation addresses this challenge by training a smaller or faster student model to imitate a more computationally expensive teacher. Y.\ A.\ Li et al.\ (2025) developed DMOSpeech, a zero-shot TTS system that uses distribution-matching distillation and reduces the generation process from 128 steps to four. \flag{1}{Similarly, Zhu et al.\ (2025) introduced ZipVoice, a flow-matching TTS system with a distilled version designed to speed up speech generation.} Within flow-matching TTS, Zheng et al.\ (2025) identified redundant sampling steps in F5-TTS and removed them without retraining, although the same pruned schedule is applied to every input. The cost is also higher than the step count alone suggests, because classifier-free guidance requires two forward passes at each step (Ho \& Salimans, 2022; D.\ Yang et al., 2025). These studies show how distillation and step reduction can lower the computing needs of speech generation, but \flag{2}{distilled students also tend to lose some of the variety in intonation that the teacher produces}\add{ (Y.\ A.\ Li et al., 2026)}.
+
+\begin{cmt}{1 (minor)}
+ZipVoice was removed from Chapter~2 as not needed for the new method. Keeping it here is acceptable (it is still in the bibliography), but the sentence can be dropped without loss if you want Chapters~1 and~2 to cite the same studies.
+\end{cmt}
+\begin{cmt}{2 (consistency)}
+This claim needs a source; DMOSpeech~2 motivates teacher guidance by exactly this loss of diversity, and Chapter~2 (Section~2.2) cites it for the same point.
+\end{cmt}
+
+Building on this direction, Y.\ A.\ Li et al.\ (2026) developed DMOSpeech 2, a teacher-guided TTS system in which a teacher model carries out the first generation steps and a distilled student model completes the speech. In this approach, the teacher runs fewer steps than in its full generation process, approximately 6 to 14 instead of 32 (Y.\ A.\ Li et al., 2026, p.~31818). The authors report that this approach improves output diversity compared with using the student alone, while remaining more efficient than running the full teacher. This provides a direct precedent for combining teacher guidance and distilled generation in TTS. In the released system, the teacher always runs the same number of steps and always hands the student the same thing: its own estimate of the final speech \flag{4}{(Y.\ A.\ Li, 2025)}. Results are reported as averages over clean test sets (Y.\ A.\ Li et al., 2026, p.~31819), so it is not known how this handover behaves when the speaker's recording, called the prompt, is noisy or otherwise degraded. Zero-shot TTS systems are known to copy the conditions of the prompt: flow-matching models ``tend to generate speech with a style of noise similar to that contained in the audio prompt'' (Wang et al., 2024, p.~1), and \flag{5}{\chg{infilling models such as F5-TTS}{zero-shot models that learn from the audio prompt in context}} ``tend to preserve the environmental characteristics of the audio prompt in the synthesized speech'' (Lu et al., 2026, p.~1). The remedies proposed so far retrain the model (Lu et al., 2026; Wang et al., 2024; \flag{6}{L.\ Zhang et al., 2025}), and cleaning the prompt beforehand is not enough, because applying speech enhancement to the prompt ``causes degradation in both intelligibility and speaker characteristics of the generated audio'' (Wang et al., 2024, p.~1). In teacher-guided sampling, the teacher's estimate is computed with the prompt as a guide, so it may pass these conditions on to the student, and \flag{3}{\chg{a teacher that is stopped earlier to save computation has had less opportunity to settle the speech}{a teacher that reaches the handover point in fewer, larger steps to save computation has had less opportunity to settle the speech}}. A cheaper teacher path is therefore possible only if what the teacher hands over can be protected on such prompts.
+
+\begin{cmt}{3 (accuracy, must fix)}
+The proposed teacher is not stopped \emph{earlier}: it reaches exactly the released handover point ($t\approx0.29$) in 4 larger steps instead of 8 (Chapter~3, Section~3.4.1). ``Stopped earlier'' would suggest a different handover time, which is what the old method did. The same slip appears in Chapter~3, Section~3.1, and will be fixed there too.
+\end{cmt}
+\begin{cmt}{4 (consistency)}
+The team decided on 15 October to cite DMOSpeech~2 only through the 2026 paper, not the GitHub code, but Chapter~2 now also cites the code (for the exact sampler and the 21-pass cost). Decide one rule for both chapters; if the code is cited, use the same reference key as Chapter~2.
+\end{cmt}
+\begin{cmt}{5 (accuracy, must fix)}
+The quote is exact, but the paper attributes it to ``ICL-based methods'' (in-context learning, i.e.\ methods that learn the voice from the audio prompt), not specifically to ``infilling models such as F5-TTS''. The source is Lu, Wang, Ai, Du, Ling and Yamagishi, \emph{Towards Real-world Environment-aware Zero-shot Text-to-speech Synthesis via Disentangled Audio Infilling} (arXiv 2608.03011, extending an ICASSP 2026 paper). It is a different paper from the Lu et al.\ (2025) already in the bibliography and needs its own entry.
+\end{cmt}
+\begin{cmt}{6 (missing reference, must fix)}
+``L.\ Zhang et al., 2025'' could not be identified and is not in the bibliography. The author of this paragraph should supply the full reference, or the citation should be removed. Wang et al.\ (2024) and Lu et al.\ (2026) already support ``remedies retrain the model''.
+\end{cmt}
+
+Adjusting computation separately for each input has been studied in other generative tasks. In flow-matching image and video generation, Bajpai, Bhardwaj, et al.\ (2026) and Bajpai, Verma, and Hanawal (2026) choose sampling steps for each input without retraining, noting that ``a fixed step budget may be unnecessarily conservative for some inputs while insufficient for others'' (Bajpai, Verma, \& Hanawal, 2026, p.~3). H.\ Zhang et al.\ (2025) likewise select a step count for each prompt in diffusion models, although their selection policy must be trained. Closer to a teacher-student setting, Starodubcev et al.\ (2024) proposed a method for generating images from text in which a student first creates an image and a quality estimator decides whether the teacher needs to refine it further. Mualem et al.\ (2026) applied a related idea during training rather than generation, giving more training samples to groups of prompts where the student differs most from the teacher. In speech, Hsieh and Kim (2025) allocate more flow-matching steps to noisier inputs in target speaker extraction, although their estimate of the noise level comes from a trained predictor. Closest in structure, Cheng et al.\ (2025) ran a large video-generation model for the early, high-noise steps and handed over to a smaller model at a step chosen for each prompt, based on when the change in the generated sample between steps had levelled off; the switching threshold, however, was set by hand, and the smaller model was not a distilled student. These studies show that computation, including the point at which a large model hands over to a smaller one, can be adapted to the input. All of them adapt how much computation is spent or when the handover happens; none adapts what is handed over, and none addresses speech synthesis.
+
+\begin{cmt}{7 (suggestion)}
+Well aligned with Section~2.5 and the novelty argument. Consider one more sentence: recent large--small methods (TRACK, HybridStitch; Munir et al., 2026; Sun et al., 2026) already use disagreement between the two models as a signal, but average it offline or threshold it by hand. This shows the panel that the residual signal is not claimed as new in itself (Table~2.3).
+\end{cmt}
+
+A separate line of work suggests what a protected handover could look like. In noise-robust speech recognition, histogram equalization removes the mismatch that background noise causes in speech features by mapping each feature's values onto a reference distribution while keeping their order in time (de la Torre et al., 2005; Dharanipragada \& Padmanabhan, 2000\add{; Hilger \& Ney, 2006}). The same operation can be applied to the teacher's estimate: it would keep when each sound rises and falls, which carries the teacher's timing and intonation, while taking the loudness values from a quick first attempt by the student, which works from noise and does not copy the prompt's recording conditions in the same way. Such a correction removes some of the teacher's detail, so it should be applied only when the teacher's estimate appears to be affected.
+
+\begin{cmt}{8 (suggestion)}
+Adding Hilger and Ney (2006), the quantile-based version of histogram equalization, matches Chapter~2 (Section~2.4, Table~2.3) and the exact form of the correction used in Chapter~3.
+\end{cmt}
+
+An adaptive handover also raises the question of how reliable its decisions are. Choosing what to hand over from signals available at inference does not, by itself, show how often the choice may introduce additional quality failures. Statistical risk control has already been applied to adaptive computation: Schuster et al.\ (2022) calibrated early exiting in language models, Jazbec et al.\ (2024) applied risk control to early exiting in diffusion-based image generation, and Damri and Laufer-Goldshtein (2026) used Learn-Then-Test to choose, for each input, how many recognition hypotheses to pass to a language-model corrector in speech recognition. Wu et al.\ (2025) likewise used Learn-Then-Test to decide when a language model can stop reasoning. Calibrated choices between a safe default and a riskier alternative have also been made outside speech: Xie et al.\ (2026) override a fixed image-enhancement model with a generative one only when a calibrated certificate allows it, counting an image as harmed when the routed output is worse than the fixed model's, and otherwise return ``the fixed base expert'' (p.~2). These studies show that statistically calibrated decisions are feasible, but they address text, images, or speech recognition rather than speech synthesis, and none of the adaptive handover methods described above attaches such a guarantee to its decision. Learn-Then-Test (LTT), \chg{introduced}{proposed} by Angelopoulos et al.\ (2025), is a statistical framework for choosing among a limited set of candidate settings while making sure, at a chosen confidence level, that the risk of the chosen setting does not go beyond a stated limit, as long as the framework's assumptions are met. Applying LTT to teacher-guided TTS requires defining what counts as a quality failure, choosing a reference system, stating the acceptable risk limit, and using suitable calibration data. In this study, LTT will be used to control the rate at which the proposed method fails where the released system does not, not to guarantee the quality of every individual utterance.
+
+\begin{cmt}{9 (accuracy, must fix)}
+Xie et al.\ (2026) is verified (\emph{When Should a Low-Light Pipeline Generate? Auditable Risk Control for Selective Generative Enhancement}, arXiv 2610.21335; harm is defined as a routed output worse than the fixed base expert), and it is an excellent parallel to our excess-failure rule. It must be added to \texttt{references.bib}. ``Introduced'' is softened to ``proposed'' because LTT first appeared as a preprint in 2021; the 2025 journal version is the one cited.
+\end{cmt}
+
+The reviewed literature provides the foundations for this study through flow-matching TTS, distilled speech generation, teacher-guided sampling, adaptive computation, noise-robust feature correction, and statistical risk calibration. Within the sources examined, however, adaptive handovers from a large to a smaller model have adapted only how much computation is spent or when the handover happens, with thresholds set by hand and without a statistical guarantee on the quality failures they add, and none has been applied to text-to-speech. No method has been established that chooses, for each utterance, what a teacher hands to a distilled student and statistically bounds the added rate of quality failures relative to the released system. Related adaptive and risk-controlled methods exist for image and video generation, language models, and speech recognition, so this gap is limited to this specific combination in the literature reviewed and does not mean that no other adaptive methods exist.
+
+To address this problem, the study will develop a training-free, risk-calibrated payload router for DMOSpeech 2 (Y.\ A.\ Li et al., 2026). The teacher will \chg{be stopped earlier than in the released system and at the same point for every input}{reach the released handover point in four larger steps instead of eight, the same for every input}, so that every utterance costs the same number of forward passes, fewer than the released system\add{ (13 instead of 21, or 38\% fewer)}, and the student will make a one-step first attempt, called the draft. For each utterance, a router will then decide what the teacher hands to the student, called the payload: either the teacher's own estimate, or a corrected version that keeps the teacher's timing but takes its loudness values from the draft. The router will use two signals that need no extra network \add{beyond the draft}: the signal-to-noise ratio (SNR) of the prompt, and a residual that measures how far the teacher's loudness values have moved from the draft's. LTT will be used to calibrate the router's single threshold so that the rate at which the router fails where the released system does not stays within a predefined limit, subject to the framework's statistical assumptions; if no threshold passes, the released system is used unchanged. All model weights will be kept unchanged. The method will be evaluated on clean and degraded prompts, using word error rate (WER), speaker similarity (SIM), predicted naturalness (UTMOS), pitch variety across repeated generations, forward-pass counts, and runtime.
+
+\begin{cmt}{10 (panel item 13)}
+Dr.~Landicho asked to show the saving with numbers. Chapter~3 gives the exact count (Table~3.3: 13 vs.\ 21 forward passes, and 30 for the configuration in the DMOSpeech~2 paper), so the numbers can be stated here. ``Beyond the draft'' keeps the sentence accurate: the residual needs the draft, which costs one pass.
+\end{cmt}
+
+Efficient and responsive speech generation may also be relevant to assistive information and communication technology for autistic users. Research on augmentative and alternative communication (AAC), including speech-generating devices, has looked at their role in supporting communication among autistic individuals (Muharib et al., 2024; Therrien et al., 2025). A TTS component can provide spoken output for text that a user selects or types, which makes the efficiency of speech generation relevant to communication-support applications, and \flag{11}{recordings made outside a studio are often noisy}. In this study, the assistive-technology context of autism spectrum disorder (ASD) motivates the practical value of developing a more computationally efficient TTS method. The main evaluation, however, will focus on speech quality, computing cost, and the statistical control of additional quality failures. It will not assess clinical outcomes or establish how effective the resulting application is as an AAC intervention. Experiments will use an NVIDIA Tesla T4 graphics processing unit (GPU) through Google Colab, while use on mobile or other devices with limited computing power remains a possible direction for future work.
+
+\begin{cmt}{11 (accuracy)}
+Uncited claim. Either cite a source or soften it, e.g.\ ``and a speaker's reference recording may not be clean''.
+\end{cmt}
+
+% =====================================================================
+\section*{1.2 PROBLEM STATEMENT}
+
+Speaking without delay matters especially when a person relies on a device to communicate. DMOSpeech 2, developed by Y.\ A.\ Li et al.\ (2026), produces speech by letting a teacher model carry out the first generation steps and a distilled student model finish the speech. In the released system, the teacher always runs the same number of steps and always hands the student its own estimate of the final speech. Running the teacher for fewer steps would lower computing cost, but what the teacher hands over may then carry problems from the speaker's recording into the speech, and any rule that protects against this raises questions about how reliable its decisions are. These concerns matter for efficient text-to-speech (TTS), including its possible use in communication-support applications, such as those intended for autistic users.
+
+To begin with, it is not known how the released system and a shortened teacher behave when the speaker's recording, the prompt, is degraded. DMOSpeech 2 reports a single teacher-guided setting, with results averaged over clean test sets (Y.\ A.\ Li et al., 2026, p.~31819). Because each guided teacher step requires two forward passes (Ho \& Salimans, 2022; D.\ Yang et al., 2025), the teacher accounts for most of the cost, so a shorter teacher path is the obvious place to save computation. However, zero-shot TTS models are known to copy noise and other conditions of the prompt into the speech they generate (Lu et al., 2026; Wang et al., 2024), and in teacher-guided sampling the teacher's estimate may pass these conditions on to the student, particularly when the teacher \chg{is stopped early}{takes fewer steps}. \flag{12}{\add{The researchers' preliminary experiments support this concern: on noisy prompts, early handovers failed mostly because the teacher had copied the prompt's noise into its estimate, a simple check of the prompt's noise level missed moderate noise, and a rule that adapted when the teacher stops could not be shown to save computation safely (Appendices~D and~E).}} How the released system and the two possible handover contents, the teacher's estimate and a corrected version of it, perform under clean and degraded prompts therefore needs to be measured, in terms of intelligibility, speaker similarity, predicted naturalness, and cost.
+
+\begin{cmt}{12 (panel item 17)}
+Dr.~Landicho asked to use the pre-experiment to validate the problem. The draft does not mention the preliminary results; the suggested sentence summarizes Appendices~D and~E without numbers. Numbers can be added if you want them here (e.g.\ 86 of 360 failures, 23.9\%, for 18--22~dB prompts passed by the 20~dB check).
+\end{cmt}
+\begin{cmt}{13 (the shift from the concept defense)}
+At the defense, the problem was presented as the fixed switching time and the method adapted the timing. The suggested sentence in comment 12 already says that adapting the timing was tried and could not be certified, which keeps the problem (one fixed handover for every input) and explains why the adaptive part moved to the content. Keep it, or an equivalent, so the panel does not see the change as a contradiction.
+\end{cmt}
+
+Building on this, the content of the handover itself is a concern. A corrected version that keeps the teacher's timing but replaces its loudness values could remove copied noise, but it also removes part of the teacher's detail, including some of the variety in intonation that teacher guidance was introduced to restore (Y.\ A.\ Li et al., 2026, p.~31818). Correcting every input would give up that detail on clean prompts, while never correcting would leave degraded prompts unprotected. It is still unclear whether the choice between the two can be made for each utterance, from signals available during generation and without \chg{additional network evaluations}{network evaluations beyond a one-step student draft} or changes to the model weights.
+
+\begin{cmt}{14 (accuracy, must fix; also in RQ2 and Objective 2)}
+The student draft is one extra forward pass (it is counted in the 13). The signals, the correction and the routing are free, but the draft is not, so ``without additional network evaluations'' is not accurate.
+\end{cmt}
+
+Beyond these effects on quality and cost, there is no established measure of reliability for such a choice. Choosing the handover content adaptively does not, by itself, show how often it adds quality failures compared with the released system. Statistical risk control has been applied to adaptive computation in other tasks, such as language models, image generation, and speech recognition (Damri \& Laufer-Goldshtein, 2026; Jazbec et al., 2024; Schuster et al., 2022; Wu et al., 2025), but within the sources reviewed, not to the teacher-to-student handover in TTS. Learn-Then-Test provides a framework for controlling risk statistically when choosing among candidate settings, as long as its assumptions are met (Angelopoulos et al., 2025). Whether it can bound the rate at which an adaptive handover fails where the released system does not must therefore be examined, using a quality-failure rule applied equally to every system, calibration speakers kept separate from evaluation speakers, and a risk limit set beforehand.
+
+Finally, these technical concerns connect to the use of speech synthesis for autistic users. Research has examined speech-generating devices as communication-support tools for autistic individuals (Muharib et al., 2024; Therrien et al., 2025). However, the possible relevance of TTS to these uses does not show that a more computationally efficient method improves communication outcomes. The technical performance of the proposed method must therefore be evaluated without assuming that it is usable or effective as an assistive intervention.
+
+In view of these concerns, the general problem addressed by this study is whether a training-free, risk-calibrated method that chooses, for each utterance, what the teacher hands to the student can reduce the computing cost of teacher-guided flow-matching TTS while keeping the rate of \flag{15}{added quality failures}, compared with the released system, within a limit set beforehand.
+
+\begin{cmt}{15 (consistency)}
+Chapter~1 says ``added quality failures''; Chapters~2 and~3 say ``excess failures'' or ``fails where the released system does not''. Either use one term everywhere or define it once here, e.g.\ ``added (excess) quality failures, that is, failures on utterances for which the released system does not fail''. Same in the general objective and Objective~3.
+\end{cmt}
+
+Specifically, the study seeks to answer the following research questions:
+\begin{enumerate}
+\item How do the released DMOSpeech 2 system and the two handover contents of a shortened teacher, the teacher's own estimate and a corrected version of it, perform in speech quality (intelligibility, speaker similarity, and predicted naturalness) and computing cost under clean and degraded prompts?
+\item Can the choice between the two handover contents be made for each utterance from signals available during generation, without \chg{additional network evaluations}{network evaluations beyond a one-step student draft} or changes to the model weights, and can the Learn-Then-Test framework calibrate this choice so that the rate of added quality failures relative to the released system stays within a limit set beforehand?
+\item How does the calibrated method compare with the released system, the other established configurations, and simpler versions of the method in computing cost, speech quality, prosodic variety, and the rate of added quality failures, and how well does its guarantee hold across prompt conditions, calibration sample sizes, and a second dataset?
+\end{enumerate}
+
+% =====================================================================
+\section*{1.3 OBJECTIVES OF THE STUDY}
+\subsection*{1.3.1 General Objective}
+The general objective of this study is to develop and evaluate a training-free, risk-calibrated payload router that chooses, for each utterance, what the teacher hands to the student in teacher-guided flow-matching text-to-speech (TTS), so that every utterance costs fewer forward passes than the released system while the rate of added quality failures, compared with that system, stays within a risk limit set beforehand, with all model weights kept unchanged.
+
+\subsection*{1.3.2 Specific Objectives}
+Specifically, this study aims to:
+\begin{enumerate}
+\item \textbf{Characterize the baseline and the handover payloads.} Reproduce the released DMOSpeech 2 system and the other established configurations, and measure word error rate (WER), speaker similarity (SIM), predicted naturalness (UTMOS), forward-pass counts, and runtime for the released system and for the two payloads of a shortened teacher, the teacher's estimate and its corrected version, under clean and degraded prompt conditions.
+\item \textbf{Develop the payload router.} Formulate the choice between the two payloads for each utterance as a problem of keeping the teacher's estimate as often as a set risk limit allows; define the corrected payload, the residual signal, and the routing rule, which use no \chg{additional network evaluation}{network evaluation beyond the one-step student draft} and change no model weights, and prove their properties; and calibrate the router's single threshold with Learn-Then-Test (LTT) so that the rate at which it fails where the released system does not stays within a limit and confidence level set beforehand.
+\item \textbf{Evaluate the method and test its robustness.} On speakers not used to develop or calibrate the method, and on a second dataset, compare the calibrated router with the released system, the other established configurations, and simpler versions of the router\add{, including two other teacher stopping points}, using forward-pass counts, runtime, WER, SIM, UTMOS, prosodic variety, failure rates, and the rate of added failures; check whether the observed rate of added failures stays within the calibrated limit; and examine how the results vary across prompt conditions, calibration sample sizes, and the tolerated risk.
+\end{enumerate}
+
+\begin{cmt}{16 (alignment)}
+The three objectives match Chapter~3 (Sections~3.5, 3.6--3.7 and 3.8) and its workflow. The insertion in Objective~3 reflects the stopping-point ablations (10 and 16 passes) added to Chapter~3. Optional: Objective~3 could name the pre-specified variety test (router vs.\ the student restarted from its own draft), since that test decides whether the teacher's ten passes are justified.
+\end{cmt}
+
+% =====================================================================
+\section*{1.4 SIGNIFICANCE OF THE STUDY}
+This study investigates a training-free, risk-calibrated payload router for teacher-guided flow-matching text-to-speech (TTS). Its findings may contribute to more efficient speech synthesis while keeping the rate of added quality failures within a risk limit set beforehand.
+
+\textbf{TTS Researchers.} This study may provide insights into how degraded speaker recordings affect teacher-guided generation, whether the teacher's estimate carries recording problems into the speech, and how much of the teacher's work is needed for quality and prosodic variety, supporting further research on efficient TTS inference.
+
+\textbf{TTS Developers.} The proposed method may offer a way to run teacher-guided TTS at a fixed, lower cost per utterance than the released system, without retraining the pretrained models, while controlling the rate of added quality failures. Because the method falls back to the released system whenever no threshold passes calibration, \flag{17}{\chg{it is designed never to be less reliable than what developers already use}{and otherwise adds failures on at most a stated share of utterances, developers know in advance how much reliability they may trade for the lower cost}}.
+
+\begin{cmt}{17 (accuracy, must fix)}
+``Never less reliable'' is an overclaim: when a threshold passes, the method may fail on up to the tolerated share (5\%) more utterances than the released system. Only the fallback has zero added risk (Chapter~3, Propositions on the rate and the fallback).
+\end{cmt}
+
+\textbf{Researchers in Reliable Machine Learning.} The application of Learn-Then-Test (LTT) may demonstrate how statistical risk control can be used to calibrate a decision inside a generative model, with a bound stated against the failure rate of an existing system, under stated calibration assumptions.
+
+\textbf{Assistive Technology and AAC Developers.} The findings may inform future research on efficient TTS components for communication-support technologies, including augmentative and alternative communication (AAC), where speaker recordings may not be clean.
+
+\textbf{Autistic and Neurodivergent Learners.} The study may indirectly support future assistive-technology research by examining the technical performance of speech synthesis. However, it does not directly evaluate usability or communication outcomes for these learners.
+
+\textbf{Future Researchers.} The methodology, the calibrated threshold and the conditions under which it holds may serve as a reference for further studies on adaptive handover, risk-calibrated inference, and efficient TTS across different datasets, recording conditions, and hardware.
+
+% =====================================================================
+\section*{1.5 SCOPE AND LIMITATIONS}
+This study will focus on developing and evaluating a training-free, risk-calibrated method that chooses, for each utterance, what the teacher hands to the student in teacher-guided flow-matching text-to-speech (TTS), using DMOSpeech 2 and its F5-TTS teacher (Y.\ A.\ Li et al., 2026). It will cover the reproduction of the released system, the two handover payloads\chg{ such as}{, namely} the teacher's estimate and a corrected version that keeps the teacher's timing and takes its loudness values from a one-step student draft, the two signals that guide the choice (the prompt signal-to-noise ratio and a residual comparing the teacher's estimate with the draft), the routing rule, statistical calibration with Learn-Then-Test, and objective evaluation of speech quality, prosodic variety, and computing cost. Because only one teacher-student system will be studied, the findings may not transfer to other teacher-guided TTS systems.
+
+The method will be adaptive in what the teacher hands over, not in how much computation an utterance receives. The teacher will stop at the same point for every input, so every utterance will cost the same number of forward passes, fewer than the released system\add{ (13 instead of 21)}; choosing the amount of computation per utterance is outside the scope.\add{ Two other stopping points will be tested only as ablations.} The released system, which hands over at a switching time of 0.25 (Y.\ A.\ Li et al., 2026, p.~31819), will serve as the reference for cost and risk. \flag{18}{The method will not be compared with step-pruning methods that shorten the teacher's own schedule for every input, such as the empirically pruned step sampling of Zheng et al.\ (2025); the study's results will be stated relative to the released teacher-guided system rather than as the lowest possible cost of synthesis.}
+
+\begin{cmt}{18 (anticipate a panel question)}
+The router's shorter teacher path is itself a form of step pruning, and Table~2.3 credits Zheng et al.\ (2025) for it, so a panelist may ask why pruning is excluded. Suggested addition: ``The effect of the shorter teacher path alone is measured by the ablation that always hands over the teacher's estimate (12 forward passes).'' The adaptive definition in the first sentence of this paragraph matches Chapter~3 (Section~3.1) and the adviser report.
+\end{cmt}
+
+All pretrained model weights, including those of the teacher, the student, the duration predictor, and the vocoder, will be kept unchanged. Duration prediction will follow the published procedure and will not be part of the proposed contribution. Apart from the router's threshold, the settings of the method will be fixed before calibration, so that the calibration chooses only one number.
+
+The evaluation will use English zero-shot prompts from the Seed-TTS test set, which draws on Common Voice (Anastassiou et al., 2024; Ardila et al., 2020), divided by speaker into development, calibration, and test groups, and a second English dataset used only for testing. Prompts will be used as recorded and with added damage, such as background noise, room echo, and telephone-band filtering. Other languages, other kinds of recording damage, and very different inputs are outside the scope. Speech quality will be measured only with automatic measures: word error rate (WER), speaker similarity (SIM), and predicted naturalness (UTMOS). Prosodic variety will be measured from the variation in pitch across repeated generations of the same sentence; this captures only part of what listeners hear as varied speech, since it ignores rhythm and loudness.
+
+\begin{cmt}{19 (optional)}
+Matches Chapter~3, Section~3.4.3. The second dataset could be named (LibriSpeech-PC test-clean) since Chapter~3 names it, and ``cafeteria babble'' could be added to the list of damage.
+\end{cmt}
+
+The reliability guarantee will hold only under the statistical assumptions of the calibration procedure. It will limit how often the method fails where the released system does not, on average across inputs drawn from the same population and the same mix of prompt conditions as the calibration data; it will not guarantee acceptable quality for every individual utterance or for every prompt condition separately, and results on the second dataset will be reported as a check of transfer rather than as part of the guarantee. The guarantee may not hold when the inputs differ from the calibration data. In addition, running time will be measured only on an NVIDIA Tesla T4 GPU through Google Colab, and no measurements will be made on mobile or other limited-resource devices. Furthermore, the study will evaluate only technical performance and computing efficiency. It will not assess clinical effectiveness, user experience, communication outcomes, or actual use in mobile assistive technologies. Listening tests with people will also be outside the scope of the study, except for a small check by the research team.
+
+\begin{cmt}{20 (aligned)}
+Fully consistent with Chapter~3 (Sections~3.7.2, 3.8.4 and~3.9). No change needed.
+\end{cmt}
+
+\end{document}
