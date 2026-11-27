@@ -1147,7 +1147,7 @@
       "title": "Rewrite Chapter 3 around the risk-calibrated payload router (SNR_R) with an absolute failure rule and LTT bound against reproduced DMOSpeech 2",
       "owner": "Claude (drafting), for Mark Vincent D. Limpahan",
       "status": "review",
-      "updated": "2026-11-18",
+      "updated": "2026-11-27",
       "acceptance": "paper/chapters/03-methodology.tex describes the payload router; future tense; no result values; every display equation defined; objectives only in headings and workflow table; plain-language explanations for unfamiliar readers; latexmk -Werror passes. Not adviser-approved; EXP-034 remains development evidence.",
       "evidence": [
         "paper/chapters/03-methodology.tex",
@@ -1160,9 +1160,11 @@
         "docs/progress/log/2026-11-18-citations-and-chapter2-alignment.md",
         "docs/progress/log/2026-11-18-build-fixes-and-chapter3-rewrite.md",
         "paper/chapters/01-introduction.tex",
-        "docs/progress/log/2026-11-18-fixed-cost-clarifications.md"
+        "docs/progress/log/2026-11-18-fixed-cost-clarifications.md",
+        "docs/progress/log/2026-11-27-chapter1-router-port.md",
+        "docs/progress/log/2026-11-27-chapter3-candidate-paths.md"
       ],
-      "validation": "2026-11-18: latexmk -Werror main.tex exit 0 (111 pages), zero undefined references/citations, zero Overfull boxes. Chapter 1 beyond Scope still describes the old scheduler. Pending team and adviser review."
+      "validation": "2026-11-18: latexmk -Werror main.tex exit 0 (111 pages), zero undefined references/citations, zero Overfull boxes. Chapter 1 beyond Scope still describes the old scheduler. Pending team and adviser review. 2026-11-27: Chapter 1 ported to the router with candidate teacher paths; latexmk -Werror clean. 2026-11-27: Chapter 3 aligned with candidate teacher paths (per-path fixed-sequence LTT at delta/3); latexmk -g -Werror clean, 108 pages."
     },
     {
       "id": "PAPER-021",

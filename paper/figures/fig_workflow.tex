@@ -16,15 +16,15 @@
 \node[wf] (s2)  at (\wfxb,0)     {\textbf{2. Prompt conditions}\\ clean and seven degradations};
 \node[wf] (s3)  at (\wfxc,0)     {\textbf{3. Check pipeline}\\ seeds, identities, pass counts};
 
-\node[wf] (s4)  at (\wfxa,-1.9)  {\textbf{4. Run systems}\\ references and both payloads};
+\node[wf] (s4)  at (\wfxa,-1.9)  {\textbf{4. Run systems}\\ references; payloads of each path};
 \node[wf] (s5)  at (\wfxb,-1.9)  {\textbf{5. Reproduction check}\\ against published numbers};
 \node[wf] (s6)  at (\wfxc,-1.9)  {\textbf{6. Fix floors}\\ $s_{\min}$, $u_{\min}$ from the baseline};
 
 \node[wf] (s7)  at (\wfxa,-3.8)  {\textbf{7. Formulate method}\\ $Q$, $r$, policy, proofs};
 
-\node[wf] (s8)  at (\wfxa,-5.7)  {\textbf{8. Fix protocol}\\ $\alpha$, $\delta$, grid of $\lambda_r$};
-\node[wf] (s9)  at (\wfxb,-5.7)  {\textbf{9. Calibrate}\\ binomial tests in order};
-\node[wf] (s10) at (\wfxc,-5.7) {\textbf{10. Threshold certified?}\\ no: use DMOSpeech~2};
+\node[wf] (s8)  at (\wfxa,-5.7)  {\textbf{8. Fix protocol}\\ $\alpha$, $\delta$, paths, grid of $\lambda_r$};
+\node[wf] (s9)  at (\wfxb,-5.7)  {\textbf{9. Calibrate}\\ binomial tests per path};
+\node[wf] (s10) at (\wfxc,-5.7) {\textbf{10. Select cheapest path}\\ none: use DMOSpeech~2};
 
 \node[wf] (s11) at (\wfxa,-7.6)  {\textbf{11. Check the bound}\\ test risk, 100 re-splits};
 \node[wf] (s12) at (\wfxb,-7.6)  {\textbf{12. Run compared systems}\\ test split, LibriSpeech-PC};
