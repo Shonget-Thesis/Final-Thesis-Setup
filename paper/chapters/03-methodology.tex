@@ -7,6 +7,10 @@
 % Chapter 3 rewritten 18 Nov 2026 around the risk-calibrated payload
 % router; the per-utterance stopping-time scheduler of the concept
 % defense is now preliminary work (Appendix D).
+% 28 Nov 2026: written as a plan; every candidate path is calibrated and
+% evaluated separately and the paths are compared in the evaluation (the best
+% path is a finding, not part of the architecture); Figure 3.2, Remark 3.1 and
+% computed values removed; Section 3.1 shortened.
 % 27 Nov 2026: candidate teacher paths (k = 2, 4, 6 steps on the 8-interval
 % grid; 10, 13, 16 passes). Learn-Then-Test selects the least costly path and
 % its threshold (fixed-sequence test per path at delta/3, union bound), in line
@@ -22,48 +26,44 @@
 \subsection{Research Design}
 \label{sec:design}
 
-This study will use a quantitative experimental design combined with algorithm development and statistical calibration. The system studied is DMOSpeech~2 \parencite{li2025dmospeech2}, a text-to-speech model that copies a speaker's voice from a short recording, called the prompt. It generates speech with two networks: a large \emph{teacher}, F5-TTS \parencite{chen2024f5}, which produces good speech but needs many steps, and a smaller \emph{student} trained to imitate it in a few steps. The teacher does the first part of the work and then hands its result to the student, which finishes. The study will first reproduce this released system on a fixed set of prompts, together with two ways of handing the teacher's work to the student. It will then formulate a method that chooses between these two hand-over contents, called \emph{payloads}, for each sentence, select, on one group of speakers and with a statistical guarantee, the cheapest of several candidate teacher paths together with the method's threshold, and evaluate the selected configuration on other speakers against the established systems. The design follows the three specific objectives in order (Section~\ref{sec:workflow}).
+This study will use a quantitative experimental design combined with algorithm development and statistical calibration. It will study DMOSpeech~2 \parencite{li2025dmospeech2}, a zero-shot text-to-speech system in which a large teacher, F5-TTS \parencite{chen2024f5}, carries out the first generation steps and a smaller, distilled student finishes the speech. Both networks work on a mel-spectrogram, a picture of the sound over time and frequency, which a vocoder turns into audio. The proposed method, a payload router, will let the teacher take fewer, larger steps and will decide for each sentence whether the teacher hands the student its own estimate of the final mel-spectrogram or a corrected version of it. Three candidate teacher paths, which differ in the number of teacher steps, will be studied. The method therefore adapts what is handed over for each sentence, not how much computation a sentence receives. Computing cost will be counted in \emph{forward passes}, the number of times a network is run.
 
-For each sentence, the method changes only what the teacher passes to the student, not when it passes it. Both networks work on a mel-spectrogram, a picture of the sound that shows how much energy each frequency band has in each short time frame; a separate network, the vocoder, turns it into audio at the end. In the released system, the teacher runs a fixed number of steps and passes its estimate of the final mel-spectrogram. The proposed method will let the teacher take fewer, larger steps, along one of three candidate paths that differ in how many steps the teacher takes before the handover, and will decide for each sentence whether to pass the teacher's estimate itself or a corrected version of it. The corrected version keeps the teacher's timing, that is, when each sound rises and falls, but takes its loudness values from a quick first attempt by the student, called the student draft. Computing cost is counted in \emph{forward passes}, the number of times a network is run. Every candidate path costs fewer forward passes than the released system. The calibration will select one path, the least costly one that keeps the excess failures within the tolerance, and that path will then be used for every sentence, so every sentence will cost the same number of forward passes; the decision between the two payloads only protects quality when the prompt recording is noisy or otherwise degraded. The method is therefore adaptive in what the teacher hands over for each sentence, while its cost is chosen once, at calibration; choosing the amount of computation per sentence is outside the scope of this study. The per-utterance stopping-time scheduler of the earlier proposal is reported in Appendix~\ref{app:prelim}, where it motivates this design.
+The study will follow the three specific objectives (Section~\ref{sec:workflow}). It will first reproduce the released system and describe the two payloads on development speakers. It will then formulate the router and, with Learn-Then-Test, calibrate its threshold for each candidate path on separate calibration speakers. Finally, it will evaluate every calibrated path against the established systems on unseen test speakers and a second dataset; comparing the paths will show which one gives the lowest cost while keeping excess failures within the stated limit.
 
-The comparisons will be paired. Every system will synthesize the same inputs from the same random starting values, and no network will be retrained, so a difference between two outputs of the same input can come only from the way the networks are run. The prompt condition and the calibration sample size will be varied as experimental factors; the trained networks, the list of candidate teacher paths, the random seeds and the hardware will be held fixed, and once the calibration has selected a path, that path and its student starting point will be used for every input.
-
-The study has an exploratory stage and a confirmatory stage, which will use different speakers. The exploratory stage, on the development speakers, will reproduce the established systems, describe how the two payloads behave and fix the minimum quality levels of the failure rule. The confirmatory stage begins once the failure rule, the tolerance $\alpha$, the confidence parameter $\delta$, the candidate paths and the threshold grid have been fixed: the path and the threshold will be selected on the calibration split only, and the bound and the comparisons will be checked on the test split and on a second, unseen dataset. Results from the development split, including those of Appendix~\ref{app:snr-r}, will be reported as exploratory and will not be used as evidence for the guarantee.
-
-The unit of analysis will be the speaker. The calibration and test groups will contain one sentence per speaker, so that the observations used by the calibration are close to independent of one another, as the calibration method, Learn-Then-Test, requires (Section~\ref{sec:obj3}). The method will be judged successful if, on speakers not used to design or calibrate it, it costs fewer forward passes than the released DMOSpeech~2 system, its quality is not worse than that system's within stated margins, and it fails on at most a small, stated share of sentences more than that system does. A result in which no candidate passes the calibration test, in which only the most expensive path passes, or in which a simpler system matches the method at lower cost, will be reported as a finding. The design measures speech quality, prosodic variety, computing cost and risk only; it does not measure clinical, educational or user outcomes.
+All comparisons will be paired: every system will synthesize the same inputs from the same random starting values, and no network will be retrained. The prompt condition and the number of calibration speakers will be varied; the networks, the candidate paths, the seeds and the hardware will be held fixed. The unit of analysis will be the speaker, with one sentence per speaker in the calibration and test groups. Results on the development speakers, including those of Appendix~\ref{app:snr-r}, will be treated as exploratory. The study will measure speech quality, prosodic variety, computing cost and risk, not clinical or user outcomes.
 
 % =====================================================================
 \subsection{System Architecture}
 \label{sec:architecture}
 
-The proposed method adds a decision step, the \emph{router}, to DMOSpeech~2 without changing any network. Figure~\ref{fig:method} shows the architecture, and Table~\ref{tab:components} lists its components, which fall into three groups: the frozen backbone, the released networks used without retraining; the router, which decides during generation what the teacher hands to the student; and the offline calibrator, which selects the teacher path and the router's threshold once, before the system is used.
+The proposed method adds a decision step, the \emph{router}, to DMOSpeech~2 without changing any network. Figure~\ref{fig:method} shows the architecture, and Table~\ref{tab:components} lists its components, which fall into three groups: the frozen backbone, the released networks used without retraining; the router, which decides during generation what the teacher hands to the student; and the offline calibrator, which sets the router's threshold for each candidate teacher path once, before the system is used.
 
-The frozen backbone consists of the duration predictor, the teacher, the distilled student and the vocoder. The duration predictor fixes the length of the output. The teacher starts from random noise and turns it step by step into a mel-spectrogram; it will take $\hat k$ large steps, where $\hat k$ is two, four or six as selected by the calibration, and stop at the point $t_{\hat k}$ on its time scale, where it gives its estimate of the final mel-spectrogram (Section~\ref{sec:baseline}). The student runs once from pure noise to produce its draft, and $4-\hat k/2$ more times (three, two or one) from the selected payload to finish generation. The vocoder turns the final mel-spectrogram into a waveform.
+The frozen backbone consists of the duration predictor, the teacher, the distilled student and the vocoder. The duration predictor fixes the length of the output. The teacher starts from random noise and turns it step by step into a mel-spectrogram. It will take $k$ large steps, where $k$ is one of the candidate paths (two, four or six steps), then stop at the point $t_k$ on its time scale and give its estimate of the final mel-spectrogram (Section~\ref{sec:baseline}). The student runs once from pure noise to produce its draft, and $4-k/2$ more times from the selected payload to finish generation. The vocoder turns the final mel-spectrogram into a waveform.
 
-The router sits between the teacher and the student. It reads three things: the prompt audio, from which it estimates the signal-to-noise ratio $\hat S$, a measure of how loud the speech is compared with the background noise (Definition~\ref{def:snr}); the teacher's estimate $\hat x_1$; and the student draft $s_0$. From the last two it forms the corrected payload, called the quantile projection $Q(\hat x_1,s_0)$ (Definition~\ref{def:quantile}), and a score called the invariant residual $r$ (Definition~\ref{def:residual}), which measures how far the teacher's loudness values have moved from the draft's, for example because the teacher copied the prompt's background noise. The routing rule (Definition~\ref{def:policy}) passes the corrected payload when the prompt seems noisy or when the residual is above the threshold, and the teacher's own estimate otherwise. The router runs no network of its own: the draft is the only added forward pass, and it is counted in the cost (Proposition~\ref{prop:cost}).
+The router sits between the teacher and the student. It reads three things: the prompt audio, from which it estimates the signal-to-noise ratio $\hat S$, a measure of how loud the speech is compared with the background noise (Definition~\ref{def:snr}); the teacher's estimate $\hat x_1$; and the student draft $s_0$. From the last two it forms the corrected payload, called the quantile projection $Q(\hat x_1,s_0)$ (Definition~\ref{def:quantile}). It also computes a score called the invariant residual $r$ (Definition~\ref{def:residual}), which measures how far the teacher's loudness values have moved from the draft's, for example because the teacher copied the prompt's background noise. The routing rule (Definition~\ref{def:policy}) passes the corrected payload when the prompt seems noisy or when the residual is above the threshold, and the teacher's own estimate otherwise. The router runs no network of its own: the draft is the only added forward pass, and it is counted in the cost (Proposition~\ref{prop:cost}).
 
-The calibrator runs once, before deployment. For each candidate teacher path, it replays the routing rule on recorded outputs of a separate group of calibration speakers for a list of candidate thresholds and keeps the largest threshold, the one that lets the most teacher estimates through, that passes a statistical test on the number of failures. It then selects the least costly path for which some threshold passed (Algorithm~\ref{alg:ltt}). It changes no network and adds nothing to generation; its only outputs are the path $\hat k$ and the threshold $\hat\lambda_r$. If no path passes, the released DMOSpeech~2 system is used instead (Proposition~\ref{prop:fallback}).
+The calibrator runs once, before deployment. For each candidate teacher path, it replays the routing rule on recorded outputs of a separate group of calibration speakers, trying a list of candidate thresholds. It keeps the largest threshold that passes a statistical test on the number of failures, which is the one that lets the most teacher estimates through (Algorithm~\ref{alg:ltt}). It changes no network and adds nothing to generation; its only output is one threshold $\hat\lambda_k$ for each path. A path for which no threshold passes falls back to the released DMOSpeech~2 system (Proposition~\ref{prop:fallback}).
 
 \input{figures/fig_method}
 
 \begin{table}[!htbp]
 \centering\small
-\caption{Components of the proposed architecture.}
+\caption{Components of the proposed architecture}
 \label{tab:components}
 \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.1cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{2.3cm} >{\raggedright\arraybackslash}p{2.5cm}@{}}
 \toprule
 \textbf{Component} & \textbf{Role} & \textbf{Status} & \textbf{Cost per utterance} \\
 \midrule
 Duration predictor & Sets the number of frames to generate & Frozen & As released \\
-Teacher (F5-TTS) & $\hat k\in\{2,4,6\}$ guided Euler steps on the 8-interval grid and the endpoint estimate at $t_{\hat k}$ & Frozen & $2\hat k+2$: 6, 10 or 14 passes \\
+Teacher (F5-TTS) & $k\in\{2,4,6\}$ guided Euler steps on the 8-interval grid and the endpoint estimate at $t_k$ & Frozen & $2k+2$ passes \\
 Student (DMOSpeech~2), draft & One step from pure noise, giving $s_0$ & Frozen & 1 pass \\
-Student (DMOSpeech~2), finish & Re-noising steps from the payload, from $j=\hat k/2$ & Frozen & $4-\hat k/2$: 3, 2 or 1 pass \\
+Student (DMOSpeech~2), finish & Re-noising steps from the payload, from $j=k/2$ & Frozen & $4-k/2$ passes \\
 Vocoder (Vocos) & Mel-spectrogram to waveform & Frozen & As released \\
 Prompt SNR estimator & Frame-energy estimate $\hat S$ & Added, inference & No pass \\
 Quantile projection & Payload $Q(\hat x_1,s_0)$ & Added, inference & No pass \\
 Residual scorer & Invariant residual $r(\hat x_1,s_0)$ & Added, inference & No pass \\
-Payload router $\pi_{\hat k,\hat\lambda_r}$ & Chooses $\hat x_1$ or $Q(\hat x_1,s_0)$ & Added, inference & No pass \\
-Calibrator & Selects $\hat k$ and $\hat\lambda_r$ with a guarantee & Added, offline & Run once \\
+Payload router $\pi_{k,\hat\lambda_k}$ & Chooses $\hat x_1$ or $Q(\hat x_1,s_0)$ & Added, inference & No pass \\
+Calibrator & Sets $\hat\lambda_k$ for each path with a guarantee & Added, offline & Run once \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -74,14 +74,12 @@ Several choices in this architecture rest on the team's earlier experiments. App
 \subsection{Research Workflow}
 \label{sec:workflow}
 
-Figure~\ref{fig:workflow} shows the design of Section~\ref{sec:design} as fifteen steps, from preparing the data to reporting the results. Each row of the figure is one stage: the common setup, followed by one stage per specific objective; the development of the method takes two rows, one for formulating it, which uses no data, and one for calibrating it on its own group of speakers. Table~\ref{tab:steps} describes what will be done in every step and gives the section where the step is explained.
-
-\input{figures/fig_workflow}
+Table~\ref{tab:steps} lists the fifteen steps of the methodology, grouped into the common setup and one stage per specific objective, with the section where each step is explained.
 
 {\small
 \setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
 \begin{longtable}{@{}>{\centering\arraybackslash}p{0.8cm} >{\raggedright\arraybackslash}p{8.0cm} >{\raggedright\arraybackslash}p{2.4cm} >{\raggedright\arraybackslash}p{1.5cm}@{}}
-\caption{Steps of the methodology (Figure~\ref{fig:workflow}).}
+\caption{Steps of the methodology}
 \label{tab:steps} \\
 \toprule
 \textbf{Step} & \textbf{What will be done} & \textbf{Data} & \textbf{Section} \\
@@ -98,7 +96,7 @@ Figure~\ref{fig:workflow} shows the design of Section~\ref{sec:design} as fiftee
 \bottomrule
 \endlastfoot
 \multicolumn{4}{@{}l}{\textit{Common setup}} \\
-1 & Divide 500 Seed-TTS speakers into separate development, calibration and test groups, with no speaker in more than one group and one sentence per speaker; select the LibriSpeech-PC test sentences. & All splits & \ref{sec:data} \\
+1 & Divide the Seed-TTS speakers into separate development, calibration and test groups, with no speaker in more than one group and one sentence per speaker; select the LibriSpeech-PC test sentences. & All splits & \ref{sec:data} \\
 2 & Create the clean prompt and seven degraded versions of every prompt; assign one condition per calibration and test speaker for the calibration and the bound check. & All splits & \ref{sec:data} \\
 3 & Check that the same input always gives the same output, that the payload computations behave as defined, that the counted forward passes match Proposition~\ref{prop:cost}, and that the fallback reproduces the released system. & --- & \ref{sec:tools} \\
 \midrule
@@ -111,21 +109,20 @@ Figure~\ref{fig:workflow} shows the design of Section~\ref{sec:design} as fiftee
 7 & State the problem, define the quantile projection, the invariant residual and the routing rule, and prove their properties. & --- & \ref{sec:obj2} \\
 \midrule
 \multicolumn{4}{@{}l}{\textit{Objective 2: develop the method (calibration with a reliability guarantee)}} \\
-8 & Fix $\alpha=0.05$, $\delta=0.10$, the candidate teacher paths, the ordered grid of $\lambda_r$ and the failure rule before calibration. & --- & \ref{sec:calibration} \\
+8 & Fix $\alpha$, $\delta$, the candidate teacher paths, the ordered grid of $\lambda$ and the failure rule before calibration. & --- & \ref{sec:calibration} \\
 9 & Record the outputs of both payloads of every path and of the released system for the calibration speakers; for each path, test the candidate thresholds in a fixed order with a statistical test on their numbers of failures (Algorithm~\ref{alg:ltt}). & Calibration & \ref{sec:calibration} \\
-10 & Select the least costly path with a certified threshold and lock $\hat k$ and $\hat\lambda_r$; if no path passes, use the released system and report this. & Calibration & \ref{sec:calibration} \\
+10 & Lock the accepted threshold $\hat\lambda_k$ of every path; a path with no accepted threshold falls back to the released system. & Calibration & \ref{sec:calibration} \\
 \midrule
 \multicolumn{4}{@{}l}{\textit{Objective 3: evaluate the method and test its robustness}} \\
-11 & Measure on the test speakers how often the method fails where the released system does not, with a confidence interval; repeat the calibration on 100 random re-divisions of the speakers. & Calibration, test & \ref{sec:verify} \\
-12 & Run all compared systems (Table~\ref{tab:systems}), including the candidate paths that were not selected, on the test split and on LibriSpeech-PC. & Test, LibriSpeech-PC & \ref{sec:compared} \\
-13 & Compare forward passes, running time on the Tesla T4, WER, SIM, UTMOS, pitch variety and failure rates with paired statistical tests and tests of equivalence. & Test, LibriSpeech-PC & \ref{sec:stats} \\
-14 & Report results per prompt condition; calibrate on clean prompts and test on damaged ones; repeat calibration with 75, 100 and 200 speakers and at $\alpha=0.10$. & Calibration, test & \ref{sec:robust} \\
+11 & Measure on the test speakers how often the method fails where the released system does not, with a confidence interval; repeat the calibration on random re-divisions of the speakers. & Calibration, test & \ref{sec:verify} \\
+12 & Run all compared systems (Table~\ref{tab:systems}), including the router on every candidate path, on the test split and on LibriSpeech-PC. & Test, LibriSpeech-PC & \ref{sec:compared} \\
+13 & Compare forward passes, running time on the Tesla T4, WER, SIM, UTMOS, pitch variety and failure rates with paired statistical tests and tests of equivalence, and compare the candidate paths with one another. & Test, LibriSpeech-PC & \ref{sec:stats} \\
+14 & Report results per prompt condition; calibrate on clean prompts and test on damaged ones; repeat calibration with fewer speakers and with a larger tolerance. & Calibration, test & \ref{sec:robust} \\
 \midrule
 15 & Report all results, including negative ones. & --- & \ref{sec:workflow} \\
 \end{longtable}
 }
 
-Each stage can produce a negative result, and each such result will be reported. The reproduced baseline may differ from the published numbers; the calibration may find no path and threshold that pass its test, or only the most expensive path; the selected configuration may fail more often than promised on new speakers; and a cheaper system, such as the student alone or the student restarted from its own draft, may match the router's quality, in which case the teacher's contribution would rest only on the variety of intonation it adds. If the router's variety is also not higher than that of the student restarted from its own draft, the study will report that the teacher's passes are not justified on these data and that the three-pass student is the cost-effective choice. The workflow is designed so that these outcomes are detected rather than hidden.
 
 % =====================================================================
 \subsection{Common Experimental Setup}
@@ -134,7 +131,7 @@ Each stage can produce a negative result, and each such result will be reported.
 \subsubsection{Baseline Sampler and Cost}
 \label{sec:baseline}
 
-The study will use the trained DMOSpeech~2 networks and generation code released with \textcite{li2025dmospeech2}. For a prompt and a target text, the duration predictor fixes the total length. The mel-spectrogram $x\in\R^{F\times 100}$ holds $F$ time frames of 100 frequency bands each: the frames of the prompt followed by the frames to be generated, which a mask $M$ marks. This section describes the released generation procedure, which is the baseline, and then the shorter teacher paths among which the router's path will be selected.
+The study will use the trained DMOSpeech~2 networks and generation code released with \textcite{li2025dmospeech2}. For a prompt and a target text, the duration predictor fixes the total length. The mel-spectrogram $x\in\R^{F\times 100}$ holds $F$ time frames of 100 frequency bands each: the frames of the prompt followed by the frames to be generated, which a mask $M$ marks. This section describes the released generation procedure, which is the baseline, and then the shorter teacher paths of the router.
 
 \phead{Released sampler} The backbone is used exactly as released, so it is described here only as far as the method depends on it; Algorithm~\ref{alg:baseline} gives the complete procedure. The teacher is a flow-matching model: it starts from random noise at time $t=0$ and moves it in small steps towards speech at time $t=1$. The steps follow the sway schedule of F5-TTS \parencite{chen2024f5}, which places more steps near the start, where the coarse structure of the speech is decided:
 \begin{equation}
@@ -158,7 +155,7 @@ $x_{t_i}$ & teacher state at time $t_i$ \\
 $v(x_{t_i},t_i)$ & guided velocity at that state \\
 $1-t_i$ & remaining distance to the speech end of the time scale
 \end{whereterms}
-This estimate is what the teacher hands to the student. The released system stops the teacher at the first grid point after its switching argument $s=0.25$ on the 16-interval grid ($t_8\approx0.293$, eight steps) and hands over $\hat x_1(t_8)$. The student then mixes the handed-over estimate with fresh random noise, to the level $\tau$ at which it was trained to work, and predicts the output again. It repeats this once per point of its own schedule $\tau\in\{0,\allowbreak0.0761,\allowbreak0.2929,\allowbreak0.6173\}$, starting from position $j$, at one forward pass per step; the released code uses $j=1$, that is, three steps. Finally the prompt frames are removed and Vocos converts the mel-spectrogram into a waveform \parencite{siuzdak2024vocos}.
+This estimate is what the teacher hands to the student. The released system stops the teacher at the first grid point after its switching argument $s=0.25$ on the 16-interval grid, after eight steps, and hands over $\hat x_1(t_8)$. The student then mixes the handed-over estimate with fresh random noise, to the level $\tau$ at which it was trained to work, and predicts the output again. It repeats this once per point of its own schedule $\tau_j=1-\cos(\pi j/8)$, $j=0,\dots,3$, starting from position $j$, at one forward pass per step; the released code uses $j=1$, that is, three steps. Finally the prompt frames are removed and Vocos converts the mel-spectrogram into a waveform \parencite{siuzdak2024vocos}.
 
 \begin{algorithm}[!htbp]
 \caption{Released teacher-guided sampler of DMOSpeech~2 (baseline)}
@@ -173,7 +170,7 @@ This estimate is what the teacher hands to the student. The released system stop
   \State $x_{t_{i+1}} \gets x_{t_i} + (t_{i+1}-t_i)\,v$ \Comment{Euler step}
 \EndFor
 \State $x \gets x_{t_k} + (1-t_k)\,v(x_{t_k},t_k)$ \Comment{endpoint estimate, 2 forward passes}
-\For{$\tau \in \{0.0761,\,0.2929,\,0.6173\}$} \Comment{student, $j=1$}
+\For{$\tau \in \{\tau_1,\tau_2,\tau_3\}$} \Comment{student, $j=1$}
   \State draw $\varepsilon\sim\mathcal{N}(0,I)$ with a seed fixed per input and step
   \State $\phi \gets (1-\tau)\,\varepsilon + \tau\,x$; \quad $x \gets \phi + (1-\tau)\,g(\phi,\tau)$ \Comment{1 forward pass}
 \EndFor
@@ -183,16 +180,16 @@ This estimate is what the teacher hands to the student. The released system stop
 
 \phead{Candidate teacher paths} The router will run the teacher on the coarser 8-interval grid ($N=8$ in \Cref{eq:grid}), whose steps are twice as large as those of the released grid, and stop it after $k$ steps at the \emph{commit point} $t_k$, where it takes the estimate $\hat x_1=\hat x_1(t_k)$ of \Cref{eq:endpoint}. Three values of $k$ will be considered,
 \begin{equation}
-k\in\mathcal K=\{2,4,6\},\qquad t_2\approx0.0761,\quad t_4\approx0.2929,\quad t_6\approx0.6173,
+k\in\mathcal K=\{2,4,6\},\qquad t_k=1-\cos\Big(\frac{\pi k}{16}\Big),
 \label{eq:paths}
 \end{equation}
 \eqentry{Candidate teacher paths}
 \begin{whereterms}[2.6cm]
 $k$ & number of guided Euler steps the teacher takes before the handover \\
 $\mathcal K$ & set of candidate teacher paths, fixed before calibration \\
-$t_k$ & commit point of path $k$ on the 8-interval grid, $t_k=1-\cos(\pi k/16)$
+$t_k$ & commit point of path $k$ on the 8-interval grid
 \end{whereterms}
-These are the only points of the 8-interval grid that coincide with a point of the student's schedule, $\tau_{k/2}$, so the student can restart exactly where the teacher stops. The 8-interval grid consists of every second point of the 16-interval grid, so the four-step path reaches $t_4=t_8^{(16)}$, exactly the point where the released system hands over, in four steps of twice the size instead of eight; the two-step path hands over earlier and the six-step path later. The calibration will select one path, $\hat k$ (Section~\ref{sec:obj3}), and the selected path will be the same for every input. Before the payload is chosen, the student makes a quick first attempt at the whole output directly from noise, the draft,
+These are the only points of the 8-interval grid that coincide with a point of the student's schedule, $\tau_{k/2}$, so the student can restart exactly where the teacher stops. The 8-interval grid consists of every second point of the 16-interval grid, so the four-step path reaches $t_4=t_8^{(16)}$, exactly the point where the released system hands over, in four steps of twice the size instead of eight; the two-step path hands over earlier and the six-step path later. Each path will be calibrated and evaluated separately (Sections~\ref{sec:obj3} and~\ref{sec:obj4}), and within one configuration the same path is used for every input. Before the payload is chosen, the student makes a quick first attempt at the whole output directly from noise, the draft,
 \begin{equation}
 s_0 = \varepsilon_0 + g(\varepsilon_0, 0),
 \label{eq:draft}
@@ -203,7 +200,7 @@ $s_0$ & student draft: the student's one-step prediction of the output from nois
 $\varepsilon_0$ & Gaussian noise drawn with the input's seed, $\varepsilon_0\sim\mathcal N(0,I)$ \\
 $g(\varepsilon_0,0)$ & student network output at $\tau=0$ (one forward pass)
 \end{whereterms}
-which is the student step of Algorithm~\ref{alg:baseline} at $\tau=0$ and does not depend on the teacher. After routing, the student finishes from the selected payload starting at position $j=k/2$ of its schedule, that is, with $4-k/2$ steps: three steps from $\tau=0.0761$ for $k=2$, two from $\tau=0.2929$ for $k=4$, and one from $\tau=0.6173$ for $k=6$. Its first step mixes in exactly the amount of noise that was still left when the teacher stopped, so the student continues from where the teacher left off. For $k=4$, the two-step finish is also the configuration of the DMOSpeech~2 paper \parencite{li2025dmospeech2}.
+which is the student step of Algorithm~\ref{alg:baseline} at $\tau=0$ and does not depend on the teacher. After routing, the student finishes from the selected payload starting at position $j=k/2$ of its schedule, that is, with $4-k/2$ steps from $\tau_{k/2}=t_k$. Its first step mixes in exactly the amount of noise that was still left when the teacher stopped, so the student continues from where the teacher left off. For $k=4$, the two-step finish is also the configuration of the DMOSpeech~2 paper \parencite{li2025dmospeech2}.
 
 \phead{Cost} Counting forward passes gives the exact cost of every system in the study, which the rest of the chapter uses as the unit of computation.
 
@@ -225,7 +222,7 @@ forward passes. In particular, the released system costs $2\cdot9+0+3=21$ passes
 \[
 C(k)=2(k+1)+1+\big(4-k/2\big)=\tfrac32k+7,
 \]
-that is, 10, 13 or 16 passes for $k=2$, 4 or 6, for every input and whichever payload it selects. The draft accounts for one of these passes even when the teacher's estimate is handed over, because the residual needs it.
+for every input and whichever payload it selects; every candidate path costs less than the released system. The draft accounts for one of these passes even when the teacher's estimate is handed over, because the residual needs it.
 \end{proposition}
 \begin{proof}
 Each guided evaluation runs the teacher once with and once without the condition; each student step and the draft run the student once (Algorithm~\ref{alg:baseline}, \Cref{eq:draft}). The released system makes $k=8$ Euler steps and one endpoint evaluation, $e=9$, with $j=1$. The router with path $k$ makes $k$ Euler steps and one endpoint evaluation, $e=k+1$, computes the draft, $u=1$, and finishes from $j=k/2$, so $n_s=4-k/2$. The quantile projection, the residual and the SNR estimate (Section~\ref{sec:obj2}) involve no network.
@@ -235,53 +232,48 @@ Table~\ref{tab:cost} applies \Cref{eq:cost} to every system that will be compare
 
 \begin{table}[!htbp]
 \centering\small
-\caption{Forward passes per utterance of the compared systems, from \Cref{eq:cost}. For the SNR-only router, $u=1$ only when the prompt falls below the SNR gate, because only the projection needs the draft.}
+\caption{Forward passes per utterance of the compared systems}
 \label{tab:cost}
-\begin{tabular}{@{}>{\raggedright\arraybackslash}p{5.4cm} c c c c@{}}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{4.8cm} c c c c@{}}
 \toprule
 \textbf{System} & \textbf{Teacher $2e$} & \textbf{Draft $u$} & \textbf{Student $n_s$} & \textbf{Total $C$} \\
 \midrule
 F5-TTS teacher alone (32 steps) & 64 & 0 & 0 & 64 \\
-DMOSpeech~2, paper configuration & 28 & 0 & 2 & 30 \\
 DMOSpeech~2, released system ($s=0.25$) & 18 & 0 & 3 & 21 \\
-Router, two-step path ($k=2$, $j=1$) & 6 & 1 & 3 & 10 \\
-Router, four-step path ($k=4$, $j=2$) & 10 & 1 & 2 & 13 \\
-Router, six-step path ($k=6$, $j=3$) & 14 & 1 & 1 & 16 \\
-Never project, selected path $\hat k$ & $2\hat k+2$ & 0 & $4-\hat k/2$ & $C(\hat k)-1$ \\
-Always project, selected path $\hat k$ & $2\hat k+2$ & 1 & $4-\hat k/2$ & $C(\hat k)$ \\
-SNR-only router, selected path $\hat k$ & $2\hat k+2$ & 0 or 1 & $4-\hat k/2$ & $C(\hat k)-u$ \\
+Payload router, path $k\in\{2,4,6\}$ & $2k+2$ & 1 & $4-k/2$ & $C(k)$ \\
+Never project, path $k$ & $2k+2$ & 0 & $4-k/2$ & $C(k)-1$ \\
+Always project, path $k$ & $2k+2$ & 1 & $4-k/2$ & $C(k)$ \\
+SNR-only router, path $k$ & $2k+2$ & 0 or 1 & $4-k/2$ & $\le C(k)$ \\
 Student restarted from its draft (\texttt{STUR2}) & 0 & 1 & 2 & 3 \\
 DMOSpeech~2 student alone & 0 & 0 & 4 & 4 \\
 \bottomrule
 \end{tabular}
-\end{table}
 
-\begin{remark}\label{rem:grid}
-The DMOSpeech~2 paper reports its main configuration as 14 teacher and 2 student steps at $t_{\text{switch}}=0.25$ on a 32-interval sway grid \parencite{li2025dmospeech2}, which is 28 teacher passes and 2 student passes. The released code instead stops at the first point above $s$ on its default 16-interval grid. The authors' evaluation script is not released, so the paper configuration will be reproduced from the paper's description and reported next to the released one; the released system will be the cost reference and the reference of the risk (Section~\ref{sec:obj3}), because it is what a user of the released code runs.
-\end{remark}
+\end{table}
 
 \subsubsection{Notation}
 Table~\ref{tab:notation} lists the symbols used in the rest of this chapter. Inputs are treated as random draws from an unknown population $\mathcal{D}$ of (prompt, prompt text, target text, prompt condition) combinations; this is what allows the calibration to make statements about new inputs from the same population.
 
 \begin{table}[!htbp]
 \centering\small
-\caption{Notation.}
+\caption{Notation}
 \label{tab:notation}
 \begin{tabularx}{\columnwidth}{@{}>{\raggedright\arraybackslash}p{2.9cm} X@{}}
 \toprule
 Symbol & Meaning \\
 \midrule
 $x$ & input (prompt audio, prompt text, target text, prompt condition) drawn from distribution $\mathcal{D}$ \\
-$k$, $\mathcal K$, $\hat k$ & teacher path (number of teacher steps); candidate paths $\{2,4,6\}$; selected path \\
+$k$, $\mathcal K$ & teacher path (number of teacher steps); candidate paths $\{2,4,6\}$ \\
 $C(k)$ & forward passes per utterance of the router with path $k$ (Prop.~\ref{prop:cost}) \\
 $\hat x_1$ & teacher endpoint estimate at the commit point $t_k$ (generated frames, $n\times B$) \\
 $s_0$ & student draft (\Cref{eq:draft}) \\
 $Q(\hat x_1,s_0)$ & quantile projection payload (Def.~\ref{def:quantile}) \\
 $r$ & invariant residual (Def.~\ref{def:residual}) \\
-$\hat S$, $\theta$ & estimated prompt SNR in dB; fixed SNR gate, $\theta=20$~dB \\
+$\hat S$, $\theta$ & estimated prompt SNR in dB; fixed SNR gate \\
+$n_{\text{dev}}$, $n$, $n_{\text{test}}$ & numbers of development, calibration and test speakers \\
 $\pi_{k,\lambda}$ & routing rule with path $k$ and residual threshold $\lambda$ (Def.~\ref{def:policy}) \\
 $\Lambda=\{\lambda_1<\dots<\lambda_G\}$ & ordered grid of candidate thresholds \\
-$\hat\lambda_r$ & calibrated threshold of the selected path \\
+$\hat\lambda_k$ & calibrated threshold of path $k$ \\
 $F(x,y)\in\{0,1\}$ & quality failure of output $y$ for input $x$ (Def.~\ref{def:failure}) \\
 $y_{\text{ref}}(x)$, $y_{k,\lambda}(x)$ & output of the released system; output of the router with path $k$ and threshold $\lambda$ \\
 $e(x,k,\lambda)$ & excess-failure indicator (\Cref{eq:excess}) \\
@@ -296,7 +288,7 @@ $C$ & forward passes per utterance (Prop.~\ref{prop:cost}) \\
 \subsubsection{Data and Splits}
 \label{sec:data}
 
-The corpus will be Seed-TTS test-en, whose prompts come from Common Voice \parencite{anastassiou2024seedtts,ardila2020commonvoice}; it is the English test set used by DMOSpeech~2 \parencite{li2025dmospeech2}, so the reproduced baseline can be compared with published numbers. It contains 1,088 utterances from 666 prompt speakers. The speakers will be divided at random into three groups, called splits, with no speaker in more than one split (Table~\ref{tab:splits}). The splits will use 500 of the 666 speakers and one sentence per speaker; speaker identity is taken from the prompt recording. The development split will serve the characterization stage and the fixing of the minimum quality levels; the calibration split will serve only the selection of the teacher path and the threshold $\lambda_r$; and the test split will serve the check of the guarantee and the comparisons. Keeping the speakers separate prevents the threshold from being tuned to voices it is later tested on, and one sentence per speaker keeps the inputs close to independent, which the guarantee of Proposition~\ref{prop:ltt} requires. The development runs of Appendix~\ref{app:snr-r} used development speakers only, so the calibration and test speakers will be new to the method.
+The corpus will be Seed-TTS test-en, whose prompts come from Common Voice \parencite{anastassiou2024seedtts,ardila2020commonvoice}; it is the English test set used by DMOSpeech~2 \parencite{li2025dmospeech2}, so the reproduced baseline can be compared with published numbers. It contains 1,088 utterances from 666 prompt speakers. The speakers will be divided at random into three groups, called splits, with no speaker in more than one split (Table~\ref{tab:splits}). The splits will use $n_{\text{dev}}+n+n_{\text{test}}$ of the 666 speakers and one sentence per speaker; speaker identity is taken from the prompt recording. The development split will serve the characterization stage and the fixing of the minimum quality levels; the calibration split will serve only the calibration of the threshold of each path; and the test split will serve the check of the guarantee and the comparisons. Keeping the speakers separate prevents the threshold from being tuned to voices it is later tested on, and one sentence per speaker keeps the inputs close to independent, which the guarantee of Proposition~\ref{prop:ltt} requires. The development runs of Appendix~\ref{app:snr-r} used development speakers only, so the calibration and test speakers will be new to the method.
 
 A second test set, the test-clean portion of LibriSpeech-PC \parencite{meister2023librispeechpc}, will be used only for testing and never for development or calibration. Its audio is LibriSpeech test-clean \parencite{panayotov2015librispeech} and its transcripts are the LibriSpeech-PC versions with punctuation and capitalization restored. It differs from Seed-TTS test-en in source (read audiobooks rather than crowd-sourced recordings), so it checks whether the threshold calibrated on Seed-TTS speakers carries over to a new source. One utterance per speaker will be used, chosen in the manifest before testing. Because the guarantee covers only inputs like those used in calibration, results on this set will be reported as a check of how well the method transfers, not as part of the guarantee.
 
@@ -306,7 +298,7 @@ Before the splits are drawn, a list called the manifest will record every select
 
 \begin{table}[!htbp]
 \centering\small
-\caption{Prompt conditions.}
+\caption{Prompt conditions}
 \label{tab:conditions}
 \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.6cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{3.0cm}@{}}
 \toprule
@@ -324,20 +316,20 @@ Babble, 15~dB & Recorded cafeteria chatter from DEMAND \parencite{thiemann2013de
 \end{tabularx}
 \end{table}
 
-All eight conditions will be synthesized for every development, calibration and test speaker, so that results can be reported per condition. For the calibration and for the check of the guarantee, however, each calibration and test speaker will contribute one input: the manifest will assign each speaker one condition at random, so that every condition goes to the same number of speakers (25 of the 200 in each split). This keeps one observation per speaker, as the guarantee requires, and makes the calibration inputs an equal mix of the eight conditions. The guarantee therefore holds on average over that mix; per-condition rates will be reported separately (Section~\ref{sec:robust}).
+All eight conditions will be synthesized for every development, calibration and test speaker, so that results can be reported per condition. For the calibration and for the check of the guarantee, however, each calibration and test speaker will contribute one input: the manifest will assign each speaker one condition at random, so that every condition goes to the same number of speakers, one eighth of each split. This keeps one observation per speaker, as the guarantee requires, and makes the calibration inputs an equal mix of the eight conditions. The guarantee therefore holds on average over that mix; per-condition rates will be reported separately (Section~\ref{sec:robust}).
 
 \begin{table}[!htbp]
 \centering\small
-\caption{Data splits, with no speaker in more than one split.}
+\caption{Data splits, with no speaker in more than one split}
 \label{tab:splits}
 \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.6cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{3.6cm} >{\raggedright\arraybackslash}p{2.5cm}@{}}
 \toprule
 \textbf{Split} & \textbf{Used for} & \textbf{Constraint} & \textbf{Size} \\
 \midrule
-Development & Characterization; minimum quality levels $s_{\min}$, $u_{\min}$ & No speaker shared with other splits & 100 speakers / 100 utterances \\
-Calibration & Selection of $\hat k$ and $\hat\lambda_r$ & One utterance per speaker & 200 speakers / 200 utterances \\
-Test & Check of the guarantee; comparisons & One utterance per speaker & 200 speakers / 200 utterances \\
-LibriSpeech-PC test-clean & Transfer to a new source & Test only; one utterance per speaker & 40 speakers / 40 utterances \\
+Development & Characterization; minimum quality levels $s_{\min}$, $u_{\min}$ & No speaker shared with other splits & $n_{\text{dev}}$ speakers, one utterance each \\
+Calibration & Threshold $\hat\lambda_k$ of each path & One utterance per speaker & $n$ speakers, one utterance each \\
+Test & Check of the guarantee; comparisons & One utterance per speaker & $n_{\text{test}}$ speakers, one utterance each \\
+LibriSpeech-PC test-clean & Transfer to a new source & Test only; one utterance per speaker & $n_{\text{LS}}$ speakers, one utterance each \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -376,11 +368,11 @@ $\lVert\cdot\rVert$ & Euclidean length of a vector
 \begin{whereterms}[2.6cm]
 $\mathrm{CV}_{f_0}$ & pitch variety of one system on one input; higher means more varied melodies \\
 $f_0^{(k)}(t)$ & fundamental frequency of the output of seed $k$ at frame $t$ \\
-$K$ & number of seeds, $K=12$ \\
+$K$ & number of seeds \\
 $\operatorname{sd}_k$, $\operatorname{mean}_k$ & standard deviation and mean across the seeds that voice frame $t$ \\
 $\mathcal V$ & frames voiced by at least $\max(2,\lceil0.3K\rceil)$ seeds
 \end{whereterms}
-Because different seeds also change the timing of the words, an aligned version will be reported as well, in which every output is first stretched in time to line up with the first one by dynamic time warping \parencite{sakoe1978dtw}; it separates variety in melody from variety in timing. Pitch-based measures capture only part of what listeners hear as varied prosody, since they ignore rhythm and loudness \parencite{yang2025prosody}, and newer neural pitch trackers are more accurate than pYIN \parencite{morrison2023pitch}; $\mathrm{CV}_{f_0}$ is kept because it is the measure of the team's development runs, and its limits will be stated with the results. Variety will be measured on 40 test speakers under the clean and the white 25~dB conditions, with the same 12 seeds for every system.
+Because different seeds also change the timing of the words, an aligned version will be reported as well, in which every output is first stretched in time to line up with the first one by dynamic time warping \parencite{sakoe1978dtw}; it separates variety in melody from variety in timing. Pitch-based measures capture only part of what listeners hear as varied prosody, since they ignore rhythm and loudness \parencite{yang2025prosody}, and newer neural pitch trackers are more accurate than pYIN \parencite{morrison2023pitch}; $\mathrm{CV}_{f_0}$ is kept because it is the measure of the team's development runs, and its limits will be stated with the results. Variety will be measured on $n_{\text{var}}$ test speakers under the clean condition and one moderate noise condition, with the same $K$ seeds for every system.
 
 \phead{Cost} Cost will be measured primarily in forward passes (Proposition~\ref{prop:cost}) and secondarily in measured time and real-time factor on the study's GPU, an NVIDIA Tesla T4 through Google Colab. The real-time factor relates synthesis time to the length of the speech produced; values below one mean faster than real time:
 \begin{equation}
@@ -395,18 +387,23 @@ $T_{\text{audio}}$ & duration of the generated speech
 
 \begin{table}[!htbp]
 \centering\small
-\caption{Quality, variety and cost measures.}
+\caption{Measures of quality, variety, risk and cost}
 \label{tab:measures}
+\label{tab:matrix}
+\label{tab:matrix-cols}
 \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.4cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{3.0cm} >{\raggedright\arraybackslash}p{3.0cm}@{}}
 \toprule
 \textbf{Measure} & \textbf{Computed with} & \textbf{Better when} & \textbf{Role} \\
 \midrule
-WER & Whisper-large-v3 transcript, stated normalization & Lower & Failure rule; compared \\
-SIM & WavLM-Base+ speaker verifier, cosine similarity & Higher & Failure rule; compared \\
+WER & Whisper-large-v3 transcript, stated normalization (\Cref{eq:wer}) & Lower & Failure rule; compared \\
+SIM & WavLM-Base+ speaker verifier, cosine similarity (\Cref{eq:sim}) & Higher & Failure rule; compared \\
 UTMOS & Predicted mean opinion score & Higher & Failure rule; compared \\
-$\mathrm{CV}_{f_0}$ & Pitch tracks of 12 seeds, raw and time-aligned & Higher & Compared \\
-Forward passes & Proposition~\ref{prop:cost} & Lower & Primary cost \\
-Runtime, RTF & Wall-clock time on the Tesla T4 GPU, full pipeline & Lower & Secondary cost \\
+Prosodic variety, $\mathrm{CV}_{f_0}$ & Spread of pitch across $K$ seeds of the same sentence, raw and time-aligned (\Cref{eq:cvf0}) & Higher & Compared; main test of the teacher's value \\
+Failure rate & Share of inputs that fail the quality rule, with an exact interval (Def.~\ref{def:failure}) & Lower & Compared \\
+Excess-failure rate & Share of inputs that fail while the released system passes, with an exact interval (\Cref{eq:excess}) & Lower & Calibration; compared \\
+Routing rate & Share of inputs given the projection & --- & Router only \\
+Forward passes, saving & Proposition~\ref{prop:cost}; share of the released system's passes saved (\Cref{eq:saving}) & Fewer passes & Primary cost \\
+Runtime, RTF & Wall-clock time on the Tesla T4 GPU, full pipeline (\Cref{eq:rtf}) & Lower & Secondary cost \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -428,42 +425,42 @@ and $F(x,y)=0$ otherwise.
 \begin{whereterms}[2.6cm]
 $F(x,y)$ & quality-failure indicator of output $y$ on input $x$ \\
 $\mathrm{WER}(x,y)$, $\mathrm{SIM}(x,y)$, $\mathrm{UTMOS}(y)$ & the three measures of output $y$ \\
-$c$ & WER ceiling, $c=12.5\%$ \\
+$c$ & WER ceiling \\
 $s_{\min}$ & SIM floor (\Cref{eq:floors}) \\
 $u_{\min}$ & UTMOS floor (\Cref{eq:floors})
 \end{whereterms}
 \end{definition}
 
-The WER ceiling of 12.5\% allows one misrecognized word in an eight-word sentence, so a short sentence does not fail because of a single recognizer error. Minimum SIM and UTMOS levels cannot be taken from the literature, because both scores depend on the scoring model and the prompts. They will therefore be set from the reproduced baseline on the development speakers, before any calibration:
+The WER ceiling $c$ is set so that a short sentence does not fail because of a single recognizer error. Minimum SIM and UTMOS levels cannot be taken from the literature, because both scores depend on the scoring model and the prompts. They will therefore be set from the reproduced baseline on the development speakers, before any calibration:
 \begin{equation}
 \begin{aligned}
-s_{\min} &= q_{0.05}\big\{\mathrm{SIM}(x, y_{\text{ref}}(x)) : x\in\mathcal X_{\text{dev}}^{\text{clean}}\big\},\\
-u_{\min} &= q_{0.05}\big\{\mathrm{UTMOS}(y_{\text{ref}}(x)) : x\in\mathcal X_{\text{dev}}^{\text{clean}}\big\}.
+s_{\min} &= q_{p}\big\{\mathrm{SIM}(x, y_{\text{ref}}(x)) : x\in\mathcal X_{\text{dev}}^{\text{clean}}\big\},\\
+u_{\min} &= q_{p}\big\{\mathrm{UTMOS}(y_{\text{ref}}(x)) : x\in\mathcal X_{\text{dev}}^{\text{clean}}\big\}.
 \end{aligned}
 \label{eq:floors}
 \end{equation}
 \eqentry{SIM and UTMOS floors}
 \begin{whereterms}[2.6cm]
-$q_{0.05}\{\cdot\}$ & 5th percentile of a set of scores \\
+$q_{p}\{\cdot\}$ & $p$-quantile of a set of scores: the value below which a share $p$ of the scores lies \\
 $y_{\text{ref}}(x)$ & output of the released DMOSpeech~2 system for input $x$ \\
 $\mathcal X_{\text{dev}}^{\text{clean}}$ & development inputs with clean prompts
 \end{whereterms}
-In plain words, an output fails on similarity or naturalness when it is worse than all but the worst 5\% of what the released system produces from clean prompts. The floors describe what the baseline already achieves rather than an ideal, so the released system will itself fail on some inputs, and its failure rate will be measured and reported like every other system's. UTMOS is included in the rule, unlike in the earlier proposal, because the router's choice mainly affects naturalness on damaged prompts (Appendix~\ref{app:snr-r}), and a rule without it would not see the failures the router is meant to prevent. Any output above the WER ceiling will also be checked by its transcript and by listening before the failure is attributed to synthesis rather than to the recognizer. All constants of the rule will be fixed before calibration and reported with the results.
+In plain words, an output fails on similarity or naturalness when it is worse than all but the worst share $p$ of what the released system produces from clean prompts. The floors describe what the baseline already achieves rather than an ideal, so the released system will itself fail on some inputs, and its failure rate will be measured and reported like every other system's. UTMOS is included in the rule, unlike in the earlier proposal, because the router's choice mainly affects naturalness on damaged prompts (Appendix~\ref{app:snr-r}), and a rule without it would not see the failures the router is meant to prevent. Any output above the WER ceiling will also be checked by its transcript and by listening before the failure is attributed to synthesis rather than to the recognizer. All constants of the rule will be fixed before calibration and reported with the results.
 
 A failed output is not removed from the data. The failure rate of a system is the number of inputs on which it fails divided by the number of inputs, reported with an exact Clopper--Pearson interval \parencite{clopper1934}, the range within which the true rate lies with 95\% confidence.
 
 \subsubsection{Tools, Hardware, and Reproducibility}
 \label{sec:tools}
 
-The implementation will use Python and PyTorch with the released DMOSpeech~2 code (Section~\ref{sec:baseline}), Vocos \parencite{siuzdak2024vocos} and the evaluation models above on an NVIDIA Tesla T4 GPU (15.6~GB of memory) through Google Colab, in 32-bit floating point with seeded random generators. Timing will cover the whole generation process (prompt SNR estimate, teacher steps, student draft, routing, student steps and vocoder) and will be measured for each candidate path. The clock will be read only after the GPU has finished its work, five sentences will be generated before timing starts so that start-up costs are not counted, and the order of the compared systems will be varied across sentences; preprocessing, duration prediction, model loading, file writing and the offline quality evaluation will be reported separately. The GPU model and software versions of every Colab session will be recorded. Every script will use one shared generation module, so all systems run the same code. Before any experiment, five checks will be run on that module: two runs of the same input with the same seed must give identical outputs; the quantile projection of a mel-spectrogram onto itself must return it unchanged, $Q(x,x)=x$, and its residual must be zero, $r(x,x)=0$; the router's payload must keep the draft's prompt frames; a counter attached to the teacher and student networks must record exactly the forward passes of Table~\ref{tab:cost}; and the fallback must reproduce the released system's output exactly. A further check will confirm that the endpoint estimates at $t_2$ and $t_4$ recorded during one run of the six-step path equal those of separate two- and four-step runs. Raw per-utterance results and configuration files will be archived, and every table will be regenerated by a committed script from those raw results.
+The implementation will use Python and PyTorch with the released DMOSpeech~2 code (Section~\ref{sec:baseline}), Vocos \parencite{siuzdak2024vocos} and the evaluation models above on an NVIDIA Tesla T4 GPU (15.6~GB of memory) through Google Colab, in 32-bit floating point with seeded random generators. Timing will cover the whole generation process (prompt SNR estimate, teacher steps, student draft, routing, student steps and vocoder) and will be measured for each candidate path. The clock will be read only after the GPU has finished its work. Five sentences will be generated before timing starts, so that start-up costs are not counted, and the order of the compared systems will be varied across sentences. Preprocessing, duration prediction, model loading, file writing and the offline quality evaluation will be reported separately. The GPU model and software versions of every Colab session will be recorded. Every script will use one shared generation module, so all systems run the same code. Before any experiment, that module will be checked for identical outputs from identical seeds, for the defining properties of the projection and the residual, for exact forward-pass counts (Table~\ref{tab:cost}), and for an exact reproduction of the released system by the fallback. Raw per-utterance results and configuration files will be archived, and every table will be regenerated by a committed script from those raw results.
 
 % =====================================================================
 \subsection{Characterizing the Baseline and the Handover Payloads}
 \label{sec:obj1}
 
-This stage covers Steps~4 to~6 of Figure~\ref{fig:workflow} and uses the development speakers only. Its purpose is to measure, before the method is calibrated, what the established systems achieve on the study's prompts and what each of the two payloads does to quality.
+This stage covers Steps~4 to~6 of Table~\ref{tab:steps} and uses the development speakers only. Its purpose is to measure, before the method is calibrated, what the established systems achieve on the study's prompts and what each of the two payloads does to quality.
 
-\phead{Reproducing the baseline} The released DMOSpeech~2 system and the paper configuration (Remark~\ref{rem:grid}) will be run on every development input under all eight prompt conditions, together with the F5-TTS teacher alone and the DMOSpeech~2 student alone (Table~\ref{tab:cost}). Their WER, SIM and UTMOS will be reported as absolute values per condition, with the number of outputs that exceed the WER ceiling and the number of run-on outputs. As a reproduction check, the released system will also be run once on the full Seed-TTS test-en set with clean prompts, and its WER will be compared with the published value \parencite{li2025dmospeech2}; SIM will be reported with the caveat on verifiers of Section~\ref{sec:measures}. Nothing is tuned on this run: no threshold or minimum level is set from it, so the calibration and test speakers it includes do not influence the design.
+\phead{Reproducing the baseline} The released DMOSpeech~2 system will be run on every development input under all eight prompt conditions, together with the F5-TTS teacher alone and the DMOSpeech~2 student alone (Table~\ref{tab:cost}). Their WER, SIM and UTMOS will be reported as absolute values per condition, with the number of outputs that exceed the WER ceiling and the number of run-on outputs. As a reproduction check, the released system will also be run once on the full Seed-TTS test-en set with clean prompts, and its WER will be compared with the published value \parencite{li2025dmospeech2}; SIM will be reported with the caveat on verifiers of Section~\ref{sec:measures}. Nothing is tuned on this run: no threshold or minimum level is set from it, so the calibration and test speakers it includes do not influence the design.
 
 \phead{Characterizing the payloads} On the same inputs, every candidate teacher path will be run, and both of its payloads will be completed by the student: the teacher payload $\hat x_1$ (never project) and the quantile projection $Q(\hat x_1,s_0)$ (always project). One run of the six-step path is enough, because it passes through $t_2$ and $t_4$ and the velocity it computes at those points gives their endpoint estimates (\Cref{eq:endpoint}) without extra passes. The student restarted from its own draft (\texttt{STUR2}) will be run as well, because it uses the same draft and the same two-step finish without any teacher. For every input and path, the prompt SNR $\hat S$ and the residual $r$ will be recorded. The analysis will report, per condition and path, the cost and quality of each payload, how often each payload fails under Definition~\ref{def:failure}, and how $r$ and $\hat S$ relate to the cases in which the teacher payload fails and the projection does not. The numerical identities of Section~\ref{sec:tools} will also be checked on real outputs, including that the projection stays the same when a steady noise or a change of loudness is applied to the teacher's estimate (Proposition~\ref{prop:invariance}).
 
@@ -478,7 +475,7 @@ Algorithm~\ref{alg:grid} gives the procedure that records, for one input, the ou
 \begin{algorithmic}[1]
 \Require input $x$ with its prompt condition and seed
 \State run the released system (Algorithm~\ref{alg:baseline}); store $y_{\text{ref}}$ and $F(x,y_{\text{ref}})$
-\State run the teacher on the 8-interval grid to $t_6$; store $\hat x_1^{(k)}=\hat x_1(t_k)$ for $k\in\mathcal K$ \Comment{14 passes}
+\State run the teacher on the 8-interval grid to $t_6$; store $\hat x_1^{(k)}=\hat x_1(t_k)$ for $k\in\mathcal K$
 \State compute the draft $s_0$ (\Cref{eq:draft}) and $\hat S$ (\Cref{eq:snr}) \Comment{1 pass}
 \For{$k \in \mathcal K$}
   \State compute $Q(\hat x_1^{(k)},s_0)$ (\Cref{eq:quantile}) and $r^{(k)}$ (\Cref{eq:residual}) \Comment{no pass}
@@ -495,29 +492,27 @@ Algorithm~\ref{alg:grid} gives the procedure that records, for one input, the ou
 \subsection{Formulation and Analysis of the Payload Router}
 \label{sec:obj2}
 
-This section covers Step~7 of Figure~\ref{fig:workflow}. It states the problem the router solves, defines its parts, and proves the properties on which the design rests. It uses no data.
+This section covers Step~7 of Table~\ref{tab:steps}. It states the problem the router solves, defines its parts, and proves the properties on which the design rests. It uses no data.
 
 \subsubsection{Problem Formulation}
 \label{sec:problem-formulation}
 
-The router makes two choices at different times. The teacher path $k$ fixes the cost, $C(k)$ passes for every input (Proposition~\ref{prop:cost}), and is chosen once, before use. The payload is chosen for each input, and it decides how much of the teacher's own output reaches the student. The teacher payload carries all of the teacher's detail, including its variety of pitch and timing; the projection keeps only the teacher's timing and takes its loudness values from the student draft (Section~\ref{sec:quantile}), so it is safer when the prompt is damaged but carries less of the teacher. The router should therefore pass the teacher payload whenever it is safe to do so. The threshold $\lambda$ of the routing rule $\pi_{k,\lambda}$ (Definition~\ref{def:policy}) controls this: the higher the threshold, the more inputs receive the teacher payload. The problem is to choose the least costly path for which some threshold keeps the risk within the tolerance $\alpha$, and, on that path, the highest such threshold:
+Once a teacher path $k$ is fixed, every input costs $C(k)$ passes (Proposition~\ref{prop:cost}), and the router only chooses the payload. The teacher payload carries all of the teacher's detail, including its variety of pitch and timing; the projection keeps only the teacher's timing and takes its loudness values from the student draft (Section~\ref{sec:quantile}), so it is safer when the prompt is damaged but carries less of the teacher. The router should therefore pass the teacher payload whenever it is safe to do so. The threshold $\lambda$ of the routing rule $\pi_{k,\lambda}$ (Definition~\ref{def:policy}) controls this: the higher the threshold, the more inputs receive the teacher payload. For each path, the problem is to find the highest threshold that keeps the risk within the tolerance $\alpha$:
 \begin{equation}
-\hat k=\min\big\{k\in\mathcal K : \exists\,\lambda\in\Lambda,\ R(k,\lambda)\le\alpha\big\},
-\qquad
-\hat\lambda=\max\big\{\lambda\in\Lambda : R(\hat k,\lambda)\le\alpha\big\},
+\lambda^\ast_k=\max\big\{\lambda\in\Lambda : R(k,\lambda)\le\alpha\big\},\qquad k\in\mathcal K,
 \label{eq:objective}
 \end{equation}
-\eqentry{Router selection problem}
+\eqentry{Router calibration problem}
 \begin{whereterms}[2.6cm]
-$\hat k$ & least costly teacher path with a safe threshold; since $C(k)$ increases with $k$, the smallest such $k$ \\
-$\hat\lambda$ & highest safe threshold on that path; a larger $\lambda$ projects fewer inputs \\
+$\lambda^\ast_k$ & highest safe threshold for path $k$; a larger $\lambda$ projects fewer inputs \\
 $\mathcal K$, $\Lambda$ & candidate paths (\Cref{eq:paths}) and finite, ordered grid of candidate thresholds (Section~\ref{sec:calibration}) \\
 $R(k,\lambda)$ & risk of the router with path $k$ and threshold $\lambda$: $\E_{x\sim\mathcal D}\big[e(x,k,\lambda)\big]$ \\
 $e(x,k,\lambda)$ & excess-failure indicator (\Cref{eq:excess}) \\
 $\E_{x\sim\mathcal D}$ & average over new inputs drawn from the population $\mathcal D$ \\
 $\alpha$ & tolerated risk
 \end{whereterms}
-The risks are unknown, so \Cref{eq:objective} cannot be solved exactly; the calibration of Section~\ref{sec:obj3} solves it from data, with a stated confidence. If no path has a safe threshold, no configuration is selected and the released system is used.
+The risks are unknown, so \Cref{eq:objective} cannot be solved exactly; the calibration of Section~\ref{sec:obj3} estimates $\lambda^\ast_k$ from data, with a stated confidence. If no threshold is safe for a path, that path falls back to the released system. The paths are not compared here: each is calibrated on its own, and the comparison of cost, quality and risk across paths is part of the evaluation (Section~\ref{sec:obj4}).
+
 The risk is the share of inputs on which the router fails but the released system does not. For one input this event, an \emph{excess failure}, is written
 \begin{equation}
 e(x,k,\lambda) = F\big(x,y_{k,\lambda}(x)\big)\,\big(1-F\big(x,y_{\text{ref}}(x)\big)\big).
@@ -530,7 +525,7 @@ $y_{k,\lambda}(x)$ & router output for $x$ with path $k$ and threshold $\lambda$
 $y_{\text{ref}}(x)$ & released DMOSpeech~2 output for $x$ \\
 $F$ & quality-failure indicator (Definition~\ref{def:failure})
 \end{whereterms}
-Because the routing rate $\rho(k,\lambda)$, the share of inputs that receive the projection, can only fall as $\lambda$ rises (Proposition~\ref{prop:mono}), choosing the highest safe $\lambda$ keeps as many teacher payloads as the risk allows on the selected path. Limiting the excess failures also limits how much more often the router fails than the released system:
+Because the routing rate $\rho(k,\lambda)$, the share of inputs that receive the projection, can only fall as $\lambda$ rises (Proposition~\ref{prop:mono}), choosing the highest safe $\lambda$ keeps as many teacher payloads as the risk allows on each path. Limiting the excess failures also limits how much more often the router fails than the released system:
 
 \begin{proposition}[Failure rate relative to the baseline]\label{prop:rate}
 Write $F_{k,\lambda}=F(x,y_{k,\lambda}(x))$ and $F_{\text{ref}}=F(x,y_{\text{ref}}(x))$. For every path $k$ and threshold $\lambda$,
@@ -550,7 +545,7 @@ Hence $R(k,\lambda)\le\alpha$ implies that the router fails on at most $\alpha$ 
 For every input, $F_{k,\lambda} \le F_{\text{ref}} + F_{k,\lambda}(1-F_{\text{ref}})$: if $F_{\text{ref}}=1$ the right side is at least 1, and if $F_{\text{ref}}=0$ both sides equal $F_{k,\lambda}$. Taking expectations over $x\sim\mathcal D$ gives \Cref{eq:rate}.
 \end{proof}
 
-In other words, if the router adds a failure on at most 5\% of inputs, its overall failure rate can be at most 5 percentage points above that of the released system. The comparison is one-sided on purpose: an input on which the router passes and the released system fails does not lower the risk, so the calibration cannot balance new failures on some inputs against improvements on others.
+In other words, if the router adds a failure on at most a share $\alpha$ of inputs, its overall failure rate can exceed that of the released system by at most $\alpha$. The comparison is one-sided on purpose: an input on which the router passes and the released system fails does not lower the risk, so the calibration cannot balance new failures on some inputs against improvements on others.
 
 \subsubsection{Condition Model}
 \label{sec:condition-model}
@@ -571,7 +566,7 @@ Every such $g_b$ is strictly increasing: a louder frame stays louder after the c
 
 \begin{table}[!htbp]
 \centering\small
-\caption{Condition groups and the payloads that are unchanged by them.}
+\caption{Condition groups and the payloads that are unchanged by them}
 \label{tab:ladder}
 \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.2cm} >{\raggedright\arraybackslash}p{3.5cm} >{\raggedright\arraybackslash}X@{}}
 \toprule
@@ -683,7 +678,7 @@ $\mathrm{clip}_{[0,50]}$ & limits the value to between 0 and 50~dB
 It is computed on the prompt before its volume is adjusted, and set to 0~dB when the prompt is shorter than two pieces.
 \end{definition}
 
-The gate will be fixed at $\theta=20$~dB, the value used in the earlier experiments (Appendix~\ref{app:prelim}), rather than calibrated. Keeping it fixed leaves the calibration with only the path and the residual threshold to choose, so the guarantee of Section~\ref{sec:obj3} applies to exactly the rule that will be used. The gate serves as a cheap first check for prompts that are clearly noisy; prompts that it passes are left to the residual.
+The gate $\theta$ will be fixed before calibration, at the value used in the earlier experiments (Appendix~\ref{app:prelim}), rather than calibrated. Keeping it fixed leaves the calibration with only the path and the residual threshold to choose, so the guarantee of Section~\ref{sec:obj3} applies to exactly the rule that will be used. The gate serves as a cheap first check for prompts that are clearly noisy; prompts that it passes are left to the residual.
 
 \subsubsection{Routing Rule and Properties}
 \label{sec:properties}
@@ -702,10 +697,10 @@ Q(\hat x_1,s_0) & \text{if } \hat S<\theta \ \text{ or } \ r(\hat x_1,s_0)>\lamb
 and the student finishes with $4-k/2$ steps from this payload.
 \begin{whereterms}[2.6cm]
 $\pi_{k,\lambda}(x)$ & payload handed to the student for input $x$ \\
-$\hat S$, $\theta$ & prompt SNR estimate and fixed gate, $\theta=20$~dB \\
+$\hat S$, $\theta$ & prompt SNR estimate and fixed gate \\
 $r(\hat x_1,s_0)$ & invariant residual (\Cref{eq:residual}) \\
-$\lambda$ & residual threshold; $\hat\lambda_r$ after calibration \\
-$k$ & teacher path; $\hat k$ after calibration
+$\lambda$ & residual threshold; $\hat\lambda_k$ after calibration \\
+$k$ & teacher path, one of $\mathcal K$
 \end{whereterms}
 \end{definition}
 
@@ -716,25 +711,25 @@ That is, the router uses the corrected payload when the prompt is clearly noisy 
 \label{alg:handover}
 \small
 \begin{algorithmic}[1]
-\Require prompt mel and mask $M$, text, duration, seed, selected $(\hat k,\hat\lambda_r)$ (or \textsc{none}), gate $\theta$
-\If{no configuration was selected} \State \Return output of Algorithm~\ref{alg:baseline} \Comment{fallback, 21 passes} \EndIf
+\Require prompt mel and mask $M$, text, duration, seed, path $k$, calibrated $\hat\lambda_k$ (or \textsc{none}), gate $\theta$
+\If{$\hat\lambda_k=\textsc{none}$} \State \Return output of Algorithm~\ref{alg:baseline} \Comment{fallback} \EndIf
 \State $\hat S \gets$ \Cref{eq:snr} on the prompt waveform \Comment{no pass}
-\State draw $x_{t_0}\sim\mathcal{N}(0,I)$; run $\hat k$ guided Euler steps on the 8-interval grid \Comment{$2\hat k$ passes}
-\State $\hat x_1 \gets x_{t_{\hat k}} + (1-t_{\hat k})\,v(x_{t_{\hat k}},t_{\hat k})$ \Comment{2 passes}
+\State draw $x_{t_0}\sim\mathcal{N}(0,I)$; run $k$ guided Euler steps on the 8-interval grid \Comment{$2k$ passes}
+\State $\hat x_1 \gets x_{t_k} + (1-t_k)\,v(x_{t_k},t_k)$ \Comment{2 passes}
 \State $s_0 \gets \varepsilon_0 + g(\varepsilon_0,0)$ \Comment{1 pass}
 \State $Q \gets$ \Cref{eq:quantile}; \quad $r \gets$ \Cref{eq:residual} \Comment{no pass}
-\If{$\hat S<\theta$ \textbf{or} $r>\hat\lambda_r$} \State $x \gets Q$ \Else \State $x \gets \hat x_1$ \EndIf
-\For{$\tau \in \{\tau_{\hat k/2},\dots,\tau_3\}$} \Comment{student, $j=\hat k/2$, $4-\hat k/2$ steps}
+\If{$\hat S<\theta$ \textbf{or} $r>\hat\lambda_k$} \State $x \gets Q$ \Else \State $x \gets \hat x_1$ \EndIf
+\For{$\tau \in \{\tau_{k/2},\dots,\tau_3\}$} \Comment{student, $j=k/2$, $4-k/2$ steps}
   \State $\phi \gets (1-\tau)\,\varepsilon + \tau\,x$; \quad $x \gets \phi + (1-\tau)\,g(\phi,\tau)$ \Comment{1 pass each}
 \EndFor
 \State remove prompt frames; decode $x$ with the vocoder
 \end{algorithmic}
 \end{algorithm}
 
-The router has four properties that follow from its definition. In other words: once its path is selected, it always costs the same; raising the threshold can only send more inputs to the teacher payload; if calibration fails, the released system is used and nothing gets worse; and no rule choosing between the two payloads can do better than choosing with hindsight.
+The router has four properties that follow from its definition. On a given path, it always costs the same. Raising the threshold can only send more inputs to the teacher payload. If calibration fails, the released system is used and nothing gets worse. No rule choosing between the two payloads can do better than choosing with hindsight.
 
 \begin{proposition}[Fixed cost and no added network]\label{prop:zero}
-For every input and every threshold, the router with path $k$ costs $C(k)$ forward passes (10, 13 or 16), and the SNR estimate, the projection, the residual and the routing decision run no network.
+For every input and every threshold, the router with path $k$ costs $C(k)$ forward passes, and the SNR estimate, the projection, the residual and the routing decision run no network.
 \end{proposition}
 \begin{proof}
 The teacher path, the draft and the student finish do not depend on the routing decision, so Proposition~\ref{prop:cost} gives $C(k)$ for both payloads. \Cref{eq:snr,eq:quantile,eq:residual,eq:policy} use only frame energies, sorting and norms. Sorting $B$ bands of $n$ frames takes on the order of $Bn\log n$ operations, which is small next to one forward pass of the teacher or student network over the same frames.
@@ -748,7 +743,7 @@ Under $\pi_{k,\lambda}$ an input receives $\hat x_1$ exactly when $\hat S\ge\the
 \end{proof}
 
 \begin{proposition}[Safe fallback]\label{prop:fallback}
-If the calibration accepts no path and threshold and the released system is used instead, the system in use has risk zero.
+If the calibration accepts no threshold for a path and the released system is used instead, the system in use has risk zero.
 \end{proposition}
 \begin{proof}
 If the deployed output is $y_{\text{ref}}(x)$, then $e=F(x,y_{\text{ref}})(1-F(x,y_{\text{ref}}))=0$ for every input.
@@ -769,11 +764,8 @@ The hindsight router needs to know the outcome of both payloads in advance, so i
 \subsubsection{Calibration Procedure}
 \label{sec:calibration}
 
-This section covers Steps~8 to~10 of Figure~\ref{fig:workflow}. It will select the teacher path and the threshold so that the limit on risk of \Cref{eq:objective} holds, with a stated level of confidence, on new inputs. Calibration uses the Learn-Then-Test procedure \parencite{angelopoulos2025ltt}, which treats each candidate setting as a claim to be tested on data and accepts only settings that the data show to be safe. Before calibration, the failure rule (Definition~\ref{def:failure}, including the minimum levels from the development speakers), the tolerance $\alpha=0.05$, the confidence parameter $\delta=0.10$, the candidate paths $\mathcal K=\{2,4,6\}$ of \Cref{eq:paths} and the list of candidate thresholds
-\[
-\Lambda = \{\lambda_1<\dots<\lambda_G\} = \{0.00,\,0.05,\,0.10,\,\dots,\,1.00\},\qquad G=21,
-\]
-will be fixed. For every path, the list is ordered from the threshold that sends the most inputs to the projection to the one that sends the fewest, so that the thresholds tested first are the safest; at $\lambda_1=0$ every input with a nonzero residual is projected. The residual is a relative distance, so a value above one would mean that the teacher's estimate differs from its projection by more than its own size; the list therefore covers the whole useful range in steps of 0.05, and the data rather than the list will limit the chosen threshold. Because the thresholds of a path are tested in a fixed order, adding more candidate thresholds does not weaken the guarantee.
+This section covers Steps~8 to~10 of Table~\ref{tab:steps}. It will set the threshold of every candidate path so that the limit on risk of \Cref{eq:objective} holds, with a stated level of confidence, on new inputs. Calibration uses the Learn-Then-Test procedure \parencite{angelopoulos2025ltt}, which treats each candidate setting as a claim to be tested on data and accepts only settings that the data show to be safe. Before calibration, the failure rule (Definition~\ref{def:failure}, including the minimum levels from the development speakers), the tolerance $\alpha$, the confidence parameter $\delta$, the candidate paths $\mathcal K=\{2,4,6\}$ of \Cref{eq:paths} and the list of candidate thresholds
+$\Lambda=\{\lambda_1<\dots<\lambda_G\}$, evenly spaced from zero to one, will be fixed. For every path, the list is ordered from the threshold that sends the most inputs to the projection to the one that sends the fewest, so that the thresholds tested first are the safest; at $\lambda_1=0$ every input with a nonzero residual is projected. The residual is a relative distance, so a value above one would mean that the teacher's estimate differs from its projection by more than its own size; the list therefore covers the whole useful range in small, even steps, and the data rather than the list will limit the chosen threshold. Because the thresholds of a path are tested in a fixed order, adding more candidate thresholds does not weaken the guarantee.
 
 The outcomes of both payloads of every path and of the released system will be recorded for every calibration input with Algorithm~\ref{alg:grid}, each speaker contributing the input of its assigned prompt condition (Section~\ref{sec:data}). The router's output for any path and threshold follows from the recorded $\hat S$ and $r^{(k)}$, so the excess failures of every candidate can be counted without generating speech again. For path $k$ and threshold $\lambda_g$, the observed risk on the $n$ calibration inputs is the share of excess failures:
 \begin{equation}
@@ -783,7 +775,7 @@ The outcomes of both payloads of every path and of the released system will be r
 \eqentry{Empirical risk on the calibration set}
 \begin{whereterms}[2.6cm]
 $\hat R_{k,g}$ & observed excess-failure rate of path $k$ with threshold $\lambda_g$ \\
-$n$ & number of calibration inputs (one per speaker), $n=200$ \\
+$n$ & number of calibration inputs (one per speaker) \\
 $x_l$ & $l$-th calibration input \\
 $e(\cdot,\cdot,\cdot)$ & excess-failure indicator (\Cref{eq:excess})
 \end{whereterms}
@@ -799,59 +791,55 @@ $p_{k,g}$ & p-value of path $k$ with threshold $\lambda_g$ \\
 $\mathrm{Bin}(n,\alpha)$ & number of excess failures among $n$ independent inputs if the true risk were exactly $\alpha$ \\
 $n\hat R_{k,g}$ & observed number of excess failures of that candidate
 \end{whereterms}
-that is, the probability of seeing so few excess failures if the true risk were exactly $\alpha$. A small p-value means that so few failures would be unlikely for an unsafe candidate. Because three paths are tested, the allowance $\delta$ is divided equally among them: on each path, a threshold is accepted as safe when $p_{k,g}\le\delta/\lvert\mathcal K\rvert=\delta/3$. The thresholds of each path are tested in the order of the list, and the test of that path stops at the first threshold that is not accepted, returning $\hat\lambda^{(k)}$, the last accepted threshold, or nothing if even the first is not accepted. The calibration then selects the least costly path for which a threshold was accepted, $\hat k$, and its threshold, $\hat\lambda_r=\hat\lambda^{(\hat k)}$. If no path has an accepted threshold, no configuration is selected and the released system is used (Proposition~\ref{prop:fallback}). This is the best answer to \Cref{eq:objective} that the data can support: the cheapest path that the data show to be safe, with the threshold on that path that lets the most teacher estimates through. Algorithm~\ref{alg:ltt} states the procedure.
+that is, the probability of seeing so few excess failures if the true risk were exactly $\alpha$. A small p-value means that so few failures would be unlikely for an unsafe candidate. Because three paths are calibrated and later compared, the allowance $\delta$ is divided equally among them: on each path, a threshold is accepted as safe when $p_{k,g}\le\delta/\lvert\mathcal K\rvert=\delta/3$. This keeps the guarantee valid for all three paths at once, so it still holds for whichever path the evaluation later finds best. The thresholds of each path are tested in the order of the list, and the test of that path stops at the first threshold that is not accepted, returning $\hat\lambda_k$, the last accepted threshold, or nothing if even the first is not accepted; in that case the path falls back to the released system (Proposition~\ref{prop:fallback}). Algorithm~\ref{alg:ltt} states the procedure.
 
 \begin{algorithm}[!htbp]
-\caption{Learn-Then-Test selection of the teacher path and the residual threshold}
+\caption{Learn-Then-Test calibration of the residual threshold of each path}
 \label{alg:ltt}
 \small
 \begin{algorithmic}[1]
 \Require records of Algorithm~\ref{alg:grid} for $n$ calibration inputs; paths $\mathcal K=\{2,4,6\}$; grid $\lambda_1<\dots<\lambda_G$; $\alpha$, $\delta$
 \For{$k \in \mathcal K$} \Comment{each path tested separately at level $\delta/3$}
-  \State $\hat\lambda^{(k)} \gets \textsc{none}$
+  \State $\hat\lambda_k \gets \textsc{none}$
   \For{$g = 1,\dots,G$}
     \State $\hat R_{k,g} \gets \frac1n\sum_{l} e(x_l,k,\lambda_g)$ \Comment{from records, no new generation}
     \State $p_{k,g} \gets \P\big(\mathrm{Bin}(n,\alpha)\le n\hat R_{k,g}\big)$
     \If{$p_{k,g}\le\delta/\lvert\mathcal K\rvert$}
-      \State $\hat\lambda^{(k)}\gets\lambda_g$
+      \State $\hat\lambda_k\gets\lambda_g$
     \Else
       \State \textbf{break}
     \EndIf
   \EndFor
 \EndFor
-\If{$\hat\lambda^{(k)}=\textsc{none}$ for every $k$} \State \Return \textsc{none} \Comment{use the released system} \EndIf
-\State $\hat k \gets \min\{k\in\mathcal K : \hat\lambda^{(k)}\ne\textsc{none}\}$ \Comment{least costly accepted path}
-\State \Return $(\hat k,\ \hat\lambda_r=\hat\lambda^{(\hat k)})$
+\State \Return $\hat\lambda_k$ for every $k\in\mathcal K$ \Comment{\textsc{none}: path uses the released system}
 \end{algorithmic}
 \end{algorithm}
 
 \subsubsection{Guarantee}
 
-The procedure can be trusted for three reasons. Each p-value is small only rarely when its candidate is in fact unsafe. Within a path, testing in a fixed order means that the test can go wrong only by accepting the first unsafe threshold in the list, so that path's whole share $\delta/3$ protects that one test instead of being divided among all thresholds. Across paths, the three shares add up to $\delta$, so the chance that any path accepts an unsafe threshold, and therefore the chance that the selected configuration is unsafe, is at most $\delta$ whichever path is selected. Learn-Then-Test needs only a pass-or-fail outcome per input, calibration inputs that are independent and come from the same population as future inputs, and candidates fixed in advance \parencite{angelopoulos2025ltt}; the excess-failure indicator of \Cref{eq:excess} is such an outcome, so the procedure applies to text-to-speech without change.
+The procedure can be trusted for three reasons. Each p-value is small only rarely when its candidate is in fact unsafe. Within a path, testing in a fixed order means that the test can go wrong only by accepting the first unsafe threshold in the list, so that path's whole share $\delta/3$ protects that one test instead of being divided among all thresholds. Across paths, the three shares add up to $\delta$, so the chance that any path accepts an unsafe threshold is at most $\delta$. Learn-Then-Test needs only a pass-or-fail outcome per input, calibration inputs that are independent and come from the same population as future inputs, and candidates fixed in advance \parencite{angelopoulos2025ltt}; the excess-failure indicator of \Cref{eq:excess} is such an outcome, so the procedure applies to text-to-speech without change.
 
 \begin{proposition}[Risk control]\label{prop:ltt}
 If the calibration inputs and a new input are independent draws from $\mathcal{D}$, then
 \begin{equation}
-\P\big(R(\hat k,\hat\lambda_r)\le\alpha\big)\ \ge\ 1-\delta,
+\P\big(R(k,\hat\lambda_k)\le\alpha\ \text{for every}\ k\in\mathcal K\big)\ \ge\ 1-\delta,
 \label{eq:guarantee}
 \end{equation}
 \eqentry{Reliability guarantee}
-where the risk of the fallback is zero. Put simply, with at least 90\% confidence the selected configuration adds failures on at most 5\% of new inputs; by Proposition~\ref{prop:rate}, the router then fails on at most 5 percentage points more of the new inputs than the released system.
+where the risk of the fallback is zero. Put simply, with confidence at least $1-\delta$, every calibrated path adds failures on at most a share $\alpha$ of new inputs; by Proposition~\ref{prop:rate}, the router then fails on at most a share $\alpha$ more of the new inputs than the released system.
 \begin{whereterms}[2.6cm]
-$R(\hat k,\hat\lambda_r)$ & true excess-failure rate of the selected router on new inputs \\
-$(\hat k,\hat\lambda_r)$ & path and threshold returned by Algorithm~\ref{alg:ltt} \\
+$R(k,\hat\lambda_k)$ & true excess-failure rate of the router on path $k$ on new inputs \\
+$\hat\lambda_k$ & threshold of path $k$ returned by Algorithm~\ref{alg:ltt} \\
 $1-\delta$ & confidence; the probability refers to the random choice of calibration speakers
 \end{whereterms}
 \end{proposition}
 \begin{proof}
-\emph{Valid p-values.} If $H_{k,g}$ is true, $n\hat R_{k,g}\sim\mathrm{Bin}(n,R(k,\lambda_g))$ with $R(k,\lambda_g)>\alpha$, which is stochastically larger than $\mathrm{Bin}(n,\alpha)$; hence $\P(p_{k,g}\le\delta/3)\le\delta/3$.
-\emph{One path.} Let $A_k$ be the event that path $k$ returns an unsafe threshold, $R(k,\hat\lambda^{(k)})>\alpha$. Then a true hypothesis $H_{k,\hat g}$ was rejected. The test of path $k$ rejects every hypothesis before $\hat g$, so the first true hypothesis of that path in the fixed order, $g^\ast_k$, which depends only on the unknown risks and not on the data, was rejected. Hence $A_k$ implies $p_{k,g^\ast_k}\le\delta/3$, and $\P(A_k)\le\delta/3$. This is the fixed-sequence argument of \textcite{bauer1991} as used by \textcite{angelopoulos2025ltt}.
-\emph{Selection.} The selected configuration is unsafe only if the selected path returned an unsafe threshold, which requires some $A_k$. By the union bound, $\P(R(\hat k,\hat\lambda_r)>\alpha)\le\sum_{k\in\mathcal K}\P(A_k)\le 3\cdot\delta/3=\delta$. Returning the fallback never errs (Proposition~\ref{prop:fallback}).
+\emph{Valid p-values.} If $H_{k,g}$ is true, $n\hat R_{k,g}\sim\mathrm{Bin}(n,R(k,\lambda_g))$ with $R(k,\lambda_g)>\alpha$. A binomial count with a larger rate tends to be larger, so a small count is less likely than under $\mathrm{Bin}(n,\alpha)$; hence $\P(p_{k,g}\le\delta/3)\le\delta/3$.
+\emph{One path.} Let $A_k$ be the event that path $k$ returns an unsafe threshold, $R(k,\hat\lambda_k)>\alpha$. Then a true hypothesis $H_{k,\hat g}$ was rejected. The test of path $k$ rejects every hypothesis before $\hat g$, so the first true hypothesis of that path in the fixed order, $g^\ast_k$, which depends only on the unknown risks and not on the data, was rejected. Hence $A_k$ implies $p_{k,g^\ast_k}\le\delta/3$, and $\P(A_k)\le\delta/3$. This is the fixed-sequence argument of \textcite{bauer1991} as used by \textcite{angelopoulos2025ltt}.
+\emph{All paths.} The guarantee fails only if some $A_k$ happens. The chance that at least one of several events happens is at most the sum of their chances, so the probability of failure is at most $\sum_{k\in\mathcal K}\P(A_k)\le 3\cdot\delta/3=\delta$. Returning the fallback never errs (Proposition~\ref{prop:fallback}).
 \end{proof}
 
-\begin{remark}
-The proof needs no monotonicity of the risk in $\lambda$ or in $k$; monotone routing (Proposition~\ref{prop:mono}) only makes it likely that the safe thresholds come first in each order. Dividing $\delta$ among the paths makes each test slightly stricter, but every path is tested, so an unsafe threshold on one path cannot stop the test of another. The guarantee is an average over inputs and over the mix of prompt conditions, not a promise about a single sentence or a single condition, and it does not hold if new inputs differ systematically from the calibration inputs.
-\end{remark}
+The proof does not need the risk to change in any particular way with $\lambda$ or $k$. The guarantee is an average over inputs and over the mix of prompt conditions, not a promise about a single sentence or a single condition, and it does not hold if new inputs differ systematically from the calibration inputs.
 
 \subsubsection{Tolerance, Confidence, and Calibration Size}
 \label{sec:calsize}
@@ -865,39 +853,18 @@ The number of calibration speakers determines how small a risk can be shown at a
 \begin{whereterms}[2.6cm]
 $n$ & number of independent calibration inputs (one per speaker) \\
 $\alpha$ & tolerated risk \\
-$\delta$ & allowed probability that calibration selects an unsafe configuration \\
+$\delta$ & allowed probability that calibration accepts an unsafe threshold on some path \\
 $\lvert\mathcal K\rvert$ & number of candidate paths, 3 \\
 $\ln$ & natural logarithm
 \end{whereterms}
-Table~\ref{tab:samplesize} gives, for several combinations of $n$ and $\alpha$ at $\delta=0.10$ shared among three paths, the largest number of excess failures that still lets \Cref{eq:pvalue} accept a threshold. By \Cref{eq:zerofail}, showing $\alpha=0.05$ at $\delta=0.10$ with three paths requires at least 67 independent inputs even with no excess failures at all; with a single path it would require 45.
+\Cref{eq:zerofail} links the three quantities that the user of the method chooses: a smaller tolerance or a higher confidence needs more calibration speakers, and testing more candidate paths needs more as well, because each path receives a smaller share of $\delta$. The tolerance and the confidence are design choices; Learn-Then-Test leaves both to the user \parencite{angelopoulos2025ltt}. The values of $\alpha$, $\delta$ and the other settings of the study will be fixed in the study protocol before calibration and reported with the results; Appendix~\ref{app:calc-size} shows the calculation for one choice of values. Because the choice of $\alpha$ is a judgment, the calibration will also be repeated at a larger tolerance as a sensitivity analysis.
 
-The tolerance $\alpha=0.05$ and the confidence parameter $\delta=0.10$ are design choices of this study; Learn-Then-Test leaves both to the user \parencite{angelopoulos2025ltt}. They are set for three reasons. First, $\alpha=0.05$ allows the router at most one failure in twenty inputs beyond those of the released system, a limit strict enough to matter in use. Second, both values can be shown with the 200 calibration speakers available: at $n=200$, a threshold can be accepted on a path with up to four excess failures (Table~\ref{tab:samplesize}). Third, $\delta=0.10$, a 90\% confidence, keeps the minimum number of calibration speakers of \Cref{eq:zerofail} well below the number available, so the analysis of smaller calibration groups in Section~\ref{sec:robust} can still accept thresholds at $n=75$. Because the choice of $\alpha$ is a judgment, the calibration will be repeated at $\alpha=0.10$ as a sensitivity analysis, and both results will be reported.
-
-\begin{table}[!htbp]
-\centering\small
-\caption{Largest number of excess failures on $n$ calibration inputs that still lets the test of \Cref{eq:pvalue} accept a threshold on one path, with $\delta=0.10$ shared among three paths ($\delta/3$ per path). At $n=50$ and $\alpha=0.05$, no threshold can be accepted even with zero failures.}
-\label{tab:samplesize}
-\begin{tabular}{@{}cccc@{}}
-\toprule
-Calibration size $n$ & $\alpha$ & Level per path $\delta/3$ & Max.\ excess failures \\
-\midrule
-75 & 0.05 & 0.033 & 0 \\
-75 & 0.10 & 0.033 & 2 \\
-100 & 0.05 & 0.033 & 0 \\
-100 & 0.10 & 0.033 & 4 \\
-200 & 0.05 & 0.033 & 4 \\
-200 & 0.10 & 0.033 & 12 \\
-300 & 0.05 & 0.033 & 7 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsubsection{Verifying the Guarantee and Reporting the Selected Configuration}
+\subsubsection{Verifying the Guarantee and Reporting the Thresholds}
 \label{sec:verify}
 
-This check begins the evaluation (Step~11). The guarantee is a statement about repeated calibration, so it will be checked in two ways. The single check on new speakers will apply the selected configuration $(\hat k,\hat\lambda_r)$ to the test split, each speaker with its assigned condition, and report the observed excess-failure rate with a Clopper--Pearson interval \parencite{clopper1934}; it will also report the failure rates of the router and of the released system on the same inputs, so that \Cref{eq:rate} can be seen directly. A rate well above $\alpha$ would indicate that an assumption does not hold, most likely that the inputs are independent or that calibration and test inputs come from the same population. The repeated check will combine the calibration and test speakers, divide them at random into two halves 100 times, run Algorithm~\ref{alg:ltt} on one half and measure the risk of the selected configuration on the other each time, also recording which path is selected. The guarantee predicts that the risk stays within $\alpha$ in at least $1-\delta$, that is 90\%, of these divisions. Because all outputs will already be recorded, neither check requires generating speech again.
+This check begins the evaluation (Step~11). The guarantee is a statement about repeated calibration, so it will be checked in two ways. The single check on new speakers will apply each path with its threshold $\hat\lambda_k$ to the test split, each speaker with its assigned condition, and report the observed excess-failure rate with a Clopper--Pearson interval \parencite{clopper1934}; it will also report the failure rates of the router and of the released system on the same inputs, so that \Cref{eq:rate} can be seen directly. A rate well above $\alpha$ would indicate that an assumption does not hold, most likely that the inputs are independent or that calibration and test inputs come from the same population. The repeated check will combine the calibration and test speakers, divide them at random into two halves $R$ times, run Algorithm~\ref{alg:ltt} on one half and measure the risk of every path on the other each time. The guarantee predicts that the risks of all paths stay within $\alpha$ in at least a share $1-\delta$ of these divisions. Because all outputs will already be recorded, neither check requires generating speech again.
 
-The selected path $\hat k$ and threshold $\hat\lambda_r$ will be reported so that other researchers can reuse or reproduce them, together with the thresholds accepted on the other paths and the conditions under which they hold: $\alpha$, $\delta$, $n$, the candidate paths and their testing order, the grid, the student's starting point, the SNR gate, the constants and minimum levels of the failure rule, the trained networks, the evaluation models, the dataset and the mixture of prompt conditions, and the hardware. Under these conditions, $(\hat k,\hat\lambda_r)$ can be used directly with DMOSpeech~2. The selection is a result of the calibration, not part of the method's design: for another model, dataset, risk limit or failure rule the selected path and threshold do not transfer, but the procedure does: Algorithm~\ref{alg:grid} is run on at least 67 independent calibration inputs (\Cref{eq:zerofail}), and Algorithm~\ref{alg:ltt} returns a new path and threshold with the same kind of guarantee. Calibrated thresholds of this kind are established in other settings: CALM certified when a language model may stop computing early \parencite{schuster2022calm}, thought calibration used Learn-Then-Test with fixed-sequence testing to certify when a model may stop reasoning \parencite{wu2025thought}, and FlowGuard calibrated a threshold on a flow-matching sampler \parencite{li2025flowguard}. What these studies did not provide is such a threshold for the teacher-to-student handover in text-to-speech, with a bound stated against the released system's own failure rate.
+The calibrated threshold $\hat\lambda_k$ of every path will be reported so that other researchers can reuse or reproduce it, together with the conditions under which it holds: $\alpha$, $\delta$, $n$, the candidate paths and their testing order, the grid, the student's starting point, the SNR gate, the constants and minimum levels of the failure rule, the trained networks, the evaluation models, the dataset and the mixture of prompt conditions, and the hardware. Under these conditions, the thresholds can be used directly with DMOSpeech~2. For another model, dataset, risk limit or failure rule they do not transfer, but the procedure does: Algorithm~\ref{alg:grid} is run on enough independent calibration inputs to satisfy \Cref{eq:zerofail}, and Algorithm~\ref{alg:ltt} returns new thresholds with the same kind of guarantee. Calibrated thresholds of this kind are established in other settings: CALM certified when a language model may stop computing early \parencite{schuster2022calm}, thought calibration used Learn-Then-Test with fixed-sequence testing to certify when a model may stop reasoning \parencite{wu2025thought}, and FlowGuard calibrated a threshold on a flow-matching sampler \parencite{li2025flowguard}. What these studies did not provide is such a threshold for the teacher-to-student handover in text-to-speech, with a bound stated against the released system's own failure rate.
 
 % =====================================================================
 \subsection{Evaluation and Robustness}
@@ -907,11 +874,11 @@ The selected path $\hat k$ and threshold $\hat\lambda_r$ will be reported so tha
 \subsubsection{Compared Systems}
 \label{sec:compared}
 
-The evaluation covers Steps~12 to~14 of Figure~\ref{fig:workflow}. All systems in Table~\ref{tab:systems} will be run on the test split under all eight prompt conditions and on LibriSpeech-PC with clean prompts. The established systems show what the released models achieve: the released DMOSpeech~2 system is the baseline that the router must not fall below, the paper configuration is the configuration whose numbers were published, and the teacher alone and the student alone mark the expensive and the cheap end of the range. The proposed system is the router with the path and threshold selected by the calibration. The two candidate paths that were not selected will also be run, each with the threshold that the calibration accepted on it, or reported as not accepted; together with the selected path they give a curve of cost against quality, variety and excess failures on which the selection can be judged. The ablations, versions of the router with one part removed or fixed, all use the selected path and show what each part contributes: never and always projecting show what each payload does without a decision; the SNR-only router shows what the residual adds beyond the prompt check; and the student restarted from its own draft shows what the teacher adds at all. The hindsight router (Proposition~\ref{prop:oracle}) will be reported as a limit, not as a competitor. The results will be reported in Chapter~4 as a comparison matrix against the baseline, which reports every system of Table~\ref{tab:systems} on the measures of Table~\ref{tab:matrix-cols}; the matrix will be given overall, for every prompt condition, and for LibriSpeech-PC.
+The evaluation covers Steps~12 to~14 of Table~\ref{tab:steps}. All systems in Table~\ref{tab:systems} will be run on the test split under all eight prompt conditions and on LibriSpeech-PC with clean prompts. The established systems show what the released models achieve: the released DMOSpeech~2 system is the baseline that the router must not fall below, and the teacher alone and the student alone mark the expensive and the cheap end of the range. The proposed system is the router on each candidate path with its calibrated threshold. The three paths give a curve of cost against quality, variety and excess failures; the least costly path whose excess-failure rate stays within the limit and whose quality is not worse than the released system's will be identified in the conclusions. The ablations, versions of the router with one part removed or fixed, will be run on every path and show what each part contributes: never and always projecting show what each payload does without a decision; the SNR-only router shows what the residual adds beyond the prompt check; and the student restarted from its own draft shows what the teacher adds at all. The hindsight router (Proposition~\ref{prop:oracle}) will be reported as a limit, not as a competitor. The results will be reported in Chapter~4 as a comparison matrix against the baseline, which reports every system of Table~\ref{tab:systems} on the measures of Table~\ref{tab:matrix-cols}; the matrix will be given overall, for every prompt condition, and for LibriSpeech-PC.
 
 \begin{table}[!htbp]
 \centering\small
-\caption{Compared systems. Costs follow from \Cref{eq:cost} (Table~\ref{tab:cost}).}
+\caption{Compared systems}
 \label{tab:systems}
 \label{tab:methods}
 \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{4.6cm} >{\raggedright\arraybackslash}X >{\centering\arraybackslash}p{1.4cm}@{}}
@@ -920,18 +887,16 @@ The evaluation covers Steps~12 to~14 of Figure~\ref{fig:workflow}. All systems i
 \midrule
 \multicolumn{3}{@{}l}{\textit{Established systems}} \\
 DMOSpeech~2, released system ($s=0.25$) & Baseline and reference of the risk & 21 \\
-DMOSpeech~2, paper configuration & Published configuration (Remark~\ref{rem:grid}) & 30 \\
 F5-TTS teacher alone & Quality of the teacher without distillation & 64 \\
 DMOSpeech~2 student alone & Cheapest released system & 4 \\
 \midrule
 \multicolumn{3}{@{}l}{\textit{Proposed}} \\
-Payload router \texttt{SNR\_R}, selected $(\hat k,\hat\lambda_r)$ & The method & $C(\hat k)$ \\
-Router on the paths not selected, each with its own accepted threshold & Cost against quality and risk across the candidate paths & 10, 13 or 16 \\
+Payload router \texttt{SNR\_R}, each path $k$ with $\hat\lambda_k$ & The method; cost against quality and risk across paths & $C(k)$ \\
 \midrule
-\multicolumn{3}{@{}l}{\textit{Ablations (selected path $\hat k$)}} \\
-Always project ($Q$ for every input) & The projection without a decision & $C(\hat k)$ \\
-Never project ($\hat x_1$ for every input) & The teacher payload without a decision; the effect of the shorter teacher path alone & $C(\hat k)-1$ \\
-SNR-only router ($Q$ if $\hat S<\theta$) & Value of the residual beyond the prompt check & $C(\hat k)-1$ or $C(\hat k)$ \\
+\multicolumn{3}{@{}l}{\textit{Ablations (each path $k$)}} \\
+Always project ($Q$ for every input) & The projection without a decision & $C(k)$ \\
+Never project ($\hat x_1$ for every input) & The teacher payload without a decision; the effect of the shorter teacher path alone & $C(k)-1$ \\
+SNR-only router ($Q$ if $\hat S<\theta$) & Value of the residual beyond the prompt check & $C(k)-1$ or $C(k)$ \\
 Student from its draft (\texttt{STUR2}) & Value of the teacher at all & 3 \\
 \midrule
 Hindsight router & Lowest risk of any two-payload rule (descriptive) & --- \\
@@ -940,28 +905,7 @@ Hindsight router & Lowest risk of any two-payload rule (descriptive) & --- \\
 \end{table}
 
 
-\begin{table}[!htbp]
-\centering\small
-\caption{Comparison matrix. Every system of Table~\ref{tab:systems} will be reported on each of these measures, computed on the same inputs.}
-\label{tab:matrix}
-\label{tab:matrix-cols}
-\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.0cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{1.5cm} >{\raggedright\arraybackslash}p{2.6cm}@{}}
-\toprule
-\textbf{Measure} & \textbf{What it reports} & \textbf{Better when} & \textbf{Defined in} \\
-\midrule
-Forward passes & Mean network passes per utterance & Lower & Prop.~\ref{prop:cost} \\
-Saving & Share of the released system's passes saved & Higher & \Cref{eq:saving} \\
-Synthesis time, RTF & Mean wall-clock time per utterance on the Tesla T4 and real-time factor & Lower & \Cref{eq:rtf} \\
-WER & Mean word error rate, with the number of run-on outputs & Lower & \Cref{eq:wer} \\
-SIM & Mean speaker similarity & Higher & \Cref{eq:sim} \\
-UTMOS & Mean predicted naturalness & Higher & Section~\ref{sec:measures} \\
-$\mathrm{CV}_{f_0}$ (raw, aligned) & Pitch variety across 12 seeds & Higher & \Cref{eq:cvf0} \\
-Failure rate & Share of inputs that fail the quality rule, with a 95\% exact interval & Lower & Def.~\ref{def:failure} \\
-Excess-failure rate & Share of inputs that fail while the released system passes, with a 95\% exact interval & Lower & \Cref{eq:excess} \\
-Routing rate & Share of inputs given the projection (router and SNR-only router only) & --- & Section~\ref{sec:obj2} \\
-\bottomrule
-\end{tabularx}
-\end{table}
+
 
 \subsubsection{Measures of Comparison}
 The saving of a system is stated relative to the released system:
@@ -975,38 +919,21 @@ $\Delta C$ & share of the reference's forward passes saved \\
 $\bar C_{\text{sys}}$ & mean forward passes per utterance of the system \\
 $C_{\text{ref}}$ & forward passes of the released system, 21
 \end{whereterms}
-The same ratio will be reported for measured generation time on the Tesla T4. For the router, the routing rate $\rho(\hat k,\hat\lambda_r)$ will be reported overall and per condition, together with the share of clean prompts that receive the projection, since projecting a clean prompt gives up teacher detail for no gain in safety.
+The same ratio will be reported for measured generation time on the Tesla T4. For the router, the routing rate $\rho(k,\hat\lambda_k)$ of each path will be reported overall and per condition, together with the share of clean prompts that receive the projection, since projecting a clean prompt gives up teacher detail for no gain in safety.
 
 \subsubsection{Robustness}
 \label{sec:robust}
 
-Three robustness questions follow from the assumptions of Proposition~\ref{prop:ltt}. The first concerns prompt conditions: the excess-failure rate and the quality measures will be reported for each of the eight conditions, and the path and threshold will also be selected on clean prompts only and tested on each damaged condition, to see how the guarantee and the residual behave when the prompts met in use differ from those used in calibration. The second concerns the number of calibration speakers: the calibration will be repeated on random subsets of $n=75$, $100$ and $200$ calibration speakers, 100 times each, and the study will report how often each path is selected, how often no configuration is accepted, the resulting cost and routing rate and the observed risk, which shows how much data a user of the method needs. The third concerns the tolerance: the calibration will be repeated at $\alpha=0.10$, as stated in Section~\ref{sec:calsize}. Transfer to a new source will be checked on LibriSpeech-PC with the path and threshold selected on Seed-TTS.
+Three robustness questions follow from the assumptions of Proposition~\ref{prop:ltt}. The first concerns prompt conditions: the excess-failure rate and the quality measures will be reported for each of the eight conditions, and the thresholds will also be calibrated on clean prompts only and tested on each damaged condition, to see how the guarantee and the residual behave when the prompts met in use differ from those used in calibration. The second concerns the number of calibration speakers: the calibration will be repeated on random subsets of calibration speakers of several sizes, $R$ times each, and the study will report how often each path's threshold is accepted, the resulting routing rate and the observed risk, which shows how much data a user of the method needs. The third concerns the tolerance: the calibration will be repeated at a larger tolerance, as stated in Section~\ref{sec:calsize}. Transfer to a new source will be checked on LibriSpeech-PC with the thresholds calibrated on Seed-TTS.
 
 \subsubsection{Statistical Analysis}
 \label{sec:stats}
 
-Comparisons will be paired, since every system is applied to the same inputs with the same random starting values; each speaker's result under one system is compared with the same speaker's result under another. Differences in generation time, WER, SIM, UTMOS and $\mathrm{CV}_{f_0}$ between the router and each other system will be tested with the Wilcoxon signed-rank test \parencite{wilcoxon1945}, which compares paired values without assuming that the differences follow a normal distribution. Because the router is compared with several systems, the Holm correction \parencite{holm1979} will adjust the results so that the chance of at least one false finding stays at the chosen level. The teacher passes of the router are justified only by the variety they add, so one comparison is fixed in advance as the main test of the teacher's value: the router's $\mathrm{CV}_{f_0}$, raw and aligned, against that of the student restarted from its own draft, with a one-sided Wilcoxon signed-rank test on speaker-level values. Because pitch-based variety captures only part of what listeners hear \parencite{yang2025prosody}, a small listening check by the research team on a fixed subset of these outputs will be reported as supporting evidence only. Whether two systems fail on different inputs will be compared with the exact McNemar test \parencite{mcnemar1947}, which looks only at the inputs on which one system fails and the other does not. Average differences will be reported with 95\% bootstrap intervals, obtained by resampling whole speakers 2,000 times \parencite{efron1979bootstrap}; resampling speakers rather than single sentences respects the dependence between sentences of the same speaker \parencite{liu2020blockwise}.
+Comparisons will be paired, since every system is applied to the same inputs with the same random starting values; each speaker's result under one system is compared with the same speaker's result under another. Differences in generation time, WER, SIM, UTMOS and $\mathrm{CV}_{f_0}$ between the router and each other system will be tested with the Wilcoxon signed-rank test \parencite{wilcoxon1945}, which compares paired values without assuming that the differences follow a normal distribution. Because the router is compared with several systems, the Holm correction \parencite{holm1979} will adjust the results so that the chance of at least one false finding stays at the chosen level. The teacher passes of the router are justified only by the variety they add, so one comparison is fixed in advance as the main test of the teacher's value: the router's $\mathrm{CV}_{f_0}$, raw and aligned, against that of the student restarted from its own draft, with a one-sided Wilcoxon signed-rank test on speaker-level values. Because pitch-based variety captures only part of what listeners hear \parencite{yang2025prosody}, a small listening check by the research team on a fixed subset of these outputs will be reported as supporting evidence only. Whether two systems fail on different inputs will be compared with the exact McNemar test \parencite{mcnemar1947}, which looks only at the inputs on which one system fails and the other does not. Average differences will be reported with bootstrap intervals, obtained by resampling whole speakers $B$ times \parencite{efron1979bootstrap}; resampling speakers rather than single sentences respects the dependence between sentences of the same speaker \parencite{liu2020blockwise}.
 
-A claim that the router's quality is not worse than the released system's will require a test of equivalence, the two one-sided tests procedure \parencite{schuirmann1987}, which shows that the difference lies within a stated margin; failing to find a difference is not the same as showing that there is none, so it will not be taken as evidence of equal quality. The margins will be fixed before testing: WER at most 1 percentage point higher, SIM at most 0.02 lower, and UTMOS at most 0.10 lower than the released system's mean. The WER and SIM margins are those of the earlier proposal's failure rule, chosen to be larger than the small differences the scoring models give when the same audio is scored again; the UTMOS margin, one tenth of a point on the five-point opinion scale, is a design choice of this study, set before any test-split result is seen. Results will be reported per condition as well as overall, so that a gain on damaged prompts cannot hide a loss on clean ones.
+A claim that the router's quality is not worse than the released system's will require a test of equivalence, the two one-sided tests procedure \parencite{schuirmann1987}, which shows that the difference lies within a stated margin; failing to find a difference is not the same as showing that there is none, so it will not be taken as evidence of equal quality. The margins $\Delta_{\text{WER}}$, $\Delta_{\text{SIM}}$ and $\Delta_{\text{UTMOS}}$, the largest losses against the released system's mean that still count as ``not worse'', will be fixed before testing. Results will be reported per condition as well as overall, so that a gain on damaged prompts cannot hide a loss on clean ones.
 
-Every test will use a significance level of 0.05 after the Holm correction. This level is a different quantity from the tolerance $\alpha=0.05$ of the calibration, even though the two numbers are equal: the significance level limits the chance of declaring a difference between two systems when there is none, while $\alpha$ limits how often the router may fail where the released system does not. Table~\ref{tab:levels} lists the probability levels used in the study and what each one controls.
-
-\begin{table}[!htbp]
-\centering\small
-\caption{Probability levels and margins used in the study.}
-\label{tab:levels}
-\begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.3cm}>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{4.9cm}>{\raggedright\arraybackslash}p{2.2cm}@{}}
-\toprule
-\textbf{Level} & \textbf{Value} & \textbf{What it controls} & \textbf{Where} \\
-\midrule
-Significance level of the paired tests & 0.05, Holm-adjusted & Chance of declaring a difference between two systems when there is none & Section~\ref{sec:stats} \\
-Equivalence margins & WER $+1$ pt; SIM $-0.02$; UTMOS $-0.10$ & Largest loss against the released system still called ``not worse'' & Section~\ref{sec:stats} \\
-Tolerated risk $\alpha$ & 0.05 (sensitivity 0.10) & Largest acceptable rate of excess failures on new inputs & Eqs.~\ref{eq:objective}, \ref{eq:pvalue} \\
-Confidence parameter $\delta$ & 0.10, shared as $\delta/3$ per path & Largest allowed chance that calibration selects an unsafe configuration & Eqs.~\ref{eq:pvalue}, \ref{eq:guarantee} \\
-Interval level & 95\% & Width of the Clopper--Pearson and bootstrap intervals & Sections \ref{sec:verify}, \ref{sec:stats} \\
-\bottomrule
-\end{tabular}
-\end{table}
+Every test will use a significance level $a$ after the Holm correction. This level is a different quantity from the tolerance $\alpha$ of the calibration, even if the two values are equal: the significance level limits the chance of declaring a difference between two systems when there is none, while $\alpha$ limits how often the router may fail where the released system does not.
 
 % =====================================================================
 \subsection{Ethical Considerations}
