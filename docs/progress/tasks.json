@@ -1196,6 +1196,21 @@
         "docs/progress/log/2026-11-19-baseline-handover-diagram.md"
       ],
       "validation": "2026-11-19: Visually inspected 3200x1800 PNG (906,686 bytes, SHA-256 ebb57733...) and verified identical copy in paper/figures/baseline_handover_architectures.png; latexmk -interaction=nonstopmode -halt-on-error -Werror main.tex exited 0 (109 pages, 3,124,040 bytes) with Appendix E pages visually verified via pdftoppm; render_progress.py, check_workspace.py, and unittest pass after final edits. Pending teacher/adviser review."
+    },
+    {
+      "id": "PAPER-022",
+      "title": "Reconcile Appendices A-E, ltt_sim.py, and revision matrix with the payload-router and candidate-path Chapter 3",
+      "owner": "Rhenel Jhon R. Sajol",
+      "status": "review",
+      "updated": "2026-11-28",
+      "acceptance": "origin/main (531a26a) merged cleanly into rhnl-3; Appendix A walks through the 8-interval candidate paths K={2,4,6}, quantile projection Q, invariant residual r, absolute 3-metric failure rule, and delta/3 Learn-Then-Test calibration (minimum n=67) on EXP-034 T4 development data; Appendix B and code/analysis/ltt_sim.py simulate three-path LTT vs naive selection across n in {50,75,100,200,400} plus EXP-034 fitted bootstrap; Appendix C (Table C.1, Figure C.1) and revision-matrix.tex item 2 describe the SNR_R prototype; Appendix D preserves the complete Steps 1-8 fixed-step benchmark table (Table D.3: Clean & Noisy WER/SIM/UTMOS, latency, EXP-003 failures, TOST) in D.1 without duplicating those rows in D.4's policy table, embeds fig_baseline_handover in D.2, and removes stale j=1/'Chapter 3 unchanged' claims; Appendix E removes duplicate Section E.1 math/proofs and Figure E.2 (now in Chapter 3) and frames EXP-034 as the k=4 development pilot; latexmk -Werror, check_workspace.py, and unittest pass.",
+      "evidence": [
+        "paper/chapters/appendices.tex",
+        "paper/revision-matrix.tex",
+        "code/analysis/ltt_sim.py",
+        "docs/progress/log/2026-11-28-appendices-router-reconciliation.md"
+      ],
+      "validation": "2026-11-28: Synced local main and merged origin/main (531a26a) into rhnl-3; updated appendices.tex, revision-matrix.tex, and code/analysis/ltt_sim.py; latexmk -g -pdf -Werror main.tex and latexmk -pdf revision-matrix.tex exited 0 with zero undefined references/citations and zero Overfull hbox warnings in appendices.tex; python scripts/render_progress.py, python scripts/check_workspace.py, and python -m unittest discover -s code/tests pass. Pending team and adviser review."
     }
   ]
 }
