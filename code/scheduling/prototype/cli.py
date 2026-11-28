@@ -1,7 +1,7 @@
 """Terminal mode of the SNR + Invariant Residual (SNR_R) prototype: prints steps live and saves the output WAV.
 
-    .venv\\Scripts\\python code\\prototype\\cli.py --example 38 --condition gauss25 --compare
-    .venv\\Scripts\\python code\\prototype\\cli.py --prompt my_voice.wav --prompt-text "What the prompt says." \\
+    .venv\\Scripts\\python code\\scheduling\\prototype\\cli.py --example 38 --condition gauss25 --compare
+    .venv\\Scripts\\python code\\scheduling\\prototype\\cli.py --prompt my_voice.wav --prompt-text "What the prompt says." \\
         --text "What the voice should say." --out out.wav
 """
 import argparse

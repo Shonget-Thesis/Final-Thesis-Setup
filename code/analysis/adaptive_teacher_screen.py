@@ -44,7 +44,7 @@ from pathlib import Path
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
-for p in ("code/colab", "code/prototype"):
+for p in ("code/colab", "code/scheduling/prototype"):
     sys.path.insert(0, str(ROOT / p))
 
 EXP033_QUAL = ROOT / "research/experiments/EXP-033-cheaper-teacher-path/results/quality.csv"

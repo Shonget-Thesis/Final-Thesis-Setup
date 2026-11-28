@@ -40,7 +40,7 @@ from pathlib import Path
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
-for p in ("code/colab", "code/prototype", "code/analysis"):
+for p in ("code/colab", "code/scheduling/prototype", "code/analysis"):
     sys.path.insert(0, str(ROOT / p))
 import exp032_bank_pitch_screen as bs  # noqa: E402
 import run_selective_handover_prelim as sh  # noqa: E402

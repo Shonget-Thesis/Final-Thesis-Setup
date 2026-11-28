@@ -1,4 +1,4 @@
-"""Tests for the prototype's SNR + drift file (code/prototype/snr_drift.py) and the engine's pure helpers. They check the
+"""Tests for the prototype's SNR + drift file (code/scheduling/prototype/snr_drift.py) and the engine's pure helpers. They check the
 prototype against the thesis's own code: code/scheduling/sampler.py (functions extracted from its source, so PyTorch is
 not needed) and the experiments' Chapter 3 policy. The PyTorch comparison of the drift runs only where PyTorch exists."""
 import ast
@@ -11,7 +11,7 @@ from pathlib import Path
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "code/prototype"))
+sys.path.insert(0, str(ROOT / "code/scheduling/prototype"))
 sys.path.insert(0, str(ROOT / "code/colab"))
 import engine as eng  # noqa: E402
 import run_followup_tests as rf  # noqa: E402
@@ -160,7 +160,7 @@ class EngineHelperTests(unittest.TestCase):
 
 class InterfaceTests(unittest.TestCase):
     def test_page_uses_the_presentation_design_and_the_api(self):
-        html = (ROOT / "code/prototype/web/index.html").read_text(encoding="utf-8")
+        html = (ROOT / "code/scheduling/prototype/web/index.html").read_text(encoding="utf-8")
         for token in ("--blue-grad", "--orange-grad", "--dark-grad", "Google+Sans+Flex", "/api/jobs", "/api/status",
                       "/api/examples", "SNR + Invariant Residual"):
             self.assertIn(token, html)
