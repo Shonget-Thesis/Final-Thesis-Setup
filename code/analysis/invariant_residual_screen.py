@@ -51,7 +51,7 @@ from pathlib import Path
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
-for p in ("code/colab", "code/prototype", "code/analysis"):
+for p in ("code/colab", "code/scheduling/prototype", "code/analysis"):
     sys.path.insert(0, str(ROOT / p))
 import innovation_snr_screen as ins  # noqa: E402
 import noise_color_screen as ncs  # noqa: E402

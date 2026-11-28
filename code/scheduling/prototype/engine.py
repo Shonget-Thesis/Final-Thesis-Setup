@@ -20,7 +20,7 @@ from pathlib import Path
 import numpy as np
 
 HERE = Path(__file__).resolve().parent
-ROOT = HERE.parents[1]
+ROOT = HERE.parents[2]
 VENDOR_SRC = ROOT / "code/vendor/dmospeech2/src"
 COLAB_DIR = ROOT / "code/colab"
 CKPT_DIR = Path(os.environ.get("DMO_CKPT_DIR", ROOT / "ckpts"))

@@ -1,6 +1,6 @@
 """Local web server for the SNR + Invariant Residual (SNR_R) prototype.
 
-    .venv\\Scripts\\python code\\prototype\\server.py            (then open http://127.0.0.1:8765)
+    .venv\\Scripts\\python code\\scheduling\\prototype\\server.py            (then open http://127.0.0.1:8765)
 
 The page (web/index.html) opens at once; the model loads in the background. Jobs run one at a time on the CPU, and each
 step (student draft, 8-interval teacher steps, invariant residual decision, student completion) is streamed live.

@@ -24,12 +24,12 @@ A local CPU demonstration of **risk-calibrated SNR + Invariant Residual (`SNR_R`
 
 ## Run it
 
-**Option 1:** double-click `code\prototype\start_prototype.bat`.
+**Option 1:** double-click `code\scheduling\prototype\start_prototype.bat`.
 
 **Option 2:** from the repository root:
 
 ```powershell
-.venv\Scripts\python code\prototype\server.py
+.venv\Scripts\python code\scheduling\prototype\server.py
 ```
 
 The page opens at http://127.0.0.1:8765.
@@ -37,8 +37,8 @@ The page opens at http://127.0.0.1:8765.
 **Terminal mode:**
 
 ```powershell
-.venv\Scripts\python code\prototype\cli.py --example 38 --condition gauss25 --compare
-.venv\Scripts\python code\prototype\cli.py --prompt my_voice.wav --prompt-text "What the prompt says." --text "What to say." --out out.wav
+.venv\Scripts\python code\scheduling\prototype\cli.py --example 38 --condition gauss25 --compare
+.venv\Scripts\python code\scheduling\prototype\cli.py --prompt my_voice.wav --prompt-text "What the prompt says." --text "What to say." --out out.wav
 ```
 
 ## Suggested demo (`EXP-034` recorded development examples)
@@ -74,7 +74,7 @@ Switching the preset chip to **`Off · SNR only`** (`lambda_r = 10.00`) disables
 
 ## Setup (checkpoints & environment)
 
-Uses `.venv`, `ckpts/model_85000.pt`, `ckpts/model_1500.pt`, and `research/data/seed-tts-eval/en` (see `code/prototype/requirements.txt`). `.venv/`, `ckpts/`, and `research/data/` are git-ignored.
+Uses `.venv`, `ckpts/model_85000.pt`, `ckpts/model_1500.pt`, and `research/data/seed-tts-eval/en` (see `code/scheduling/prototype/requirements.txt`). `.venv/`, `ckpts/`, and `research/data/` are git-ignored.
 
 ## Notes
 
