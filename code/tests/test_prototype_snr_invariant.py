@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "code/prototype"))
+sys.path.insert(0, str(ROOT / "code/scheduling/prototype"))
 sys.path.insert(0, str(ROOT / "code/colab"))
 
 import engine as eng  # noqa: E402
@@ -203,7 +203,7 @@ class EngineAndInterfaceTests(unittest.TestCase):
             self.assertAlmostEqual(st["risk_calibration"]["ltt_10"]["lambda_r"], si.LTT_10_LAMBDA_R, places=12)
 
     def test_ui_tokens_present(self):
-        html = (ROOT / "code/prototype/web/index.html").read_text(encoding="utf-8")
+        html = (ROOT / "code/scheduling/prototype/web/index.html").read_text(encoding="utf-8")
         for token in ("SNR + Invariant Residual", "Learn-Then-Test", "CPH8", "CPQH", "EXP-034", "lam_r"):
             self.assertIn(token, html)
 
