@@ -24,7 +24,7 @@
 \node[frozen] (teach) at (4.4,1.0) {Teacher\\(shorter path, same\\for every input)};
 \node[contrib] (hand) at (8.0,1.0) {\textbf{Handover decision}\\what the teacher passes:\\its estimate, or a\\noise-corrected version};
 \node[frozen] (stud)  at (11.6,1.0) {Student\\finishes the speech};
-\node[contrib, text width=3.3cm, minimum height=1.2cm] (cal) at (8.0,-1.95) {\textbf{Calibration}\\selects the teacher path\\and threshold once};
+\node[contrib, text width=3.3cm, minimum height=1.2cm] (cal) at (8.0,-1.95) {\textbf{Calibration}\\sets the threshold for\\each teacher path once};
 
 \begin{scope}[on background layer]
 \draw[draw=frozenLine, dashed, rounded corners=4pt] (2.9,-0.2) rectangle (13.1,2.5);
@@ -39,7 +39,7 @@
 \draw[arr] (hand) -- (stud);
 \draw[arr] (stud) -- (o1);
 \draw[arr] (ical) -- (cal);
-\draw[arr] (cal) -- node[lab, right] {path, threshold} (hand);
+\draw[arr] (cal) -- node[lab, right] {threshold} (hand);
 \node[lab, anchor=north] at (cal.south) {with a stated limit on extra quality failures};
 \node[lab, anchor=south] (sig) at (8.0,2.0) {signals: prompt noise; teacher--student disagreement};
 \draw[arr, densely dotted] (sig.south) -- (hand.north);

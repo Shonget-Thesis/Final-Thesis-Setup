@@ -263,7 +263,6 @@
         "paper/chapters/02-related-work.tex",
         "paper/chapters/03-methodology.tex",
         "paper/figures/fig_contribution.tex",
-        "paper/figures/fig_workflow.tex",
         "paper/chapters/appendices.tex",
         "paper/chapters/01-introduction.tex",
         "paper/frontmatter.tex",
@@ -1147,12 +1146,11 @@
       "title": "Rewrite Chapter 3 around the risk-calibrated payload router (SNR_R) with an absolute failure rule and LTT bound against reproduced DMOSpeech 2",
       "owner": "Claude (drafting), for Mark Vincent D. Limpahan",
       "status": "review",
-      "updated": "2026-11-27",
+      "updated": "2026-11-28",
       "acceptance": "paper/chapters/03-methodology.tex describes the payload router; future tense; no result values; every display equation defined; objectives only in headings and workflow table; plain-language explanations for unfamiliar readers; latexmk -Werror passes. Not adviser-approved; EXP-034 remains development evidence.",
       "evidence": [
         "paper/chapters/03-methodology.tex",
         "paper/figures/fig_method.tex",
-        "paper/figures/fig_workflow.tex",
         "docs/progress/log/2026-11-18-chapter3-v2-router-draft.md",
         "docs/progress/log/2026-11-18-chapter3-router-replaces-scheduler.md",
         "paper/chapters/02-related-work.tex",
@@ -1162,9 +1160,15 @@
         "paper/chapters/01-introduction.tex",
         "docs/progress/log/2026-11-18-fixed-cost-clarifications.md",
         "docs/progress/log/2026-11-27-chapter1-router-port.md",
-        "docs/progress/log/2026-11-27-chapter3-candidate-paths.md"
+        "docs/progress/log/2026-11-27-chapter3-candidate-paths.md",
+        "docs/progress/log/2026-11-28-appendices-and-notes.md",
+        "docs/progress/log/2026-11-28-chapter3-as-plan.md",
+        "docs/progress/log/2026-11-28-chapter3-variables-and-plain-language.md",
+        "docs/progress/log/2026-11-28-conceptual-framework-placement.md",
+        "docs/progress/log/2026-11-28-revision-matrix-locations.md",
+        "docs/progress/log/2026-11-28-short-captions.md"
       ],
-      "validation": "2026-11-18: latexmk -Werror main.tex exit 0 (111 pages), zero undefined references/citations, zero Overfull boxes. Chapter 1 beyond Scope still describes the old scheduler. Pending team and adviser review. 2026-11-27: Chapter 1 ported to the router with candidate teacher paths; latexmk -Werror clean. 2026-11-27: Chapter 3 aligned with candidate teacher paths (per-path fixed-sequence LTT at delta/3); latexmk -g -Werror clean, 108 pages."
+      "validation": "2026-11-18: latexmk -Werror main.tex exit 0 (111 pages), zero undefined references/citations, zero Overfull boxes. Chapter 1 beyond Scope still describes the old scheduler. Pending team and adviser review. 2026-11-27: Chapter 1 ported to the router with candidate teacher paths; latexmk -Werror clean. 2026-11-27: Chapter 3 aligned with candidate teacher paths (per-path fixed-sequence LTT at delta/3); latexmk -g -Werror clean, 108 pages. 2026-11-28: proposal revisions (Chapter 1 conceptual framework moved, Chapter 3 as a plan with per-path calibration, appendices rewritten, short captions, revision matrix rebuilt); latexmk -Werror clean."
     },
     {
       "id": "PAPER-021",

@@ -57,8 +57,9 @@ With $s=-1$ the map becomes $t=1-\cos(\tfrac{\pi}{2}u)$, and half of the steps f
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=\textwidth]{figures/sway_grid_tswitch.png}
-\caption[Sway sampling and the switching time]{Sway sampling ($s=-1$) concentrates teacher steps at small $t$, where the switching time lies. (a) The sway map against the uniform grid; 8 of the 17 teacher grid points lie at or below $t_{\text{switch}}=0.25$, and each additional guided teacher step costs two forward passes, so the released handover after eight steps costs 21 forward passes, and a coarser grid with every second point reaches the same handover time in four steps. (b) Near $t=0.25$, the paper's 14 teacher steps correspond to the last point not above 0.25 on a 32-interval grid ($t_{14}\approx0.227$), while the released code stops at the first point above 0.25 on its 16-interval grid ($t_8\approx0.293$). Figure by the researchers, computed from the sway map of \textcite{chen2024f5}, the configuration reported by \textcite[p.~31819]{li2025dmospeech2} and the released code \parencite{li2025dmospeech2code}.}
+\caption[Sway sampling and the switching time]{Sway sampling ($s=-1$) concentrates teacher steps at small $t$, where the switching time lies}
 \label{fig:rrl-sway}
+\par\vspace{2pt}{\footnotesize\raggedright (a)~Sway map against the uniform grid; (b)~grid points near $t=0.25$. Figure by the researchers, computed from \textcite{chen2024f5}, \textcite[p.~31819]{li2025dmospeech2} and the released code \parencite{li2025dmospeech2code}.\par}
 \end{figure}
 
 \subsubsection{Forward-Pass Cost and Guidance}
@@ -104,8 +105,9 @@ A fraction $\tau$ of the input carries the teacher's information and $1-\tau$ is
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=\textwidth]{figures/teacher_guided_timeline_t55.png}
-\caption[Teacher-guided sampling in DMOSpeech~2]{Teacher-guided sampling in the DMOSpeech~2 code at the reference switching time ($t_{\text{switch}}=0.25$, 16-interval sway grid). The teacher takes guided Euler steps up to the first grid point above $t_{\text{switch}}$ ($t_8\approx0.293$), and one more guided evaluation gives the endpoint estimate $\hat x_1$. The student then restarts from a re-noised copy of $\hat x_1$ at $\tau\approx0.076$ and finishes in three unguided steps. Guided teacher evaluations cost two forward passes each, so the teacher accounts for 18 of the 21 passes. In DMOSpeech~2 both the switching time and the handed-over content are fixed; this study keeps a fixed, cheaper handover point and chooses per utterance what is handed over. Figure by the researchers, based on the sampler described by \textcite{li2025dmospeech2} and the released code \parencite{li2025dmospeech2code}.}
+\caption[Teacher-guided sampling in DMOSpeech~2]{Teacher-guided sampling in the released DMOSpeech~2 code}
 \label{fig:rrl-tg}
+\par\vspace{2pt}{\footnotesize\raggedright Figure by the researchers, based on \textcite{li2025dmospeech2} and the released code \parencite{li2025dmospeech2code}.\par}
 \end{figure}
 
 In the released code the restart level is set by the student's own grid, not by the switching time \parencite{li2025dmospeech2code}. With the default start index the student always restarts at $\tau=0.0761$, which equals the teacher's fourth grid point. For a handover after that point, the student re-noises the teacher's estimate back to a noisier level than the teacher had already reached, so part of the teacher's work is diluted. Matching the restart level to the handover point avoids this. The proposed method will therefore restart the student at $\tau=0.2929$, exactly the point at which its teacher stops, which is also the two-step student configuration of the DMOSpeech~2 paper \parencite{li2025dmospeech2}; the restart level is fixed in advance and not chosen per input.
@@ -133,7 +135,7 @@ A smaller group of methods did attach such a bound. Confident Adaptive Language 
 {\small
 \setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{3.0cm} >{\raggedright\arraybackslash}p{2.75cm} >{\raggedright\arraybackslash}p{2.75cm} >{\raggedright\arraybackslash}p{2.2cm} >{\raggedright\arraybackslash}p{2.2cm}@{}}
-\caption{Input-adaptive computation methods compared on the three ingredients of an adaptive rule.}
+\caption{Input-adaptive computation methods}
 \label{tab:rrl-adaptive} \\
 \toprule
 \textbf{Method} & \textbf{What is adapted} & \textbf{Decision signal} & \textbf{Rule} & \textbf{Guarantee} \\
@@ -257,7 +259,7 @@ Table~\ref{tab:synthesis} lists only the studies that bear on the problem or the
 {\small
 \setlength{\LTpre}{6pt}\setlength{\LTpost}{0pt}
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.7cm} >{\raggedright\arraybackslash}p{1.8cm} >{\raggedright\arraybackslash}p{2.7cm} >{\raggedright\arraybackslash}p{2.85cm} >{\raggedright\arraybackslash}p{2.85cm}@{}}
-\caption{Synthesis of the related studies: what each line of work shows and what it leaves open for this study.}
+\caption{Synthesis of the related studies}
 \label{tab:synthesis} \\
 \toprule
 \textbf{Reference} & \textbf{Domain} & \textbf{Objective / method} & \textbf{Use in this study} & \textbf{What it does not establish} \\
@@ -312,7 +314,7 @@ Table~\ref{tab:sources} lists, for each component that the proposed method adds 
 {\small
 \setlength{\LTpre}{6pt}\setlength{\LTpost}{0pt}
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm} >{\raggedright\arraybackslash}p{2.9cm} >{\raggedright\arraybackslash}p{3.7cm} >{\raggedright\arraybackslash}p{3.7cm}@{}}
-\caption{Sources of the components added by the proposed method (Chapter~3).}
+\caption{Sources of the components added by the proposed method}
 \label{tab:sources} \\
 \toprule
 \textbf{Component} & \textbf{Built on} & \textbf{What is taken} & \textbf{What this study changes} \\
