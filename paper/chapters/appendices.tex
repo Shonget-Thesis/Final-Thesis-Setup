@@ -187,6 +187,31 @@ $s=0.25$ (reference) & 8 & 21 & 0 & 0 & 0 \\
 \end{tabular}
 \end{table}
 
+To check every candidate on the released grid, a second run synthesized all eight fixed switching steps on 60 development speakers under six prompt conditions (360 inputs: clean, and white noise at 15, 18, 20, 22 and 25~dB). Table~\ref{tab:fixed-steps} lists them. Clean prompts were already as good as Step~8 by Step~2, but every step copied the prompt's noise: noisy naturalness stayed between 1.28 and 1.48 UTMOS at every step, against 2.69 for the 4-pass student alone, and only Step~7, which saves 2 of 21 passes, was equivalent to Step~8 in WER. No single fixed step was therefore both cheaper and safe.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{All eight fixed switching steps on the released grid}
+\label{tab:fixed-steps}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}l r r r r r@{}}
+\toprule
+\textbf{Step ($t$)} & \textbf{Passes} & \textbf{Clean} & \textbf{Noisy} & \textbf{Noisy} & \textbf{Same} \\
+ & & \textbf{UTMOS} & \textbf{WER} & \textbf{UTMOS} & \textbf{WER?} \\
+\midrule
+Step~1 (0.0048) & 7 & 3.06 & 56.3\% & 1.28 & No \\
+Step~2 (0.0192) & 9 & 3.86 & 22.2\% & 1.38 & No \\
+Step~3 (0.0431) & 11 & 3.87 & 15.8\% & 1.46 & No \\
+Step~4 (0.0761) & 13 & 3.92 & 10.9\% & 1.48 & No \\
+Step~5 (0.1181) & 15 & 3.92 & 8.2\% & 1.48 & No \\
+Step~6 (0.1685) & 17 & 3.92 & 7.2\% & 1.48 & No \\
+Step~7 (0.2270) & 19 & 3.93 & 7.5\% & 1.47 & Yes \\
+Step~8 (0.2929, ref.) & 21 & 3.92 & 7.5\% & 1.46 & --- \\
+\bottomrule
+\end{tabular}
+\par\smallskip{\footnotesize Noisy WER is capped at 100\% per input. Same WER: a TOST equivalence test against Step~8 within 1 percentage point \parencite{schuirmann1987}.\par}
+\end{table}
+
 \subsection{Adapting the Handover Time Could Not Be Certified}
 \label{app:prelim-timing}
 

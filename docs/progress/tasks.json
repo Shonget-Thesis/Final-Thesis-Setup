@@ -972,16 +972,16 @@
       "owner": "Rhenel Jhon R. Sajol",
       "status": "review",
       "updated": "2026-11-16",
-      "acceptance": "SNR + drift lives in its own file (code/prototype/snr_drift.py) with no model or interface code and agrees with code/scheduling/sampler.py and the experiments' Chapter 3 policy; the prototype runs locally on CPU from verified checkpoints and the Seed-TTS English set, stops the teacher when the rule decides, reports SNR, drifts, the handover step and passes against the 21-pass reference, and serves an HTML page in the design of presentation/index.html; examples are development speakers only; nothing in code/vendor, the experiments or the manuscript changes.",
+      "acceptance": "SNR + drift lives in its own file (code/scheduling/prototype/snr_drift.py) with no model or interface code and agrees with code/scheduling/sampler.py and the experiments' Chapter 3 policy; the prototype runs locally on CPU from verified checkpoints and the Seed-TTS English set, stops the teacher when the rule decides, reports SNR, drifts, the handover step and passes against the 21-pass reference, and serves an HTML page in the design of presentation/index.html; examples are development speakers only; nothing in code/vendor, the experiments or the manuscript changes.",
       "evidence": [
-        "code/prototype/snr_drift.py",
-        "code/prototype/engine.py",
-        "code/prototype/server.py",
-        "code/prototype/cli.py",
-        "code/prototype/web/index.html",
-        "code/prototype/README.md",
-        "code/prototype/requirements.txt",
-        "code/prototype/start_prototype.bat",
+        "code/scheduling/prototype/snr_drift.py",
+        "code/scheduling/prototype/engine.py",
+        "code/scheduling/prototype/server.py",
+        "code/scheduling/prototype/cli.py",
+        "code/scheduling/prototype/web/index.html",
+        "code/scheduling/prototype/README.md",
+        "code/scheduling/prototype/requirements.txt",
+        "code/scheduling/prototype/start_prototype.bat",
         "code/tests/test_prototype_snr_drift.py",
         "docs/progress/log/2026-11-16-snr-drift-prototype.md"
       ],
@@ -1045,7 +1045,7 @@
         "paper/chapters/appendices.tex",
         "paper/revision-matrix.tex",
         "presentation/index.html",
-        "code/prototype/snr_drift.py",
+        "code/scheduling/prototype/snr_drift.py",
         "docs/progress/log/2026-11-17-merge-origin-main.md"
       ],
       "validation": "2026-11-17: Merged origin/main (d169bef) into rhnl-3 at e0bb5c4; verified empty diff against origin/main on all 12 non-appendix PR #19 files and reconciled paper/chapters/appendices.tex with Table A.1 Step 7, 3-objective numbering, Appendix D Steps 1-7 & prosodic variety, and STAC removal; latexmk -Werror exited 0 (paper/build/main.pdf, 90 pages, 1,182,187 bytes)."
@@ -1126,15 +1126,15 @@
       "owner": "Rhenel Jhon R. Sajol",
       "status": "review",
       "updated": "2026-11-18",
-      "acceptance": "Risk-calibrated SNR + Invariant Residual (SNR_R) with fixed-sequence binomial Learn-Then-Test (LTT) calibration is implemented in model-free code/prototype/snr_invariant.py and verified against run_invariant_residual.py and run_method_comparison.py (NumPy + PyTorch); engine.py, server.py, cli.py, and web/index.html run the 1-pass s_0 draft + 5-step 8-grid teacher + LTT-calibrated r > lambda_r / SNR < 20 dB CPQH-vs-CPH8 router (default ltt_15 0.3416 and strict ltt_10 0.3816, plus empirical/snr_only) + 2-pass student completion (13 passes vs 21 W8 / 30 P25), expose live LTT calibration + EXP-034 T4 outcomes and pink25/hp25 conditions on development examples only, preserve code/prototype/snr_drift.py, and pass prototype + full unittest + workspace checks without altering code/vendor or manuscript.",
+      "acceptance": "Risk-calibrated SNR + Invariant Residual (SNR_R) with fixed-sequence binomial Learn-Then-Test (LTT) calibration is implemented in model-free code/scheduling/prototype/snr_invariant.py and verified against run_invariant_residual.py and run_method_comparison.py (NumPy + PyTorch); engine.py, server.py, cli.py, and web/index.html run the 1-pass s_0 draft + 5-step 8-grid teacher + LTT-calibrated r > lambda_r / SNR < 20 dB CPQH-vs-CPH8 router (default ltt_15 0.3416 and strict ltt_10 0.3816, plus empirical/snr_only) + 2-pass student completion (13 passes vs 21 W8 / 30 P25), expose live LTT calibration + EXP-034 T4 outcomes and pink25/hp25 conditions on development examples only, preserve code/scheduling/prototype/snr_drift.py, and pass prototype + full unittest + workspace checks without altering code/vendor or manuscript.",
       "evidence": [
-        "code/prototype/snr_invariant.py",
-        "code/prototype/engine.py",
-        "code/prototype/server.py",
-        "code/prototype/cli.py",
-        "code/prototype/web/index.html",
-        "code/prototype/README.md",
-        "code/prototype/start_prototype.bat",
+        "code/scheduling/prototype/snr_invariant.py",
+        "code/scheduling/prototype/engine.py",
+        "code/scheduling/prototype/server.py",
+        "code/scheduling/prototype/cli.py",
+        "code/scheduling/prototype/web/index.html",
+        "code/scheduling/prototype/README.md",
+        "code/scheduling/prototype/start_prototype.bat",
         "code/tests/test_prototype_snr_drift.py",
         "code/tests/test_prototype_snr_invariant.py",
         "docs/progress/log/2026-11-18-snr-invariant-prototype.md"
@@ -1200,6 +1200,24 @@
         "docs/progress/log/2026-11-19-baseline-handover-diagram.md"
       ],
       "validation": "2026-11-19: Visually inspected 3200x1800 PNG (906,686 bytes, SHA-256 ebb57733...) and verified identical copy in paper/figures/baseline_handover_architectures.png; latexmk -interaction=nonstopmode -halt-on-error -Werror main.tex exited 0 (109 pages, 3,124,040 bytes) with Appendix E pages visually verified via pdftoppm; render_progress.py, check_workspace.py, and unittest pass after final edits. Pending teacher/adviser review."
+    },
+    {
+      "id": "PAPER-022",
+      "title": "Relocate the prototype to code/scheduling/prototype and add the Steps 1-8 fixed-step table to Appendix B (from PR #27)",
+      "owner": "Rhenel Jhon R. Sajol and Mark Vincent D. Limpahan",
+      "status": "review",
+      "updated": "2026-11-28",
+      "acceptance": "PR #27's code changes (prototype move, math guide, updated tests, three-path ltt_sim.py) are on main; analysis scripts and progress links follow the move; Appendix B.1 lists all eight fixed switching steps (Table B.2) and revision-matrix items 1 and 11 cite it; main's appendices and revision matrix otherwise unchanged; latexmk -Werror, check_workspace.py and unittest pass.",
+      "evidence": [
+        "code/scheduling/prototype/README.md",
+        "code/scheduling/prototype/SNR_INVARIANT_MATH_GUIDE.md",
+        "code/analysis/ltt_sim.py",
+        "paper/chapters/appendices.tex",
+        "paper/revision-matrix.tex",
+        "docs/progress/log/2026-11-28-appendices-router-reconciliation.md",
+        "docs/progress/log/2026-11-28-rhnl3-code-and-fixed-steps.md"
+      ],
+      "validation": "2026-11-28: latexmk -pdf -Werror main.tex and revision-matrix.tex exit 0 with no undefined references; render_progress.py, check_workspace.py and unittest pass. Pending team and adviser review."
     }
   ]
 }
